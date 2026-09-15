@@ -259,12 +259,12 @@
           <div class="study-shell">
             <div class="study-intro">
               <div>
-                <h2>Сначала познакомимся со словами</h2>
-                <p>Посмотри перевод и примеры, затем переходи к заданиям без подсказок.</p>
+                <h2 id="studyTitle">Сначала познакомимся со словами</h2>
+                <p id="studyIntroText">Посмотри перевод и примеры, затем переходи к заданиям без подсказок.</p>
               </div>
               <button class="btn btn-primary" id="startFoodPractice" type="button">К упражнениям →</button>
             </div>
-            <div class="food-filters" id="foodFilters" aria-label="Категории продуктов"></div>
+            <div class="food-filters" id="foodFilters" aria-label="Категории слов"></div>
             <article class="study-card">
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
               <div>
@@ -370,6 +370,7 @@
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
       { id:"city", title:"Город и район", icon:"⌂" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
+      { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
       { id:"custom", title:"Свои задания", icon:"＋" }
     ];
 
@@ -575,6 +576,125 @@
 
     ];
 
+    const CLOTHING_CATEGORIES = [
+      {id:"all",title:"Все слова"},
+      {id:"clothes",title:"Одежда"},
+      {id:"shoes",title:"Обувь"},
+      {id:"accessories",title:"Аксессуары"},
+      {id:"jewelry",title:"Украшения"},
+      {id:"headwear",title:"Головные уборы"},
+      {id:"bags",title:"Сумки"}
+    ];
+
+    function clothingWord(id,cat,word,base,gender,tr,ru,answers,art,examples,cloze,clozeAnswers){
+      return {id:id,cat:cat,word:word,base:base,gender:gender,tr:tr,ru:ru,answers:answers,art:art,examples:examples,cloze:cloze,clozeAnswers:clozeAnswers};
+    }
+
+    const CLOTHING_WORDS = [
+      clothingWord("tshirt","clothes","la camiseta","camiseta","женский род","футболка",["футболка"],["camiseta","la camiseta"],"tshirt",
+        [["Llevo una camiseta blanca.","На мне белая футболка."],["Esta camiseta es muy cómoda.","Эта футболка очень удобная."]],"Llevo una ___ blanca.",["camiseta"]),
+      clothingWord("shirt","clothes","la camisa","camisa","женский род","рубашка",["рубашка"],["camisa","la camisa"],"shirt",
+        [["Él lleva una camisa azul.","На нём синяя рубашка."],["Plancho la camisa para mañana.","Я глажу рубашку на завтра."]],"Él lleva una ___ azul.",["camisa"]),
+      clothingWord("blouse","clothes","la blusa","blusa","женский род","блузка",["блузка"],["blusa","la blusa"],"blouse",
+        [["La blusa combina con la falda.","Блузка сочетается с юбкой."],["Busco una blusa elegante.","Я ищу элегантную блузку."]],"Busco una ___ elegante.",["blusa"]),
+      clothingWord("sweater","clothes","el jersey","jersey","мужской род","свитер",["свитер","джемпер"],["jersey","el jersey","suéter","el suéter"],"sweater",
+        [["Me pongo un jersey de lana.","Я надеваю шерстяной свитер."],["Este jersey abriga mucho.","Этот свитер очень тёплый."]],"Me pongo un ___ de lana.",["jersey","suéter"]),
+      clothingWord("jacket","clothes","la chaqueta","chaqueta","женский род","куртка, пиджак",["куртка","пиджак","куртка пиджак"],["chaqueta","la chaqueta"],"jacket",
+        [["Necesito una chaqueta ligera.","Мне нужна лёгкая куртка."],["La chaqueta tiene cuatro bolsillos.","У куртки четыре кармана."]],"Necesito una ___ ligera.",["chaqueta"]),
+      clothingWord("coat","clothes","el abrigo","abrigo","мужской род","пальто",["пальто"],["abrigo","el abrigo"],"coat",
+        [["Ponte el abrigo, hace frío.","Надень пальто, холодно."],["Mi abrigo es largo y negro.","Моё пальто длинное и чёрное."]],"Ponte el ___, hace frío.",["abrigo"]),
+      clothingWord("dress","clothes","el vestido","vestido","мужской род","платье",["платье"],["vestido","el vestido"],"dress",
+        [["Ella lleva un vestido rojo.","На ней красное платье."],["El vestido es para una fiesta.","Это платье для вечеринки."]],"Ella lleva un ___ rojo.",["vestido"]),
+      clothingWord("skirt","clothes","la falda","falda","женский род","юбка",["юбка"],["falda","la falda"],"skirt",
+        [["La falda me queda bien.","Юбка хорошо на мне сидит."],["Prefiero una falda larga.","Я предпочитаю длинную юбку."]],"Prefiero una ___ larga.",["falda"]),
+      clothingWord("trousers","clothes","los pantalones","pantalones","мужской род, множественное число","брюки, штаны",["брюки","штаны","брюки штаны"],["pantalones","los pantalones"],"trousers",
+        [["Estos pantalones son cómodos.","Эти брюки удобные."],["Necesito unos pantalones negros.","Мне нужны чёрные брюки."]],"Estos ___ son cómodos.",["pantalones"]),
+      clothingWord("jeans","clothes","los vaqueros","vaqueros","мужской род, множественное число","джинсы",["джинсы"],["vaqueros","los vaqueros","jeans","los jeans"],"jeans",
+        [["Siempre llevo vaqueros los viernes.","По пятницам я всегда ношу джинсы."],["Los vaqueros están en el armario.","Джинсы находятся в шкафу."]],"Siempre llevo ___ los viernes.",["vaqueros","jeans"]),
+      clothingWord("shorts","clothes","los pantalones cortos","pantalones cortos","мужской род, множественное число","шорты",["шорты"],["pantalones cortos","los pantalones cortos","shorts","los shorts"],"shorts",
+        [["En verano llevo pantalones cortos.","Летом я ношу шорты."],["Estos pantalones cortos son nuevos.","Эти шорты новые."]],"En verano llevo ___.",["pantalones cortos","shorts"]),
+      clothingWord("suit","clothes","el traje","traje","мужской род","костюм",["костюм"],["traje","el traje"],"suit",
+        [["Lleva traje para la entrevista.","Он надевает костюм на собеседование."],["El traje gris es muy elegante.","Серый костюм очень элегантный."]],"Lleva ___ para la entrevista.",["traje"]),
+      clothingWord("pajamas","clothes","el pijama","pijama","мужской род","пижама",["пижама"],["pijama","el pijama"],"pajamas",
+        [["Me pongo el pijama antes de dormir.","Я надеваю пижаму перед сном."],["Este pijama es de algodón.","Эта пижама из хлопка."]],"Me pongo el ___ antes de dormir.",["pijama"]),
+      clothingWord("underwear","clothes","la ropa interior","ropa interior","женский род","нижнее бельё",["нижнее бельё","нижнее белье"],["ropa interior","la ropa interior"],"underwear",
+        [["La ropa interior está en el cajón.","Нижнее бельё находится в ящике."],["Compro ropa interior de algodón.","Я покупаю хлопковое нижнее бельё."]],"La ___ está en el cajón.",["ropa interior"]),
+      clothingWord("socks","clothes","los calcetines","calcetines","мужской род, множественное число","носки",["носки"],["calcetines","los calcetines"],"socks",
+        [["Necesito un par de calcetines.","Мне нужна пара носков."],["Mis calcetines son verdes.","Мои носки зелёные."]],"Necesito un par de ___.",["calcetines"]),
+
+      clothingWord("shoes","shoes","los zapatos","zapatos","мужской род, множественное число","туфли, обувь",["туфли","обувь","туфли обувь"],["zapatos","los zapatos"],"shoes",
+        [["Estos zapatos me quedan pequeños.","Эти туфли мне малы."],["Limpio mis zapatos cada semana.","Я чищу свою обувь каждую неделю."]],"Estos ___ me quedan pequeños.",["zapatos"]),
+      clothingWord("sneakers","shoes","las zapatillas deportivas","zapatillas deportivas","женский род, множественное число","кроссовки",["кроссовки"],["zapatillas deportivas","las zapatillas deportivas","tenis","los tenis"],"sneakers",
+        [["Corro con zapatillas deportivas.","Я бегаю в кроссовках."],["Mis zapatillas deportivas son ligeras.","Мои кроссовки лёгкие."]],"Corro con ___.",["zapatillas deportivas","tenis"]),
+      clothingWord("boots","shoes","las botas","botas","женский род, множественное число","сапоги, ботинки",["сапоги","ботинки","сапоги ботинки"],["botas","las botas"],"boots",
+        [["Llevo botas cuando llueve.","Я ношу сапоги, когда идёт дождь."],["Las botas son de cuero.","Сапоги сделаны из кожи."]],"Llevo ___ cuando llueve.",["botas"]),
+      clothingWord("ankleboots","shoes","los botines","botines","мужской род, множественное число","ботильоны, короткие ботинки",["ботильоны","короткие ботинки","ботильоны короткие ботинки"],["botines","los botines"],"ankleboots",
+        [["Los botines combinan con el vestido.","Ботильоны сочетаются с платьем."],["Estos botines tienen cremallera.","У этих ботильонов есть молния."]],"Los ___ combinan con el vestido.",["botines"]),
+      clothingWord("sandals","shoes","las sandalias","sandalias","женский род, множественное число","сандалии, босоножки",["сандалии","босоножки","сандалии босоножки"],["sandalias","las sandalias"],"sandals",
+        [["Llevo sandalias en la playa.","На пляже я ношу сандалии."],["Estas sandalias son cómodas.","Эти сандалии удобные."]],"Llevo ___ en la playa.",["sandalias"]),
+      clothingWord("heels","shoes","los zapatos de tacón","zapatos de tacón","мужской род, множественное число","туфли на каблуке",["туфли на каблуке"],["zapatos de tacón","los zapatos de tacón","tacones","los tacones"],"heels",
+        [["Ella lleva zapatos de tacón.","Она носит туфли на каблуке."],["Estos tacones son muy altos.","Эти каблуки очень высокие."]],"Ella lleva ___.",["zapatos de tacón","tacones"]),
+      clothingWord("slippers","shoes","las zapatillas de casa","zapatillas de casa","женский род, множественное число","домашние тапочки",["домашние тапочки","тапочки"],["zapatillas de casa","las zapatillas de casa"],"slippers",
+        [["Me pongo las zapatillas de casa.","Я надеваю домашние тапочки."],["Las zapatillas están junto a la cama.","Тапочки стоят рядом с кроватью."]],"Me pongo las ___.",["zapatillas de casa"]),
+
+      clothingWord("belt","accessories","el cinturón","cinturón","мужской род","ремень",["ремень"],["cinturón","el cinturón"],"belt",
+        [["El cinturón es de cuero.","Ремень сделан из кожи."],["Necesito un cinturón más largo.","Мне нужен ремень подлиннее."]],"El ___ es de cuero.",["cinturón"]),
+      clothingWord("scarf","accessories","la bufanda","bufanda","женский род","шарф",["шарф"],["bufanda","la bufanda"],"scarf",
+        [["Me pongo una bufanda roja.","Я надеваю красный шарф."],["La bufanda es muy suave.","Шарф очень мягкий."]],"Me pongo una ___ roja.",["bufanda"]),
+      clothingWord("gloves","accessories","los guantes","guantes","мужской род, множественное число","перчатки",["перчатки"],["guantes","los guantes"],"gloves",
+        [["No encuentro mis guantes.","Я не могу найти свои перчатки."],["Lleva guantes porque hace frío.","Он носит перчатки, потому что холодно."]],"No encuentro mis ___.",["guantes"]),
+      clothingWord("sunglasses","accessories","las gafas de sol","gafas de sol","женский род, множественное число","солнцезащитные очки",["солнцезащитные очки","солнечные очки"],["gafas de sol","las gafas de sol"],"sunglasses",
+        [["Necesito gafas de sol.","Мне нужны солнцезащитные очки."],["Tus gafas de sol están en la mesa.","Твои солнцезащитные очки лежат на столе."]],"Necesito ___.",["gafas de sol"]),
+      clothingWord("umbrella","accessories","el paraguas","paraguas","мужской род","зонт",["зонт"],["paraguas","el paraguas"],"umbrella",
+        [["Lleva un paraguas, va a llover.","Возьми зонт, будет дождь."],["Mi paraguas es amarillo.","Мой зонт жёлтый."]],"Lleva un ___, va a llover.",["paraguas"]),
+      clothingWord("tie","accessories","la corbata","corbata","женский род","галстук",["галстук"],["corbata","la corbata"],"tie",
+        [["La corbata combina con la camisa.","Галстук сочетается с рубашкой."],["No llevo corbata al trabajo.","Я не ношу галстук на работу."]],"La ___ combina con la camisa.",["corbata"]),
+      clothingWord("bowtie","accessories","la pajarita","pajarita","женский род","галстук-бабочка",["галстук-бабочка","бабочка"],["pajarita","la pajarita"],"bowtie",
+        [["Lleva una pajarita negra.","На нём чёрный галстук-бабочка."],["La pajarita es para la boda.","Галстук-бабочка — для свадьбы."]],"Lleva una ___ negra.",["pajarita"]),
+      clothingWord("handkerchief","accessories","el pañuelo","pañuelo","мужской род","платок",["платок"],["pañuelo","el pañuelo"],"handkerchief",
+        [["Lleva un pañuelo en el cuello.","На ней платок на шее."],["El pañuelo tiene flores.","На платке цветочный узор."]],"Lleva un ___ en el cuello.",["pañuelo"]),
+
+      clothingWord("necklace","jewelry","el collar","collar","мужской род","ожерелье, колье",["ожерелье","колье","ожерелье колье"],["collar","el collar"],"necklace",
+        [["El collar es de plata.","Ожерелье сделано из серебра."],["Este collar es un regalo.","Это ожерелье — подарок."]],"El ___ es de plata.",["collar"]),
+      clothingWord("bracelet","jewelry","la pulsera","pulsera","женский род","браслет",["браслет"],["pulsera","la pulsera"],"bracelet",
+        [["Llevo una pulsera dorada.","Я ношу золотистый браслет."],["La pulsera tiene pequeñas piedras.","На браслете есть маленькие камни."]],"Llevo una ___ dorada.",["pulsera"]),
+      clothingWord("ring","jewelry","el anillo","anillo","мужской род","кольцо",["кольцо"],["anillo","el anillo"],"ring",
+        [["El anillo está en la caja.","Кольцо находится в коробке."],["Este anillo me queda grande.","Это кольцо мне велико."]],"El ___ está en la caja.",["anillo"]),
+      clothingWord("earrings","jewelry","los pendientes","pendientes","мужской род, множественное число","серьги",["серьги"],["pendientes","los pendientes"],"earrings",
+        [["Lleva unos pendientes pequeños.","Она носит маленькие серьги."],["Los pendientes son de oro.","Серьги сделаны из золота."]],"Lleva unos ___ pequeños.",["pendientes"]),
+      clothingWord("watch","jewelry","el reloj","reloj","мужской род","наручные часы",["наручные часы","часы"],["reloj","el reloj"],"watch",
+        [["Miro la hora en mi reloj.","Я смотрю время на своих часах."],["Su reloj tiene una correa marrón.","У его часов коричневый ремешок."]],"Miro la hora en mi ___.",["reloj"]),
+      clothingWord("brooch","jewelry","el broche","broche","мужской род","брошь",["брошь"],["broche","el broche"],"brooch",
+        [["El broche tiene forma de flor.","Брошь имеет форму цветка."],["Pone el broche en la chaqueta.","Она прикалывает брошь к пиджаку."]],"El ___ tiene forma de flor.",["broche"]),
+      clothingWord("chain","jewelry","la cadena","cadena","женский род","цепочка",["цепочка","цепь"],["cadena","la cadena"],"chain",
+        [["La cadena es muy fina.","Цепочка очень тонкая."],["Lleva una cadena de oro.","Он носит золотую цепочку."]],"La ___ es muy fina.",["cadena"]),
+
+      clothingWord("hat","headwear","el sombrero","sombrero","мужской род","шляпа",["шляпа"],["sombrero","el sombrero"],"hat",
+        [["El sombrero protege del sol.","Шляпа защищает от солнца."],["Lleva un sombrero de paja.","На нём соломенная шляпа."]],"El ___ protege del sol.",["sombrero"]),
+      clothingWord("cap","headwear","la gorra","gorra","женский род","кепка, бейсболка",["кепка","бейсболка","кепка бейсболка"],["gorra","la gorra"],"cap",
+        [["Me pongo una gorra para correr.","Я надеваю кепку для пробежки."],["La gorra tiene una visera larga.","У кепки длинный козырёк."]],"Me pongo una ___ para correr.",["gorra"]),
+      clothingWord("beanie","headwear","el gorro","gorro","мужской род","шапка",["шапка"],["gorro","el gorro"],"beanie",
+        [["Ponte el gorro, hace frío.","Надень шапку, холодно."],["Mi gorro es de lana.","Моя шапка шерстяная."]],"Ponte el ___, hace frío.",["gorro"]),
+      clothingWord("beret","headwear","la boina","boina","женский род","берет",["берет"],["boina","la boina"],"beret",
+        [["La boina es de color rojo.","Берет красного цвета."],["Lleva la boina un poco inclinada.","Она носит берет немного набок."]],"La ___ es de color rojo.",["boina"]),
+      clothingWord("hood","headwear","la capucha","capucha","женский род","капюшон",["капюшон"],["capucha","la capucha"],"hood",
+        [["Sube la capucha porque llueve.","Подними капюшон, потому что идёт дождь."],["La chaqueta tiene capucha.","У куртки есть капюшон."]],"Sube la ___ porque llueve.",["capucha"]),
+
+      clothingWord("handbag","bags","el bolso","bolso","мужской род","сумка",["сумка","женская сумка"],["bolso","el bolso"],"handbag",
+        [["El móvil está en mi bolso.","Телефон находится в моей сумке."],["Este bolso tiene una correa larga.","У этой сумки длинный ремешок."]],"El móvil está en mi ___.",["bolso"]),
+      clothingWord("backpack","bags","la mochila","mochila","женский род","рюкзак",["рюкзак"],["mochila","la mochila"],"backpack",
+        [["Llevo el portátil en la mochila.","Я ношу ноутбук в рюкзаке."],["La mochila es muy ligera.","Рюкзак очень лёгкий."]],"Llevo el portátil en la ___.",["mochila"]),
+      clothingWord("wallet","bags","la cartera","cartera","женский род","кошелёк, портмоне",["кошелёк","кошелек","портмоне","кошелёк портмоне"],["cartera","la cartera"],"wallet",
+        [["Guardo las tarjetas en la cartera.","Я храню карты в кошельке."],["No encuentro mi cartera.","Я не могу найти свой кошелёк."]],"Guardo las tarjetas en la ___.",["cartera"]),
+      clothingWord("coinpurse","bags","el monedero","monedero","мужской род","кошелёк для мелочи",["кошелёк для мелочи","кошелек для мелочи","монетница"],["monedero","el monedero"],"coinpurse",
+        [["Las monedas están en el monedero.","Монеты находятся в кошельке."],["El monedero es pequeño.","Кошелёк для мелочи маленький."]],"Las monedas están en el ___.",["monedero"]),
+      clothingWord("suitcase","bags","la maleta","maleta","женский род","чемодан",["чемодан"],["maleta","la maleta"],"suitcase",
+        [["Preparo la maleta para el viaje.","Я собираю чемодан для поездки."],["La maleta pesa mucho.","Чемодан много весит."]],"Preparo la ___ para el viaje.",["maleta"]),
+      clothingWord("waistbag","bags","la riñonera","riñonera","женский род","поясная сумка",["поясная сумка"],["riñonera","la riñonera"],"waistbag",
+        [["Guardo las llaves en la riñonera.","Я храню ключи в поясной сумке."],["La riñonera es práctica para caminar.","Поясная сумка удобна для прогулок."]],"Guardo las llaves en la ___.",["riñonera"])
+    ];
+
+
     const BUILTIN = [
       {id:"v1",topic:"verbs",skill:"Значение глагола",q:"Как по-испански «быть» в значении постоянного признака?",a:["ser"],e:"Ser используют для происхождения, профессии, характера и других устойчивых признаков."},
       {id:"v2",topic:"verbs",skill:"Значение глагола",q:"Как по-испански «быть, находиться» в значении состояния или места?",a:["estar"],e:"Estar используют для состояния и местонахождения."},
@@ -676,6 +796,29 @@
       return items;
     }
 
+
+    function clothingExercises(){
+      const items=[];
+      CLOTHING_WORDS.forEach(function(word){
+        items.push({
+          id:"clothes_"+word.id+"_es",topic:"clothes",foodCat:word.cat,skill:"Вспомни слово",
+          q:"Переведи на испанский: "+word.tr+".",a:word.answers,
+          e:"Базовая форма: "+word.word+"."
+        });
+        items.push({
+          id:"clothes_"+word.id+"_ru",topic:"clothes",foodCat:word.cat,skill:"Узнай слово",
+          q:"Переведи на русский: "+word.word+".",a:word.ru,
+          e:word.word+" — "+word.tr+"."
+        });
+        items.push({
+          id:"clothes_"+word.id+"_ctx",topic:"clothes",foodCat:word.cat,skill:"Слово в контексте",
+          q:"Вставь пропущенное слово: "+word.cloze,a:word.clozeAnswers,
+          e:word.examples[0][0]+" — "+word.examples[0][1]
+        });
+      });
+      return items;
+    }
+
     function foodArt(kind){
       const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
       const art={
@@ -725,6 +868,62 @@
       return '<svg '+common+'>'+art[kind]+'</svg>';
     }
 
+
+    function clothingArt(kind){
+      const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
+      const art={
+        tshirt:'<path d="M62 44 39 55 25 84l25 13 10-18v65h60V79l10 18 25-13-14-29-23-11c-5 10-15 15-28 15S67 54 62 44Z" fill="#FFD447"/>',
+        shirt:'<path d="M64 40 39 54 25 86l25 12 11-22v69h58V76l11 22 25-12-14-32-25-14-26 17-26-17Z" fill="#A9DCFF"/><path d="M90 57v88M78 51l12 14 12-14" fill="none"/><circle cx="99" cy="84" r="2"/><circle cx="99" cy="104" r="2"/>',
+        blouse:'<path d="M64 43 42 54 28 84l23 12 10-17-7 65h72l-7-65 10 17 23-12-14-30-22-11c-4 12-13 18-26 18S68 55 64 43Z" fill="#FFB6CC"/><path d="M77 51c2 12 24 12 26 0M90 61v29" fill="none"/>',
+        sweater:'<path d="M61 45 38 59 24 103l25 9 12-28v61h58V84l12 28 25-9-14-44-23-14c-7 9-15 13-29 13S68 54 61 45Z" fill="#8174ED"/><path d="M68 65h44M68 123h44" fill="none" stroke="#EDE9FF"/>',
+        jacket:'<path d="M67 39 43 52 28 82l23 15 10-17-5 65h68l-5-65 10 17 23-15-15-30-24-13-23 22-23-22Z" fill="#65B56C"/><path d="M90 61v84M67 101h17M96 101h17" fill="none"/><circle cx="101" cy="77" r="2"/>',
+        coat:'<path d="M68 34 45 48 30 80l23 15 10-17-9 70h72l-9-70 10 17 23-15-15-32-23-14-22 24-22-24Z" fill="#E6A06E"/><path d="M90 58v90M65 103h17M98 103h17" fill="none"/><circle cx="100" cy="77" r="3"/><circle cx="100" cy="91" r="3"/>',
+        dress:'<path d="M72 35h36l5 43 28 66H39l28-66 5-43Z" fill="#FF786C"/><path d="M72 35c2 17 34 17 36 0M65 81h50" fill="none"/>',
+        skirt:'<path d="M62 48h56l20 96H42l20-96Z" fill="#F3A1D4"/><path d="M62 48h56v19H62z" fill="#8174ED"/><path d="M73 69 65 137M90 69v68M107 69l8 68" fill="none" stroke="#FFF4FC"/>',
+        trousers:'<path d="M55 39h70l6 106H98l-8-61-8 61H49L55 39Z" fill="#5E78B5"/><path d="M90 44v40M56 64h68" fill="none"/>',
+        jeans:'<path d="M55 39h70l6 106H98l-8-61-8 61H49L55 39Z" fill="#5489C7"/><path d="M90 44v40M56 64h68M65 48c4 8 12 12 25 12s21-4 25-12" fill="none" stroke="#D9EEFF"/>',
+        shorts:'<path d="M55 45h70l8 72H98l-8-33-8 33H47l8-72Z" fill="#FFD447"/><path d="M90 49v35M56 66h68" fill="none"/>',
+        suit:'<path d="M66 36 42 51 29 83l23 13 10-20-5 69h66l-5-69 10 20 23-13-13-32-24-15-24 24-24-24Z" fill="#42517A"/><path d="m76 49 14 11 14-11-7 28H83l-7-28ZM90 77v68" fill="#FFFDF8"/><path d="M85 61h10l-2 17h-6l-2-17Z" fill="#FF786C"/>',
+        pajamas:'<path d="M60 39 38 52 27 80l22 11 12-19v54h58V72l12 19 22-11-11-28-22-13c-8 11-13 14-30 14S68 50 60 39Z" fill="#A9DCFF"/><path d="M62 126h56l8 22H96l-6-18-6 18H54l8-22Z" fill="#A9DCFF"/><g fill="#FFD447" stroke="none"><circle cx="72" cy="82" r="3"/><circle cx="106" cy="99" r="3"/><circle cx="84" cy="111" r="3"/></g>',
+        underwear:'<path d="M47 59h86l-8 75c-13 8-25 5-35-17-10 22-22 25-35 17l-8-75Z" fill="#FFB6CC"/><path d="M49 74h82M90 75v42" fill="none"/>',
+        socks:'<path d="M53 38h37v61c0 21-9 39-35 43-13 2-22-5-21-17 1-9 9-14 20-18l8-4V38Z" fill="#FFD447"/><path d="M96 38h37v61c0 21-9 39-35 43-13 2-22-5-21-17 1-9 9-14 20-18l8-4V38Z" fill="#FF786C"/><path d="M62 56h28M105 56h28" fill="none"/>',
+        shoes:'<path d="M38 104c20 0 31-12 43-33 12 19 27 30 55 34 15 2 18 28-3 34H50c-23-2-30-35-12-35Z" fill="#E7A06F"/><path d="M45 119h96" fill="none"/>',
+        sneakers:'<path d="M35 101c21 1 34-11 45-34 17 23 31 31 58 36 16 3 17 29-2 35H47c-22-2-29-37-12-37Z" fill="#A9DCFF"/><path d="M46 119h96M71 82l31 17M65 92l28 14" fill="none"/><path d="M112 104h25" stroke="#FF786C"/>',
+        boots:'<path d="M55 32h55v70c8 10 20 16 35 18 15 3 15 25-4 28H52c-18-2-24-25-8-34l12-7-1-75Z" fill="#9A684E"/><path d="M56 61h54M49 128h97" fill="none"/>',
+        ankleboots:'<path d="M55 52h55v50c8 9 20 15 35 18 15 3 15 25-4 28H52c-18-2-24-25-8-34l12-7-1-55Z" fill="#6A568F"/><path d="M56 75h54M49 128h97" fill="none"/>',
+        sandals:'<path d="M40 106c19 0 36-12 48-33 16 20 28 27 50 31 19 4 18 33-4 38H54c-29-2-34-36-14-36Z" fill="#F1B85B"/><path d="M48 120h92M68 92l40 30M80 78l43 40" fill="none"/>',
+        heels:'<path d="M40 105c20 0 36-14 47-39 17 24 32 34 53 38 17 4 17 30-4 36H55c-25-2-32-35-15-35Z" fill="#FF786C"/><path d="M52 121h88M116 140v20M132 140v8" fill="none"/>',
+        slippers:'<path d="M42 102c18 0 32-10 43-28 15 17 29 25 50 28 20 3 20 34-4 39H51c-27-2-30-39-9-39Z" fill="#F3A1D4"/><path d="M49 118h91" fill="none"/><path d="M66 91c10 11 25 16 45 16" stroke="#FFF4FC"/>',
+        belt:'<path d="M28 76h124v31H28z" fill="#A66B48"/><rect x="65" y="65" width="50" height="53" rx="6" fill="#FFD447"/><rect x="78" y="76" width="25" height="31" rx="3" fill="#FFFDF8"/>',
+        scarf:'<path d="M63 29h54v82c0 16-9 26-27 26s-27-10-27-26V29Z" fill="#FF786C"/><path d="M63 62h54M63 91h54M69 137v15M81 137v15M99 137v15M111 137v15" fill="none" stroke="#FFF4E8"/>',
+        gloves:'<path d="M50 143c-12-10-14-27-8-45l8-31c2-8 13-6 12 3l-2 19 8-42c2-8 13-6 12 3l-5 35 9-45c2-9 14-6 12 3l-7 42 9-35c2-8 13-4 11 4l-8 38 8-20c4-8 14-2 11 7l-12 34c-8 25-37 42-58 30Z" fill="#FFD447"/>',
+        sunglasses:'<path d="M28 77h50l8 16c0 26-15 40-32 40S28 119 28 93V77Zm74 0h50v16c0 26-9 40-26 40s-32-14-32-40l8-16Z" fill="#5648CB"/><path d="M78 86c8-7 16-7 24 0M28 79 13 70M152 79l15-9" fill="none"/>',
+        umbrella:'<path d="M24 85c8-35 32-55 66-55s58 20 66 55c-13-10-26-10-39 0-18-10-36-10-54 0-13-10-26-10-39 0Z" fill="#FFD447"/><path d="M90 31v91c0 27 30 29 30 6" fill="none"/>',
+        tie:'<path d="m75 35 15 17 15-17 13 18-14 21 15 72-29 14-29-14 15-72-14-21 13-18Z" fill="#8174ED"/><path d="M76 74h28" fill="none"/>',
+        bowtie:'<path d="M35 60c22-15 39-14 55 4 16-18 33-19 55-4v61c-22 15-39 14-55-4-16 18-33 19-55 4V60Z" fill="#FF786C"/><rect x="75" y="67" width="30" height="47" rx="8" fill="#FFD447"/>',
+        handkerchief:'<path d="M38 39h104v104H38z" fill="#A9DCFF"/><path d="M38 39l104 104M142 39 38 143" fill="none" stroke="#FFFDF8"/><circle cx="90" cy="91" r="20" fill="#FFD447"/>',
+        necklace:'<path d="M44 37c0 69 20 107 46 107s46-38 46-107" fill="none" stroke="#E7A931" stroke-width="9"/><path d="m90 104 20 22-20 28-20-28 20-22Z" fill="#FF786C"/>',
+        bracelet:'<circle cx="90" cy="91" r="51" fill="none" stroke="#E7A931" stroke-width="12"/><g fill="#FF786C" stroke="none"><circle cx="90" cy="40" r="8"/><circle cx="139" cy="91" r="8"/><circle cx="90" cy="142" r="8"/><circle cx="41" cy="91" r="8"/></g>',
+        ring:'<circle cx="90" cy="103" r="39" fill="none" stroke="#E7A931" stroke-width="11"/><path d="m90 22 22 26-22 27-22-27 22-26Z" fill="#A9DCFF"/>',
+        earrings:'<path d="M58 35v39M122 35v39" fill="none" stroke="#E7A931" stroke-width="8"/><circle cx="58" cy="102" r="28" fill="none" stroke="#FFD447" stroke-width="10"/><circle cx="122" cy="102" r="28" fill="none" stroke="#FFD447" stroke-width="10"/>',
+        watch:'<rect x="63" y="21" width="54" height="138" rx="22" fill="#E7A931"/><circle cx="90" cy="90" r="38" fill="#FFFDF8"/><path d="M90 90V65M90 90l18 12" fill="none"/>',
+        brooch:'<g fill="#FFB6CC"><circle cx="90" cy="49" r="25"/><circle cx="130" cy="90" r="25"/><circle cx="90" cy="131" r="25"/><circle cx="50" cy="90" r="25"/></g><circle cx="90" cy="90" r="22" fill="#FFD447"/>',
+        chain:'<g fill="none" stroke="#E7A931" stroke-width="10"><ellipse cx="55" cy="55" rx="20" ry="31" transform="rotate(-38 55 55)"/><ellipse cx="88" cy="88" rx="20" ry="31" transform="rotate(-38 88 88)"/><ellipse cx="121" cy="121" rx="20" ry="31" transform="rotate(-38 121 121)"/></g>',
+        hat:'<path d="M52 101c0-37 15-62 38-62s38 25 38 62" fill="#F1B85B"/><ellipse cx="90" cy="114" rx="69" ry="24" fill="#FFD447"/><path d="M51 96h78" fill="none"/>',
+        cap:'<path d="M43 98c2-42 20-63 49-63 27 0 43 20 45 56-25-8-56-6-94 7Z" fill="#FF786C"/><path d="M77 95c32-7 58-5 81 7-17 16-45 20-73 11" fill="#FFD447"/>',
+        beanie:'<path d="M48 111c0-51 17-76 42-76s42 25 42 76H48Z" fill="#8174ED"/><path d="M43 106h94v34H43z" fill="#A99FFF"/><circle cx="90" cy="27" r="15" fill="#FFD447"/>',
+        beret:'<path d="M38 102c3-43 24-66 57-66 29 0 49 19 53 54-32-8-68-4-110 12Z" fill="#FF786C"/><path d="m92 36 8-15" fill="none"/>',
+        hood:'<path d="M42 139c2-72 18-108 48-108s46 36 48 108H42Z" fill="#65B56C"/><path d="M63 126c-5-43 4-66 27-66s32 23 27 66c-17 13-37 13-54 0Z" fill="#FFFDF8"/>',
+        handbag:'<path d="M42 69h96l9 75H33l9-75Z" fill="#FF786C"/><path d="M62 69c0-27 12-40 28-40s28 13 28 40" fill="none"/><circle cx="90" cy="97" r="5" fill="#FFD447"/>',
+        backpack:'<path d="M44 67c0-24 18-38 46-38s46 14 46 38v78H44V67Z" fill="#8174ED"/><path d="M63 67c0-18 9-27 27-27s27 9 27 27M59 92h62v42H59z" fill="#A9DCFF"/><path d="M44 86c-20 12-20 41 0 54M136 86c20 12 20 41 0 54" fill="none"/>',
+        wallet:'<rect x="31" y="57" width="118" height="78" rx="12" fill="#A66B48"/><path d="M31 75h118v43H91c-14 0-23-8-23-21s9-22 23-22h58" fill="#C8895F"/><circle cx="90" cy="97" r="5" fill="#FFD447"/>',
+        coinpurse:'<path d="M43 67h94l9 72H34l9-72Z" fill="#FFD447"/><path d="M56 67c2-25 15-37 34-37s32 12 34 37M43 86h94" fill="none"/><circle cx="90" cy="86" r="6" fill="#FF786C"/>',
+        suitcase:'<rect x="42" y="50" width="96" height="97" rx="12" fill="#A9DCFF"/><path d="M69 50V33h42v17M65 51v96M115 51v96" fill="none"/><circle cx="59" cy="154" r="7" fill="#463B75"/><circle cx="121" cy="154" r="7" fill="#463B75"/>',
+        waistbag:'<path d="M46 77h88l12 49c-32 24-80 24-112 0l12-49Z" fill="#FFD447"/><path d="M16 77h30M134 77h30M65 78v25h50V78" fill="none"/><circle cx="90" cy="115" r="5" fill="#FF786C"/>'
+      };
+      return '<svg '+common+'><g stroke="#463B75" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">'+(art[kind]||art.tshirt)+'</g></svg>';
+    }
+
     const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1" };
     let stats = read(STORAGE.stats,{});
     let custom = read(STORAGE.custom,[]);
@@ -748,13 +947,16 @@
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
       studyView:$("studyView"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
-      foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"),
+      foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn")
     };
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foodExercises()).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foodExercises()).concat(clothingExercises()).concat(custom); }
+    function isVocabularyTopic(){ return selectedTopic==="foods" || selectedTopic==="clothes"; }
+    function vocabularyWords(){ return selectedTopic==="clothes" ? CLOTHING_WORDS : FOOD_WORDS; }
+    function vocabularyCategories(){ return selectedTopic==="clothes" ? CLOTHING_CATEGORIES : FOOD_CATEGORIES; }
     function topicById(id){ return TOPICS.find(function(t){return t.id===id;}) || TOPICS[0]; }
     function normalize(value){
       return value.toLowerCase().trim().replace(/[¿?¡!.,;:]+/g,"").replace(/\s+/g," ");
@@ -770,7 +972,7 @@
     }
     function buildQueue(keepIndex){
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
-      if(selectedTopic==="foods" && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
+      if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ return stats[x.id] && stats[x.id].wrong>0; });
       queue=items;
       if(!keepIndex || index>=queue.length) index=0;
@@ -783,15 +985,15 @@
       els.topicList.innerHTML=TOPICS.map(function(t){
         return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
-          '</span><span class="topic-count">'+(t.id==="foods" ? FOOD_WORDS.length+" слов" : counts[t.id])+'</span></button>';
+          '</span><span class="topic-count">'+(t.id==="foods" ? FOOD_WORDS.length+" слов" : t.id==="clothes" ? CLOTHING_WORDS.length+" слов" : counts[t.id])+'</span></button>';
       }).join("");
       els.topicList.querySelectorAll("[data-topic]").forEach(function(btn){
         btn.addEventListener("click",function(){
           selectedTopic=btn.dataset.topic;
           index=0;
           wordIndex=0;
-          if(selectedTopic==="foods") foodCategory="all";
-          foodPhase=(selectedTopic==="foods" && selectedMode==="all") ? "study" : "practice";
+          if(isVocabularyTopic()) foodCategory="all";
+          foodPhase=(isVocabularyTopic() && selectedMode==="all") ? "study" : "practice";
           renderTopics();
           buildQueue(false);
         });
@@ -816,21 +1018,27 @@
     }
 
     function currentFoodWords(){
-      return foodCategory==="all" ? FOOD_WORDS : FOOD_WORDS.filter(function(word){return word.cat===foodCategory;});
+      const words=vocabularyWords();
+      return foodCategory==="all" ? words : words.filter(function(word){return word.cat===foodCategory;});
     }
     function foodCategoryTitle(id){
-      const item=FOOD_CATEGORIES.find(function(cat){return cat.id===id;});
-      return item ? item.title : "Продукты";
+      const item=vocabularyCategories().find(function(cat){return cat.id===id;});
+      return item ? item.title : topicById(selectedTopic).title;
     }
     function renderStudy(){
       const words=currentFoodWords();
+      const categories=vocabularyCategories();
       if(wordIndex>=words.length) wordIndex=0;
       const word=words[wordIndex];
       els.studyView.hidden=false;
       els.exerciseView.hidden=true;
       els.emptyView.hidden=true;
-      els.foodFilters.innerHTML=FOOD_CATEGORIES.map(function(cat){
-        const count=cat.id==="all" ? FOOD_WORDS.length : FOOD_WORDS.filter(function(word){return word.cat===cat.id;}).length;
+      els.studyTitle.textContent=selectedTopic==="clothes" ? "Сначала познакомимся с одеждой и аксессуарами" : "Сначала познакомимся с продуктами";
+      els.studyIntroText.textContent="Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
+      els.foodFilters.setAttribute("aria-label",selectedTopic==="clothes" ? "Категории одежды и аксессуаров" : "Категории продуктов");
+      els.foodFilters.innerHTML=categories.map(function(cat){
+        const allWords=vocabularyWords();
+        const count=cat.id==="all" ? allWords.length : allWords.filter(function(word){return word.cat===cat.id;}).length;
         return '<button class="food-filter '+(cat.id===foodCategory?"active":"")+'" data-food-category="'+cat.id+'" type="button">'+
           cat.title+' · '+count+'</button>';
       }).join("");
@@ -841,7 +1049,7 @@
           renderStudy();
         });
       });
-      els.foodArt.innerHTML=foodArt(word.art);
+      els.foodArt.innerHTML=selectedTopic==="clothes" ? clothingArt(word.art) : foodArt(word.art);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
@@ -865,7 +1073,7 @@
     function render(){
       renderTopics(); renderStats();
       els.topicName.textContent=topicById(selectedTopic).title;
-      if(selectedTopic==="foods" && selectedMode==="all" && foodPhase==="study"){
+      if(isVocabularyTopic() && selectedMode==="all" && foodPhase==="study"){
         renderStudy();
         return;
       }
@@ -882,7 +1090,7 @@
         return;
       }
       els.exerciseView.hidden=false; els.emptyView.hidden=true;
-      els.backToWordsBtn.hidden=selectedTopic!=="foods";
+      els.backToWordsBtn.hidden=!isVocabularyTopic();
       const item=queue[index];
       els.questionText.textContent=item.q;
       els.skillLabel.textContent=item.skill || "Практика";
@@ -979,7 +1187,7 @@
     document.querySelectorAll("[data-mode]").forEach(function(btn){
       btn.addEventListener("click",function(){
         selectedMode=btn.dataset.mode; index=0;
-        if(selectedTopic==="foods") foodPhase=selectedMode==="all" ? "study" : "practice";
+        if(isVocabularyTopic()) foodPhase=selectedMode==="all" ? "study" : "practice";
         document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x===btn);});
         buildQueue(false);
       });
