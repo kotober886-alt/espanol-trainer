@@ -155,6 +155,9 @@
       align-items:center; padding:clamp(22px,4vw,42px); border-radius:26px;
       background:linear-gradient(145deg,#f3f0ff,#fff9e8); border:1px solid #e7e1ff;
     }
+    .study-card.no-art { grid-template-columns:minmax(0,1fr); }
+    .study-card.no-art .food-art { display:none; }
+    .study-card.no-art > div:last-child { width:min(800px,100%); margin:auto; }
     .food-art {
       min-height:280px; display:grid; place-items:center; border-radius:22px;
       background:rgba(255,255,255,.7); overflow:hidden;
@@ -265,7 +268,7 @@
               <button class="btn btn-primary" id="startFoodPractice" type="button">К упражнениям →</button>
             </div>
             <div class="food-filters" id="foodFilters" aria-label="Категории слов"></div>
-            <article class="study-card">
+            <article class="study-card" id="studyCard">
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
               <div>
                 <div class="word-count" id="wordCount">Слово 1</div>
@@ -815,6 +818,126 @@
     ];
 
 
+    function foundationItem(id,cat,word,label,tr,ru,answers,ex1,ex1ru,ex2,ex2ru,cloze,clozeAnswers){
+      return {id:id,cat:cat,word:word,base:word,gender:label,tr:tr,ru:ru,answers:answers,art:null,examples:[[ex1,ex1ru],[ex2,ex2ru]],cloze:cloze,clozeAnswers:clozeAnswers};
+    }
+
+    const VERB_CATEGORIES=[{id:"all",title:"Все глаголы"},{id:"core",title:"Самые нужные"},{id:"daily",title:"Повседневные"}];
+    const VERB_WORDS=[
+      foundationItem("ser","core","ser","неправильный","быть, являться",["быть","являться"],["ser"],"Soy diseñadora.","Я дизайнер.","Madrid es una ciudad grande.","Мадрид — большой город.","Madrid ___ una ciudad grande.",["es"]),
+      foundationItem("estar","core","estar","неправильный","быть, находиться",["быть","находиться"],["estar"],"Estoy en casa.","Я дома.","Estamos un poco cansados.","Мы немного устали.","Ahora ___ en casa.",["estoy"]),
+      foundationItem("tener","core","tener","неправильный","иметь",["иметь"],["tener"],"Tengo un gato.","У меня есть кот.","Ella tiene tiempo libre.","У неё есть свободное время.","Yo ___ un gato.",["tengo"]),
+      foundationItem("hacer","core","hacer","неправильный","делать",["делать"],["hacer"],"Hago deporte los lunes.","Я занимаюсь спортом по понедельникам.","¿Qué haces hoy?","Что ты делаешь сегодня?","¿Qué ___ hoy?",["haces"]),
+      foundationItem("ir","core","ir","неправильный","идти, ехать",["идти","ехать"],["ir"],"Voy al trabajo en metro.","Я еду на работу на метро.","Vamos al cine esta noche.","Сегодня вечером мы идём в кино.","Yo ___ al trabajo.",["voy"]),
+      foundationItem("venir","core","venir","неправильный","приходить, приезжать",["приходить","приезжать"],["venir"],"Vengo de Madrid.","Я приезжаю из Мадрида.","¿Vienes conmigo?","Ты идёшь со мной?","¿___ conmigo?",["vienes"]),
+      foundationItem("querer","core","querer","неправильный","хотеть, любить",["хотеть","любить"],["querer"],"Quiero un café.","Я хочу кофе.","Queremos viajar por España.","Мы хотим путешествовать по Испании.","Yo ___ un café.",["quiero"]),
+      foundationItem("poder","core","poder","неправильный","мочь",["мочь"],["poder"],"Puedo ayudarte.","Я могу тебе помочь.","Hoy no podemos ir.","Сегодня мы не можем пойти.","Yo ___ ayudarte.",["puedo"]),
+      foundationItem("deber","core","deber","глагол на -er","быть должным, следует",["быть должным","следует","должен"],["deber"],"Debo trabajar mañana.","Завтра я должен работать.","Debes descansar más.","Тебе следует больше отдыхать.","Tú ___ descansar más.",["debes"]),
+      foundationItem("saber","core","saber","неправильный","знать, уметь",["знать","уметь"],["saber"],"Sé la respuesta.","Я знаю ответ.","Sabemos nadar.","Мы умеем плавать.","Yo ___ la respuesta.",["sé","se"]),
+      foundationItem("hablar","daily","hablar","глагол на -ar","говорить",["говорить","разговаривать"],["hablar"],"Hablo un poco de español.","Я немного говорю по-испански.","Hablamos del trabajo.","Мы говорим о работе.","Yo ___ español.",["hablo"]),
+      foundationItem("trabajar","daily","trabajar","глагол на -ar","работать",["работать"],["trabajar"],"Trabajo en una empresa grande.","Я работаю в большой компании.","Mi amiga trabaja desde casa.","Моя подруга работает из дома.","Mi amiga ___ desde casa.",["trabaja"]),
+      foundationItem("vivir","daily","vivir","глагол на -ir","жить",["жить"],["vivir"],"Vivo en Madrid.","Я живу в Мадриде.","Mis padres viven cerca.","Мои родители живут рядом.","Yo ___ en Madrid.",["vivo"]),
+      foundationItem("leer","daily","leer","глагол на -er","читать",["читать"],["leer"],"Leo antes de dormir.","Я читаю перед сном.","Él lee las noticias.","Он читает новости.","Él ___ las noticias.",["lee"]),
+      foundationItem("escribir","daily","escribir","глагол на -ir","писать",["писать"],["escribir"],"Escribo un mensaje.","Я пишу сообщение.","Ella escribe historias cortas.","Она пишет короткие истории.","Yo ___ un mensaje.",["escribo"]),
+      foundationItem("comer","daily","comer","глагол на -er","есть",["есть","кушать"],["comer"],"Como a las dos.","Я ем в два часа.","Comemos juntos los domingos.","По воскресеньям мы едим вместе.","Nosotros ___ juntos.",["comemos"]),
+      foundationItem("beber","daily","beber","глагол на -er","пить",["пить"],["beber"],"Bebo mucha agua.","Я пью много воды.","Ellos beben café con leche.","Они пьют кофе с молоком.","Yo ___ mucha agua.",["bebo"])
+    ];
+
+    const PRESENT_CATEGORIES=[{id:"all",title:"Все формы"},{id:"ar",title:"Глаголы -ar"},{id:"er",title:"Глаголы -er"},{id:"ir",title:"Глаголы -ir"}];
+    const PRESENT_WORDS=[
+      foundationItem("hablo","ar","yo hablo","-ar · yo","я говорю",["я говорю"],["yo hablo","hablo"],"Yo hablo español.","Я говорю по-испански.","Hablo con mi amiga cada día.","Я разговариваю с подругой каждый день.","Yo ___ español.",["hablo"]),
+      foundationItem("hablas","ar","tú hablas","-ar · tú","ты говоришь",["ты говоришь"],["tú hablas","tu hablas","hablas"],"Tú hablas muy rápido.","Ты говоришь очень быстро.","¿Hablas español en el trabajo?","Ты говоришь по-испански на работе?","Tú ___ muy rápido.",["hablas"]),
+      foundationItem("habla","ar","él / ella / usted habla","-ar · él, ella, usted","он, она говорит; Вы говорите",["он говорит","она говорит","вы говорите"],["él habla","el habla","ella habla","usted habla","habla"],"Ella habla con el profesor.","Она разговаривает с преподавателем.","Usted habla muy bien español.","Вы очень хорошо говорите по-испански.","Ella ___ con el profesor.",["habla"]),
+      foundationItem("hablamos","ar","nosotros hablamos","-ar · nosotros","мы говорим",["мы говорим"],["nosotros hablamos","hablamos"],"Nosotros hablamos de música.","Мы говорим о музыке.","Hablamos español en clase.","Мы говорим по-испански на занятии.","Nosotros ___ de música.",["hablamos"]),
+      foundationItem("hablais","ar","vosotros habláis","-ar · vosotros","вы говорите",["вы говорите"],["vosotros habláis","vosotros hablais","habláis","hablais"],"Vosotros habláis muy alto.","Вы говорите очень громко.","¿Habláis con vuestros vecinos?","Вы разговариваете со своими соседями?","Vosotros ___ muy alto.",["habláis","hablais"]),
+      foundationItem("hablan","ar","ellos / ustedes hablan","-ar · ellos, ustedes","они говорят; вы говорите",["они говорят","вы говорите"],["ellos hablan","ellas hablan","ustedes hablan","hablan"],"Ellos hablan de fútbol.","Они говорят о футболе.","Ustedes hablan varios idiomas.","Вы говорите на нескольких языках.","Ellos ___ de fútbol.",["hablan"]),
+      foundationItem("como","er","yo como","-er · yo","я ем",["я ем"],["yo como","como"],"Yo como fruta cada día.","Я ем фрукты каждый день.","Como en casa los domingos.","По воскресеньям я ем дома.","Yo ___ fruta.",["como"]),
+      foundationItem("comes","er","tú comes","-er · tú","ты ешь",["ты ешь"],["tú comes","tu comes","comes"],"Tú comes muy tarde.","Ты ешь очень поздно.","¿Comes carne?","Ты ешь мясо?","Tú ___ muy tarde.",["comes"]),
+      foundationItem("come","er","él / ella / usted come","-er · él, ella, usted","он, она ест; Вы едите",["он ест","она ест","вы едите"],["él come","el come","ella come","usted come","come"],"Ella come una ensalada.","Она ест салат.","Usted come aquí cada viernes.","Вы едите здесь каждую пятницу.","Ella ___ una ensalada.",["come"]),
+      foundationItem("comemos","er","nosotros comemos","-er · nosotros","мы едим",["мы едим"],["nosotros comemos","comemos"],"Nosotros comemos juntos.","Мы едим вместе.","Comemos a las dos.","Мы едим в два часа.","Nosotros ___ juntos.",["comemos"]),
+      foundationItem("comeis","er","vosotros coméis","-er · vosotros","вы едите",["вы едите"],["vosotros coméis","vosotros comeis","coméis","comeis"],"Vosotros coméis mucha fruta.","Вы едите много фруктов.","¿Coméis en casa hoy?","Вы сегодня едите дома?","Vosotros ___ mucha fruta.",["coméis","comeis"]),
+      foundationItem("comen","er","ellos / ustedes comen","-er · ellos, ustedes","они едят; вы едите",["они едят","вы едите"],["ellos comen","ellas comen","ustedes comen","comen"],"Ellos comen en el restaurante.","Они едят в ресторане.","Ustedes comen muy temprano.","Вы едите очень рано.","Ellos ___ en el restaurante.",["comen"]),
+      foundationItem("vivo","ir","yo vivo","-ir · yo","я живу",["я живу"],["yo vivo","vivo"],"Yo vivo en Madrid.","Я живу в Мадриде.","Vivo cerca del metro.","Я живу рядом с метро.","Yo ___ en Madrid.",["vivo"]),
+      foundationItem("vives","ir","tú vives","-ir · tú","ты живёшь",["ты живёшь","ты живешь"],["tú vives","tu vives","vives"],"Tú vives en el centro.","Ты живёшь в центре.","¿Vives con tu familia?","Ты живёшь со своей семьёй?","Tú ___ en el centro.",["vives"]),
+      foundationItem("vive","ir","él / ella / usted vive","-ir · él, ella, usted","он, она живёт; Вы живёте",["он живёт","она живёт","вы живёте"],["él vive","el vive","ella vive","usted vive","vive"],"Él vive cerca del trabajo.","Он живёт рядом с работой.","Usted vive en una zona tranquila.","Вы живёте в спокойном районе.","Él ___ cerca del trabajo.",["vive"]),
+      foundationItem("vivimos","ir","nosotros vivimos","-ir · nosotros","мы живём",["мы живём","мы живем"],["nosotros vivimos","vivimos"],"Nosotros vivimos en España.","Мы живём в Испании.","Vivimos en un piso pequeño.","Мы живём в маленькой квартире.","Nosotros ___ en España.",["vivimos"]),
+      foundationItem("vivis","ir","vosotros vivís","-ir · vosotros","вы живёте",["вы живёте","вы живете"],["vosotros vivís","vosotros vivis","vivís","vivis"],"Vosotros vivís muy lejos.","Вы живёте очень далеко.","¿Vivís cerca de la escuela?","Вы живёте рядом со школой?","Vosotros ___ muy lejos.",["vivís","vivis"]),
+      foundationItem("viven","ir","ellos / ustedes viven","-ir · ellos, ustedes","они живут; вы живёте",["они живут","вы живёте"],["ellos viven","ellas viven","ustedes viven","viven"],"Ellos viven en Barcelona.","Они живут в Барселоне.","Ustedes viven en una casa grande.","Вы живёте в большом доме.","Ellos ___ en Barcelona.",["viven"])
+    ];
+
+
+    const PREPOSITION_CATEGORIES=[{id:"all",title:"Все предлоги"},{id:"basic",title:"Основные"},{id:"place",title:"Место"},{id:"compound",title:"Составные"}];
+    const PREPOSITION_WORDS=[
+      foundationItem("a","basic","a","простой предлог","в, к; направление",["в","к"],["a"],"Voy a Madrid.","Я еду в Мадрид.","Escribo a Ana.","Я пишу Ане.","Voy ___ Madrid.",["a"]),
+      foundationItem("al","basic","al","a + el","в, к + мужской артикль",["в","к"],["al"],"Voy al trabajo.","Я иду на работу.","Vamos al cine.","Мы идём в кино.","Vamos ___ cine.",["al"]),
+      foundationItem("de","basic","de","простой предлог","из, от, о; принадлежность",["из","от","о"],["de"],"Soy de Rusia.","Я из России.","La mesa es de madera.","Стол сделан из дерева.","Soy ___ Rusia.",["de"]),
+      foundationItem("del","basic","del","de + el","из, от + мужской артикль",["из","от"],["del"],"Vengo del trabajo.","Я возвращаюсь с работы.","Es la puerta del banco.","Это дверь банка.","Vengo ___ trabajo.",["del"]),
+      foundationItem("en","basic","en","простой предлог","в, на; местонахождение",["в","на"],["en"],"Vivo en Madrid.","Я живу в Мадриде.","El libro está en la mesa.","Книга лежит на столе.","Vivo ___ Madrid.",["en"]),
+      foundationItem("con","basic","con","простой предлог","с, вместе с",["с","вместе с"],["con"],"Bebo café con leche.","Я пью кофе с молоком.","Hablo con Marta.","Я разговариваю с Мартой.","Hablo ___ Marta.",["con"]),
+      foundationItem("sin","basic","sin","простой предлог","без",["без"],["sin"],"Tomo té sin azúcar.","Я пью чай без сахара.","Salgo sin paraguas.","Я выхожу без зонта.","Tomo té ___ azúcar.",["sin"]),
+      foundationItem("para","basic","para","цель, адресат, срок","для, чтобы, к сроку",["для","чтобы","к сроку"],["para"],"Este regalo es para ti.","Этот подарок для тебя.","Necesito el informe para el lunes.","Мне нужен отчёт к понедельнику.","Este regalo es ___ ti.",["para"]),
+      foundationItem("por","basic","por","причина, путь, обмен","из-за, по, через, за",["из-за","по","через","за"],["por"],"Paseamos por el parque.","Мы гуляем по парку.","Gracias por tu ayuda.","Спасибо за твою помощь.","Gracias ___ tu ayuda.",["por"]),
+      foundationItem("sobre","place","sobre","место или тема","на, над; о чём-либо",["на","над","о"],["sobre"],"El móvil está sobre la mesa.","Телефон лежит на столе.","Leo un libro sobre arte.","Я читаю книгу об искусстве.","El móvil está ___ la mesa.",["sobre"]),
+      foundationItem("debajo","compound","debajo de","составной предлог","под",["под"],["debajo de"],"El gato está debajo de la mesa.","Кот находится под столом.","Los zapatos están debajo de la cama.","Туфли находятся под кроватью.","El gato está ___ la mesa.",["debajo de"]),
+      foundationItem("delante","compound","delante de","составной предлог","перед",["перед"],["delante de"],"El coche está delante de la casa.","Машина стоит перед домом.","Espero delante del cine.","Я жду перед кинотеатром.","El coche está ___ la casa.",["delante de"]),
+      foundationItem("detras","compound","detrás de","составной предлог","за, позади",["за","позади"],["detrás de","detras de"],"El jardín está detrás de la casa.","Сад находится за домом.","La mochila está detrás de la puerta.","Рюкзак находится за дверью.","El jardín está ___ la casa.",["detrás de","detras de"]),
+      foundationItem("cerca","compound","cerca de","составной предлог","рядом с, недалеко от",["рядом с","недалеко от"],["cerca de"],"Vivo cerca del metro.","Я живу рядом с метро.","La farmacia está cerca de casa.","Аптека находится недалеко от дома.","Vivo ___ metro.",["cerca del"]),
+      foundationItem("lejos","compound","lejos de","составной предлог","далеко от",["далеко от"],["lejos de"],"El aeropuerto está lejos del centro.","Аэропорт находится далеко от центра.","Vivimos lejos de la escuela.","Мы живём далеко от школы.","Vivimos ___ la escuela.",["lejos de"]),
+      foundationItem("entre","place","entre","простой предлог","между, среди",["между","среди"],["entre"],"El banco está entre la farmacia y el cine.","Банк находится между аптекой и кинотеатром.","Estoy entre amigos.","Я среди друзей.","El banco está ___ la farmacia y el cine.",["entre"]),
+      foundationItem("junto","compound","junto a","составной предлог","рядом с, возле",["рядом с","возле"],["junto a"],"La parada está junto al banco.","Остановка находится рядом с банком.","Siéntate junto a mí.","Сядь рядом со мной.","La parada está ___ banco.",["junto al"])
+    ];
+
+    const CALENDAR_CATEGORIES=[{id:"all",title:"Весь календарь"},{id:"days",title:"Дни недели"},{id:"months",title:"Месяцы"},{id:"seasons",title:"Времена года"}];
+    const CALENDAR_WORDS=[
+      foundationItem("monday","days","el lunes","день недели","понедельник; в понедельник",["понедельник","в понедельник"],["lunes","el lunes"],"El lunes voy al trabajo.","В понедельник я иду на работу.","Los lunes estudio español.","По понедельникам я учу испанский.","___ voy al trabajo.",["El lunes","lunes"]),
+      foundationItem("tuesday","days","el martes","день недели","вторник; во вторник",["вторник","во вторник"],["martes","el martes"],"El martes tengo clase.","Во вторник у меня занятие.","Los martes voy al gimnasio.","По вторникам я хожу в спортзал.","___ tengo clase.",["El martes","martes"]),
+      foundationItem("wednesday","days","el miércoles","день недели","среда; в среду",["среда","в среду"],["miércoles","miercoles","el miércoles","el miercoles"],"El miércoles trabajo desde casa.","В среду я работаю из дома.","Los miércoles cocinamos juntos.","По средам мы готовим вместе.","___ trabajo desde casa.",["El miércoles","El miercoles","miércoles","miercoles"]),
+      foundationItem("thursday","days","el jueves","день недели","четверг; в четверг",["четверг","в четверг"],["jueves","el jueves"],"El jueves quedo con Ana.","В четверг я встречаюсь с Аной.","Los jueves leo por la noche.","По четвергам я читаю вечером.","___ quedo con Ana.",["El jueves","jueves"]),
+      foundationItem("friday","days","el viernes","день недели","пятница; в пятницу",["пятница","в пятницу"],["viernes","el viernes"],"El viernes descanso en casa.","В пятницу я отдыхаю дома.","Los viernes vemos películas.","По пятницам мы смотрим фильмы.","___ descanso en casa.",["El viernes","viernes"]),
+      foundationItem("saturday","days","el sábado","день недели","суббота; в субботу",["суббота","в субботу"],["sábado","sabado","el sábado","el sabado"],"El sábado quedamos con amigos.","В субботу мы встречаемся с друзьями.","Los sábados voy de compras.","По субботам я хожу за покупками.","___ quedamos con amigos.",["El sábado","El sabado","sábado","sabado"]),
+      foundationItem("sunday","days","el domingo","день недели","воскресенье; в воскресенье",["воскресенье","в воскресенье"],["domingo","el domingo"],"El domingo descanso.","В воскресенье я отдыхаю.","Los domingos desayunamos tarde.","По воскресеньям мы завтракаем поздно.","___ descanso.",["El domingo","domingo"]),
+      foundationItem("january","months","enero","месяц","январь",["январь"],["enero"],"Enero es el primer mes del año.","Январь — первый месяц года.","En enero hace frío.","В январе холодно.","___ es el primer mes del año.",["Enero","enero"]),
+      foundationItem("february","months","febrero","месяц","февраль",["февраль"],["febrero"],"Febrero es un mes corto.","Февраль — короткий месяц.","En febrero todavía es invierno.","В феврале всё ещё зима.","___ es un mes corto.",["Febrero","febrero"]),
+      foundationItem("march","months","marzo","месяц","март",["март"],["marzo"],"Mi cumpleaños es en marzo.","Мой день рождения в марте.","La primavera empieza en marzo.","Весна начинается в марте.","Mi cumpleaños es en ___.",["marzo"]),
+      foundationItem("april","months","abril","месяц","апрель",["апрель"],["abril"],"En abril llueve mucho.","В апреле часто идёт дождь.","Abril tiene treinta días.","В апреле тридцать дней.","En ___ llueve mucho.",["abril"]),
+      foundationItem("may","months","mayo","месяц","май",["май"],["mayo"],"En mayo hace buen tiempo.","В мае хорошая погода.","Mayo es mi mes favorito.","Май — мой любимый месяц.","En ___ hace buen tiempo.",["mayo"]),
+      foundationItem("june","months","junio","месяц","июнь",["июнь"],["junio"],"El verano empieza en junio.","Лето начинается в июне.","En junio los días son largos.","В июне дни длинные.","El verano empieza en ___.",["junio"]),
+      foundationItem("july","months","julio","месяц","июль",["июль"],["julio"],"Julio es un mes caluroso.","Июль — жаркий месяц.","En julio vamos al mar.","В июле мы едем к морю.","En ___ vamos al mar.",["julio"]),
+      foundationItem("august","months","agosto","месяц","август",["август"],["agosto"],"En agosto tengo vacaciones.","В августе у меня отпуск.","Agosto suele ser muy caluroso.","Август обычно очень жаркий.","En ___ tengo vacaciones.",["agosto"]),
+      foundationItem("september","months","septiembre","месяц","сентябрь",["сентябрь"],["septiembre"],"Las clases empiezan en septiembre.","Занятия начинаются в сентябре.","Septiembre es el primer mes del otoño.","Сентябрь — первый месяц осени.","Las clases empiezan en ___.",["septiembre"]),
+      foundationItem("october","months","octubre","месяц","октябрь",["октябрь"],["octubre"],"En octubre las hojas cambian de color.","В октябре листья меняют цвет.","Octubre tiene treinta y un días.","В октябре тридцать один день.","En ___ las hojas cambian de color.",["octubre"]),
+      foundationItem("november","months","noviembre","месяц","ноябрь",["ноябрь"],["noviembre"],"En noviembre hace más frío.","В ноябре становится холоднее.","Noviembre tiene treinta días.","В ноябре тридцать дней.","En ___ hace más frío.",["noviembre"]),
+      foundationItem("december","months","diciembre","месяц","декабрь",["декабрь"],["diciembre"],"Diciembre es el último mes del año.","Декабрь — последний месяц года.","En diciembre empieza el invierno.","В декабре начинается зима.","___ es el último mes del año.",["Diciembre","diciembre"]),
+      foundationItem("winter","seasons","el invierno","время года","зима",["зима"],["invierno","el invierno"],"En invierno hace frío.","Зимой холодно.","Me gusta beber chocolate caliente en invierno.","Зимой мне нравится пить горячий шоколад.","En ___ hace frío.",["invierno"]),
+      foundationItem("spring","seasons","la primavera","время года","весна",["весна"],["primavera","la primavera"],"En primavera florecen los árboles.","Весной цветут деревья.","La primavera empieza en marzo.","Весна начинается в марте.","En ___ florecen los árboles.",["primavera"]),
+      foundationItem("summer","seasons","el verano","время года","лето",["лето"],["verano","el verano"],"En verano voy al mar.","Летом я езжу к морю.","El verano es caluroso.","Лето жаркое.","En ___ voy al mar.",["verano"]),
+      foundationItem("autumn","seasons","el otoño","время года","осень",["осень"],["otoño","otono","el otoño","el otono"],"En otoño las hojas se vuelven amarillas.","Осенью листья становятся жёлтыми.","El otoño empieza en septiembre.","Осень начинается в сентябре.","En ___ las hojas se vuelven amarillas.",["otoño","otono"])
+    ];
+
+
+    const CITY_CATEGORIES=[{id:"all",title:"Весь город"},{id:"places",title:"Места"},{id:"opposites",title:"Противоположности"}];
+    const CITY_WORDS=[
+      foundationItem("trash","places","el contenedor de basura","мужской род","мусорный контейнер",["мусорный контейнер"],["contenedor de basura","el contenedor de basura"],"El contenedor de basura está en la esquina.","Мусорный контейнер находится на углу.","Tiro la bolsa al contenedor de basura.","Я выбрасываю пакет в мусорный контейнер.","El ___ está en la esquina.",["contenedor de basura"]),
+      foundationItem("pharmacy","places","la farmacia","женский род","аптека",["аптека"],["farmacia","la farmacia"],"La farmacia está abierta.","Аптека открыта.","Hay una farmacia cerca de casa.","Рядом с домом есть аптека.","La ___ está abierta.",["farmacia"]),
+      foundationItem("bus_stop","places","la parada de autobús","женский род","автобусная остановка",["автобусная остановка","остановка автобуса"],["parada de autobús","parada de autobus","la parada de autobús","la parada de autobus"],"La parada de autobús está enfrente.","Автобусная остановка находится напротив.","Espero en la parada de autobús.","Я жду на автобусной остановке.","Espero en la ___.",["parada de autobús","parada de autobus"]),
+      foundationItem("bank","places","el banco","мужской род","банк",["банк"],["banco","el banco"],"El banco cierra a las seis.","Банк закрывается в шесть.","Hay un banco junto al supermercado.","Рядом с супермаркетом есть банк.","El ___ cierra a las seis.",["banco"]),
+      foundationItem("post","places","la oficina de correos","женский род","почтовое отделение",["почтовое отделение","почта"],["oficina de correos","la oficina de correos"],"La oficina de correos está en el centro.","Почтовое отделение находится в центре.","Voy a la oficina de correos.","Я иду на почту.","Voy a la ___.",["oficina de correos"]),
+      foundationItem("cinema","places","el cine","мужской род","кинотеатр",["кинотеатр"],["cine","el cine"],"El cine está cerca del metro.","Кинотеатр находится рядом с метро.","Vamos al cine el viernes.","В пятницу мы идём в кино.","Vamos al ___ el viernes.",["cine"]),
+      foundationItem("city_gym","places","el gimnasio","мужской род","спортзал",["спортзал","тренажёрный зал","тренажерный зал"],["gimnasio","el gimnasio"],"El gimnasio abre temprano.","Спортзал открывается рано.","Voy al gimnasio después del trabajo.","Я хожу в спортзал после работы.","Voy al ___ después del trabajo.",["gimnasio"]),
+      foundationItem("school","places","la escuela","женский род","школа",["школа"],["escuela","la escuela"],"La escuela está al final de la calle.","Школа находится в конце улицы.","Los niños van a la escuela.","Дети ходят в школу.","Los niños van a la ___.",["escuela"]),
+      foundationItem("police","places","la comisaría","женский род","полицейский участок",["полицейский участок","отделение полиции"],["comisaría","comisaria","la comisaría","la comisaria"],"La comisaría está junto al banco.","Полицейский участок находится рядом с банком.","Pregunto en la comisaría.","Я спрашиваю в полицейском участке.","La ___ está junto al banco.",["comisaría","comisaria"]),
+      foundationItem("supermarket","places","el supermercado","мужской род","супермаркет",["супермаркет"],["supermercado","el supermercado"],"El supermercado está abierto hasta tarde.","Супермаркет открыт допоздна.","Compro fruta en el supermercado.","Я покупаю фрукты в супермаркете.","Compro fruta en el ___.",["supermercado"]),
+      foundationItem("big_small","opposites","grande / pequeño","антонимы","большой / маленький",["большой маленький","большой / маленький"],["grande / pequeño","grande pequeño","grande y pequeño"],"Madrid es una ciudad grande.","Мадрид — большой город.","Vivo en un piso pequeño.","Я живу в маленькой квартире.","Vivo en un piso ___.",["pequeño","pequeno"]),
+      foundationItem("pretty_ugly","opposites","bonito / feo","антонимы","красивый / некрасивый",["красивый некрасивый","красивый / некрасивый"],["bonito / feo","bonito feo","bonito y feo"],"El parque es muy bonito.","Парк очень красивый.","Ese edificio es feo.","То здание некрасивое.","El parque es muy ___.",["bonito"]),
+      foundationItem("cheap_expensive","opposites","barato / caro","антонимы","дешёвый / дорогой",["дешёвый дорогой","дешевый дорогой"],["barato / caro","barato caro","barato y caro"],"Este café es barato.","Это кафе недорогое.","El restaurante del centro es caro.","Ресторан в центре дорогой.","Este café es ___.",["barato"]),
+      foundationItem("clean_dirty","opposites","limpio / sucio","антонимы","чистый / грязный",["чистый грязный","чистый / грязный"],["limpio / sucio","limpio sucio","limpio y sucio"],"Mi barrio está limpio.","Мой район чистый.","Esta calle está sucia.","Эта улица грязная.","Mi barrio está ___.",["limpio"]),
+      foundationItem("quiet_noisy","opposites","tranquilo / ruidoso","антонимы","тихий, спокойный / шумный",["тихий шумный","спокойный шумный"],["tranquilo / ruidoso","tranquilo ruidoso","tranquilo y ruidoso"],"Vivo en un barrio tranquilo.","Я живу в спокойном районе.","El centro es muy ruidoso.","Центр очень шумный.","Vivo en un barrio ___.",["tranquilo"]),
+      foundationItem("modern_old","opposites","moderno / antiguo","антонимы","современный / старинный",["современный старинный","современный / старинный"],["moderno / antiguo","moderno antiguo","moderno y antiguo","moderno / viejo"],"El metro es moderno.","Метро современное.","El edificio es antiguo.","Здание старинное.","El edificio es ___.",["antiguo","viejo"]),
+      foundationItem("pleasant","opposites","agradable / desagradable","антонимы","приятный / неприятный",["приятный неприятный","приятный / неприятный"],["agradable / desagradable","agradable desagradable","agradable y desagradable"],"La plaza es agradable.","Площадь приятная.","El olor es desagradable.","Запах неприятный.","La plaza es ___.",["agradable"]),
+      foundationItem("safe","opposites","seguro / peligroso","антонимы","безопасный / опасный",["безопасный опасный","безопасный / опасный"],["seguro / peligroso","seguro peligroso","seguro y peligroso"],"Este barrio es seguro.","Этот район безопасный.","Cruzar aquí es peligroso.","Переходить здесь опасно.","Este barrio es ___.",["seguro"])
+    ];
+
+
     const BUILTIN = [
       {id:"v1",topic:"verbs",skill:"Значение глагола",q:"Как по-испански «быть» в значении постоянного признака?",a:["ser"],e:"Ser используют для происхождения, профессии, характера и других устойчивых признаков."},
       {id:"v2",topic:"verbs",skill:"Значение глагола",q:"Как по-испански «быть, находиться» в значении состояния или места?",a:["estar"],e:"Estar используют для состояния и местонахождения."},
@@ -894,6 +1017,37 @@
     ];
 
 
+
+    function foundationExercises(){
+      const groups=[
+        {topic:"verbs",words:VERB_WORDS},
+        {topic:"present",words:PRESENT_WORDS},
+        {topic:"prepositions",words:PREPOSITION_WORDS},
+        {topic:"calendar",words:CALENDAR_WORDS},
+        {topic:"city",words:CITY_WORDS}
+      ];
+      const items=[];
+      groups.forEach(function(group){
+        group.words.forEach(function(word){
+          items.push({
+            id:"study_"+group.topic+"_"+word.id+"_es",topic:group.topic,foodCat:word.cat,skill:"Вспомни",
+            q:"Переведи на испанский: "+word.tr+".",a:word.answers,
+            e:"Правильный вариант: "+word.word+"."
+          });
+          items.push({
+            id:"study_"+group.topic+"_"+word.id+"_ru",topic:group.topic,foodCat:word.cat,skill:"Узнай",
+            q:"Переведи на русский: "+word.word+".",a:word.ru,
+            e:word.word+" — "+word.tr+"."
+          });
+          items.push({
+            id:"study_"+group.topic+"_"+word.id+"_ctx",topic:group.topic,foodCat:word.cat,skill:"В контексте",
+            q:"Вставь пропущенную часть: "+word.cloze,a:word.clozeAnswers,
+            e:word.examples[0][0]+" — "+word.examples[0][1]
+          });
+        });
+      });
+      return items;
+    }
     function foodExercises(){
       const items=[];
       FOOD_WORDS.forEach(function(word){
@@ -1144,7 +1298,7 @@
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
-      studyView:$("studyView"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
+      studyView:$("studyView"), studyCard:$("studyCard"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
       foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn")
@@ -1152,14 +1306,24 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(custom); }
-    function isVocabularyTopic(){ return selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="activities"; }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(custom); }
+    function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
+      if(selectedTopic==="verbs") return VERB_WORDS;
+      if(selectedTopic==="present") return PRESENT_WORDS;
+      if(selectedTopic==="prepositions") return PREPOSITION_WORDS;
+      if(selectedTopic==="calendar") return CALENDAR_WORDS;
+      if(selectedTopic==="city") return CITY_WORDS;
       if(selectedTopic==="clothes") return CLOTHING_WORDS;
       if(selectedTopic==="activities") return ACTIVITY_WORDS;
       return FOOD_WORDS;
     }
     function vocabularyCategories(){
+      if(selectedTopic==="verbs") return VERB_CATEGORIES;
+      if(selectedTopic==="present") return PRESENT_CATEGORIES;
+      if(selectedTopic==="prepositions") return PREPOSITION_CATEGORIES;
+      if(selectedTopic==="calendar") return CALENDAR_CATEGORIES;
+      if(selectedTopic==="city") return CITY_CATEGORIES;
       if(selectedTopic==="clothes") return CLOTHING_CATEGORIES;
       if(selectedTopic==="activities") return ACTIVITY_CATEGORIES;
       return FOOD_CATEGORIES;
@@ -1192,7 +1356,16 @@
       els.topicList.innerHTML=TOPICS.map(function(t){
         return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
-          '</span><span class="topic-count">'+(t.id==="foods" ? FOOD_WORDS.length+" слов" : t.id==="clothes" ? CLOTHING_WORDS.length+" слов" : t.id==="activities" ? ACTIVITY_WORDS.length+" фраз" : counts[t.id])+'</span></button>';
+          '</span><span class="topic-count">'+(
+            t.id==="verbs" ? VERB_WORDS.length+" слов" :
+            t.id==="present" ? PRESENT_WORDS.length+" форм" :
+            t.id==="prepositions" ? PREPOSITION_WORDS.length+" слов" :
+            t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
+            t.id==="city" ? CITY_WORDS.length+" карточек" :
+            t.id==="foods" ? FOOD_WORDS.length+" слов" :
+            t.id==="clothes" ? CLOTHING_WORDS.length+" слов" :
+            t.id==="activities" ? ACTIVITY_WORDS.length+" фраз" : counts[t.id]
+          )+'</span></button>';
       }).join("");
       els.topicList.querySelectorAll("[data-topic]").forEach(function(btn){
         btn.addEventListener("click",function(){
@@ -1232,6 +1405,39 @@
       const item=vocabularyCategories().find(function(cat){return cat.id===id;});
       return item ? item.title : topicById(selectedTopic).title;
     }
+    function studyTitle(){
+      const titles={
+        verbs:"Сначала познакомимся с основными глаголами",
+        present:"Сначала разберём формы Presente",
+        prepositions:"Сначала познакомимся с предлогами",
+        calendar:"Сначала выучим календарную лексику",
+        city:"Сначала познакомимся со словами о городе",
+        foods:"Сначала познакомимся с продуктами",
+        clothes:"Сначала познакомимся с одеждой и аксессуарами",
+        activities:"Сначала познакомимся с занятиями и увлечениями"
+      };
+      return titles[selectedTopic] || "Сначала познакомимся с материалом";
+    }
+    function studyIntro(){
+      if(selectedTopic==="present") return "Смотри на окончание и местоимение, затем закрепляй форму без подсказок.";
+      if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
+      if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
+      return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
+    }
+    function studyUnitLabel(){
+      if(selectedTopic==="present") return "Форма";
+      if(selectedTopic==="prepositions") return "Предлог";
+      if(selectedTopic==="activities") return "Фраза";
+      if(selectedTopic==="city" && foodCategory==="opposites") return "Пара";
+      return "Слово";
+    }
+    function studyAriaLabel(){ return "Категории: "+topicById(selectedTopic).title; }
+    function studyArt(word){
+      if(selectedTopic==="foods") return foodArt(word.art);
+      if(selectedTopic==="clothes") return clothingArt(word.art);
+      if(selectedTopic==="activities") return activityArt(word.art);
+      return "";
+    }
     function renderStudy(){
       const words=currentFoodWords();
       const categories=vocabularyCategories();
@@ -1240,13 +1446,9 @@
       els.studyView.hidden=false;
       els.exerciseView.hidden=true;
       els.emptyView.hidden=true;
-      els.studyTitle.textContent=selectedTopic==="clothes" ? "Сначала познакомимся с одеждой и аксессуарами" :
-        selectedTopic==="activities" ? "Сначала познакомимся с занятиями и увлечениями" : "Сначала познакомимся с продуктами";
-      els.studyIntroText.textContent=selectedTopic==="activities" ?
-        "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок." :
-        "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
-      els.foodFilters.setAttribute("aria-label",selectedTopic==="clothes" ? "Категории одежды и аксессуаров" :
-        selectedTopic==="activities" ? "Категории занятий и увлечений" : "Категории продуктов");
+      els.studyTitle.textContent=studyTitle();
+      els.studyIntroText.textContent=studyIntro();
+      els.foodFilters.setAttribute("aria-label",studyAriaLabel());
       els.foodFilters.innerHTML=categories.map(function(cat){
         const allWords=vocabularyWords();
         const count=cat.id==="all" ? allWords.length : allWords.filter(function(word){return word.cat===cat.id;}).length;
@@ -1260,12 +1462,14 @@
           renderStudy();
         });
       });
-      els.foodArt.innerHTML=selectedTopic==="clothes" ? clothingArt(word.art) : selectedTopic==="activities" ? activityArt(word.art) : foodArt(word.art);
+      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="activities";
+      els.studyCard.classList.toggle("no-art",!hasArt);
+      els.foodArt.innerHTML=studyArt(word);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
       els.foodTranslation.textContent=word.tr;
-      const unitLabel=selectedTopic==="activities" ? "Фраза" : "Слово";
+      const unitLabel=studyUnitLabel();
       els.wordCount.textContent=unitLabel+" "+(wordIndex+1)+" из "+words.length;
       els.foodExamples.innerHTML=word.examples.map(function(example){
         return '<div class="example"><strong>'+escapeHtml(example[0])+'</strong><span>'+escapeHtml(example[1])+'</span></div>';
