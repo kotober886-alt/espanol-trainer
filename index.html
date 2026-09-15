@@ -1759,8 +1759,11 @@
       const items=[];
       exerciseGroups().forEach(function(group){
         group.words.forEach(function(word,index){
-          let pool=group.words.filter(function(other){return other.id!==word.id && other.cat===word.cat;});
-          if(pool.length<3) pool=group.words.filter(function(other){return other.id!==word.id;});
+          if(GRAMMAR_TASKS[group.topic+":"+word.id]) return;
+          let pool=group.words.filter(function(other){return other.id!==word.id && other.cat===word.cat && !GRAMMAR_TASKS[group.topic+":"+other.id];});
+          if(pool.length<3) pool=group.words.filter(function(other){
+            return other.id!==word.id && !GRAMMAR_TASKS[group.topic+":"+other.id];
+          });
           const distractors=[];
           for(let step=0;step<pool.length && distractors.length<3;step++){
             const candidate=pool[(index+step)%pool.length].word;
@@ -1875,6 +1878,30 @@
       .concat(FORM_DATA.map(function(x){return {id:"forms_"+x[0],topic:x[1],foodCat:x[2],type:"forms",skill:"Таблица спряжения",q:x[3],formLabels:x[4],a:x[5],displayAnswer:x[6],e:"Заполняй формы слева направо по лицам."};}))
       .concat(COMPARE_DATA.map(function(x){return {id:"compare_"+x[0],topic:x[1],foodCat:x[2],type:"choice",skill:"Сравни формы",q:x[3],options:x[4],a:[x[5]],e:x[6]};}));
 
+    const GRAMMAR_TASKS={
+      "constructions:estar_location":{esQ:"Какой испанский глагол используют для местонахождения уже известного предмета?",ruQ:"Что выражает estar, когда после него указано место?",skill:"Конструкция"},
+      "constructions:ir_a":{esQ:"Какая испанская конструкция означает «собираться что-то сделать»?",ruQ:"Что означает конструкция ir a + infinitivo?",skill:"Конструкция"},
+      "constructions:querer_inf":{esQ:"Какая испанская конструкция означает «хотеть что-то сделать»?",ruQ:"Что означает конструкция querer + infinitivo?",skill:"Конструкция"},
+      "constructions:pensar_inf":{esQ:"Какая испанская конструкция передаёт намерение или план?",ruQ:"Что означает конструкция pensar + infinitivo?",skill:"Конструкция"},
+      "constructions:tener_que":{esQ:"Какая испанская конструкция выражает личную необходимость: «мне нужно / я должна»?",ruQ:"Что означает конструкция tener que + infinitivo?",skill:"Конструкция"},
+      "constructions:hay_que":{esQ:"Какая испанская конструкция выражает общую необходимость: «нужно / надо»?",ruQ:"Что означает конструкция hay que + infinitivo?",skill:"Конструкция"},
+      "constructions:deber":{esQ:"Какой испанский глагол перед инфинитивом выражает совет или обязанность?",ruQ:"Что означает конструкция deber + infinitivo?",skill:"Конструкция"},
+      "constructions:poder":{esQ:"Какой испанский глагол перед инфинитивом выражает возможность или разрешение?",ruQ:"Что означает конструкция poder + infinitivo?",skill:"Конструкция"},
+      "constructions:necesitar":{esQ:"Какой испанский глагол перед инфинитивом означает необходимость?",ruQ:"Что означает конструкция necesitar + infinitivo?",skill:"Конструкция"},
+      "constructions:acabar_de":{esQ:"Какая испанская конструкция означает «только что что-то сделать»?",ruQ:"Что означает конструкция acabar de + infinitivo?",skill:"Конструкция"},
+      "constructions:volver_a":{esQ:"Какая испанская конструкция означает «сделать что-то снова»?",ruQ:"Что означает конструкция volver a + infinitivo?",skill:"Конструкция"},
+      "practical:muy":{esQ:"Как сказать по-испански «очень» перед прилагательным или наречием?",ruQ:"Что означает слово muy?",skill:"Полезное слово"},
+      "agreement:al":{esQ:"Объедини a + el в одно слово.",esA:["al"],ruQ:"Из каких двух слов образуется al?",ruA:["a el","a + el"],skill:"Слияние"},
+      "agreement:del":{esQ:"Объедини de + el в одно слово.",esA:["del"],ruQ:"Из каких двух слов образуется del?",ruA:["de el","de + el"],skill:"Слияние"},
+      "agreement:plural_s":{esQ:"Образуй множественное число: libro → …",esA:["libros"],ruQ:"Какое окончание добавляется после гласной во множественном числе?",ruA:["s","-s"],ctxQ:"Добавь окончание множественного числа: libro → libro___.",ctxA:["s","-s"],skill:"Множественное число"},
+      "agreement:plural_es":{esQ:"Образуй множественное число: papel → …",esA:["papeles"],ruQ:"Какое окончание добавляется после согласной во множественном числе?",ruA:["es","-es"],ctxQ:"Добавь окончание множественного числа: papel → papel___.",ctxA:["es","-es"],skill:"Множественное число"}
+    };
+
+    function clozeQuestion(word,label){
+      const translation=word.examples && word.examples[0] ? word.examples[0][1] : word.tr;
+      return "Вставь "+label+" по переводу «"+translation+"»: "+word.cloze;
+    }
+
     function foundationExercises(){
       const groups=[
         {topic:"verbs",words:VERB_WORDS},
@@ -1894,19 +1921,23 @@
       const items=[];
       groups.forEach(function(group){
         group.words.forEach(function(word){
+          const special=GRAMMAR_TASKS[group.topic+":"+word.id];
           items.push({
-            id:"study_"+group.topic+"_"+word.id+"_es",topic:group.topic,foodCat:word.cat,skill:"Вспомни",
-            q:"Переведи на испанский: "+word.tr+".",a:word.answers,
-            e:"Правильный вариант: "+word.word+"."
+            id:"study_"+group.topic+"_"+word.id+"_es",topic:group.topic,foodCat:word.cat,skill:special ? special.skill : "Вспомни",
+            q:special ? special.esQ : "Переведи на испанский: "+word.tr+".",
+            a:special && special.esA ? special.esA : word.answers,
+            e:special ? word.examples[0][0]+" — "+word.examples[0][1] : "Правильный вариант: "+word.word+"."
           });
           items.push({
-            id:"study_"+group.topic+"_"+word.id+"_ru",topic:group.topic,foodCat:word.cat,skill:"Узнай",
-            q:"Переведи на русский: "+word.word+".",a:word.ru,
+            id:"study_"+group.topic+"_"+word.id+"_ru",topic:group.topic,foodCat:word.cat,skill:special ? special.skill : "Узнай",
+            q:special ? special.ruQ : "Переведи на русский: "+word.word+".",
+            a:special && special.ruA ? special.ruA : word.ru,
             e:word.word+" — "+word.tr+"."
           });
           items.push({
             id:"study_"+group.topic+"_"+word.id+"_ctx",topic:group.topic,foodCat:word.cat,skill:"В контексте",
-            q:"Вставь пропущенную часть: "+word.cloze,a:word.clozeAnswers,
+            q:special && special.ctxQ ? special.ctxQ : clozeQuestion(word,"пропущенную часть"),
+            a:special && special.ctxA ? special.ctxA : word.clozeAnswers,
             e:word.examples[0][0]+" — "+word.examples[0][1]
           });
         });
@@ -1958,7 +1989,7 @@
         });
         items.push({
           id:"food_"+word.id+"_ctx",topic:"foods",foodCat:word.cat,skill:"Слово в контексте",
-          q:"Вставь пропущенное слово: "+word.cloze,a:word.clozeAnswers,
+          q:clozeQuestion(word,"пропущенное слово"),a:word.clozeAnswers,
           e:word.examples[0][0]+" — "+word.examples[0][1]
         });
       });
@@ -1981,7 +2012,7 @@
         });
         items.push({
           id:"clothes_"+word.id+"_ctx",topic:"clothes",foodCat:word.cat,skill:"Слово в контексте",
-          q:"Вставь пропущенное слово: "+word.cloze,a:word.clozeAnswers,
+          q:clozeQuestion(word,"пропущенное слово"),a:word.clozeAnswers,
           e:word.examples[0][0]+" — "+word.examples[0][1]
         });
       });
@@ -2004,7 +2035,7 @@
         });
         items.push({
           id:"activity_"+item.id+"_ctx",topic:"activities",foodCat:item.cat,skill:"Фраза в контексте",
-          q:"Вставь пропущенное выражение: "+item.cloze,a:item.clozeAnswers,
+          q:clozeQuestion(item,"пропущенное выражение"),a:item.clozeAnswers,
           e:item.examples[0][0]+" — "+item.examples[0][1]
         });
       });
