@@ -443,7 +443,7 @@
             <div class="audio-control-label">Скорость по умолчанию
               <div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
                 <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
-                <button class="speed-option" data-audio-rate="0.74" type="button">Медленнее</button>
+                <button class="speed-option" data-audio-rate="0.68" type="button">Спокойно</button>
               </div>
             </div>
             <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
@@ -506,7 +506,7 @@
             <h2 class="question" id="questionText"></h2>
             <div class="audio-actions" id="audioActions" hidden>
               <button class="audio-prompt" id="audioPrompt" type="button"><span aria-hidden="true">▶</span> Прослушать</button>
-              <button class="audio-slow" id="slowAudioPrompt" type="button"><span aria-hidden="true">◷</span> Медленнее</button>
+              <button class="audio-slow" id="slowAudioPrompt" type="button"><span aria-hidden="true">◷</span> Медленнее · 0,64×</button>
             </div>
             <div class="choice-grid" id="choiceGrid" hidden></div>
             <div class="order-widget" id="orderWidget" hidden>
@@ -2098,6 +2098,7 @@
     let audioSettings = read(STORAGE.audio,{voiceURI:"",rate:.86});
     if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",rate:.86};
     if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
+    if(Math.abs(audioSettings.rate-.74)<.01) audioSettings.rate=.68;
     let spanishVoices = [];
     let selectedTopic = "all";
     let selectedMode = "all";
@@ -2397,10 +2398,19 @@
       return spanishVoices[0] || null;
     }
 
+    function slowerRate(){
+      return Math.max(.54,Math.round((audioSettings.rate-.22)*100)/100);
+    }
+
     function updateSpeedButtons(){
       document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
-        btn.classList.toggle("active",Math.abs(Number(btn.dataset.audioRate)-audioSettings.rate)<.01);
+        const active=Math.abs(Number(btn.dataset.audioRate)-audioSettings.rate)<.01;
+        btn.classList.toggle("active",active);
+        btn.setAttribute("aria-pressed",String(active));
       });
+      const shown=slowerRate().toFixed(2).replace(".",",");
+      els.slowAudioPrompt.innerHTML='<span aria-hidden="true">◷</span> Медленнее · '+shown+'×';
+      els.slowAudioPrompt.setAttribute("aria-label","Прослушать медленнее, скорость "+shown);
     }
 
     function setSpeakingState(active,source){
@@ -2718,7 +2728,7 @@
     els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
     $("checkBtn").addEventListener("click",checkAnswer);
     els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
-    els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(.74,els.slowAudioPrompt);});
+    els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(slowerRate(),els.slowAudioPrompt);});
     els.studyListen.addEventListener("click",speakStudy);
     els.voicePreview.addEventListener("click",function(){
       speakText("Hola. Hoy practicamos español con calma y claridad.",audioSettings.rate,els.voicePreview);
