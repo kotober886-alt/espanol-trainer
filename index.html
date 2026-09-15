@@ -1345,7 +1345,7 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ return stats[x.id] && stats[x.id].wrong>0; });
-      queue=items;
+      queue=keepIndex ? items : shuffle(items);
       if(!keepIndex || index>=queue.length) index=0;
       render();
     }
