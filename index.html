@@ -112,6 +112,50 @@
     }
     .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden] { display:none; }
     .audio-prompt span { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(255,255,255,.18); }
+    .audio-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:0 0 22px; }
+    .audio-actions[hidden] { display:none; }
+    .audio-actions .audio-prompt { margin:0; }
+    .audio-slow {
+      display:inline-flex; align-items:center; gap:9px; padding:12px 16px; border:1px solid #d8d3ee; border-radius:15px;
+      background:#f7f5ff; color:#4d438f; font-weight:800;
+    }
+    .audio-slow:hover { background:#eeebff; border-color:#c3baee; }
+    .audio-slow span { font-size:18px; line-height:1; }
+    .audio-prompt.speaking,.audio-slow.speaking,.study-listen.speaking,.voice-preview.speaking { animation:audioPulse 1s ease-in-out infinite; }
+    @keyframes audioPulse { 50% { transform:translateY(-1px); box-shadow:0 10px 28px rgba(98,83,217,.3); } }
+
+    .audio-settings {
+      margin-top:12px; border:1px solid var(--line); border-radius:15px; background:#f8f7fc; overflow:hidden;
+    }
+    .audio-settings summary {
+      list-style:none; display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding:11px 12px; font-weight:800; cursor:pointer; user-select:none;
+    }
+    .audio-settings summary::-webkit-details-marker { display:none; }
+    .audio-settings summary::after { content:"⌄"; color:var(--violet); transition:transform .18s ease; }
+    .audio-settings[open] summary::after { transform:rotate(180deg); }
+    .audio-settings-body { display:grid; gap:10px; padding:0 12px 12px; }
+    .audio-control-label { display:grid; gap:6px; color:var(--muted); font-size:12px; font-weight:800; }
+    .voice-select {
+      width:100%; min-height:42px; padding:8px 10px; border:1px solid #d8d3e8; border-radius:11px;
+      background:white; color:var(--ink); font-size:13px;
+    }
+    .speed-toggle { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .speed-option {
+      min-height:40px; padding:8px 7px; border:1px solid #d8d3e8; border-radius:11px;
+      background:white; color:var(--ink); font-size:12px; font-weight:800;
+    }
+    .speed-option.active { border-color:var(--violet); background:#ece9ff; color:#433a86; }
+    .voice-preview {
+      min-height:41px; padding:8px 10px; border:0; border-radius:11px;
+      background:var(--ink); color:white; font-size:13px; font-weight:800;
+    }
+    .voice-status { margin:0; color:var(--muted); font-size:11px; line-height:1.35; }
+    .study-listen {
+      display:inline-flex; align-items:center; gap:9px; margin:0 0 18px; padding:10px 13px; border:1px solid #d8d3ee;
+      border-radius:13px; background:#f4f1ff; color:#4a4088; font-size:13px; font-weight:800;
+    }
+    .study-listen span { display:grid; place-items:center; width:23px; height:23px; border-radius:50%; background:#e5e0ff; }
     .choice-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; margin:0 0 22px; }
     .choice-option {
       min-height:58px; padding:13px 15px; border:2px solid var(--line); border-radius:16px;
@@ -307,7 +351,9 @@
       .answer-input { min-height:54px; padding:12px 13px; font-size:16px; }
       .choice-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
       .choice-option { width:100%; min-width:0; min-height:52px; padding:11px 12px; font-size:15px; }
-      .audio-prompt { width:100%; justify-content:center; }
+      .audio-actions { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:7px; }
+      .audio-prompt,.audio-slow { width:100%; min-width:0; justify-content:center; padding:11px 8px; font-size:13px; }
+      .audio-settings { margin-top:9px; }
       .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
       .form-cell { min-width:0; padding:8px; }
       .order-built { min-height:64px; padding:10px; }
@@ -349,7 +395,7 @@
       .study-dots { grid-column:1/-1; order:3; width:100%; max-height:46px; overflow-y:auto; }
     }
     @media (max-width:360px) {
-      .form-grid,.header-actions { grid-template-columns:minmax(0,1fr); }
+      .form-grid,.header-actions,.audio-actions { grid-template-columns:minmax(0,1fr); }
       .study-nav { grid-template-columns:minmax(0,1fr); }
       .study-dots { grid-column:auto; }
       .food-word { font-size:27px; }
@@ -386,6 +432,24 @@
           <button class="mode" data-mode="tests" type="button">Тесты</button>
           <button class="mode" data-mode="audio" type="button">Аудио</button>
         </div>
+        <details class="audio-settings" id="audioSettings">
+          <summary>🔊 Настройки голоса</summary>
+          <div class="audio-settings-body">
+            <label class="audio-control-label" for="voiceSelect">Испанский голос
+              <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus">
+                <option value="">Автоматически: лучший доступный</option>
+              </select>
+            </label>
+            <div class="audio-control-label">Скорость по умолчанию
+              <div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
+                <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
+                <button class="speed-option" data-audio-rate="0.74" type="button">Медленнее</button>
+              </div>
+            </div>
+            <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
+            <p class="voice-status" id="voiceStatus">Подбираем самый естественный голос на этом устройстве…</p>
+          </div>
+        </details>
       </aside>
 
       <section class="workspace" aria-live="polite">
@@ -420,6 +484,7 @@
                 </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="pronoun-details" id="pronounDetails" hidden></div>
+                <button class="study-listen" id="studyListen" type="button"><span aria-hidden="true">▶</span> Послушать произношение</button>
                 <div class="examples-title" id="examplesTitle">В контексте</div>
                 <div class="example-list" id="foodExamples"></div>
               </div>
@@ -439,7 +504,10 @@
               <span id="questionNumber">Задание 1</span>
             </div>
             <h2 class="question" id="questionText"></h2>
-            <button class="audio-prompt" id="audioPrompt" type="button" hidden><span aria-hidden="true">▶</span> Прослушать ещё раз</button>
+            <div class="audio-actions" id="audioActions" hidden>
+              <button class="audio-prompt" id="audioPrompt" type="button"><span aria-hidden="true">▶</span> Прослушать</button>
+              <button class="audio-slow" id="slowAudioPrompt" type="button"><span aria-hidden="true">◷</span> Медленнее</button>
+            </div>
             <div class="choice-grid" id="choiceGrid" hidden></div>
             <div class="order-widget" id="orderWidget" hidden>
               <div class="order-built" id="orderBuilt" aria-label="Собранное предложение"></div>
@@ -2023,10 +2091,14 @@
       return '<svg '+common+'>'+a[kind]+'</svg>';
     }
 
-    const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1" };
+    const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1", audio:"espanol_audio_v1" };
     let stats = read(STORAGE.stats,{});
     let custom = read(STORAGE.custom,[]);
     let streak = read(STORAGE.streak,0);
+    let audioSettings = read(STORAGE.audio,{voiceURI:"",rate:.86});
+    if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",rate:.86};
+    if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
+    let spanishVoices = [];
     let selectedTopic = "all";
     let selectedMode = "all";
     let queue = [];
@@ -2042,7 +2114,9 @@
     const els = {
       topicList:$("topicList"), topicName:$("topicName"), progressBar:$("progressBar"), progressLabel:$("progressLabel"),
       questionText:$("questionText"), skillLabel:$("skillLabel"), questionNumber:$("questionNumber"), answerInput:$("answerInput"),
-      answerLabel:$("answerLabel"), audioPrompt:$("audioPrompt"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
+      answerLabel:$("answerLabel"), audioActions:$("audioActions"), audioPrompt:$("audioPrompt"), slowAudioPrompt:$("slowAudioPrompt"),
+      audioSettings:$("audioSettings"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
+      studyListen:$("studyListen"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
       orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"), feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
@@ -2175,7 +2249,7 @@
       els.answerInput.hidden=false;
       els.answerLabel.hidden=false;
       els.answerLabel.textContent="Твой ответ";
-      els.audioPrompt.hidden=true;
+      els.audioActions.hidden=true;
       els.choiceGrid.hidden=true;
       els.choiceGrid.innerHTML="";
       els.orderWidget.hidden=true;
@@ -2244,7 +2318,7 @@
         if(first) first.focus();
       } else {
         if(type==="audio"){
-          els.audioPrompt.hidden=false;
+          els.audioActions.hidden=false;
           els.answerLabel.textContent="Что ты услышала?";
           els.answerInput.placeholder="Запиши предложение…";
         } else if(type==="correct"){
@@ -2274,21 +2348,104 @@
       return els.answerInput.value;
     }
 
-    function speakCurrent(){
-      const item=queue[index];
-      if(!item || !item.audio) return;
+    function voiceScore(voice){
+      const label=(voice.name+" "+voice.voiceURI).toLowerCase();
+      let score=0;
+      if(/natural|neural|premium|enhanced/.test(label)) score+=120;
+      if(/google|microsoft|apple|siri/.test(label)) score+=45;
+      if(/españ|spanish/.test(label)) score+=12;
+      if((voice.lang || "").toLowerCase()==="es-es") score+=30;
+      if(voice.default) score+=6;
+      return score;
+    }
+
+    function refreshVoices(){
+      if(!("speechSynthesis" in window)){
+        els.voiceSelect.disabled=true;
+        els.voicePreview.disabled=true;
+        els.voiceStatus.textContent="В этом браузере озвучивание недоступно.";
+        return;
+      }
+      spanishVoices=window.speechSynthesis.getVoices().filter(function(voice){
+        return /^es([-_]|$)/i.test(voice.lang || "");
+      }).sort(function(a,b){return voiceScore(b)-voiceScore(a) || a.name.localeCompare(b.name);});
+      const previous=audioSettings.voiceURI || "";
+      els.voiceSelect.innerHTML="";
+      els.voiceSelect.appendChild(new Option("Автоматически: лучший доступный",""));
+      spanishVoices.forEach(function(voice){
+        els.voiceSelect.appendChild(new Option(voice.name+" · "+voice.lang,voice.voiceURI));
+      });
+      if(previous && spanishVoices.some(function(voice){return voice.voiceURI===previous;})) els.voiceSelect.value=previous;
+      else els.voiceSelect.value="";
+      els.voiceSelect.disabled=!spanishVoices.length;
+      els.voicePreview.disabled=!spanishVoices.length;
+      if(spanishVoices.length){
+        const chosen=selectedSpanishVoice();
+        els.voiceStatus.textContent=audioSettings.voiceURI
+          ? "Выбран: "+chosen.name+". Настройка сохранена."
+          : "Автовыбор: "+chosen.name+". Можно сменить голос вручную.";
+      } else {
+        els.voiceStatus.textContent="Список голосов появится после первого запуска аудио.";
+      }
+    }
+
+    function selectedSpanishVoice(){
+      if(audioSettings.voiceURI){
+        const saved=spanishVoices.find(function(voice){return voice.voiceURI===audioSettings.voiceURI;});
+        if(saved) return saved;
+      }
+      return spanishVoices[0] || null;
+    }
+
+    function updateSpeedButtons(){
+      document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
+        btn.classList.toggle("active",Math.abs(Number(btn.dataset.audioRate)-audioSettings.rate)<.01);
+      });
+    }
+
+    function setSpeakingState(active,source){
+      [els.audioPrompt,els.slowAudioPrompt,els.studyListen,els.voicePreview].forEach(function(btn){
+        if(btn) btn.classList.toggle("speaking",active && btn===source);
+      });
+    }
+
+    function speakText(text,rate,source){
+      if(!text) return;
       if(!("speechSynthesis" in window)){
         els.feedback.textContent="В этом браузере озвучивание недоступно.";
         els.feedback.className="feedback bad";
         return;
       }
+      if(!spanishVoices.length) refreshVoices();
       window.speechSynthesis.cancel();
-      const utterance=new SpeechSynthesisUtterance(item.audio);
-      utterance.lang="es-ES";
-      utterance.rate=.82;
-      const voice=window.speechSynthesis.getVoices().find(function(item){return /^es([-_]|$)/i.test(item.lang);});
-      if(voice) utterance.voice=voice;
+      const utterance=new SpeechSynthesisUtterance(text);
+      const voice=selectedSpanishVoice();
+      if(voice){
+        utterance.voice=voice;
+        utterance.lang=voice.lang || "es-ES";
+      } else {
+        utterance.lang="es-ES";
+      }
+      utterance.rate=rate || audioSettings.rate || .86;
+      utterance.pitch=1;
+      utterance.volume=1;
+      utterance.onstart=function(){setSpeakingState(true,source);};
+      utterance.onend=utterance.onerror=function(){setSpeakingState(false,source);};
       window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCurrent(rate,source){
+      const item=queue[index];
+      if(!item || !item.audio) return;
+      speakText(item.audio,rate,source);
+    }
+
+    function speakStudy(){
+      const words=currentFoodWords();
+      const word=words[wordIndex];
+      if(!word) return;
+      const parts=[word.word+"."].concat((word.examples || []).map(function(example){return example[0];}));
+      speakText(parts.join(" "),audioSettings.rate,els.studyListen);
     }
 
     function scheduleReview(item){
@@ -2560,7 +2717,26 @@
     });
     els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
     $("checkBtn").addEventListener("click",checkAnswer);
-    els.audioPrompt.addEventListener("click",speakCurrent);
+    els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
+    els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(.74,els.slowAudioPrompt);});
+    els.studyListen.addEventListener("click",speakStudy);
+    els.voicePreview.addEventListener("click",function(){
+      speakText("Hola. Hoy practicamos español con calma y claridad.",audioSettings.rate,els.voicePreview);
+    });
+    els.voiceSelect.addEventListener("change",function(){
+      audioSettings.voiceURI=els.voiceSelect.value;
+      write(STORAGE.audio,audioSettings);
+      refreshVoices();
+    });
+    document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        audioSettings.rate=Number(btn.dataset.audioRate);
+        write(STORAGE.audio,audioSettings);
+        updateSpeedButtons();
+        speakText("Escucha esta frase con atención.",audioSettings.rate,btn);
+      });
+    });
+    els.audioSettings.addEventListener("toggle",function(){if(els.audioSettings.open) refreshVoices();});
     $("clearOrder").addEventListener("click",function(){orderState=[];renderOrderWidget();});
     els.formGrid.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();checkAnswer();}});
     $("nextBtn").addEventListener("click",function(){move(1);});
@@ -2600,6 +2776,11 @@
       return '<option value="'+t.id+'">'+t.title+'</option>';
     }).join("");
     els.customTopic.value="custom";
+    updateSpeedButtons();
+    refreshVoices();
+    if("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged=refreshVoices;
+    setTimeout(refreshVoices,300);
+    setTimeout(refreshVoices,1200);
     buildQueue(false);
   </script>
 </body>
