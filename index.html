@@ -95,6 +95,40 @@
       background:white; color:var(--ink); font-size:18px; transition:border .15s,box-shadow .15s;
     }
     .answer-input:focus { border-color:var(--violet-2); box-shadow:0 0 0 4px rgba(98,83,217,.09); outline:0; }
+    .audio-prompt {
+      display:inline-flex; align-items:center; gap:10px; margin:0 0 22px; padding:13px 18px; border:0;
+      border-radius:15px; color:white; background:linear-gradient(135deg,var(--violet),var(--violet-2)); font-weight:850;
+      box-shadow:0 10px 24px rgba(80,62,170,.2);
+    }
+    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden] { display:none; }
+    .audio-prompt span { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(255,255,255,.18); }
+    .choice-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; margin:0 0 22px; }
+    .choice-option {
+      min-height:58px; padding:13px 15px; border:2px solid var(--line); border-radius:16px;
+      background:#fff; color:var(--ink); text-align:left; font-size:16px; font-weight:800;
+    }
+    .choice-option:hover { border-color:#c9c2ff; background:#faf9ff; }
+    .choice-option.selected { border-color:var(--violet); background:#f0edff; color:#433a86; box-shadow:0 0 0 3px rgba(98,83,217,.08); }
+    .order-widget { margin:0 0 22px; }
+    .order-built {
+      min-height:72px; display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:13px;
+      border:2px dashed #cfc8e8; border-radius:17px; background:#faf9ff;
+    }
+    .order-built:empty::before { content:"Нажимай на слова по порядку"; color:var(--muted); font-size:14px; }
+    .order-bank { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .word-chip {
+      padding:9px 12px; border:1px solid #dcd7ec; border-radius:11px; background:#fff; color:var(--ink); font-weight:800;
+      box-shadow:0 4px 10px rgba(40,31,86,.05);
+    }
+    .word-chip:hover { border-color:var(--violet); color:var(--violet); }
+    .word-chip.used { opacity:.25; pointer-events:none; }
+    .order-built .word-chip { background:#eeeaff; border-color:#d5ceff; }
+    .order-clear { margin-top:10px; padding:7px 3px; border:0; background:transparent; color:var(--muted); font-size:13px; font-weight:800; }
+    .form-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:0 0 22px; }
+    .form-cell { padding:10px; border:1px solid var(--line); border-radius:14px; background:#faf9ff; }
+    .form-cell label { display:block; margin-bottom:6px; color:var(--muted); font-size:12px; font-weight:850; }
+    .form-cell input { width:100%; min-width:0; padding:9px 10px; border:1.5px solid #d8d2e8; border-radius:10px; background:#fff; color:var(--ink); }
+    .form-cell input:focus { outline:0; border-color:var(--violet); box-shadow:0 0 0 3px rgba(98,83,217,.08); }
     .feedback { min-height:48px; display:flex; align-items:center; margin:12px 0 4px; padding:10px 13px; border-radius:13px; font-weight:750; }
     .feedback:empty { padding:0; margin:0; min-height:20px; }
     .feedback.good { color:#187052; background:#e9f8f1; }
@@ -228,6 +262,8 @@
       .conjugation-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (max-width:520px) {
+      .choice-grid { grid-template-columns:1fr; }
+      .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .pronoun-details { grid-template-columns:1fr; }
       .pronoun-block.conjugation { grid-column:auto; }
       .conjugation-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -274,6 +310,8 @@
         <div class="mode-row">
           <button class="mode active" data-mode="all" type="button">Все</button>
           <button class="mode" data-mode="mistakes" type="button">Ошибки</button>
+          <button class="mode" data-mode="tests" type="button">Тесты</button>
+          <button class="mode" data-mode="audio" type="button">Аудио</button>
         </div>
       </aside>
 
@@ -328,7 +366,15 @@
               <span id="questionNumber">Задание 1</span>
             </div>
             <h2 class="question" id="questionText"></h2>
-            <label class="answer-label" for="answerInput">Твой ответ</label>
+            <button class="audio-prompt" id="audioPrompt" type="button" hidden><span aria-hidden="true">▶</span> Прослушать ещё раз</button>
+            <div class="choice-grid" id="choiceGrid" hidden></div>
+            <div class="order-widget" id="orderWidget" hidden>
+              <div class="order-built" id="orderBuilt" aria-label="Собранное предложение"></div>
+              <div class="order-bank" id="orderBank" aria-label="Доступные слова"></div>
+              <button class="order-clear" id="clearOrder" type="button">Очистить</button>
+            </div>
+            <div class="form-grid" id="formGrid" hidden></div>
+            <label class="answer-label" id="answerLabel" for="answerInput">Твой ответ</label>
             <input class="answer-input" id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Напиши ответ сама…">
             <div class="feedback" id="feedback" role="status"></div>
             <div class="actions">
@@ -401,9 +447,16 @@
       { id:"verbs", title:"Основные глаголы", icon:"⚡" },
       { id:"present", title:"Presente", icon:"↻" },
       { id:"pronouns", title:"Местоимения", icon:"◎" },
+      { id:"questions", title:"Вопросы", icon:"?" },
+      { id:"constructions", title:"Разговорные конструкции", icon:"▣" },
+      { id:"gustar", title:"Gustar и похожие", icon:"♡" },
+      { id:"agreement", title:"Артикли и согласование", icon:"≋" },
       { id:"prepositions", title:"Предлоги", icon:"⌁" },
       { id:"connectors", title:"Связки и конструкции", icon:"⇄" },
+      { id:"past", title:"Прошедшее время", icon:"↶" },
+      { id:"routine", title:"Распорядок дня", icon:"◷" },
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
+      { id:"practical", title:"Время, числа и цены", icon:"#" },
       { id:"city", title:"Город и район", icon:"⌂" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
       { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
@@ -570,6 +623,264 @@
       {id:"al_final",cat:"sequence",word:"al final",gender:"связка",tr:"в конце, в итоге",ru:["в конце","в итоге"],answers:["al final"],
         examples:[["Al final decidimos quedarnos en casa.","В итоге мы решили остаться дома."],["Al final de la película todos lloraron.","В конце фильма все плакали."]],
         cloze:"___ decidimos quedarnos en casa.",clozeAnswers:["al final"]}
+    ];
+
+    const QUESTION_CATEGORIES = [
+      {id:"all",title:"Все вопросы"},
+      {id:"basic",title:"Основные"},
+      {id:"place",title:"Место"},
+      {id:"time",title:"Время и способ"},
+      {id:"reason",title:"Причина и цель"}
+    ];
+    const QUESTION_WORDS = [
+      {id:"que",cat:"basic",word:"¿qué?",gender:"вопросительное слово",tr:"что? какой? (перед существительным)",ru:["что","какой","какая","какое"],answers:["qué","que"],
+        examples:[["¿Qué haces?","Что ты делаешь?"],["¿Qué libro lees?","Какую книгу ты читаешь?"]],cloze:"¿___ haces?",clozeAnswers:["qué","que"]},
+      {id:"quien",cat:"basic",word:"¿quién? / ¿quiénes?",gender:"о людях",tr:"кто? кто во множественном числе?",ru:["кто"],answers:["quién","quien","quiénes","quienes"],
+        examples:[["¿Quién trabaja aquí?","Кто здесь работает?"],["¿Quiénes son ellos?","Кто они?"]],cloze:"¿___ trabaja aquí?",clozeAnswers:["quién","quien"]},
+      {id:"cual",cat:"basic",word:"¿cuál? / ¿cuáles?",gender:"выбор из вариантов",tr:"который? какой из вариантов?",ru:["который","какой из вариантов","какой"],answers:["cuál","cual","cuáles","cuales"],
+        examples:[["¿Cuál prefieres?","Какой ты предпочитаешь?"],["¿Cuáles son tus zapatos?","Какие туфли твои?"]],cloze:"¿___ prefieres?",clozeAnswers:["cuál","cual"]},
+      {id:"cuanto",cat:"basic",word:"¿cuánto? / ¿cuánta? / ¿cuántos? / ¿cuántas?",gender:"согласуется с существительным",tr:"сколько?",ru:["сколько"],answers:["cuánto","cuanto","cuánta","cuanta","cuántos","cuantos","cuántas","cuantas"],
+        examples:[["¿Cuánto cuesta?","Сколько это стоит?"],["¿Cuántas personas vienen?","Сколько человек придёт?"]],cloze:"¿___ cuesta?",clozeAnswers:["cuánto","cuanto"]},
+      {id:"donde",cat:"place",word:"¿dónde?",gender:"местонахождение",tr:"где?",ru:["где"],answers:["dónde","donde"],
+        examples:[["¿Dónde vives?","Где ты живёшь?"],["¿Dónde está la farmacia?","Где находится аптека?"]],cloze:"¿___ vives?",clozeAnswers:["dónde","donde"]},
+      {id:"adonde",cat:"place",word:"¿adónde?",gender:"направление движения",tr:"куда?",ru:["куда"],answers:["adónde","adonde","a dónde","a donde"],
+        examples:[["¿Adónde vas?","Куда ты идёшь?"],["¿Adónde viajáis en verano?","Куда вы едете летом?"]],cloze:"¿___ vas?",clozeAnswers:["adónde","adonde","a dónde","a donde"]},
+      {id:"de_donde",cat:"place",word:"¿de dónde?",gender:"происхождение или исходная точка",tr:"откуда?",ru:["откуда"],answers:["de dónde","de donde"],
+        examples:[["¿De dónde eres?","Откуда ты?"],["¿De dónde viene este autobús?","Откуда едет этот автобус?"]],cloze:"¿___ eres?",clozeAnswers:["de dónde","de donde"]},
+      {id:"cuando",cat:"time",word:"¿cuándo?",gender:"время",tr:"когда?",ru:["когда"],answers:["cuándo","cuando"],
+        examples:[["¿Cuándo trabajas?","Когда ты работаешь?"],["¿Cuándo es tu cumpleaños?","Когда твой день рождения?"]],cloze:"¿___ es tu cumpleaños?",clozeAnswers:["cuándo","cuando"]},
+      {id:"como",cat:"time",word:"¿cómo?",gender:"способ или состояние",tr:"как?",ru:["как"],answers:["cómo","como"],
+        examples:[["¿Cómo estás?","Как ты?"],["¿Cómo vas al trabajo?","Как ты добираешься на работу?"]],cloze:"¿___ estás?",clozeAnswers:["cómo","como"]},
+      {id:"por_que",cat:"reason",word:"¿por qué?",gender:"причина",tr:"почему?",ru:["почему"],answers:["por qué","por que"],
+        examples:[["¿Por qué estudias español?","Почему ты учишь испанский?"],["¿Por qué llegas tarde?","Почему ты опаздываешь?"]],cloze:"¿___ estudias español?",clozeAnswers:["por qué","por que"]},
+      {id:"para_que",cat:"reason",word:"¿para qué?",gender:"цель",tr:"зачем? для чего?",ru:["зачем","для чего"],answers:["para qué","para que"],
+        examples:[["¿Para qué necesitas esto?","Зачем тебе это нужно?"],["¿Para qué aprendes español?","Для чего ты учишь испанский?"]],cloze:"¿___ necesitas esto?",clozeAnswers:["para qué","para que"]},
+      {id:"con_quien",cat:"basic",word:"¿con quién?",gender:"вопрос с предлогом",tr:"с кем?",ru:["с кем"],answers:["con quién","con quien"],
+        examples:[["¿Con quién quedas hoy?","С кем ты сегодня встречаешься?"],["¿Con quién vives?","С кем ты живёшь?"]],cloze:"¿___ quedas hoy?",clozeAnswers:["con quién","con quien"]}
+    ];
+
+    const CONSTRUCTION_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"presence",title:"Наличие и место"},
+      {id:"plans",title:"Планы"},
+      {id:"obligation",title:"Необходимость"},
+      {id:"ability",title:"Возможность"},
+      {id:"action",title:"Этап действия"}
+    ];
+    const CONSTRUCTION_WORDS = [
+      {id:"hay",cat:"presence",word:"hay",gender:"безличная форма",tr:"есть, имеется, находятся",ru:["есть","имеется","находятся"],answers:["hay"],
+        examples:[["En mi barrio hay un parque.","В моём районе есть парк."],["Hay dos libros en la mesa.","На столе лежат две книги."]],cloze:"En mi barrio ___ un parque.",clozeAnswers:["hay"]},
+      {id:"estar_location",cat:"presence",word:"estar + место",gender:"местонахождение известного объекта",tr:"находиться где-либо",ru:["находиться","находиться где-либо"],answers:["estar","estar en"],
+        examples:[["La farmacia está cerca.","Аптека находится рядом."],["Los libros están en la mesa.","Книги находятся на столе."]],cloze:"La farmacia ___ cerca.",clozeAnswers:["está","esta"]},
+      {id:"tener",cat:"presence",word:"tener",gender:"личная конструкция",tr:"иметь; у кого-то есть",ru:["иметь","у кого-то есть","у кого то есть"],answers:["tener"],
+        examples:[["Tengo una hermana.","У меня есть сестра."],["Tenemos poco tiempo.","У нас мало времени."]],cloze:"Yo ___ una hermana.",clozeAnswers:["tengo"]},
+      {id:"ir_a",cat:"plans",word:"ir a + infinitivo",gender:"ближайшее будущее",tr:"собираться что-то сделать",ru:["собираться что-то сделать","собираться сделать","собираюсь сделать"],answers:["ir a","ir a + infinitivo","ir a infinitivo"],
+        examples:[["Voy a estudiar esta noche.","Сегодня вечером я собираюсь заниматься."],["Vamos a viajar en verano.","Летом мы собираемся путешествовать."]],cloze:"Esta noche voy ___ estudiar.",clozeAnswers:["a"]},
+      {id:"querer_inf",cat:"plans",word:"querer + infinitivo",gender:"желание",tr:"хотеть что-то сделать",ru:["хотеть что-то сделать","хотеть сделать"],answers:["querer","querer + infinitivo","querer infinitivo"],
+        examples:[["Quiero aprender español.","Я хочу выучить испанский."],["Queremos descansar.","Мы хотим отдохнуть."]],cloze:"Yo ___ aprender español.",clozeAnswers:["quiero"]},
+      {id:"pensar_inf",cat:"plans",word:"pensar + infinitivo",gender:"намерение",tr:"планировать, намереваться",ru:["планировать","намереваться"],answers:["pensar","pensar + infinitivo","pensar infinitivo"],
+        examples:[["Pienso viajar en otoño.","Я планирую путешествовать осенью."],["Pensamos cambiar de trabajo.","Мы намерены сменить работу."]],cloze:"Yo ___ viajar en otoño.",clozeAnswers:["pienso"]},
+      {id:"tener_que",cat:"obligation",word:"tener que + infinitivo",gender:"личная необходимость",tr:"нужно, должен",ru:["нужно","должен","должна"],answers:["tener que","tener que + infinitivo","tener que infinitivo"],
+        examples:[["Tengo que trabajar mañana.","Мне нужно работать завтра."],["Tenemos que salir temprano.","Нам нужно выйти рано."]],cloze:"Tengo ___ trabajar mañana.",clozeAnswers:["que"]},
+      {id:"hay_que",cat:"obligation",word:"hay que + infinitivo",gender:"общая необходимость",tr:"нужно, надо вообще",ru:["нужно","надо","нужно вообще"],answers:["hay que","hay que + infinitivo","hay que infinitivo"],
+        examples:[["Hay que practicar cada día.","Нужно заниматься каждый день."],["Hay que comprar pan.","Надо купить хлеб."]],cloze:"___ practicar cada día.",clozeAnswers:["hay que"]},
+      {id:"deber",cat:"obligation",word:"deber + infinitivo",gender:"совет или обязанность",tr:"следует, должен",ru:["следует","должен","должна"],answers:["deber","deber + infinitivo","deber infinitivo"],
+        examples:[["Debes descansar más.","Тебе следует больше отдыхать."],["Debemos llegar a tiempo.","Мы должны прийти вовремя."]],cloze:"Tú ___ descansar más.",clozeAnswers:["debes"]},
+      {id:"poder",cat:"ability",word:"poder + infinitivo",gender:"возможность или разрешение",tr:"мочь",ru:["мочь","можно"],answers:["poder","poder + infinitivo","poder infinitivo"],
+        examples:[["Puedo ayudarte.","Я могу тебе помочь."],["¿Podemos entrar?","Мы можем войти?"]],cloze:"Yo ___ ayudarte.",clozeAnswers:["puedo"]},
+      {id:"necesitar",cat:"ability",word:"necesitar + infinitivo",gender:"необходимость",tr:"нуждаться; необходимо сделать",ru:["нуждаться","необходимо сделать"],answers:["necesitar","necesitar + infinitivo","necesitar infinitivo"],
+        examples:[["Necesito comprar comida.","Мне нужно купить продукты."],["Necesitamos hablar.","Нам необходимо поговорить."]],cloze:"Yo ___ comprar comida.",clozeAnswers:["necesito"]},
+      {id:"acabar_de",cat:"action",word:"acabar de + infinitivo",gender:"только что завершённое действие",tr:"только что сделать",ru:["только что сделать","только что"],answers:["acabar de","acabar de + infinitivo","acabar de infinitivo"],
+        examples:[["Acabo de llegar.","Я только что пришла."],["Acabamos de comer.","Мы только что поели."]],cloze:"Yo ___ de llegar.",clozeAnswers:["acabo"]},
+      {id:"volver_a",cat:"action",word:"volver a + infinitivo",gender:"повтор действия",tr:"сделать снова",ru:["сделать снова","снова"],answers:["volver a","volver a + infinitivo","volver a infinitivo"],
+        examples:[["Vuelvo a leer el mensaje.","Я снова читаю сообщение."],["Volvemos a intentarlo.","Мы пробуем снова."]],cloze:"Yo ___ a leer el mensaje.",clozeAnswers:["vuelvo"]}
+    ];
+
+    const GUSTAR_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"persons",title:"Кому нравится"},
+      {id:"number",title:"Один или несколько"},
+      {id:"similar",title:"Похожие глаголы"}
+    ];
+    const GUSTAR_WORDS = [
+      {id:"me_gusta",cat:"persons",word:"me gusta",gender:"мне · один предмет или действие",tr:"мне нравится",ru:["мне нравится"],answers:["me gusta"],
+        examples:[["Me gusta el café.","Мне нравится кофе."],["Me gusta leer.","Мне нравится читать."]],cloze:"___ el café.",clozeAnswers:["me gusta"]},
+      {id:"te_gusta",cat:"persons",word:"te gusta",gender:"тебе · один предмет или действие",tr:"тебе нравится",ru:["тебе нравится"],answers:["te gusta"],
+        examples:[["¿Te gusta Madrid?","Тебе нравится Мадрид?"],["Te gusta cocinar.","Тебе нравится готовить."]],cloze:"¿___ Madrid?",clozeAnswers:["te gusta"]},
+      {id:"le_gusta",cat:"persons",word:"le gusta",gender:"ему, ей или Вам",tr:"ему, ей или Вам нравится",ru:["ему нравится","ей нравится","вам нравится"],answers:["le gusta"],
+        examples:[["A ella le gusta bailar.","Ей нравится танцевать."],["¿A usted le gusta este barrio?","Вам нравится этот район?"]],cloze:"A ella ___ bailar.",clozeAnswers:["le gusta"]},
+      {id:"nos_gusta",cat:"persons",word:"nos gusta",gender:"нам",tr:"нам нравится",ru:["нам нравится"],answers:["nos gusta"],
+        examples:[["Nos gusta viajar.","Нам нравится путешествовать."],["Nos gusta esta película.","Нам нравится этот фильм."]],cloze:"___ viajar.",clozeAnswers:["nos gusta"]},
+      {id:"os_gusta",cat:"persons",word:"os gusta",gender:"вам · неформально, Испания",tr:"вам нравится",ru:["вам нравится"],answers:["os gusta"],
+        examples:[["¿Os gusta la música?","Вам нравится музыка?"],["Os gusta vivir aquí.","Вам нравится жить здесь."]],cloze:"¿___ la música?",clozeAnswers:["os gusta"]},
+      {id:"les_gusta",cat:"persons",word:"les gusta",gender:"им или вам",tr:"им или вам нравится",ru:["им нравится","вам нравится"],answers:["les gusta"],
+        examples:[["A ellos les gusta el deporte.","Им нравится спорт."],["¿A ustedes les gusta la ciudad?","Вам нравится город?"]],cloze:"A ellos ___ el deporte.",clozeAnswers:["les gusta"]},
+      {id:"me_gustan",cat:"number",word:"me gustan",gender:"несколько предметов",tr:"мне нравятся",ru:["мне нравятся"],answers:["me gustan"],
+        examples:[["Me gustan los libros.","Мне нравятся книги."],["Me gustan estas zapatillas.","Мне нравятся эти кроссовки."]],cloze:"___ los libros.",clozeAnswers:["me gustan"]},
+      {id:"encantar",cat:"similar",word:"encantar",gender:"строится как gustar",tr:"очень нравиться, восхищать",ru:["очень нравиться","восхищать"],answers:["encantar"],
+        examples:[["Me encanta esta canción.","Мне очень нравится эта песня."],["Nos encantan los viajes.","Мы обожаем путешествия."]],cloze:"Me ___ esta canción.",clozeAnswers:["encanta"]},
+      {id:"interesar",cat:"similar",word:"interesar",gender:"строится как gustar",tr:"интересовать",ru:["интересовать"],answers:["interesar"],
+        examples:[["Me interesa el arte.","Меня интересует искусство."],["Le interesan los idiomas.","Его интересуют языки."]],cloze:"Me ___ el arte.",clozeAnswers:["interesa"]},
+      {id:"molestar",cat:"similar",word:"molestar",gender:"строится как gustar",tr:"мешать, раздражать",ru:["мешать","раздражать"],answers:["molestar"],
+        examples:[["Me molesta el ruido.","Мне мешает шум."],["¿Te molestan las luces?","Тебя раздражает свет?"]],cloze:"Me ___ el ruido.",clozeAnswers:["molesta"]},
+      {id:"doler",cat:"similar",word:"doler",gender:"duele · duelen",tr:"болеть, причинять боль",ru:["болеть","причинять боль"],answers:["doler"],
+        examples:[["Me duele la cabeza.","У меня болит голова."],["Me duelen los ojos.","У меня болят глаза."]],cloze:"Me ___ la cabeza.",clozeAnswers:["duele"]},
+      {id:"a_mi",cat:"number",word:"a mí / a ti / a él…",gender:"для акцента или уточнения",tr:"мне / тебе / ему…",ru:["мне","тебе","ему"],answers:["a mí","a mi","a ti","a él","a el"],
+        examples:[["A mí me gusta el té.","Мне нравится чай."],["A ella le encantan los libros.","Ей очень нравятся книги."]],cloze:"___ me gusta el té.",clozeAnswers:["a mí","a mi"]}
+    ];
+
+    const ROUTINE_CATEGORIES = [
+      {id:"all",title:"Весь день"},
+      {id:"morning",title:"Утро"},
+      {id:"day",title:"День"},
+      {id:"evening",title:"Вечер"}
+    ];
+    const ROUTINE_WORDS = [
+      {id:"despertarse",cat:"morning",word:"despertarse",gender:"возвратный глагол",tr:"просыпаться",ru:["просыпаться"],answers:["despertarse"],
+        examples:[["Me despierto a las siete.","Я просыпаюсь в семь."],["Los domingos nos despertamos tarde.","По воскресеньям мы просыпаемся поздно."]],cloze:"Me ___ a las siete.",clozeAnswers:["despierto"]},
+      {id:"levantarse",cat:"morning",word:"levantarse",gender:"возвратный глагол",tr:"вставать",ru:["вставать"],answers:["levantarse"],
+        examples:[["Me levanto después del despertador.","Я встаю после будильника."],["Ella se levanta temprano.","Она встаёт рано."]],cloze:"Yo me ___ temprano.",clozeAnswers:["levanto"]},
+      {id:"ducharse",cat:"morning",word:"ducharse",gender:"возвратный глагол",tr:"принимать душ",ru:["принимать душ","мыться в душе"],answers:["ducharse"],
+        examples:[["Me ducho por la mañana.","Я принимаю душ утром."],["¿Te duchas antes del trabajo?","Ты принимаешь душ перед работой?"]],cloze:"Yo me ___ por la mañana.",clozeAnswers:["ducho"]},
+      {id:"lavarse_cara",cat:"morning",word:"lavarse la cara",gender:"возвратная конструкция",tr:"умываться",ru:["умываться","мыть лицо"],answers:["lavarse la cara"],
+        examples:[["Me lavo la cara con agua fría.","Я умываюсь холодной водой."],["Ella se lava la cara antes de dormir.","Она умывается перед сном."]],cloze:"Me ___ la cara.",clozeAnswers:["lavo"]},
+      {id:"cepillarse",cat:"morning",word:"cepillarse los dientes",gender:"возвратная конструкция",tr:"чистить зубы",ru:["чистить зубы"],answers:["cepillarse los dientes"],
+        examples:[["Me cepillo los dientes después del desayuno.","Я чищу зубы после завтрака."],["Nos cepillamos los dientes dos veces al día.","Мы чистим зубы дважды в день."]],cloze:"Me ___ los dientes.",clozeAnswers:["cepillo"]},
+      {id:"vestirse",cat:"morning",word:"vestirse",gender:"возвратный глагол · e→i",tr:"одеваться",ru:["одеваться"],answers:["vestirse"],
+        examples:[["Me visto rápidamente.","Я быстро одеваюсь."],["Los niños se visten solos.","Дети одеваются сами."]],cloze:"Yo me ___ rápidamente.",clozeAnswers:["visto"]},
+      {id:"desayunar",cat:"morning",word:"desayunar",gender:"обычный глагол",tr:"завтракать",ru:["завтракать"],answers:["desayunar"],
+        examples:[["Desayuno café y tostadas.","Я завтракаю кофе и тостами."],["Desayunamos a las ocho.","Мы завтракаем в восемь."]],cloze:"Yo ___ a las ocho.",clozeAnswers:["desayuno"]},
+      {id:"ir_trabajo",cat:"day",word:"ir al trabajo",gender:"устойчивое сочетание",tr:"идти, ехать на работу",ru:["идти на работу","ехать на работу","идти ехать на работу"],answers:["ir al trabajo"],
+        examples:[["Voy al trabajo en metro.","Я еду на работу на метро."],["Los lunes vamos al trabajo temprano.","По понедельникам мы едем на работу рано."]],cloze:"Voy ___ trabajo en metro.",clozeAnswers:["al"]},
+      {id:"almorzar",cat:"day",word:"almorzar",gender:"глагол · o→ue",tr:"обедать",ru:["обедать"],answers:["almorzar"],
+        examples:[["Almuerzo a la una.","Я обедаю в час."],["Almorzamos juntos.","Мы обедаем вместе."]],cloze:"Yo ___ a la una.",clozeAnswers:["almuerzo"]},
+      {id:"volver_casa",cat:"evening",word:"volver a casa",gender:"сочетание · o→ue",tr:"возвращаться домой",ru:["возвращаться домой"],answers:["volver a casa"],
+        examples:[["Vuelvo a casa a las siete.","Я возвращаюсь домой в семь."],["Volvemos a casa en autobús.","Мы возвращаемся домой на автобусе."]],cloze:"Yo ___ a casa a las siete.",clozeAnswers:["vuelvo"]},
+      {id:"cenar",cat:"evening",word:"cenar",gender:"обычный глагол",tr:"ужинать",ru:["ужинать"],answers:["cenar"],
+        examples:[["Ceno con mi familia.","Я ужинаю с семьёй."],["Cenamos a las nueve.","Мы ужинаем в девять."]],cloze:"Yo ___ con mi familia.",clozeAnswers:["ceno"]},
+      {id:"acostarse",cat:"evening",word:"acostarse",gender:"возвратный глагол · o→ue",tr:"ложиться спать",ru:["ложиться спать","ложиться"],answers:["acostarse"],
+        examples:[["Me acuesto antes de medianoche.","Я ложусь до полуночи."],["¿A qué hora te acuestas?","Во сколько ты ложишься?"]],cloze:"Yo me ___ antes de medianoche.",clozeAnswers:["acuesto"]}
+    ];
+
+    const PRACTICAL_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"time",title:"Время"},
+      {id:"dates",title:"Даты"},
+      {id:"prices",title:"Цены"},
+      {id:"quantity",title:"Количество"}
+    ];
+    const PRACTICAL_WORDS = [
+      {id:"que_hora",cat:"time",word:"¿Qué hora es?",gender:"вопрос",tr:"Который час?",ru:["который час","сколько времени"],answers:["qué hora es","que hora es"],
+        examples:[["¿Qué hora es? — Son las tres.","Который час? — Три часа."],["Perdona, ¿qué hora es?","Извини, который час?"]],cloze:"¿___ hora es?",clozeAnswers:["qué","que"]},
+      {id:"es_la_una",cat:"time",word:"Es la una.",gender:"один час · единственное число",tr:"Сейчас час.",ru:["сейчас час","один час","час"],answers:["es la una"],
+        examples:[["Es la una de la tarde.","Сейчас час дня."],["La clase empieza a la una.","Занятие начинается в час."]],cloze:"___ la una.",clozeAnswers:["es"]},
+      {id:"son_las",cat:"time",word:"Son las…",gender:"два часа и больше",tr:"Сейчас … часа.",ru:["сейчас часа","сейчас часов"],answers:["son las"],
+        examples:[["Son las cinco y media.","Сейчас половина шестого."],["Son las diez menos cuarto.","Сейчас без четверти десять."]],cloze:"___ las cinco.",clozeAnswers:["son"]},
+      {id:"a_las",cat:"time",word:"a la una / a las dos",gender:"в какое время",tr:"в час / в два часа",ru:["в час","в два часа"],answers:["a la una","a las dos","a la","a las"],
+        examples:[["Trabajo a las nueve.","Я начинаю работать в девять."],["Comemos a la una.","Мы едим в час."]],cloze:"Trabajo ___ nueve.",clozeAnswers:["a las"]},
+      {id:"que_fecha",cat:"dates",word:"¿Qué fecha es hoy?",gender:"вопрос о дате",tr:"Какое сегодня число?",ru:["какое сегодня число","какая сегодня дата"],answers:["qué fecha es hoy","que fecha es hoy"],
+        examples:[["¿Qué fecha es hoy? — Es 15 de septiembre.","Какое сегодня число? — 15 сентября."],["No recuerdo qué fecha es hoy.","Я не помню, какое сегодня число."]],cloze:"¿Qué ___ es hoy?",clozeAnswers:["fecha"]},
+      {id:"date_pattern",cat:"dates",word:"el 15 de septiembre",gender:"день + de + месяц",tr:"15 сентября",ru:["15 сентября","пятнадцатое сентября"],answers:["el 15 de septiembre","15 de septiembre"],
+        examples:[["Mi cita es el 15 de septiembre.","Моя встреча — 15 сентября."],["Viajo el 3 de mayo.","Я уезжаю 3 мая."]],cloze:"Mi cita es el 15 ___ septiembre.",clozeAnswers:["de"]},
+      {id:"year",cat:"dates",word:"en 2026",gender:"год с предлогом en",tr:"в 2026 году",ru:["в 2026 году","в 2026"],answers:["en 2026"],
+        examples:[["Vivimos en 2026.","Мы живём в 2026 году."],["Empecé el curso en 2026.","Я начала курс в 2026 году."]],cloze:"Empecé el curso ___ 2026.",clozeAnswers:["en"]},
+      {id:"cuanto_cuesta",cat:"prices",word:"¿Cuánto cuesta?",gender:"один предмет",tr:"Сколько это стоит?",ru:["сколько это стоит","сколько стоит"],answers:["cuánto cuesta","cuanto cuesta"],
+        examples:[["¿Cuánto cuesta esta camiseta?","Сколько стоит эта футболка?"],["¿Cuánto cuesta el billete?","Сколько стоит билет?"]],cloze:"¿Cuánto ___ esta camiseta?",clozeAnswers:["cuesta"]},
+      {id:"cuanto_cuestan",cat:"prices",word:"¿Cuánto cuestan?",gender:"несколько предметов",tr:"Сколько они стоят?",ru:["сколько они стоят","сколько стоят"],answers:["cuánto cuestan","cuanto cuestan"],
+        examples:[["¿Cuánto cuestan estos zapatos?","Сколько стоят эти туфли?"],["Las entradas cuestan veinte euros.","Билеты стоят двадцать евро."]],cloze:"¿Cuánto ___ estos zapatos?",clozeAnswers:["cuestan"]},
+      {id:"euros",cat:"prices",word:"euros / céntimos",gender:"деньги",tr:"евро / центы",ru:["евро центы","евро","центы"],answers:["euros céntimos","euros","céntimos","centimos"],
+        examples:[["Cuesta diez euros.","Это стоит десять евро."],["Son dos euros con cincuenta céntimos.","Это два евро пятьдесят центов."]],cloze:"Cuesta diez ___.",clozeAnswers:["euros"]},
+      {id:"muy",cat:"quantity",word:"muy + прилагательное / наречие",gender:"не изменяется",tr:"очень",ru:["очень"],answers:["muy"],
+        examples:[["El libro es muy interesante.","Книга очень интересная."],["Habla muy rápido.","Она говорит очень быстро."]],cloze:"El libro es ___ interesante.",clozeAnswers:["muy"]},
+      {id:"mucho",cat:"quantity",word:"mucho / mucha",gender:"с существительным или после глагола",tr:"много",ru:["много"],answers:["mucho","mucha"],
+        examples:[["Tengo mucho trabajo.","У меня много работы."],["Trabajo mucho.","Я много работаю."]],cloze:"Tengo ___ trabajo.",clozeAnswers:["mucho"]},
+      {id:"muchos",cat:"quantity",word:"muchos / muchas",gender:"множественное число",tr:"много, многие",ru:["много","многие"],answers:["muchos","muchas"],
+        examples:[["Hay muchos parques.","Здесь много парков."],["Tengo muchas cosas.","У меня много вещей."]],cloze:"Hay ___ parques.",clozeAnswers:["muchos"]},
+      {id:"poco",cat:"quantity",word:"poco / poca / pocos / pocas",gender:"согласуется с существительным",tr:"мало, немного",ru:["мало","немного"],answers:["poco","poca","pocos","pocas"],
+        examples:[["Tengo poco tiempo.","У меня мало времени."],["Hay pocas personas.","Здесь мало людей."]],cloze:"Tengo ___ tiempo.",clozeAnswers:["poco"]},
+      {id:"bastante",cat:"quantity",word:"bastante / bastantes",gender:"достаточно, довольно",tr:"достаточно; довольно",ru:["достаточно","довольно"],answers:["bastante","bastantes"],
+        examples:[["Tenemos bastante comida.","У нас достаточно еды."],["Es bastante fácil.","Это довольно легко."]],cloze:"Tenemos ___ comida.",clozeAnswers:["bastante"]},
+      {id:"demasiado",cat:"quantity",word:"demasiado / demasiada / demasiados / demasiadas",gender:"избыточное количество",tr:"слишком много",ru:["слишком много"],answers:["demasiado","demasiada","demasiados","demasiadas"],
+        examples:[["Hay demasiado ruido.","Здесь слишком много шума."],["Tengo demasiadas tareas.","У меня слишком много заданий."]],cloze:"Hay ___ ruido.",clozeAnswers:["demasiado"]}
+    ];
+
+    const AGREEMENT_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"articles",title:"Артикли"},
+      {id:"contractions",title:"Слияния"},
+      {id:"adjectives",title:"Прилагательные"},
+      {id:"plural",title:"Множественное число"}
+    ];
+    const AGREEMENT_WORDS = [
+      {id:"el_la",cat:"articles",word:"el / la",gender:"определённый артикль · ед. число",tr:"этот, эта; конкретный предмет",ru:["определённый артикль","этот эта"],answers:["el la","el / la"],
+        examples:[["El barrio es tranquilo.","Этот район тихий."],["La calle es larga.","Эта улица длинная."]],cloze:"___ barrio es tranquilo.",clozeAnswers:["el"]},
+      {id:"los_las",cat:"articles",word:"los / las",gender:"определённый артикль · мн. число",tr:"эти; конкретные предметы",ru:["определённый артикль множественного числа","эти"],answers:["los las","los / las"],
+        examples:[["Los libros están aquí.","Книги находятся здесь."],["Las tiendas están abiertas.","Магазины открыты."]],cloze:"___ libros están aquí.",clozeAnswers:["los"]},
+      {id:"un_una",cat:"articles",word:"un / una",gender:"неопределённый артикль · ед. число",tr:"какой-то, один предмет",ru:["неопределённый артикль","какой-то предмет","один предмет"],answers:["un una","un / una"],
+        examples:[["Hay un parque cerca.","Рядом есть парк."],["Necesito una mochila.","Мне нужна сумка."]],cloze:"Hay ___ parque cerca.",clozeAnswers:["un"]},
+      {id:"unos_unas",cat:"articles",word:"unos / unas",gender:"неопределённый артикль · мн. число",tr:"несколько, какие-то",ru:["несколько","какие-то"],answers:["unos unas","unos / unas"],
+        examples:[["Tengo unos libros nuevos.","У меня есть несколько новых книг."],["Compré unas zapatillas.","Я купила кроссовки."]],cloze:"Tengo ___ libros nuevos.",clozeAnswers:["unos"]},
+      {id:"al",cat:"contractions",word:"a + el = al",gender:"обязательное слияние",tr:"в, к + существительное мужского рода",ru:["в","к"],answers:["al","a + el = al"],
+        examples:[["Voy al trabajo.","Я еду на работу."],["Vamos al cine.","Мы идём в кино."]],cloze:"Voy ___ trabajo.",clozeAnswers:["al"]},
+      {id:"del",cat:"contractions",word:"de + el = del",gender:"обязательное слияние",tr:"из, от, о + существительное мужского рода",ru:["из","от","о"],answers:["del","de + el = del"],
+        examples:[["Vengo del trabajo.","Я иду с работы."],["Hablamos del libro.","Мы говорим о книге."]],cloze:"Vengo ___ trabajo.",clozeAnswers:["del"]},
+      {id:"masc_sg",cat:"adjectives",word:"un barrio tranquilo",gender:"мужской род · ед. число",tr:"тихий район",ru:["тихий район"],answers:["un barrio tranquilo","barrio tranquilo"],
+        examples:[["Vivo en un barrio tranquilo.","Я живу в тихом районе."],["Es un lugar bonito.","Это красивое место."]],cloze:"Es un barrio ___.",clozeAnswers:["tranquilo"]},
+      {id:"fem_sg",cat:"adjectives",word:"una calle tranquila",gender:"женский род · ед. число",tr:"тихая улица",ru:["тихая улица"],answers:["una calle tranquila","calle tranquila"],
+        examples:[["Es una calle tranquila.","Это тихая улица."],["Tengo una mochila nueva.","У меня новая сумка."]],cloze:"Es una calle ___.",clozeAnswers:["tranquila"]},
+      {id:"masc_pl",cat:"adjectives",word:"barrios tranquilos",gender:"мужской род · мн. число",tr:"тихие районы",ru:["тихие районы"],answers:["barrios tranquilos","los barrios tranquilos"],
+        examples:[["Son barrios tranquilos.","Это тихие районы."],["Compro zapatos negros.","Я покупаю чёрные туфли."]],cloze:"Son barrios ___.",clozeAnswers:["tranquilos"]},
+      {id:"fem_pl",cat:"adjectives",word:"calles tranquilas",gender:"женский род · мн. число",tr:"тихие улицы",ru:["тихие улицы"],answers:["calles tranquilas","las calles tranquilas"],
+        examples:[["Son calles tranquilas.","Это тихие улицы."],["Lleva botas negras.","Она носит чёрные ботинки."]],cloze:"Son calles ___.",clozeAnswers:["tranquilas"]},
+      {id:"plural_s",cat:"plural",word:"vocal + s",gender:"образование множественного числа",tr:"после гласной добавляем -s",ru:["после гласной добавляем s"],answers:["s","-s","vocal + s"],
+        examples:[["casa → casas","дом → дома"],["libro → libros","книга → книги"]],cloze:"libro → libro___.",clozeAnswers:["s"]},
+      {id:"plural_es",cat:"plural",word:"consonante + es",gender:"образование множественного числа",tr:"после согласной добавляем -es",ru:["после согласной добавляем es"],answers:["es","-es","consonante + es"],
+        examples:[["ciudad → ciudades","город → города"],["papel → papeles","бумага → бумаги"]],cloze:"papel → papel___.",clozeAnswers:["es"]}
+    ];
+
+    const PAST_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"perfect",title:"Pretérito Perfecto"},
+      {id:"indefinite",title:"Pretérito Indefinido"},
+      {id:"markers",title:"Маркеры времени"}
+    ];
+    const PAST_WORDS = [
+      {id:"he_hablado",cat:"perfect",word:"he hablado",gender:"yo · haber + participio",tr:"я поговорил(а), говорил(а)",ru:["я поговорила","я поговорил","я говорила","я говорил"],answers:["he hablado"],
+        examples:[["Hoy he hablado con Ana.","Сегодня я поговорила с Аной."],["Esta mañana he hablado con mi jefa.","Сегодня утром я поговорила с начальницей."]],cloze:"Hoy ___ hablado con Ana.",clozeAnswers:["he"]},
+      {id:"has_comido",cat:"perfect",word:"has comido",gender:"tú · haber + participio",tr:"ты поел(а), ел(а)",ru:["ты поела","ты поел","ты ела","ты ел"],answers:["has comido"],
+        examples:[["¿Has comido ya?","Ты уже поела?"],["Hoy has comido muy tarde.","Сегодня ты поела очень поздно."]],cloze:"¿___ comido ya?",clozeAnswers:["has"]},
+      {id:"ha_vivido",cat:"perfect",word:"ha vivido",gender:"él / ella / usted",tr:"он или она пожил(а), жил(а)",ru:["он жил","она жила","он пожил","она пожила"],answers:["ha vivido"],
+        examples:[["Ella ha vivido en Madrid.","Она жила в Мадриде."],["Ha vivido aquí muchos años.","Он прожил здесь много лет."]],cloze:"Ella ___ vivido en Madrid.",clozeAnswers:["ha"]},
+      {id:"hemos_trabajado",cat:"perfect",word:"hemos trabajado",gender:"nosotros / nosotras",tr:"мы поработали, работали",ru:["мы поработали","мы работали"],answers:["hemos trabajado"],
+        examples:[["Esta semana hemos trabajado mucho.","На этой неделе мы много работали."],["Hoy hemos trabajado desde casa.","Сегодня мы работали из дома."]],cloze:"Esta semana ___ trabajado mucho.",clozeAnswers:["hemos"]},
+      {id:"habeis_leido",cat:"perfect",word:"habéis leído",gender:"vosotros / vosotras",tr:"вы прочитали, читали",ru:["вы прочитали","вы читали"],answers:["habéis leído","habeis leido"],
+        examples:[["¿Habéis leído este libro?","Вы читали эту книгу?"],["Hoy habéis leído mucho.","Сегодня вы много читали."]],cloze:"¿___ leído este libro?",clozeAnswers:["habéis","habeis"]},
+      {id:"han_hecho",cat:"perfect",word:"han hecho",gender:"ellos / ellas / ustedes",tr:"они сделали",ru:["они сделали","вы сделали"],answers:["han hecho"],
+        examples:[["Ya han hecho la tarea.","Они уже сделали задание."],["¿Han hecho la reserva?","Они забронировали?"]],cloze:"Ya ___ hecho la tarea.",clozeAnswers:["han"]},
+      {id:"hable",cat:"indefinite",word:"hablé",gender:"yo · -ar → -é",tr:"я поговорил(а)",ru:["я поговорила","я поговорил"],answers:["hablé","hable"],
+        examples:[["Ayer hablé con Ana.","Вчера я поговорила с Аной."],["Hablé español en el viaje.","В поездке я говорила по-испански."]],cloze:"Ayer ___ con Ana.",clozeAnswers:["hablé","hable"]},
+      {id:"comiste",cat:"indefinite",word:"comiste",gender:"tú · -er → -iste",tr:"ты поел(а)",ru:["ты поела","ты поел"],answers:["comiste"],
+        examples:[["¿Qué comiste ayer?","Что ты ела вчера?"],["Comiste en un restaurante.","Ты поела в ресторане."]],cloze:"¿Qué ___ ayer?",clozeAnswers:["comiste"]},
+      {id:"vivio",cat:"indefinite",word:"vivió",gender:"él / ella · -ir → -ió",tr:"он или она жил(а)",ru:["он жил","она жила"],answers:["vivió","vivio"],
+        examples:[["Ella vivió en Sevilla.","Она жила в Севилье."],["Vivió allí dos años.","Он прожил там два года."]],cloze:"Ella ___ en Sevilla.",clozeAnswers:["vivió","vivio"]},
+      {id:"trabajamos_past",cat:"indefinite",word:"trabajamos",gender:"nosotros · форма совпадает с Presente",tr:"мы поработали, работали",ru:["мы поработали","мы работали"],answers:["trabajamos"],
+        examples:[["Ayer trabajamos hasta tarde.","Вчера мы работали допоздна."],["Trabajamos juntos el año pasado.","Мы работали вместе в прошлом году."]],cloze:"Ayer ___ hasta tarde.",clozeAnswers:["trabajamos"]},
+      {id:"leisteis",cat:"indefinite",word:"leísteis",gender:"vosotros · -er → -isteis",tr:"вы прочитали",ru:["вы прочитали","вы читали"],answers:["leísteis","leisteis"],
+        examples:[["¿Leísteis el mensaje?","Вы прочитали сообщение?"],["Anoche leísteis juntos.","Вчера вечером вы читали вместе."]],cloze:"¿___ el mensaje?",clozeAnswers:["leísteis","leisteis"]},
+      {id:"hicieron",cat:"indefinite",word:"hicieron",gender:"ellos · hacer, неправильная форма",tr:"они сделали",ru:["они сделали","вы сделали"],answers:["hicieron"],
+        examples:[["Ellos hicieron la cena.","Они приготовили ужин."],["¿Qué hicieron ayer?","Что они делали вчера?"]],cloze:"Ellos ___ la cena.",clozeAnswers:["hicieron"]},
+      {id:"fui",cat:"indefinite",word:"fui",gender:"yo · ir / ser",tr:"я пошёл, поехал; я был",ru:["я пошла","я пошел","я поехала","я поехал","я была","я был"],answers:["fui"],
+        examples:[["Ayer fui al trabajo.","Вчера я ездила на работу."],["Fui feliz allí.","Я была там счастлива."]],cloze:"Ayer ___ al trabajo.",clozeAnswers:["fui"]},
+      {id:"tuve",cat:"indefinite",word:"tuve",gender:"yo · tener",tr:"у меня было; я имел(а)",ru:["у меня было","я имела","я имел"],answers:["tuve"],
+        examples:[["Ayer tuve mucho trabajo.","Вчера у меня было много работы."],["Tuve una buena idea.","У меня появилась хорошая идея."]],cloze:"Ayer ___ mucho trabajo.",clozeAnswers:["tuve"]},
+      {id:"hice",cat:"indefinite",word:"hice",gender:"yo · hacer",tr:"я сделал(а)",ru:["я сделала","я сделал"],answers:["hice"],
+        examples:[["Hice la tarea por la tarde.","Я сделала задание вечером."],["Ayer hice una reserva.","Вчера я забронировала столик."]],cloze:"Ayer ___ una reserva.",clozeAnswers:["hice"]},
+      {id:"hoy_marker",cat:"markers",word:"hoy / esta semana / ya / todavía no",gender:"часто с Pretérito Perfecto",tr:"сегодня / на этой неделе / уже / ещё не",ru:["сегодня на этой неделе уже ещё не","сегодня","на этой неделе","уже","ещё не"],answers:["hoy esta semana ya todavía no","hoy","esta semana","ya","todavía no","todavia no"],
+        examples:[["Hoy he trabajado mucho.","Сегодня я много работала."],["Todavía no he comido.","Я ещё не ела."]],cloze:"___ no he comido.",clozeAnswers:["todavía","todavia"]},
+      {id:"ayer_marker",cat:"markers",word:"ayer / anoche",gender:"обычно с Pretérito Indefinido",tr:"вчера / вчера вечером",ru:["вчера вчера вечером","вчера","вчера вечером"],answers:["ayer anoche","ayer","anoche"],
+        examples:[["Ayer fui al cine.","Вчера я ходила в кино."],["Anoche cenamos juntos.","Вчера вечером мы ужинали вместе."]],cloze:"___ fui al cine.",clozeAnswers:["ayer"]},
+      {id:"past_period",cat:"markers",word:"la semana pasada / el año pasado",gender:"завершённый период",tr:"на прошлой неделе / в прошлом году",ru:["на прошлой неделе в прошлом году","на прошлой неделе","в прошлом году"],answers:["la semana pasada el año pasado","la semana pasada","el año pasado"],
+        examples:[["La semana pasada estuve enferma.","На прошлой неделе я болела."],["El año pasado viajamos a España.","В прошлом году мы ездили в Испанию."]],cloze:"___ viajamos a España.",clozeAnswers:["el año pasado"]}
     ];
 
     const FOOD_CATEGORIES = [
@@ -1210,13 +1521,152 @@
 
 
 
+
+    function exerciseGroups(){
+      return [
+        {topic:"verbs",words:VERB_WORDS},{topic:"present",words:PRESENT_WORDS},{topic:"pronouns",words:PRONOUN_WORDS},
+        {topic:"questions",words:QUESTION_WORDS},{topic:"constructions",words:CONSTRUCTION_WORDS},{topic:"gustar",words:GUSTAR_WORDS},
+        {topic:"agreement",words:AGREEMENT_WORDS},{topic:"prepositions",words:PREPOSITION_WORDS},{topic:"connectors",words:CONNECTOR_WORDS},
+        {topic:"past",words:PAST_WORDS},{topic:"routine",words:ROUTINE_WORDS},{topic:"calendar",words:CALENDAR_WORDS},
+        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"foods",words:FOOD_WORDS},
+        {topic:"clothes",words:CLOTHING_WORDS},{topic:"activities",words:ACTIVITY_WORDS}
+      ];
+    }
+
+    function choiceExercises(){
+      const items=[];
+      exerciseGroups().forEach(function(group){
+        group.words.forEach(function(word,index){
+          let pool=group.words.filter(function(other){return other.id!==word.id && other.cat===word.cat;});
+          if(pool.length<3) pool=group.words.filter(function(other){return other.id!==word.id;});
+          const distractors=[];
+          for(let step=0;step<pool.length && distractors.length<3;step++){
+            const candidate=pool[(index+step)%pool.length].word;
+            if(candidate!==word.word && distractors.indexOf(candidate)<0) distractors.push(candidate);
+          }
+          items.push({
+            id:"choice_"+group.topic+"_"+word.id,topic:group.topic,foodCat:word.cat,type:"choice",skill:"Быстрый тест",
+            q:"Выбери испанский вариант: "+word.tr+".",a:[word.word],options:[word.word].concat(distractors),
+            e:word.word+" — "+word.tr+"."
+          });
+        });
+      });
+      return items;
+    }
+
+    function audioExercises(){
+      const items=[];
+      exerciseGroups().forEach(function(group){
+        group.words.forEach(function(word){
+          const sentence=word.examples && word.examples[0] ? word.examples[0][0] : "";
+          if(!sentence || sentence.indexOf("→")>=0) return;
+          items.push({
+            id:"audio_"+group.topic+"_"+word.id,topic:group.topic,foodCat:word.cat,type:"audio",skill:"Аудиодиктант",
+            q:"Прослушай и запиши предложение по-испански.",audio:sentence,a:[sentence],
+            e:word.examples[0][1]
+          });
+        });
+      });
+      return items;
+    }
+
+    const ORDER_DATA = [
+      ["q_where","questions","place","Собери вопрос: «Где ты работаешь?»",["¿Dónde","trabajas?"],"¿Dónde trabajas?","Dónde ставится в начале вопроса."],
+      ["q_why","questions","reason","Собери вопрос: «Почему ты учишь испанский?»",["¿Por","qué","estudias","español?"],"¿Por qué estudias español?","В вопросе por qué пишется раздельно."],
+      ["q_with","questions","basic","Собери вопрос: «С кем ты живёшь?»",["¿Con","quién","vives?"],"¿Con quién vives?","Предлог con стоит перед quién."],
+      ["c_hay","constructions","presence","Собери: «В моём районе есть парк»",["En","mi","barrio","hay","un","parque."],"En mi barrio hay un parque.","Hay сообщает о наличии объекта."],
+      ["c_plan","constructions","plans","Собери: «Я собираюсь работать завтра»",["Voy","a","trabajar","mañana."],"Voy a trabajar mañana.","ir a + infinitivo"],
+      ["c_need","constructions","obligation","Собери: «Мне нужно купить хлеб»",["Tengo","que","comprar","pan."],"Tengo que comprar pan.","tener que + infinitivo"],
+      ["g_books","gustar","number","Собери: «Мне нравятся книги»",["Me","gustan","los","libros."],"Me gustan los libros.","С множественным объектом используется gustan."],
+      ["g_ella","gustar","persons","Собери: «Ей нравится танцевать»",["A","ella","le","gusta","bailar."],"A ella le gusta bailar.","A ella уточняет, к кому относится le."],
+      ["r_morning","routine","morning","Собери: «Я встаю в семь»",["Me","levanto","a","las","siete."],"Me levanto a las siete.","Возвратное me ставится перед глаголом."],
+      ["r_teeth","routine","morning","Собери: «Я чищу зубы после завтрака»",["Me","cepillo","los","dientes","después","del","desayuno."],"Me cepillo los dientes después del desayuno.","После de + el используется del."],
+      ["r_home","routine","evening","Собери: «Я возвращаюсь домой вечером»",["Vuelvo","a","casa","por","la","noche."],"Vuelvo a casa por la noche.","Домой — a casa, без артикля."],
+      ["pr_time","practical","time","Собери: «Сейчас половина шестого»",["Son","las","cinco","y","media."],"Son las cinco y media.","Для времени после часа используется y media."],
+      ["pr_price","practical","prices","Собери вопрос: «Сколько стоят эти туфли?»",["¿Cuánto","cuestan","estos","zapatos?"],"¿Cuánto cuestan estos zapatos?","Cuestan согласуется с множественным числом."],
+      ["a_barrio","agreement","adjectives","Собери: «Я живу в тихом районе»",["Vivo","en","un","barrio","tranquilo."],"Vivo en un barrio tranquilo.","Прилагательное согласуется с barrio."],
+      ["a_shops","agreement","articles","Собери: «Магазины открыты»",["Las","tiendas","están","abiertas."],"Las tiendas están abiertas.","Все элементы стоят в женском множественном числе."],
+      ["p_today","past","perfect","Собери: «Сегодня я много работала»",["Hoy","he","trabajado","mucho."],"Hoy he trabajado mucho.","Незавершённый период hoy часто требует Perfecto."],
+      ["p_yesterday","past","indefinite","Собери: «Вчера я ходила в кино»",["Ayer","fui","al","cine."],"Ayer fui al cine.","Ayer указывает на завершённое прошлое."],
+      ["p_week","past","perfect","Собери: «На этой неделе мы много выучили»",["Esta","semana","hemos","aprendido","mucho."],"Esta semana hemos aprendido mucho.","Esta semana ещё связана с настоящим."]
+    ];
+
+    const CORRECTION_DATA = [
+      ["q_accent","questions","place","Исправь ошибку: ¿Donde vives.","¿Dónde vives?","В вопросительном dónde нужно ударение."],
+      ["q_spacing","questions","reason","Исправь ошибку: ¿Porqué estudias español?","¿Por qué estudias español?","Вопросительное por qué пишется раздельно."],
+      ["c_location","constructions","presence","Исправь ошибку: Hay la farmacia cerca.","La farmacia está cerca.","Hay — наличие, estar — место известного объекта."],
+      ["c_tener","constructions","obligation","Исправь ошибку: Tengo trabajar mañana.","Tengo que trabajar mañana.","После tener необходимо que."],
+      ["g_number","gustar","number","Исправь ошибку: Me gusto los libros.","Me gustan los libros.","Los libros — множественное число, поэтому gustan."],
+      ["g_pronoun","gustar","persons","Исправь ошибку: A ella la gusta bailar.","A ella le gusta bailar.","С gustar используется косвенное местоимение le."],
+      ["r_person","routine","morning","Исправь ошибку: Yo me levantas a las siete.","Yo me levanto a las siete.","Для yo нужна форма levanto."],
+      ["r_vestir","routine","morning","Исправь ошибку: Ella se visto rápido.","Ella se viste rápido.","Для ella: se viste."],
+      ["pr_clock","practical","time","Исправь ошибку: Es las tres.","Son las tres.","Для двух часов и больше используется son las."],
+      ["pr_amount","practical","quantity","Исправь ошибку: Tengo muy trabajo.","Tengo mucho trabajo.","Muy ставится перед признаком, mucho — с существительным."],
+      ["a_gender","agreement","articles","Исправь ошибку: La barrio es bonito.","El barrio es bonito.","Barrio — мужского рода."],
+      ["a_adjective","agreement","adjectives","Исправь ошибку: Compro zapatos negra.","Compro zapatos negros.","Zapatos требует мужского множественного числа."],
+      ["a_al","agreement","contractions","Исправь ошибку: Voy a el trabajo.","Voy al trabajo.","a + el обязательно сливаются в al."],
+      ["a_del","agreement","contractions","Исправь ошибку: Vengo de el trabajo.","Vengo del trabajo.","de + el обязательно сливаются в del."],
+      ["p_aux","past","perfect","Исправь ошибку: Hoy hablado con Ana.","Hoy he hablado con Ana.","Perfecto строится с haber + причастие."],
+      ["p_double","past","indefinite","Исправь ошибку: Ayer he fui al cine.","Ayer fui al cine.","Fui уже является готовой формой Indefinido."],
+      ["p_irregular","past","indefinite","Исправь ошибку: Ellos hacieron la cena.","Ellos hicieron la cena.","Неправильная форма hacer — hicieron."]
+    ];
+
+    const DIALOGUE_DATA = [
+      ["q_reason","questions","reason","Закончи диалог: — ¿Por qué estudias español? — Потому что я живу в Мадриде.",["Porque vivo en Madrid."],"Porque отвечает на вопрос por qué."],
+      ["q_destination","questions","place","Закончи диалог: — ¿Adónde vas? — Я иду на работу.",["Voy al trabajo."],"Для направления используется a; a + el = al."],
+      ["c_evening","constructions","plans","Ответь: — ¿Qué vas a hacer esta noche? — Я собираюсь читать.",["Voy a leer."],"ir a + infinitivo выражает план."],
+      ["c_help","constructions","ability","Ответь: — ¿Puedes ayudarme? — Да, могу.",["Sí, puedo.","Si, puedo."],"Краткий естественный ответ — Sí, puedo."],
+      ["g_coffee","gustar","persons","Ответь: — ¿Te gusta el café? — Да, мне нравится.",["Sí, me gusta.","Si, me gusta."],"В ответе меняется te на me."],
+      ["g_hobby","gustar","persons","Ответь: — ¿Qué te gusta hacer? — Мне нравится читать.",["Me gusta leer."],"После gusta можно поставить инфинитив."],
+      ["r_wakeup","routine","morning","Ответь: — ¿A qué hora te levantas? — Я встаю в семь.",["Me levanto a las siete."],"Для yo используется me levanto."],
+      ["pr_time_reply","practical","time","Ответь: — ¿Qué hora es? — Сейчас три часа.",["Son las tres."],"Для трёх часов используется son las."],
+      ["pr_cost_reply","practical","prices","Ответь: — ¿Cuánto cuesta? — Это стоит десять евро.",["Cuesta diez euros."],"Подлежащее можно не повторять."],
+      ["p_today_reply","past","perfect","Ответь: — ¿Qué has hecho hoy? — Сегодня я работала.",["Hoy he trabajado.","He trabajado hoy."],"Hoy обычно связывает действие с настоящим."]
+    ];
+
+    const FORM_DATA = [
+      ["ser_present","present","ser","Заполни формы ser в Presente.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["soy|eres|es|somos|sois|son"],"soy · eres · es · somos · sois · son"],
+      ["tener_present","present","irregular","Заполни формы tener в Presente.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["tengo|tienes|tiene|tenemos|tenéis|tienen","tengo|tienes|tiene|tenemos|teneis|tienen"],"tengo · tienes · tiene · tenemos · tenéis · tienen"],
+      ["possessives","pronouns","all","Заполни притяжательные формы перед существительным.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["mi|tu|su|nuestro|vuestro|su"],"mi · tu · su · nuestro · vuestro · su"],
+      ["levantarse","routine","morning","Проспрягай levantarse в Presente.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["me levanto|te levantas|se levanta|nos levantamos|os levantáis|se levantan","me levanto|te levantas|se levanta|nos levantamos|os levantais|se levantan"],"me levanto · te levantas · se levanta · nos levantamos · os levantáis · se levantan"],
+      ["gustar_persons","gustar","persons","Заполни формы «кому нравится» с gusta.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["me gusta|te gusta|le gusta|nos gusta|os gusta|les gusta"],"me gusta · te gusta · le gusta · nos gusta · os gusta · les gusta"],
+      ["haber_perfect","past","perfect","Заполни формы haber для Pretérito Perfecto.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["he|has|ha|hemos|habéis|han","he|has|ha|hemos|habeis|han"],"he · has · ha · hemos · habéis · han"],
+      ["hablar_indef","past","indefinite","Проспрягай hablar в Pretérito Indefinido.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["hablé|hablaste|habló|hablamos|hablasteis|hablaron","hable|hablaste|hablo|hablamos|hablasteis|hablaron"],"hablé · hablaste · habló · hablamos · hablasteis · hablaron"]
+    ];
+
+    const COMPARE_DATA = [
+      ["ser_estar","present","estar","Выбери форму: Madrid ___ en España.",["es","está","hay"],"está","Для местонахождения используется estar."],
+      ["hay_estar","constructions","presence","Выбери форму: En mi barrio ___ un parque.",["hay","está","tiene"],"hay","Неопределённый новый объект вводится через hay."],
+      ["por_para","prepositions","purpose","Выбери предлог: Este regalo es ___ ti.",["por","para","de"],"para","Получатель — одно из основных значений para."],
+      ["porque_question","questions","reason","Выбери форму: ¿___ estudias español?",["Porque","Por qué","Porqué"],"Por qué","Вопросительное por qué пишется раздельно."],
+      ["muy_mucho_noun","practical","quantity","Выбери форму: Tengo ___ trabajo.",["muy","mucho","muchos"],"mucho","С существительным trabajo используется mucho."],
+      ["muy_mucho_adj","practical","quantity","Выбери форму: Es ___ interesante.",["muy","mucho","mucha"],"muy","Перед прилагательным используется muy."],
+      ["gusta_gustan","gustar","number","Выбери форму: Me ___ los libros.",["gusta","gustan","gusto"],"gustan","Los libros — множественное число."],
+      ["a_el_al","agreement","contractions","Выбери форму: Voy ___ cine.",["a el","al","del"],"al","a + el всегда превращается в al."],
+      ["past_ayer","past","indefinite","Выбери форму: Ayer ___ al cine.",["he ido","fui","voy"],"fui","Ayer — завершённый период, поэтому здесь Indefinido."]
+    ];
+
+    const SPECIAL_EXERCISES = []
+      .concat(ORDER_DATA.map(function(x){return {id:"order_"+x[0],topic:x[1],foodCat:x[2],type:"order",skill:"Собери предложение",q:x[3],tokens:x[4],a:[x[5]],e:x[6]};}))
+      .concat(CORRECTION_DATA.map(function(x){return {id:"correct_"+x[0],topic:x[1],foodCat:x[2],type:"correct",skill:"Исправь ошибку",q:x[3],a:[x[4]],e:x[5]};}))
+      .concat(DIALOGUE_DATA.map(function(x){return {id:"dialogue_"+x[0],topic:x[1],foodCat:x[2],type:"dialogue",skill:"Мини-диалог",q:x[3],a:x[4],e:x[5]};}))
+      .concat(FORM_DATA.map(function(x){return {id:"forms_"+x[0],topic:x[1],foodCat:x[2],type:"forms",skill:"Таблица спряжения",q:x[3],formLabels:x[4],a:x[5],displayAnswer:x[6],e:"Заполняй формы слева направо по лицам."};}))
+      .concat(COMPARE_DATA.map(function(x){return {id:"compare_"+x[0],topic:x[1],foodCat:x[2],type:"choice",skill:"Сравни формы",q:x[3],options:x[4],a:[x[5]],e:x[6]};}));
+
     function foundationExercises(){
       const groups=[
         {topic:"verbs",words:VERB_WORDS},
         {topic:"present",words:PRESENT_WORDS},
+        {topic:"questions",words:QUESTION_WORDS},
+        {topic:"constructions",words:CONSTRUCTION_WORDS},
+        {topic:"gustar",words:GUSTAR_WORDS},
+        {topic:"agreement",words:AGREEMENT_WORDS},
         {topic:"prepositions",words:PREPOSITION_WORDS},
         {topic:"connectors",words:CONNECTOR_WORDS},
+        {topic:"past",words:PAST_WORDS},
+        {topic:"routine",words:ROUTINE_WORDS},
         {topic:"calendar",words:CALENDAR_WORDS},
+        {topic:"practical",words:PRACTICAL_WORDS},
         {topic:"city",words:CITY_WORDS}
       ];
       const items=[];
@@ -1512,12 +1962,15 @@
     let wordIndex = 0;
     let foodPhase = "study";
     let foodCategory = "all";
+    let orderPool = [];
+    let orderState = [];
 
     const $ = (id) => document.getElementById(id);
     const els = {
       topicList:$("topicList"), topicName:$("topicName"), progressBar:$("progressBar"), progressLabel:$("progressLabel"),
       questionText:$("questionText"), skillLabel:$("skillLabel"), questionNumber:$("questionNumber"), answerInput:$("answerInput"),
-      feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
+      answerLabel:$("answerLabel"), audioPrompt:$("audioPrompt"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
+      orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"), feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
@@ -1530,12 +1983,19 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
       if(selectedTopic==="present") return PRESENT_WORDS;
       if(selectedTopic==="pronouns") return PRONOUN_WORDS;
+      if(selectedTopic==="questions") return QUESTION_WORDS;
+      if(selectedTopic==="constructions") return CONSTRUCTION_WORDS;
+      if(selectedTopic==="gustar") return GUSTAR_WORDS;
+      if(selectedTopic==="agreement") return AGREEMENT_WORDS;
+      if(selectedTopic==="past") return PAST_WORDS;
+      if(selectedTopic==="routine") return ROUTINE_WORDS;
+      if(selectedTopic==="practical") return PRACTICAL_WORDS;
       if(selectedTopic==="prepositions") return PREPOSITION_WORDS;
       if(selectedTopic==="connectors") return CONNECTOR_WORDS;
       if(selectedTopic==="calendar") return CALENDAR_WORDS;
@@ -1548,6 +2008,13 @@
       if(selectedTopic==="verbs") return VERB_CATEGORIES;
       if(selectedTopic==="present") return PRESENT_CATEGORIES;
       if(selectedTopic==="pronouns") return PRONOUN_CATEGORIES;
+      if(selectedTopic==="questions") return QUESTION_CATEGORIES;
+      if(selectedTopic==="constructions") return CONSTRUCTION_CATEGORIES;
+      if(selectedTopic==="gustar") return GUSTAR_CATEGORIES;
+      if(selectedTopic==="agreement") return AGREEMENT_CATEGORIES;
+      if(selectedTopic==="past") return PAST_CATEGORIES;
+      if(selectedTopic==="routine") return ROUTINE_CATEGORIES;
+      if(selectedTopic==="practical") return PRACTICAL_CATEGORIES;
       if(selectedTopic==="prepositions") return PREPOSITION_CATEGORIES;
       if(selectedTopic==="connectors") return CONNECTOR_CATEGORIES;
       if(selectedTopic==="calendar") return CALENDAR_CATEGORIES;
@@ -1573,6 +2040,8 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ return stats[x.id] && stats[x.id].wrong>0; });
+      if(selectedMode==="tests") items=items.filter(function(x){ return x.type==="choice"; });
+      if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
       queue=keepIndex ? items : shuffle(items);
       if(!keepIndex || index>=queue.length) index=0;
       render();
@@ -1588,6 +2057,13 @@
             t.id==="verbs" ? VERB_WORDS.length+" слов" :
             t.id==="present" ? PRESENT_WORDS.length+" форм" :
             t.id==="pronouns" ? PRONOUN_WORDS.length+" лиц" :
+            t.id==="questions" ? QUESTION_WORDS.length+" вопросов" :
+            t.id==="constructions" ? CONSTRUCTION_WORDS.length+" конструкций" :
+            t.id==="gustar" ? GUSTAR_WORDS.length+" форм" :
+            t.id==="agreement" ? AGREEMENT_WORDS.length+" правил" :
+            t.id==="past" ? PAST_WORDS.length+" форм" :
+            t.id==="routine" ? ROUTINE_WORDS.length+" действий" :
+            t.id==="practical" ? PRACTICAL_WORDS.length+" карточек" :
             t.id==="prepositions" ? PREPOSITION_WORDS.length+" слов" :
             t.id==="connectors" ? CONNECTOR_WORDS.length+" конструкций" :
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
@@ -1619,12 +2095,139 @@
     }
     function resetCard(){
       checkedCurrent=false;
+      orderPool=[];
+      orderState=[];
       els.answerInput.value="";
       els.answerInput.disabled=false;
+      els.answerInput.hidden=false;
+      els.answerLabel.hidden=false;
+      els.answerLabel.textContent="Твой ответ";
+      els.audioPrompt.hidden=true;
+      els.choiceGrid.hidden=true;
+      els.choiceGrid.innerHTML="";
+      els.orderWidget.hidden=true;
+      els.orderBuilt.innerHTML="";
+      els.orderBank.innerHTML="";
+      els.formGrid.hidden=true;
+      els.formGrid.innerHTML="";
       els.feedback.textContent="";
       els.feedback.className="feedback";
       els.answerBox.classList.remove("open");
-      els.answerInput.focus();
+    }
+
+    function renderOrderWidget(){
+      els.orderBuilt.innerHTML=orderState.map(function(id){
+        const item=orderPool.find(function(token){return token.id===id;});
+        return '<button class="word-chip" data-remove-token="'+id+'" type="button">'+escapeHtml(item ? item.text : "")+'</button>';
+      }).join("");
+      els.orderBank.innerHTML=orderPool.map(function(token){
+        return '<button class="word-chip '+(orderState.indexOf(token.id)>=0?"used":"")+'" data-add-token="'+token.id+'" type="button">'+escapeHtml(token.text)+'</button>';
+      }).join("");
+      els.orderBuilt.querySelectorAll("[data-remove-token]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          orderState=orderState.filter(function(id){return id!==Number(btn.dataset.removeToken);});
+          renderOrderWidget();
+        });
+      });
+      els.orderBank.querySelectorAll("[data-add-token]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          const id=Number(btn.dataset.addToken);
+          if(orderState.indexOf(id)<0) orderState.push(id);
+          renderOrderWidget();
+        });
+      });
+    }
+
+    function setupExercise(item){
+      resetCard();
+      const type=item.type || "text";
+      if(type==="choice"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.choiceGrid.hidden=false;
+        els.choiceGrid.innerHTML=shuffle(item.options || []).map(function(option){
+          return '<button class="choice-option" data-choice="'+escapeHtml(option)+'" type="button">'+escapeHtml(option)+'</button>';
+        }).join("");
+        els.choiceGrid.querySelectorAll("[data-choice]").forEach(function(btn){
+          btn.addEventListener("click",function(){
+            els.answerInput.value=btn.dataset.choice;
+            els.choiceGrid.querySelectorAll(".choice-option").forEach(function(option){option.classList.toggle("selected",option===btn);});
+          });
+        });
+      } else if(type==="order"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.orderWidget.hidden=false;
+        orderPool=shuffle((item.tokens || []).map(function(token,i){return {id:i,text:token};}));
+        renderOrderWidget();
+      } else if(type==="forms"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.formGrid.hidden=false;
+        els.formGrid.innerHTML=(item.formLabels || []).map(function(label,i){
+          return '<div class="form-cell"><label for="formInput'+i+'">'+escapeHtml(label)+'</label><input id="formInput'+i+'" data-form-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false"></div>';
+        }).join("");
+        const first=els.formGrid.querySelector("input");
+        if(first) first.focus();
+      } else {
+        if(type==="audio"){
+          els.audioPrompt.hidden=false;
+          els.answerLabel.textContent="Что ты услышала?";
+          els.answerInput.placeholder="Запиши предложение…";
+        } else if(type==="correct"){
+          els.answerLabel.textContent="Исправленный вариант";
+          els.answerInput.placeholder="Напиши предложение без ошибки…";
+        } else if(type==="dialogue"){
+          els.answerLabel.textContent="Твоя реплика";
+          els.answerInput.placeholder="Ответь по-испански…";
+        } else {
+          els.answerInput.placeholder="Напиши ответ сама…";
+        }
+        els.answerInput.focus();
+      }
+    }
+
+    function currentAnswer(item){
+      if(item.type==="order"){
+        return orderState.map(function(id){
+          const token=orderPool.find(function(value){return value.id===id;});
+          return token ? token.text : "";
+        }).join(" ");
+      }
+      if(item.type==="forms"){
+        const values=Array.from(els.formGrid.querySelectorAll("[data-form-input]")).map(function(input){return input.value.trim();});
+        return values.some(Boolean) ? values.join("|") : "";
+      }
+      return els.answerInput.value;
+    }
+
+    function speakCurrent(){
+      const item=queue[index];
+      if(!item || !item.audio) return;
+      if(!("speechSynthesis" in window)){
+        els.feedback.textContent="В этом браузере озвучивание недоступно.";
+        els.feedback.className="feedback bad";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance=new SpeechSynthesisUtterance(item.audio);
+      utterance.lang="es-ES";
+      utterance.rate=.82;
+      const voice=window.speechSynthesis.getVoices().find(function(item){return /^es([-_]|$)/i.test(item.lang);});
+      if(voice) utterance.voice=voice;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function scheduleReview(item){
+      if(item.sessionReview || queue.some(function(value){return value.reviewOf===item.id;})) return false;
+      const review=Object.assign({},item,{
+        id:item.id+"__review",originalId:item.originalId || item.id,reviewOf:item.id,sessionReview:true,
+        skill:"Повторение · "+(item.skill || "Практика")
+      });
+      queue.splice(Math.min(index+4,queue.length),0,review);
+      els.progressLabel.textContent=(index+1)+" / "+queue.length;
+      els.progressBar.style.width=((index+1)/queue.length*100)+"%";
+      return true;
     }
 
     function currentFoodWords(){
@@ -1640,6 +2243,13 @@
         verbs:"Сначала познакомимся с основными глаголами",
         present:"Сначала разберём формы Presente",
         pronouns:"Сначала разберём местоимения",
+        questions:"Сначала разберём вопросы",
+        constructions:"Сначала разберём разговорные конструкции",
+        gustar:"Сначала разберём gustar и похожие глаголы",
+        agreement:"Сначала разберём артикли и согласование",
+        past:"Сначала познакомимся с прошедшим временем",
+        routine:"Сначала разберём распорядок дня",
+        practical:"Сначала разберём время, даты, цены и количество",
         prepositions:"Сначала познакомимся с предлогами",
         connectors:"Сначала разберём связки и конструкции",
         calendar:"Сначала выучим календарную лексику",
@@ -1653,6 +2263,13 @@
     function studyIntro(){
       if(selectedTopic==="present") return "Смотри на окончание и местоимение, затем закрепляй форму без подсказок.";
       if(selectedTopic==="pronouns") return "Переключайся между лицами: смотри притяжательные формы и спряжение пяти базовых глаголов.";
+      if(selectedTopic==="questions") return "Смотри, о чём спрашивает слово, и сравнивай готовые вопросы с переводом.";
+      if(selectedTopic==="constructions") return "Разбери схему, значение и два живых примера, затем собери собственную фразу.";
+      if(selectedTopic==="gustar") return "Следи, кому что нравится и стоит ли после местоимения форма gusta или gustan.";
+      if(selectedTopic==="agreement") return "Смотри на род и число существительного: артикль и прилагательное должны с ним согласоваться.";
+      if(selectedTopic==="past") return "Сначала освой Pretérito Perfecto, затем переходи к завершённым событиям в Indefinido.";
+      if(selectedTopic==="routine") return "Учи возвратные глаголы сразу с me, te, se, nos и os в бытовом контексте.";
+      if(selectedTopic==="practical") return "Закрепляй готовые модели для времени, дат, цен и количества.";
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
@@ -1661,6 +2278,13 @@
     function studyUnitLabel(){
       if(selectedTopic==="present") return "Форма";
       if(selectedTopic==="pronouns") return "Местоимение";
+      if(selectedTopic==="questions") return "Вопрос";
+      if(selectedTopic==="constructions") return "Конструкция";
+      if(selectedTopic==="gustar") return "Модель";
+      if(selectedTopic==="agreement") return "Правило";
+      if(selectedTopic==="past") return "Форма";
+      if(selectedTopic==="routine") return "Действие";
+      if(selectedTopic==="practical") return "Модель";
       if(selectedTopic==="prepositions") return "Предлог";
       if(selectedTopic==="connectors") return "Конструкция";
       if(selectedTopic==="activities") return "Фраза";
@@ -1763,6 +2387,12 @@
         if(selectedMode==="mistakes"){
           els.emptyTitle.textContent="Ошибок пока нет";
           els.emptyText.textContent="Задания, в которых была ошибка, появятся здесь для повторения.";
+        } else if(selectedMode==="tests"){
+          els.emptyTitle.textContent="Тестов в этой теме пока нет";
+          els.emptyText.textContent="Выбери другую тему или режим «Все».";
+        } else if(selectedMode==="audio"){
+          els.emptyTitle.textContent="Аудиозаданий в этой теме пока нет";
+          els.emptyText.textContent="Выбери другую тему или режим «Все».";
         } else {
           els.emptyTitle.textContent="В этой теме пока нет заданий";
           els.emptyText.textContent="Добавь собственное задание или выбери другую тему.";
@@ -1777,40 +2407,43 @@
       els.questionNumber.textContent="Задание "+(index+1);
       els.progressLabel.textContent=(index+1)+" / "+queue.length;
       els.progressBar.style.width=((index+1)/queue.length*100)+"%";
-      els.answerText.textContent=item.a.join(" / ");
+      els.answerText.textContent=item.displayAnswer || item.a.join(" / ");
       els.explanation.textContent=item.e || "";
       els.explanation.hidden=!item.e;
-      resetCard();
+      setupExercise(item);
     }
     function checkAnswer(){
       if(!queue.length) return;
-      const value=els.answerInput.value;
+      const item=queue[index];
+      const value=currentAnswer(item);
       if(!value.trim()){
-        els.feedback.textContent="Сначала напиши свой вариант.";
+        els.feedback.textContent=item.type==="choice" ? "Сначала выбери вариант." : "Сначала напиши или собери свой вариант.";
         els.feedback.className="feedback bad";
-        els.answerInput.focus();
+        if(!els.answerInput.hidden) els.answerInput.focus();
         return;
       }
-      const item=queue[index];
       const exact=item.a.some(function(answer){return normalize(answer)===normalize(value);});
       const near=!exact && item.a.some(function(answer){return fold(answer)===fold(value);});
+      let scheduled=false;
       if(!checkedCurrent){
-        const row=stats[item.id] || {tries:0,correct:0,wrong:0};
+        const statsId=item.originalId || item.id;
+        const row=stats[statsId] || {tries:0,correct:0,wrong:0};
         row.tries++;
         if(exact) row.correct++; else row.wrong++;
-        stats[item.id]=row;
+        stats[statsId]=row;
         streak=exact ? streak+1 : 0;
+        if(!exact) scheduled=scheduleReview(item);
         write(STORAGE.stats,stats); write(STORAGE.streak,streak);
         checkedCurrent=true; renderStats();
       }
       if(exact){
-        els.feedback.textContent="Верно! Отличная работа.";
+        els.feedback.textContent=item.sessionReview ? "Верно! Повторение закреплено." : "Верно! Отличная работа.";
         els.feedback.className="feedback good";
       } else if(near){
-        els.feedback.textContent="Почти верно — проверь ударение или букву ñ.";
+        els.feedback.textContent="Почти верно — проверь ударение или букву ñ."+(scheduled ? " Это задание вернётся через несколько карточек." : "");
         els.feedback.className="feedback near";
       } else {
-        els.feedback.textContent="Пока не совпало. Попробуй ещё раз или открой ответ сама.";
+        els.feedback.textContent="Пока не совпало. Попробуй ещё раз или открой ответ сама."+(scheduled ? " Это задание вернётся через несколько карточек." : "");
         els.feedback.className="feedback bad";
       }
     }
@@ -1854,6 +2487,9 @@
     });
     els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
     $("checkBtn").addEventListener("click",checkAnswer);
+    els.audioPrompt.addEventListener("click",speakCurrent);
+    $("clearOrder").addEventListener("click",function(){orderState=[];renderOrderWidget();});
+    els.formGrid.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();checkAnswer();}});
     $("nextBtn").addEventListener("click",function(){move(1);});
     $("skipBtn").addEventListener("click",function(){move(1);});
     $("prevBtn").addEventListener("click",function(){move(-1);});
