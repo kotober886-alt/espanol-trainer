@@ -402,6 +402,7 @@
       { id:"present", title:"Presente", icon:"↻" },
       { id:"pronouns", title:"Местоимения", icon:"◎" },
       { id:"prepositions", title:"Предлоги", icon:"⌁" },
+      { id:"connectors", title:"Связки и конструкции", icon:"⇄" },
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
       { id:"city", title:"Город и район", icon:"⌂" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
@@ -461,6 +462,114 @@
         conjugations:[["ser","son"],["estar","están"],["tener","tienen"],["ir","van"],["hacer","hacen"]],
         examples:[["Ellos van al gimnasio.","Они ходят в спортзал."],["Sus amigos viven aquí.","Их друзья живут здесь."]]
       }
+    ];
+
+    const CONNECTOR_CATEGORIES = [
+      {id:"all",title:"Все"},
+      {id:"cause",title:"Причина"},
+      {id:"result",title:"Следствие"},
+      {id:"contrast",title:"Противопоставление"},
+      {id:"replacement",title:"Замена"},
+      {id:"addition",title:"Дополнение"},
+      {id:"sequence",title:"Последовательность"}
+    ];
+
+    const CONNECTOR_WORDS = [
+      {id:"porque",cat:"cause",word:"porque",gender:"союз · перед предложением",tr:"потому что",ru:["потому что"],answers:["porque"],
+        examples:[["No salgo porque llueve.","Я не выхожу, потому что идёт дождь."],["Aprendo español porque vivo en Madrid.","Я учу испанский, потому что живу в Мадриде."]],
+        cloze:"No salgo ___ llueve.",clozeAnswers:["porque"]},
+      {id:"gracias_a",cat:"cause",word:"gracias a",gender:"выражение · перед существительным",tr:"благодаря",ru:["благодаря"],answers:["gracias a"],
+        examples:[["Gracias a tu ayuda, terminé a tiempo.","Благодаря твоей помощи я закончила вовремя."],["Mejoré mi español gracias a las clases.","Я улучшила испанский благодаря занятиям."]],
+        cloze:"Terminé a tiempo ___ tu ayuda.",clozeAnswers:["gracias a"]},
+      {id:"gracias_a_que",cat:"cause",word:"gracias a que",gender:"выражение · перед предложением",tr:"благодаря тому, что",ru:["благодаря тому что","благодаря тому, что"],answers:["gracias a que"],
+        examples:[["Llegamos a tiempo gracias a que salimos temprano.","Мы приехали вовремя благодаря тому, что вышли рано."],["Puedo trabajar desde casa gracias a que tengo internet.","Я могу работать из дома благодаря тому, что у меня есть интернет."]],
+        cloze:"Llegamos a tiempo ___ salimos temprano.",clozeAnswers:["gracias a que"]},
+      {id:"a_causa_de",cat:"cause",word:"a causa de",gender:"выражение · перед существительным",tr:"из-за, по причине",ru:["из-за","по причине","из за"],answers:["a causa de","debido a"],
+        examples:[["El vuelo se canceló a causa de la tormenta.","Рейс отменили из-за шторма."],["La calle está cerrada a causa de las obras.","Улица закрыта из-за ремонтных работ."]],
+        cloze:"El vuelo se canceló ___ la tormenta.",clozeAnswers:["a causa de","debido a"]},
+      {id:"debido_a",cat:"cause",word:"debido a",gender:"выражение · нейтрально-официальное",tr:"вследствие, из-за",ru:["вследствие","из-за","из за"],answers:["debido a","a causa de"],
+        examples:[["La reunión se pospuso debido a un problema técnico.","Встречу отложили из-за технической проблемы."],["El tren se retrasó debido a la nieve.","Поезд задержался из-за снега."]],
+        cloze:"El tren se retrasó ___ la nieve.",clozeAnswers:["debido a","a causa de"]},
+      {id:"debido_a_que",cat:"cause",word:"debido a que",gender:"выражение · перед предложением",tr:"из-за того, что; вследствие того, что",ru:["из-за того что","из за того что","вследствие того что"],answers:["debido a que","a causa de que"],
+        examples:[["Nos quedamos en casa debido a que llovía mucho.","Мы остались дома из-за того, что шёл сильный дождь."],["La tienda cerró antes debido a que no había clientes.","Магазин закрылся раньше из-за того, что не было покупателей."]],
+        cloze:"Nos quedamos en casa ___ llovía mucho.",clozeAnswers:["debido a que","a causa de que"]},
+      {id:"por_culpa_de",cat:"cause",word:"por culpa de",gender:"выражение · отрицательная причина",tr:"по вине, из-за",ru:["по вине","из-за","из за"],answers:["por culpa de"],
+        examples:[["Llegamos tarde por culpa del tráfico.","Мы опоздали из-за пробок."],["No dormí bien por culpa del ruido.","Я плохо спала из-за шума."]],
+        cloze:"Llegamos tarde ___ tráfico.",clozeAnswers:["por culpa del"]},
+
+      {id:"por_eso",cat:"result",word:"por eso",gender:"связка",tr:"поэтому, вот почему",ru:["поэтому","вот почему"],answers:["por eso"],
+        examples:[["Estoy cansada, por eso descanso.","Я устала, поэтому отдыхаю."],["Mañana trabajo, por eso me acuesto temprano.","Завтра я работаю, поэтому ложусь рано."]],
+        cloze:"Estoy cansada, ___ descanso.",clozeAnswers:["por eso"]},
+      {id:"asi_que",cat:"result",word:"así que",gender:"связка",tr:"так что",ru:["так что","поэтому"],answers:["así que","asi que"],
+        examples:[["Llueve, así que me quedo en casa.","Идёт дождь, так что я остаюсь дома."],["No tenemos pan, así que voy a la tienda.","У нас нет хлеба, так что я иду в магазин."]],
+        cloze:"Llueve, ___ me quedo en casa.",clozeAnswers:["así que","asi que"]},
+      {id:"entonces",cat:"result",word:"entonces",gender:"наречие-связка",tr:"тогда, в таком случае",ru:["тогда","в таком случае"],answers:["entonces"],
+        examples:[["No había autobuses, entonces fuimos a pie.","Автобусов не было, тогда мы пошли пешком."],["¿Estás libre? Entonces podemos quedar.","Ты свободна? Тогда мы можем встретиться."]],
+        cloze:"¿Estás libre? ___ podemos quedar.",clozeAnswers:["entonces"]},
+      {id:"por_lo_tanto",cat:"result",word:"por lo tanto",gender:"связка · более формальная",tr:"следовательно",ru:["следовательно","таким образом"],answers:["por lo tanto"],
+        examples:[["Ha estudiado mucho; por lo tanto, aprobará.","Она много занималась; следовательно, она сдаст экзамен."],["La tienda está cerrada; por lo tanto, volveremos mañana.","Магазин закрыт; следовательно, мы вернёмся завтра."]],
+        cloze:"Ha estudiado mucho; ___ aprobará.",clozeAnswers:["por lo tanto"]},
+
+      {id:"pero",cat:"contrast",word:"pero",gender:"союз",tr:"но",ru:["но"],answers:["pero"],
+        examples:[["Quiero ir, pero no tengo tiempo.","Я хочу пойти, но у меня нет времени."],["El piso es pequeño, pero cómodo.","Квартира маленькая, но удобная."]],
+        cloze:"Quiero ir, ___ no tengo tiempo.",clozeAnswers:["pero"]},
+      {id:"aunque",cat:"contrast",word:"aunque",gender:"союз",tr:"хотя",ru:["хотя"],answers:["aunque"],
+        examples:[["Aunque estoy cansada, voy al gimnasio.","Хотя я устала, я иду в спортзал."],["Salimos aunque llueve.","Мы выходим, хотя идёт дождь."]],
+        cloze:"___ estoy cansada, voy al gimnasio.",clozeAnswers:["aunque"]},
+      {id:"sin_embargo",cat:"contrast",word:"sin embargo",gender:"связка",tr:"однако, тем не менее",ru:["однако","тем не менее"],answers:["sin embargo"],
+        examples:[["Este producto es caro; sin embargo, es muy bueno.","Этот товар дорогой; однако он очень хороший."],["Estaba cansada; sin embargo, terminé el trabajo.","Я устала; тем не менее я закончила работу."]],
+        cloze:"Este producto es caro; ___ es muy bueno.",clozeAnswers:["sin embargo"]},
+      {id:"en_cambio",cat:"contrast",word:"en cambio",gender:"связка",tr:"зато, в отличие от этого",ru:["зато","в отличие от этого","напротив"],answers:["en cambio"],
+        examples:[["Mi barrio es tranquilo; el centro, en cambio, es ruidoso.","Мой район тихий, а центр, напротив, шумный."],["A mí me gusta el té; ella, en cambio, prefiere café.","Мне нравится чай, а она, напротив, предпочитает кофе."]],
+        cloze:"Mi barrio es tranquilo; el centro, ___, es ruidoso.",clozeAnswers:["en cambio"]},
+      {id:"a_pesar_de",cat:"contrast",word:"a pesar de",gender:"выражение · перед существительным или инфинитивом",tr:"несмотря на",ru:["несмотря на"],answers:["a pesar de"],
+        examples:[["A pesar de la lluvia, salimos.","Несмотря на дождь, мы вышли."],["A pesar de estar cansada, fui al gimnasio.","Несмотря на усталость, я пошла в спортзал."]],
+        cloze:"___ la lluvia, salimos.",clozeAnswers:["a pesar de"]},
+      {id:"a_pesar_de_que",cat:"contrast",word:"a pesar de que",gender:"выражение · перед предложением",tr:"несмотря на то, что",ru:["несмотря на то что","несмотря на то, что"],answers:["a pesar de que"],
+        examples:[["A pesar de que estaba cansada, terminé el trabajo.","Несмотря на то, что я устала, я закончила работу."],["Salimos a pesar de que llovía.","Мы вышли, несмотря на то, что шёл дождь."]],
+        cloze:"___ estaba cansada, terminé el trabajo.",clozeAnswers:["a pesar de que"]},
+
+      {id:"en_vez_de",cat:"replacement",word:"en vez de",gender:"выражение · перед существительным или инфинитивом",tr:"вместо",ru:["вместо"],answers:["en vez de","en lugar de"],
+        examples:[["Leo en vez de ver la televisión.","Я читаю вместо того, чтобы смотреть телевизор."],["Compré té en vez de café.","Я купила чай вместо кофе."]],
+        cloze:"Leo ___ ver la televisión.",clozeAnswers:["en vez de","en lugar de"]},
+      {id:"en_lugar_de",cat:"replacement",word:"en lugar de",gender:"выражение · перед существительным или инфинитивом",tr:"вместо",ru:["вместо"],answers:["en lugar de","en vez de"],
+        examples:[["Tomo té en lugar de café.","Я пью чай вместо кофе."],["Fuimos a pie en lugar de esperar el autobús.","Мы пошли пешком вместо того, чтобы ждать автобус."]],
+        cloze:"Tomo té ___ café.",clozeAnswers:["en lugar de","en vez de"]},
+      {id:"en_vez_de_eso",cat:"replacement",word:"en vez de eso",gender:"самостоятельная связка",tr:"вместо этого",ru:["вместо этого"],answers:["en vez de eso","en su lugar"],
+        examples:[["No fui de compras; en vez de eso, descansé.","Я не пошла за покупками; вместо этого я отдохнула."],["No llamé; en vez de eso, escribí un mensaje.","Я не позвонила; вместо этого написала сообщение."]],
+        cloze:"No fui de compras; ___, descansé.",clozeAnswers:["en vez de eso","en su lugar"]},
+      {id:"en_su_lugar",cat:"replacement",word:"en su lugar",gender:"самостоятельная связка",tr:"вместо этого",ru:["вместо этого"],answers:["en su lugar","en vez de eso"],
+        examples:[["No compré el vestido; en su lugar, compré una chaqueta.","Я не купила платье; вместо него купила куртку."],["No fuimos al cine; en su lugar, paseamos por el parque.","Мы не пошли в кино; вместо этого погуляли в парке."]],
+        cloze:"No fuimos al cine; ___, paseamos por el parque.",clozeAnswers:["en su lugar","en vez de eso"]},
+
+      {id:"tambien",cat:"addition",word:"también",gender:"наречие",tr:"тоже, также",ru:["тоже","также"],answers:["también","tambien"],
+        examples:[["Estudio español y también inglés.","Я учу испанский, а также английский."],["Yo también quiero ir.","Я тоже хочу пойти."]],
+        cloze:"Yo ___ quiero ir.",clozeAnswers:["también","tambien"]},
+      {id:"ademas",cat:"addition",word:"además",gender:"наречие-связка",tr:"кроме того, к тому же",ru:["кроме того","к тому же"],answers:["además","ademas"],
+        examples:[["El piso es bonito y, además, barato.","Квартира красивая и, кроме того, недорогая."],["Habla español y además entiende italiano.","Она говорит по-испански и к тому же понимает итальянский."]],
+        cloze:"El piso es bonito y, ___, barato.",clozeAnswers:["además","ademas"]},
+      {id:"incluso",cat:"addition",word:"incluso",gender:"наречие",tr:"даже",ru:["даже"],answers:["incluso"],
+        examples:[["Todos vinieron, incluso Ana.","Пришли все, даже Ана."],["Entiendo mucho, incluso las palabras difíciles.","Я понимаю многое, даже сложные слова."]],
+        cloze:"Todos vinieron, ___ Ana.",clozeAnswers:["incluso"]},
+      {id:"no_solo",cat:"addition",word:"no solo… sino también",gender:"парная конструкция",tr:"не только… но и",ru:["не только но и","не только но также"],answers:["no solo sino también","no solo... sino también","no solo sino tambien"],
+        examples:[["No solo habla español, sino también inglés.","Она говорит не только по-испански, но и по-английски."],["No solo compré pan, sino también queso.","Я купила не только хлеб, но и сыр."]],
+        cloze:"No solo compré pan, ___ queso.",clozeAnswers:["sino también","sino tambien"]},
+
+      {id:"primero",cat:"sequence",word:"primero",gender:"наречие",tr:"сначала, сперва",ru:["сначала","сперва"],answers:["primero"],
+        examples:[["Primero desayuno y después trabajo.","Сначала я завтракаю, а потом работаю."],["Primero lee la pregunta.","Сначала прочитай вопрос."]],
+        cloze:"___ desayuno y después trabajo.",clozeAnswers:["primero"]},
+      {id:"despues",cat:"sequence",word:"después",gender:"наречие",tr:"после, потом",ru:["после","потом"],answers:["después","despues"],
+        examples:[["Después del trabajo voy a casa.","После работы я иду домой."],["Primero estudiamos y después descansamos.","Сначала мы занимаемся, а потом отдыхаем."]],
+        cloze:"Primero estudiamos y ___ descansamos.",clozeAnswers:["después","despues"]},
+      {id:"luego",cat:"sequence",word:"luego",gender:"наречие",tr:"затем, потом",ru:["затем","потом"],answers:["luego"],
+        examples:[["Ceno y luego leo.","Я ужинаю, а затем читаю."],["Primero llama y luego escribe.","Сначала позвони, а затем напиши."]],
+        cloze:"Ceno y ___ leo.",clozeAnswers:["luego"]},
+      {id:"finalmente",cat:"sequence",word:"finalmente",gender:"наречие-связка",tr:"наконец, в конечном итоге",ru:["наконец","в конечном итоге"],answers:["finalmente"],
+        examples:[["Finalmente encontramos la dirección.","Наконец мы нашли адрес."],["Finalmente decidió quedarse.","В конечном итоге она решила остаться."]],
+        cloze:"___ encontramos la dirección.",clozeAnswers:["finalmente"]},
+      {id:"al_final",cat:"sequence",word:"al final",gender:"связка",tr:"в конце, в итоге",ru:["в конце","в итоге"],answers:["al final"],
+        examples:[["Al final decidimos quedarnos en casa.","В итоге мы решили остаться дома."],["Al final de la película todos lloraron.","В конце фильма все плакали."]],
+        cloze:"___ decidimos quedarnos en casa.",clozeAnswers:["al final"]}
     ];
 
     const FOOD_CATEGORIES = [
@@ -1106,6 +1215,7 @@
         {topic:"verbs",words:VERB_WORDS},
         {topic:"present",words:PRESENT_WORDS},
         {topic:"prepositions",words:PREPOSITION_WORDS},
+        {topic:"connectors",words:CONNECTOR_WORDS},
         {topic:"calendar",words:CALENDAR_WORDS},
         {topic:"city",words:CITY_WORDS}
       ];
@@ -1427,6 +1537,7 @@
       if(selectedTopic==="present") return PRESENT_WORDS;
       if(selectedTopic==="pronouns") return PRONOUN_WORDS;
       if(selectedTopic==="prepositions") return PREPOSITION_WORDS;
+      if(selectedTopic==="connectors") return CONNECTOR_WORDS;
       if(selectedTopic==="calendar") return CALENDAR_WORDS;
       if(selectedTopic==="city") return CITY_WORDS;
       if(selectedTopic==="clothes") return CLOTHING_WORDS;
@@ -1438,6 +1549,7 @@
       if(selectedTopic==="present") return PRESENT_CATEGORIES;
       if(selectedTopic==="pronouns") return PRONOUN_CATEGORIES;
       if(selectedTopic==="prepositions") return PREPOSITION_CATEGORIES;
+      if(selectedTopic==="connectors") return CONNECTOR_CATEGORIES;
       if(selectedTopic==="calendar") return CALENDAR_CATEGORIES;
       if(selectedTopic==="city") return CITY_CATEGORIES;
       if(selectedTopic==="clothes") return CLOTHING_CATEGORIES;
@@ -1477,6 +1589,7 @@
             t.id==="present" ? PRESENT_WORDS.length+" форм" :
             t.id==="pronouns" ? PRONOUN_WORDS.length+" лиц" :
             t.id==="prepositions" ? PREPOSITION_WORDS.length+" слов" :
+            t.id==="connectors" ? CONNECTOR_WORDS.length+" конструкций" :
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
             t.id==="city" ? CITY_WORDS.length+" карточек" :
             t.id==="foods" ? FOOD_WORDS.length+" слов" :
@@ -1528,6 +1641,7 @@
         present:"Сначала разберём формы Presente",
         pronouns:"Сначала разберём местоимения",
         prepositions:"Сначала познакомимся с предлогами",
+        connectors:"Сначала разберём связки и конструкции",
         calendar:"Сначала выучим календарную лексику",
         city:"Сначала познакомимся со словами о городе",
         foods:"Сначала познакомимся с продуктами",
@@ -1540,6 +1654,7 @@
       if(selectedTopic==="present") return "Смотри на окончание и местоимение, затем закрепляй форму без подсказок.";
       if(selectedTopic==="pronouns") return "Переключайся между лицами: смотри притяжательные формы и спряжение пяти базовых глаголов.";
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
+      if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
@@ -1547,6 +1662,7 @@
       if(selectedTopic==="present") return "Форма";
       if(selectedTopic==="pronouns") return "Местоимение";
       if(selectedTopic==="prepositions") return "Предлог";
+      if(selectedTopic==="connectors") return "Конструкция";
       if(selectedTopic==="activities") return "Фраза";
       if(selectedTopic==="city" && foodCategory==="opposites") return "Пара";
       return "Слово";
