@@ -136,6 +136,17 @@
     .toast.show { opacity:1; transform:none; }
 
     .study-shell { padding:clamp(22px,4vw,40px); }
+
+    .food-filters { display:flex; gap:8px; overflow-x:auto; padding:2px 1px 16px; scrollbar-width:thin; }
+    .food-filter {
+      flex:0 0 auto; border:1px solid var(--line); background:white; color:var(--muted);
+      border-radius:999px; padding:9px 13px; font-size:14px; font-weight:800;
+    }
+    .food-filter:hover { border-color:#c9c2ff; color:var(--violet); }
+    .food-filter.active { color:white; background:var(--violet); border-color:var(--violet); }
+    .food-tags { display:flex; gap:7px; flex-wrap:wrap; }
+    .food-category-label { display:inline-block; margin-top:12px; padding:5px 10px; border-radius:999px; background:#fff3c7; color:#72570a; font-size:13px; font-weight:800; }
+
     .study-intro { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:20px; }
     .study-intro h2 { margin:0 0 4px; font-size:clamp(22px,3vw,30px); letter-spacing:-.035em; }
     .study-intro p { margin:0; color:var(--muted); }
@@ -253,12 +264,16 @@
               </div>
               <button class="btn btn-primary" id="startFoodPractice" type="button">К упражнениям →</button>
             </div>
+            <div class="food-filters" id="foodFilters" aria-label="Категории продуктов"></div>
             <article class="study-card">
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
               <div>
                 <div class="word-count" id="wordCount">Слово 1</div>
                 <h2 class="food-word" id="foodWord"></h2>
-                <span class="food-gender" id="foodGender"></span>
+                <div class="food-tags">
+                  <span class="food-gender" id="foodGender"></span>
+                  <span class="food-category-label" id="foodCategoryLabel"></span>
+                </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="examples-title">В контексте</div>
                 <div class="example-list" id="foodExamples"></div>
@@ -359,61 +374,205 @@
     ];
 
 
+
+    const FOOD_CATEGORIES = [
+      {id:"all",title:"Все продукты"},
+      {id:"base",title:"Базовые"},
+      {id:"meat",title:"Мясо и птица"},
+      {id:"seafood",title:"Морепродукты"},
+      {id:"desserts",title:"Десерты"},
+      {id:"drinks",title:"Напитки"},
+      {id:"dishes",title:"Основные блюда"},
+      {id:"grocery",title:"Бакалея"}
+    ];
+
     const FOOD_WORDS = [
-      {id:"bread",word:"el pan",base:"pan",gender:"мужской род",tr:"хлеб",ru:["хлеб"],answers:["pan","el pan"],art:"bread",
+      {id:"bread",cat:"grocery",word:"el pan",base:"pan",gender:"мужской род",tr:"хлеб",ru:["хлеб"],answers:["pan","el pan"],art:"bread",
         examples:[["Compro pan fresco.","Я покупаю свежий хлеб."],["El pan está en la mesa.","Хлеб находится на столе."]],
         cloze:"Compro ___ fresco.",clozeAnswers:["pan"]},
-      {id:"milk",word:"la leche",base:"leche",gender:"женский род",tr:"молоко",ru:["молоко"],answers:["leche","la leche"],art:"milk",
+      {id:"milk",cat:"base",word:"la leche",base:"leche",gender:"женский род",tr:"молоко",ru:["молоко"],answers:["leche","la leche"],art:"milk",
         examples:[["Bebo leche por la mañana.","Я пью молоко утром."],["Necesitamos un litro de leche.","Нам нужен литр молока."]],
         cloze:"Bebo ___ por la mañana.",clozeAnswers:["leche"]},
-      {id:"cheese",word:"el queso",base:"queso",gender:"мужской род",tr:"сыр",ru:["сыр"],answers:["queso","el queso"],art:"cheese",
+      {id:"cheese",cat:"base",word:"el queso",base:"queso",gender:"мужской род",tr:"сыр",ru:["сыр"],answers:["queso","el queso"],art:"cheese",
         examples:[["Me gusta el queso.","Мне нравится сыр."],["Este queso es muy suave.","Этот сыр очень нежный."]],
         cloze:"Me gusta el ___.",clozeAnswers:["queso"]},
-      {id:"egg",word:"el huevo",base:"huevo",gender:"мужской род",tr:"яйцо",ru:["яйцо"],answers:["huevo","el huevo"],art:"egg",
+      {id:"egg",cat:"base",word:"el huevo",base:"huevo",gender:"мужской род",tr:"яйцо",ru:["яйцо"],answers:["huevo","el huevo"],art:"egg",
         examples:[["Como un huevo en el desayuno.","Я ем яйцо на завтрак."],["Los huevos están en la nevera.","Яйца находятся в холодильнике."]],
         cloze:"Como un ___ en el desayuno.",clozeAnswers:["huevo"]},
-      {id:"rice",word:"el arroz",base:"arroz",gender:"мужской род",tr:"рис",ru:["рис"],answers:["arroz","el arroz"],art:"rice",
+      {id:"rice",cat:"grocery",word:"el arroz",base:"arroz",gender:"мужской род",tr:"рис",ru:["рис"],answers:["arroz","el arroz"],art:"rice",
         examples:[["Cocinamos arroz con verduras.","Мы готовим рис с овощами."],["Quiero una porción de arroz.","Я хочу порцию риса."]],
         cloze:"Cocinamos ___ con verduras.",clozeAnswers:["arroz"]},
-      {id:"pasta",word:"la pasta",base:"pasta",gender:"женский род",tr:"макароны, паста",ru:["макароны","паста","макароны паста"],answers:["pasta","la pasta"],art:"pasta",
+      {id:"pasta",cat:"grocery",word:"la pasta",base:"pasta",gender:"женский род",tr:"макароны, паста",ru:["макароны","паста","макароны паста"],answers:["pasta","la pasta"],art:"pasta",
         examples:[["Hoy comemos pasta.","Сегодня мы едим пасту."],["La pasta está caliente.","Паста горячая."]],
         cloze:"Hoy comemos ___.",clozeAnswers:["pasta"]},
-      {id:"chicken",word:"el pollo",base:"pollo",gender:"мужской род",tr:"курица, куриное мясо",ru:["курица","куриное мясо","курятина"],answers:["pollo","el pollo"],art:"chicken",
+      {id:"chicken",cat:"meat",word:"el pollo",base:"pollo",gender:"мужской род",tr:"курица, куриное мясо",ru:["курица","куриное мясо","курятина"],answers:["pollo","el pollo"],art:"chicken",
         examples:[["Como pollo con patatas.","Я ем курицу с картофелем."],["El pollo está en el horno.","Курица находится в духовке."]],
         cloze:"Como ___ con patatas.",clozeAnswers:["pollo"]},
-      {id:"fish",word:"el pescado",base:"pescado",gender:"мужской род",tr:"рыба как продукт",ru:["рыба","рыба как продукт"],answers:["pescado","el pescado"],art:"fish",
+      {id:"fish",cat:"seafood",word:"el pescado",base:"pescado",gender:"мужской род",tr:"рыба как продукт",ru:["рыба","рыба как продукт"],answers:["pescado","el pescado"],art:"fish",
         examples:[["Prefiero el pescado.","Я предпочитаю рыбу."],["Compramos pescado fresco.","Мы покупаем свежую рыбу."]],
         cloze:"Prefiero el ___.",clozeAnswers:["pescado"]},
-      {id:"meat",word:"la carne",base:"carne",gender:"женский род",tr:"мясо",ru:["мясо"],answers:["carne","la carne"],art:"meat",
+      {id:"meat",cat:"meat",word:"la carne",base:"carne",gender:"женский род",tr:"мясо",ru:["мясо"],answers:["carne","la carne"],art:"meat",
         examples:[["No como mucha carne.","Я не ем много мяса."],["La carne está lista.","Мясо готово."]],
         cloze:"No como mucha ___.",clozeAnswers:["carne"]},
-      {id:"potato",word:"la patata",base:"patata",gender:"женский род",tr:"картофель, картофелина",ru:["картофель","картошка","картофелина"],answers:["patata","la patata","papa","la papa"],art:"potato",
+      {id:"potato",cat:"base",word:"la patata",base:"patata",gender:"женский род",tr:"картофель, картофелина",ru:["картофель","картошка","картофелина"],answers:["patata","la patata","papa","la papa"],art:"potato",
         examples:[["Pelo una patata.","Я чищу картофелину."],["Necesito dos patatas.","Мне нужны две картофелины."]],
         cloze:"Pelo una ___.",clozeAnswers:["patata","papa"]},
-      {id:"tomato",word:"el tomate",base:"tomate",gender:"мужской род",tr:"помидор",ru:["помидор","томат"],answers:["tomate","el tomate"],art:"tomato",
+      {id:"tomato",cat:"base",word:"el tomate",base:"tomate",gender:"мужской род",tr:"помидор",ru:["помидор","томат"],answers:["tomate","el tomate"],art:"tomato",
         examples:[["Corto un tomate.","Я режу помидор."],["Los tomates están maduros.","Помидоры спелые."]],
         cloze:"Corto un ___.",clozeAnswers:["tomate"]},
-      {id:"apple",word:"la manzana",base:"manzana",gender:"женский род",tr:"яблоко",ru:["яблоко"],answers:["manzana","la manzana"],art:"apple",
+      {id:"apple",cat:"base",word:"la manzana",base:"manzana",gender:"женский род",tr:"яблоко",ru:["яблоко"],answers:["manzana","la manzana"],art:"apple",
         examples:[["Como una manzana.","Я ем яблоко."],["La manzana es roja.","Яблоко красное."]],
         cloze:"Como una ___.",clozeAnswers:["manzana"]},
-      {id:"banana",word:"el plátano",base:"plátano",gender:"мужской род",tr:"банан",ru:["банан"],answers:["plátano","el plátano","banana","la banana"],art:"banana",
+      {id:"banana",cat:"base",word:"el plátano",base:"plátano",gender:"мужской род",tr:"банан",ru:["банан"],answers:["plátano","el plátano","banana","la banana"],art:"banana",
         examples:[["Compro plátanos.","Я покупаю бананы."],["El plátano está maduro.","Банан спелый."]],
         cloze:"El ___ está maduro.",clozeAnswers:["plátano"]},
-      {id:"orange",word:"la naranja",base:"naranja",gender:"женский род",tr:"апельсин",ru:["апельсин"],answers:["naranja","la naranja"],art:"orange",
+      {id:"orange",cat:"base",word:"la naranja",base:"naranja",gender:"женский род",tr:"апельсин",ru:["апельсин"],answers:["naranja","la naranja"],art:"orange",
         examples:[["Quiero zumo de naranja.","Я хочу апельсиновый сок."],["La naranja es dulce.","Апельсин сладкий."]],
         cloze:"La ___ es dulce.",clozeAnswers:["naranja"]},
-      {id:"water",word:"el agua",base:"agua",gender:"женский род",tr:"вода",ru:["вода"],answers:["agua","el agua"],art:"water",
+      {id:"water",cat:"drinks",word:"el agua",base:"agua",gender:"женский род",tr:"вода",ru:["вода"],answers:["agua","el agua"],art:"water",
         examples:[["Bebo agua todos los días.","Я пью воду каждый день."],["Quiero un vaso de agua.","Я хочу стакан воды."]],
         cloze:"Bebo ___ todos los días.",clozeAnswers:["agua"]},
-      {id:"coffee",word:"el café",base:"café",gender:"мужской род",tr:"кофе",ru:["кофе"],answers:["café","el café"],art:"coffee",
+      {id:"coffee",cat:"drinks",word:"el café",base:"café",gender:"мужской род",tr:"кофе",ru:["кофе"],answers:["café","el café"],art:"coffee",
         examples:[["Tomo café sin azúcar.","Я пью кофе без сахара."],["El café está caliente.","Кофе горячий."]],
         cloze:"Tomo ___ sin azúcar.",clozeAnswers:["café"]},
-      {id:"tea",word:"el té",base:"té",gender:"мужской род",tr:"чай",ru:["чай"],answers:["té","el té"],art:"tea",
+      {id:"tea",cat:"drinks",word:"el té",base:"té",gender:"мужской род",tr:"чай",ru:["чай"],answers:["té","el té"],art:"tea",
         examples:[["Bebo té por la tarde.","Я пью чай после обеда."],["Prefiero el té verde.","Я предпочитаю зелёный чай."]],
         cloze:"Bebo ___ por la tarde.",clozeAnswers:["té"]},
-      {id:"salt",word:"la sal",base:"sal",gender:"женский род",tr:"соль",ru:["соль"],answers:["sal","la sal"],art:"salt",
+      {id:"salt",cat:"grocery",word:"la sal",base:"sal",gender:"женский род",tr:"соль",ru:["соль"],answers:["sal","la sal"],art:"salt",
         examples:[["Añade un poco de sal.","Добавь немного соли."],["La sal está en la mesa.","Соль находится на столе."]],
-        cloze:"Añade un poco de ___.",clozeAnswers:["sal"]}
+        cloze:"Añade un poco de ___.",clozeAnswers:["sal"]},
+      {id:"beef",cat:"meat",word:"la ternera",base:"ternera",gender:"женский род",tr:"говядина, телятина",ru:["говядина","телятина","говядина телятина"],answers:["ternera","la ternera","carne de ternera","la carne de ternera"],art:"meat",
+        examples:[["Compro ternera para la cena.","Я покупаю говядину на ужин."],["La ternera está muy tierna.","Говядина очень нежная."]],
+        cloze:"Compro ___ para la cena.",clozeAnswers:["ternera","carne de ternera"]},
+      {id:"pork",cat:"meat",word:"la carne de cerdo",base:"carne de cerdo",gender:"женский род",tr:"свинина",ru:["свинина"],answers:["carne de cerdo","la carne de cerdo","cerdo","el cerdo"],art:"meat",
+        examples:[["No como carne de cerdo.","Я не ем свинину."],["La carne de cerdo está en la nevera.","Свинина находится в холодильнике."]],
+        cloze:"No como carne de ___.",clozeAnswers:["cerdo"]},
+      {id:"turkey",cat:"meat",word:"el pavo",base:"pavo",gender:"мужской род",tr:"индейка",ru:["индейка","индюшка"],answers:["pavo","el pavo"],art:"chicken",
+        examples:[["Hoy cocinamos pavo.","Сегодня мы готовим индейку."],["El pavo tiene poca grasa.","В индейке мало жира."]],
+        cloze:"Hoy cocinamos ___.",clozeAnswers:["pavo"]},
+      {id:"ham",cat:"meat",word:"el jamón",base:"jamón",gender:"мужской род",tr:"ветчина, хамон",ru:["ветчина","хамон","ветчина хамон"],answers:["jamón","el jamón"],art:"meat",
+        examples:[["Quiero un bocadillo de jamón.","Я хочу бутерброд с ветчиной."],["El jamón está muy rico.","Хамон очень вкусный."]],
+        cloze:"Quiero un bocadillo de ___.",clozeAnswers:["jamón"]},
+      {id:"sausage",cat:"meat",word:"la salchicha",base:"salchicha",gender:"женский род",tr:"сосиска, колбаска",ru:["сосиска","колбаска","сосиска колбаска"],answers:["salchicha","la salchicha"],art:"sausage",
+        examples:[["Como una salchicha con pan.","Я ем сосиску с хлебом."],["Las salchichas están calientes.","Сосиски горячие."]],
+        cloze:"Como una ___ con pan.",clozeAnswers:["salchicha"]},
+
+      {id:"salmon",cat:"seafood",word:"el salmón",base:"salmón",gender:"мужской род",tr:"лосось",ru:["лосось"],answers:["salmón","el salmón"],art:"fish",
+        examples:[["El salmón está en el horno.","Лосось находится в духовке."],["Me gusta el salmón con arroz.","Мне нравится лосось с рисом."]],
+        cloze:"Me gusta el ___ con arroz.",clozeAnswers:["salmón"]},
+      {id:"tuna",cat:"seafood",word:"el atún",base:"atún",gender:"мужской род",tr:"тунец",ru:["тунец"],answers:["atún","el atún"],art:"fish",
+        examples:[["La ensalada lleva atún.","В салате есть тунец."],["Compro una lata de atún.","Я покупаю банку тунца."]],
+        cloze:"Compro una lata de ___.",clozeAnswers:["atún"]},
+      {id:"shrimp",cat:"seafood",word:"las gambas",base:"gambas",gender:"женский род, множественное число",tr:"креветки",ru:["креветки"],answers:["gambas","las gambas","camarones","los camarones"],art:"shellfish",
+        examples:[["Las gambas están muy frescas.","Креветки очень свежие."],["Pedimos arroz con gambas.","Мы заказываем рис с креветками."]],
+        cloze:"Pedimos arroz con ___.",clozeAnswers:["gambas","camarones"]},
+      {id:"mussels",cat:"seafood",word:"los mejillones",base:"mejillones",gender:"мужской род, множественное число",tr:"мидии",ru:["мидии"],answers:["mejillones","los mejillones"],art:"shellfish",
+        examples:[["Los mejillones están listos.","Мидии готовы."],["Nunca como mejillones.","Я никогда не ем мидии."]],
+        cloze:"Nunca como ___.",clozeAnswers:["mejillones"]},
+      {id:"squid",cat:"seafood",word:"el calamar",base:"calamar",gender:"мужской род",tr:"кальмар",ru:["кальмар"],answers:["calamar","el calamar"],art:"shellfish",
+        examples:[["El calamar está muy tierno.","Кальмар очень нежный."],["Quiero calamar a la plancha.","Я хочу кальмара на гриле."]],
+        cloze:"Quiero ___ a la plancha.",clozeAnswers:["calamar"]},
+      {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"shellfish",
+        examples:[["Probamos pulpo en Galicia.","Мы пробуем осьминога в Галисии."],["El pulpo está delicioso.","Осьминог очень вкусный."]],
+        cloze:"El ___ está delicioso.",clozeAnswers:["pulpo"]},
+      {id:"seafood",cat:"seafood",word:"el marisco",base:"marisco",gender:"мужской род",tr:"морепродукты",ru:["морепродукты","морепродукт"],answers:["marisco","el marisco","mariscos","los mariscos"],art:"shellfish",
+        examples:[["Me gusta mucho el marisco.","Я очень люблю морепродукты."],["La paella lleva marisco.","В паэлье есть морепродукты."]],
+        cloze:"La paella lleva ___.",clozeAnswers:["marisco","mariscos"]},
+
+      {id:"cookie",cat:"desserts",word:"la galleta",base:"galleta",gender:"женский род",tr:"печенье",ru:["печенье","печенька"],answers:["galleta","la galleta"],art:"cookie",
+        examples:[["Como una galleta con café.","Я ем печенье с кофе."],["Estas galletas tienen chocolate.","В этом печенье есть шоколад."]],
+        cloze:"Como una ___ con café.",clozeAnswers:["galleta"]},
+      {id:"cake",cat:"desserts",word:"la tarta",base:"tarta",gender:"женский род",tr:"торт, пирог",ru:["торт","пирог","торт пирог"],answers:["tarta","la tarta","pastel","el pastel"],art:"cake",
+        examples:[["La tarta es de chocolate.","Торт шоколадный."],["Preparo una tarta para mi cumpleaños.","Я готовлю торт на свой день рождения."]],
+        cloze:"La ___ es de chocolate.",clozeAnswers:["tarta","pastel"]},
+      {id:"icecream",cat:"desserts",word:"el helado",base:"helado",gender:"мужской род",tr:"мороженое",ru:["мороженое"],answers:["helado","el helado"],art:"icecream",
+        examples:[["Quiero un helado de vainilla.","Я хочу ванильное мороженое."],["El helado está muy frío.","Мороженое очень холодное."]],
+        cloze:"Quiero un ___ de vainilla.",clozeAnswers:["helado"]},
+      {id:"chocolate",cat:"desserts",word:"el chocolate",base:"chocolate",gender:"мужской род",tr:"шоколад",ru:["шоколад"],answers:["chocolate","el chocolate"],art:"chocolate",
+        examples:[["Me encanta el chocolate negro.","Я обожаю тёмный шоколад."],["Esta tarta lleva chocolate.","В этом торте есть шоколад."]],
+        cloze:"Me encanta el ___ negro.",clozeAnswers:["chocolate"]},
+      {id:"candy",cat:"desserts",word:"el caramelo",base:"caramelo",gender:"мужской род",tr:"конфета, карамель",ru:["конфета","карамель","конфета карамель"],answers:["caramelo","el caramelo"],art:"candy",
+        examples:[["El niño come un caramelo.","Ребёнок ест конфету."],["No quiero más caramelos.","Я больше не хочу конфет."]],
+        cloze:"El niño come un ___.",clozeAnswers:["caramelo"]},
+      {id:"muffin",cat:"desserts",word:"la magdalena",base:"magdalena",gender:"женский род",tr:"кекс",ru:["кекс","маффин"],answers:["magdalena","la magdalena","muffin","el muffin"],art:"muffin",
+        examples:[["Desayuno una magdalena.","Я завтракаю кексом."],["La magdalena está muy esponjosa.","Кекс очень воздушный."]],
+        cloze:"Desayuno una ___.",clozeAnswers:["magdalena"]},
+      {id:"flan",cat:"desserts",word:"el flan",base:"flan",gender:"мужской род",tr:"флан, карамельный пудинг",ru:["флан","карамельный пудинг","пудинг"],answers:["flan","el flan"],art:"flan",
+        examples:[["De postre quiero flan.","На десерт я хочу флан."],["El flan lleva huevos y leche.","Во флане есть яйца и молоко."]],
+        cloze:"De postre quiero ___.",clozeAnswers:["flan"]},
+
+      {id:"juice",cat:"drinks",word:"el zumo",base:"zumo",gender:"мужской род",tr:"сок",ru:["сок"],answers:["zumo","el zumo","jugo","el jugo"],art:"juice",
+        examples:[["Bebo zumo de naranja.","Я пью апельсиновый сок."],["El zumo está en la nevera.","Сок находится в холодильнике."]],
+        cloze:"Bebo ___ de naranja.",clozeAnswers:["zumo","jugo"]},
+      {id:"lemonade",cat:"drinks",word:"la limonada",base:"limonada",gender:"женский род",tr:"лимонад",ru:["лимонад"],answers:["limonada","la limonada"],art:"juice",
+        examples:[["La limonada está muy fría.","Лимонад очень холодный."],["Preparo limonada con hielo.","Я готовлю лимонад со льдом."]],
+        cloze:"Preparo ___ con hielo.",clozeAnswers:["limonada"]},
+      {id:"soda",cat:"drinks",word:"el refresco",base:"refresco",gender:"мужской род",tr:"газированный напиток",ru:["газировка","газированный напиток","прохладительный напиток"],answers:["refresco","el refresco"],art:"soda",
+        examples:[["No bebo muchos refrescos.","Я не пью много газировки."],["Quiero un refresco sin azúcar.","Я хочу газировку без сахара."]],
+        cloze:"Quiero un ___ sin azúcar.",clozeAnswers:["refresco"]},
+      {id:"wine",cat:"drinks",word:"el vino",base:"vino",gender:"мужской род",tr:"вино",ru:["вино"],answers:["vino","el vino"],art:"wine",
+        examples:[["Prefiero el vino blanco.","Я предпочитаю белое вино."],["La botella de vino está en la mesa.","Бутылка вина находится на столе."]],
+        cloze:"Prefiero el ___ blanco.",clozeAnswers:["vino"]},
+      {id:"beer",cat:"drinks",word:"la cerveza",base:"cerveza",gender:"женский род",tr:"пиво",ru:["пиво"],answers:["cerveza","la cerveza"],art:"beer",
+        examples:[["Quiero una cerveza sin alcohol.","Я хочу безалкогольное пиво."],["La cerveza está fría.","Пиво холодное."]],
+        cloze:"Quiero una ___ sin alcohol.",clozeAnswers:["cerveza"]},
+      {id:"hotchocolate",cat:"drinks",word:"el chocolate caliente",base:"chocolate caliente",gender:"мужской род",tr:"горячий шоколад",ru:["горячий шоколад"],answers:["chocolate caliente","el chocolate caliente"],art:"coffee",
+        examples:[["En invierno bebo chocolate caliente.","Зимой я пью горячий шоколад."],["El chocolate caliente lleva leche.","В горячем шоколаде есть молоко."]],
+        cloze:"En invierno bebo chocolate ___.",clozeAnswers:["caliente"]},
+
+      {id:"soup",cat:"dishes",word:"la sopa",base:"sopa",gender:"женский род",tr:"суп",ru:["суп"],answers:["sopa","la sopa"],art:"soup",
+        examples:[["La sopa está caliente.","Суп горячий."],["Hoy preparo sopa de verduras.","Сегодня я готовлю овощной суп."]],
+        cloze:"Hoy preparo ___ de verduras.",clozeAnswers:["sopa"]},
+      {id:"salad",cat:"dishes",word:"la ensalada",base:"ensalada",gender:"женский род",tr:"салат",ru:["салат"],answers:["ensalada","la ensalada"],art:"salad",
+        examples:[["Quiero una ensalada pequeña.","Я хочу маленький салат."],["La ensalada lleva tomate y atún.","В салате есть помидор и тунец."]],
+        cloze:"Quiero una ___ pequeña.",clozeAnswers:["ensalada"]},
+      {id:"omelette",cat:"dishes",word:"la tortilla",base:"tortilla",gender:"женский род",tr:"омлет, тортилья",ru:["омлет","тортилья","омлет тортилья"],answers:["tortilla","la tortilla"],art:"egg",
+        examples:[["La tortilla lleva huevos y patatas.","В тортилье есть яйца и картофель."],["Comemos tortilla para cenar.","Мы едим тортилью на ужин."]],
+        cloze:"Comemos ___ para cenar.",clozeAnswers:["tortilla"]},
+      {id:"sandwich",cat:"dishes",word:"el bocadillo",base:"bocadillo",gender:"мужской род",tr:"бутерброд, сэндвич",ru:["бутерброд","сэндвич","бутерброд сэндвич"],answers:["bocadillo","el bocadillo","sándwich","el sándwich"],art:"sandwich",
+        examples:[["Quiero un bocadillo de queso.","Я хочу бутерброд с сыром."],["El bocadillo está listo.","Бутерброд готов."]],
+        cloze:"Quiero un ___ de queso.",clozeAnswers:["bocadillo","sándwich"]},
+      {id:"pizza",cat:"dishes",word:"la pizza",base:"pizza",gender:"женский род",tr:"пицца",ru:["пицца"],answers:["pizza","la pizza"],art:"pizza",
+        examples:[["Pedimos una pizza grande.","Мы заказываем большую пиццу."],["La pizza lleva queso y tomate.","В пицце есть сыр и помидор."]],
+        cloze:"Pedimos una ___ grande.",clozeAnswers:["pizza"]},
+      {id:"paella",cat:"dishes",word:"la paella",base:"paella",gender:"женский род",tr:"паэлья",ru:["паэлья"],answers:["paella","la paella"],art:"rice",
+        examples:[["La paella lleva arroz y marisco.","В паэлье есть рис и морепродукты."],["Hoy comemos paella.","Сегодня мы едим паэлью."]],
+        cloze:"Hoy comemos ___.",clozeAnswers:["paella"]},
+      {id:"stew",cat:"dishes",word:"el guiso",base:"guiso",gender:"мужской род",tr:"рагу, тушёное блюдо",ru:["рагу","тушёное блюдо","тушеное блюдо"],answers:["guiso","el guiso"],art:"soup",
+        examples:[["El guiso lleva carne y patatas.","В рагу есть мясо и картофель."],["Mi abuela prepara un guiso delicioso.","Моя бабушка готовит вкусное рагу."]],
+        cloze:"El ___ lleva carne y patatas.",clozeAnswers:["guiso"]},
+      {id:"puree",cat:"dishes",word:"el puré",base:"puré",gender:"мужской род",tr:"пюре",ru:["пюре"],answers:["puré","el puré"],art:"puree",
+        examples:[["Quiero puré de patatas.","Я хочу картофельное пюре."],["El puré está muy suave.","Пюре очень нежное."]],
+        cloze:"Quiero ___ de patatas.",clozeAnswers:["puré"]},
+
+      {id:"flour",cat:"grocery",word:"la harina",base:"harina",gender:"женский род",tr:"мука",ru:["мука"],answers:["harina","la harina"],art:"bag",
+        examples:[["Necesito harina para la tarta.","Мне нужна мука для торта."],["La harina está en el armario.","Мука находится в шкафу."]],
+        cloze:"Necesito ___ para la tarta.",clozeAnswers:["harina"]},
+      {id:"sugar",cat:"grocery",word:"el azúcar",base:"azúcar",gender:"мужской род",tr:"сахар",ru:["сахар"],answers:["azúcar","el azúcar"],art:"bag",
+        examples:[["Tomo café sin azúcar.","Я пью кофе без сахара."],["Añade una cucharada de azúcar.","Добавь ложку сахара."]],
+        cloze:"Tomo café sin ___.",clozeAnswers:["azúcar"]},
+      {id:"oil",cat:"grocery",word:"el aceite",base:"aceite",gender:"мужской род",tr:"масло растительное",ru:["масло","растительное масло"],answers:["aceite","el aceite","aceite vegetal","el aceite vegetal"],art:"bottle",
+        examples:[["Cocino con aceite de oliva.","Я готовлю с оливковым маслом."],["Necesitamos un poco de aceite.","Нам нужно немного масла."]],
+        cloze:"Cocino con ___ de oliva.",clozeAnswers:["aceite"]},
+      {id:"vinegar",cat:"grocery",word:"el vinagre",base:"vinagre",gender:"мужской род",tr:"уксус",ru:["уксус"],answers:["vinagre","el vinagre"],art:"bottle",
+        examples:[["La ensalada lleva aceite y vinagre.","В салате есть масло и уксус."],["No me gusta mucho el vinagre.","Я не очень люблю уксус."]],
+        cloze:"La ensalada lleva aceite y ___.",clozeAnswers:["vinagre"]},
+      {id:"butter",cat:"grocery",word:"la mantequilla",base:"mantequilla",gender:"женский род",tr:"сливочное масло",ru:["сливочное масло","масло"],answers:["mantequilla","la mantequilla"],art:"butter",
+        examples:[["Como pan con mantequilla.","Я ем хлеб со сливочным маслом."],["La mantequilla está en la nevera.","Сливочное масло находится в холодильнике."]],
+        cloze:"Como pan con ___.",clozeAnswers:["mantequilla"]},
+      {id:"jam",cat:"grocery",word:"la mermelada",base:"mermelada",gender:"женский род",tr:"варенье, джем",ru:["варенье","джем","варенье джем"],answers:["mermelada","la mermelada"],art:"jar",
+        examples:[["Desayuno pan con mermelada.","Я завтракаю хлебом с вареньем."],["La mermelada es de fresa.","Это клубничное варенье."]],
+        cloze:"Desayuno pan con ___.",clozeAnswers:["mermelada"]},
+      {id:"honey",cat:"grocery",word:"la miel",base:"miel",gender:"женский род",tr:"мёд",ru:["мёд","мед"],answers:["miel","la miel"],art:"jar",
+        examples:[["Pongo miel en el té.","Я кладу мёд в чай."],["La miel es muy dulce.","Мёд очень сладкий."]],
+        cloze:"Pongo ___ en el té.",clozeAnswers:["miel"]},
+      {id:"lentils",cat:"grocery",word:"las lentejas",base:"lentejas",gender:"женский род, множественное число",tr:"чечевица",ru:["чечевица"],answers:["lentejas","las lentejas"],art:"beans",
+        examples:[["Hoy comemos lentejas.","Сегодня мы едим чечевицу."],["Las lentejas tienen mucha proteína.","В чечевице много белка."]],
+        cloze:"Hoy comemos ___.",clozeAnswers:["lentejas"]},
+      {id:"beans",cat:"grocery",word:"las judías",base:"judías",gender:"женский род, множественное число",tr:"фасоль",ru:["фасоль"],answers:["judías","las judías","frijoles","los frijoles"],art:"beans",
+        examples:[["El guiso lleva judías.","В рагу есть фасоль."],["Compramos judías blancas.","Мы покупаем белую фасоль."]],
+        cloze:"El guiso lleva ___.",clozeAnswers:["judías","frijoles"]}
+
     ];
 
     const BUILTIN = [
@@ -499,17 +658,17 @@
       const items=[];
       FOOD_WORDS.forEach(function(word){
         items.push({
-          id:"food_"+word.id+"_es",topic:"foods",skill:"Вспомни слово",
+          id:"food_"+word.id+"_es",topic:"foods",foodCat:word.cat,skill:"Вспомни слово",
           q:"Переведи на испанский: "+word.tr+".",a:word.answers,
           e:"Базовая форма: "+word.word+"."
         });
         items.push({
-          id:"food_"+word.id+"_ru",topic:"foods",skill:"Узнай слово",
+          id:"food_"+word.id+"_ru",topic:"foods",foodCat:word.cat,skill:"Узнай слово",
           q:"Переведи на русский: "+word.word+".",a:word.ru,
           e:word.word+" — "+word.tr+"."
         });
         items.push({
-          id:"food_"+word.id+"_ctx",topic:"foods",skill:"Слово в контексте",
+          id:"food_"+word.id+"_ctx",topic:"foods",foodCat:word.cat,skill:"Слово в контексте",
           q:"Вставь пропущенное слово: "+word.cloze,a:word.clozeAnswers,
           e:word.examples[0][0]+" — "+word.examples[0][1]
         });
@@ -537,7 +696,31 @@
         water:'<path d="M91 25c14 26 39 53 39 80 0 23-17 42-39 42s-40-19-40-42c0-27 26-54 40-80Z" fill="#7ACFF2" stroke="#463B75" stroke-width="5"/><path d="M71 111c3 10 10 15 20 17" fill="none" stroke="#E9FAFF" stroke-width="7" stroke-linecap="round"/>',
         coffee:'<path d="M43 58h83v52c0 24-17 38-41 38S43 134 43 110V58Z" fill="#FFF6E2" stroke="#463B75" stroke-width="5"/><path d="M126 73h8c17 0 18 29 0 31h-8" fill="none" stroke="#463B75" stroke-width="8"/><path d="M54 73h61" stroke="#825239" stroke-width="14"/><path d="M68 43c-8-9 8-14 0-23M91 43c-8-9 8-14 0-23" fill="none" stroke="#B3A8D8" stroke-width="5" stroke-linecap="round"/>',
         tea:'<path d="M43 62h83v49c0 23-17 37-41 37s-42-14-42-37V62Z" fill="#F1FAE7" stroke="#463B75" stroke-width="5"/><path d="M126 75h8c17 0 18 28 0 30h-8" fill="none" stroke="#463B75" stroke-width="8"/><path d="M77 63v32h29V63" fill="#86C479" stroke="#463B75" stroke-width="4"/><path d="M91 37v26" stroke="#463B75" stroke-width="4"/>',
-        salt:'<path d="M62 64h56l9 76H53l9-76Z" fill="#FDFDFF" stroke="#463B75" stroke-width="5"/><path d="M59 64c0-18 13-29 31-29s31 11 31 29H59Z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><g fill="#463B75"><circle cx="79" cy="51" r="3"/><circle cx="91" cy="47" r="3"/><circle cx="103" cy="51" r="3"/></g><path d="M57 101h66" stroke="#A9DCFF" stroke-width="18"/>'
+        salt:'<path d="M62 64h56l9 76H53l9-76Z" fill="#FDFDFF" stroke="#463B75" stroke-width="5"/><path d="M59 64c0-18 13-29 31-29s31 11 31 29H59Z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><g fill="#463B75"><circle cx="79" cy="51" r="3"/><circle cx="91" cy="47" r="3"/><circle cx="103" cy="51" r="3"/></g><path d="M57 101h66" stroke="#A9DCFF" stroke-width="18"/>',
+        sausage:'<path d="M47 112c17 23 69 24 87-4 10-16-10-30-23-18-13 12-39 8-45-7-6-15-28-4-19 29Z" fill="#E88672" stroke="#463B75" stroke-width="5"/><path d="m45 111-10 6M135 108l10 7" stroke="#463B75" stroke-width="6" stroke-linecap="round"/>',
+        shellfish:'<path d="M45 111c10-38 27-59 46-59s37 21 45 59c-21 28-70 28-91 0Z" fill="#FF917E" stroke="#463B75" stroke-width="5"/><path d="M91 53v79M66 64l25 68M116 64l-25 68M50 96h82" fill="none" stroke="#FFF1E2" stroke-width="5"/>',
+        cookie:'<circle cx="90" cy="90" r="54" fill="#DDA45F" stroke="#463B75" stroke-width="5"/><g fill="#6F4537"><circle cx="67" cy="66" r="7"/><circle cx="108" cy="62" r="6"/><circle cx="84" cy="98" r="7"/><circle cx="119" cy="112" r="6"/><circle cx="58" cy="122" r="5"/></g>',
+        cake:'<path d="M46 77h88v63H46z" fill="#FFB5C3" stroke="#463B75" stroke-width="5"/><path d="M46 98h88" stroke="#FFF4D9" stroke-width="14"/><path d="M43 77c8-22 23-30 47-30s39 8 47 30H43Z" fill="#FFF4D9" stroke="#463B75" stroke-width="5"/><circle cx="91" cy="39" r="10" fill="#F25E65"/>',
+        icecream:'<path d="m60 76 31 72 31-72H60Z" fill="#DDA45F" stroke="#463B75" stroke-width="5"/><path d="M58 76c-8-17 5-31 20-29 4-18 29-21 36-5 19-4 31 17 20 34H58Z" fill="#FFB5C3" stroke="#463B75" stroke-width="5"/>',
+        chocolate:'<rect x="48" y="34" width="84" height="112" rx="10" fill="#80513C" stroke="#463B75" stroke-width="5"/><path d="M48 71h84M48 108h84M76 34v112M104 34v112" stroke="#D99A73" stroke-width="4"/>',
+        candy:'<path d="m52 70-25-14 8 28-8 28 25-14M128 70l25-14-8 28 8 28-25-14" fill="#FFD447" stroke="#463B75" stroke-width="5" stroke-linejoin="round"/><rect x="49" y="58" width="82" height="52" rx="20" fill="#FF786C" stroke="#463B75" stroke-width="5"/>',
+        muffin:'<path d="M54 82h73l-9 60H63L54 82Z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><path d="M52 83c-7-19 6-35 24-32 7-20 36-16 39 2 19-2 28 15 17 30H52Z" fill="#F1B85B" stroke="#463B75" stroke-width="5"/>',
+        flan:'<path d="m55 65 10-24h51l10 24 10 70H45l10-70Z" fill="#F4C46B" stroke="#463B75" stroke-width="5"/><path d="M55 65h71" stroke="#B96D45" stroke-width="14"/><ellipse cx="90" cy="135" rx="55" ry="10" fill="#A9DCFF" stroke="#463B75" stroke-width="4"/>',
+        juice:'<path d="M56 53h68l-8 91H64l-8-91Z" fill="#FFF4E4" stroke="#463B75" stroke-width="5"/><path d="M62 87h56l-5 54H67l-5-54Z" fill="#FFA33B"/><path d="m93 54 24-31M108 34l23 5" fill="none" stroke="#463B75" stroke-width="5" stroke-linecap="round"/>',
+        soda:'<path d="M64 37h52l8 108H56L64 37Z" fill="#FF786C" stroke="#463B75" stroke-width="5"/><path d="M62 61h56M59 119h62" stroke="#FFF4D9" stroke-width="7"/><circle cx="90" cy="91" r="17" fill="#FFD447"/>',
+        wine:'<path d="M57 37h66v30c0 22-14 37-33 37S57 89 57 67V37Z" fill="#FAF3FF" stroke="#463B75" stroke-width="5"/><path d="M60 66h60c-1 21-12 35-30 35S61 87 60 66Z" fill="#B64B65"/><path d="M90 104v33M69 142h42" stroke="#463B75" stroke-width="5" stroke-linecap="round"/>',
+        beer:'<path d="M49 48h73v94H49V48Z" fill="#FFD447" stroke="#463B75" stroke-width="5"/><path d="M122 66h12c20 0 20 48 0 48h-12" fill="none" stroke="#463B75" stroke-width="8"/><path d="M50 48c4-17 22-18 31-8 10-15 34-9 36 8" fill="#FFF8E5" stroke="#463B75" stroke-width="5"/>',
+        soup:'<path d="M37 78h106c-3 43-22 67-53 67S40 121 37 78Z" fill="#FF786C" stroke="#463B75" stroke-width="5"/><path d="M45 79h90" stroke="#F3B85A" stroke-width="14"/><path d="M67 54c-8-11 8-16 0-27M92 54c-8-11 8-16 0-27M117 54c-8-11 8-16 0-27" fill="none" stroke="#B3A8D8" stroke-width="5" stroke-linecap="round"/>',
+        salad:'<path d="M37 88h106c-4 39-22 59-53 59S41 127 37 88Z" fill="#8174ED" stroke="#463B75" stroke-width="5"/><g stroke="#463B75" stroke-width="4"><circle cx="69" cy="77" r="18" fill="#65B56C"/><circle cx="104" cy="70" r="20" fill="#9ACE67"/><circle cx="124" cy="87" r="15" fill="#FF786C"/></g>',
+        sandwich:'<path d="m41 89 49-45 49 45v49H41V89Z" fill="#F1B85B" stroke="#463B75" stroke-width="5" stroke-linejoin="round"/><path d="m41 102 49 22 49-22" fill="#65B56C" stroke="#463B75" stroke-width="5"/><path d="m45 91 45 17 45-17" fill="#FFD447" stroke="#463B75" stroke-width="5"/>',
+        pizza:'<path d="M91 31c30 0 54 25 54 55 0 31-24 55-54 55S36 117 36 86c0-30 25-55 55-55Z" fill="#F1B85B" stroke="#463B75" stroke-width="5"/><path d="M91 31v110M91 86h54M91 86 53 47" fill="none" stroke="#FFF1C0" stroke-width="5"/><g fill="#F25E65"><circle cx="69" cy="67" r="9"/><circle cx="116" cy="63" r="9"/><circle cx="67" cy="113" r="9"/><circle cx="119" cy="112" r="9"/></g>',
+        puree:'<path d="M41 83h98c-3 40-20 62-49 62S44 123 41 83Z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><path d="M51 84c8-26 25-38 39-38s31 12 39 38" fill="#FFF0BD" stroke="#463B75" stroke-width="5"/><path d="m121 39-36 71" stroke="#463B75" stroke-width="7" stroke-linecap="round"/>',
+        bag:'<path d="M55 54h70l10 90H45l10-90Z" fill="#FFF3D8" stroke="#463B75" stroke-width="5"/><path d="m55 54 15-24h40l15 24M59 89h62" fill="none" stroke="#463B75" stroke-width="5"/><path d="M72 112c12-14 25-14 37 0" fill="none" stroke="#E7A94B" stroke-width="8" stroke-linecap="round"/>',
+        bottle:'<path d="M74 31h32v25l12 17v70H62V73l12-17V31Z" fill="#9DD5A3" stroke="#463B75" stroke-width="5"/><path d="M62 86h56v38H62z" fill="#FFF3D8"/><path d="M74 31h32" stroke="#463B75" stroke-width="9"/>',
+        butter:'<path d="M43 82h94v54H43z" fill="#FFD968" stroke="#463B75" stroke-width="5"/><path d="m43 82 25-24h70l-1 24M68 58v24" fill="#FFF3B6" stroke="#463B75" stroke-width="5"/><path d="M59 105h62" stroke="#F3A74C" stroke-width="6"/>',
+        jar:'<path d="M57 55h66v88H57V55Z" fill="#FFB45C" stroke="#463B75" stroke-width="5"/><path d="M52 39h76v20H52z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><path d="M57 83h66v38H57z" fill="#FFF6E5"/><circle cx="90" cy="102" r="12" fill="#F25E65"/>',
+        beans:'<path d="M39 86h102c-4 39-22 59-51 59S43 125 39 86Z" fill="#8174ED" stroke="#463B75" stroke-width="5"/><g fill="#C77E56" stroke="#463B75" stroke-width="3"><ellipse cx="64" cy="79" rx="14" ry="10" transform="rotate(18 64 79)"/><ellipse cx="92" cy="68" rx="14" ry="10" transform="rotate(-18 92 68)"/><ellipse cx="119" cy="80" rx="14" ry="10" transform="rotate(20 119 80)"/></g>'
+
       };
       return '<svg '+common+'>'+art[kind]+'</svg>';
     }
@@ -553,6 +736,7 @@
     let checkedCurrent = false;
     let wordIndex = 0;
     let foodPhase = "study";
+    let foodCategory = "all";
 
     const $ = (id) => document.getElementById(id);
     const els = {
@@ -564,6 +748,7 @@
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
       studyView:$("studyView"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
+      foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn")
     };
 
@@ -585,6 +770,7 @@
     }
     function buildQueue(keepIndex){
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
+      if(selectedTopic==="foods" && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ return stats[x.id] && stats[x.id].wrong>0; });
       queue=items;
       if(!keepIndex || index>=queue.length) index=0;
@@ -604,6 +790,7 @@
           selectedTopic=btn.dataset.topic;
           index=0;
           wordIndex=0;
+          if(selectedTopic==="foods") foodCategory="all";
           foodPhase=(selectedTopic==="foods" && selectedMode==="all") ? "study" : "practice";
           renderTopics();
           buildQueue(false);
@@ -628,29 +815,51 @@
       els.answerInput.focus();
     }
 
+    function currentFoodWords(){
+      return foodCategory==="all" ? FOOD_WORDS : FOOD_WORDS.filter(function(word){return word.cat===foodCategory;});
+    }
+    function foodCategoryTitle(id){
+      const item=FOOD_CATEGORIES.find(function(cat){return cat.id===id;});
+      return item ? item.title : "Продукты";
+    }
     function renderStudy(){
-      const word=FOOD_WORDS[wordIndex];
+      const words=currentFoodWords();
+      if(wordIndex>=words.length) wordIndex=0;
+      const word=words[wordIndex];
       els.studyView.hidden=false;
       els.exerciseView.hidden=true;
       els.emptyView.hidden=true;
+      els.foodFilters.innerHTML=FOOD_CATEGORIES.map(function(cat){
+        const count=cat.id==="all" ? FOOD_WORDS.length : FOOD_WORDS.filter(function(word){return word.cat===cat.id;}).length;
+        return '<button class="food-filter '+(cat.id===foodCategory?"active":"")+'" data-food-category="'+cat.id+'" type="button">'+
+          cat.title+' · '+count+'</button>';
+      }).join("");
+      els.foodFilters.querySelectorAll("[data-food-category]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          foodCategory=btn.dataset.foodCategory;
+          wordIndex=0;
+          renderStudy();
+        });
+      });
       els.foodArt.innerHTML=foodArt(word.art);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
+      els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
       els.foodTranslation.textContent=word.tr;
-      els.wordCount.textContent="Слово "+(wordIndex+1)+" из "+FOOD_WORDS.length;
+      els.wordCount.textContent="Слово "+(wordIndex+1)+" из "+words.length;
       els.foodExamples.innerHTML=word.examples.map(function(example){
         return '<div class="example"><strong>'+escapeHtml(example[0])+'</strong><span>'+escapeHtml(example[1])+'</span></div>';
       }).join("");
-      els.studyDots.innerHTML=FOOD_WORDS.map(function(_,i){
+      els.studyDots.innerHTML=words.map(function(_,i){
         return '<button class="study-dot '+(i===wordIndex?"active":"")+'" data-word-index="'+i+'" type="button" aria-label="Слово '+(i+1)+'"></button>';
       }).join("");
       els.studyDots.querySelectorAll("[data-word-index]").forEach(function(btn){
         btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.wordIndex);renderStudy();});
       });
       $("prevWord").disabled=wordIndex===0;
-      els.nextWord.textContent=wordIndex===FOOD_WORDS.length-1 ? "Начать тренировку →" : "Следующее →";
-      els.progressLabel.textContent=(wordIndex+1)+" / "+FOOD_WORDS.length;
-      els.progressBar.style.width=((wordIndex+1)/FOOD_WORDS.length*100)+"%";
+      els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : "Следующее →";
+      els.progressLabel.textContent=(wordIndex+1)+" / "+words.length;
+      els.progressBar.style.width=((wordIndex+1)/words.length*100)+"%";
     }
 
     function render(){
@@ -752,7 +961,8 @@
     $("startFoodPractice").addEventListener("click",startFoodPractice);
     $("prevWord").addEventListener("click",function(){if(wordIndex>0){wordIndex--;renderStudy();}});
     els.nextWord.addEventListener("click",function(){
-      if(wordIndex<FOOD_WORDS.length-1){wordIndex++;renderStudy();} else {startFoodPractice();}
+      const words=currentFoodWords();
+      if(wordIndex<words.length-1){wordIndex++;renderStudy();} else {startFoodPractice();}
     });
     els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
     $("checkBtn").addEventListener("click",checkAnswer);
