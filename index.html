@@ -134,6 +134,37 @@
     .custom-row button { border:0; background:transparent; color:var(--red); font-weight:800; }
     .toast { position:fixed; right:20px; bottom:20px; background:var(--ink); color:white; padding:13px 17px; border-radius:14px; box-shadow:var(--shadow); opacity:0; transform:translateY(10px); pointer-events:none; transition:.2s; }
     .toast.show { opacity:1; transform:none; }
+
+    .study-shell { padding:clamp(22px,4vw,40px); }
+    .study-intro { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:20px; }
+    .study-intro h2 { margin:0 0 4px; font-size:clamp(22px,3vw,30px); letter-spacing:-.035em; }
+    .study-intro p { margin:0; color:var(--muted); }
+    .study-card {
+      display:grid; grid-template-columns:minmax(230px,.8fr) minmax(300px,1.2fr); gap:clamp(24px,5vw,52px);
+      align-items:center; padding:clamp(22px,4vw,42px); border-radius:26px;
+      background:linear-gradient(145deg,#f3f0ff,#fff9e8); border:1px solid #e7e1ff;
+    }
+    .food-art {
+      min-height:280px; display:grid; place-items:center; border-radius:22px;
+      background:rgba(255,255,255,.7); overflow:hidden;
+    }
+    .food-svg { width:min(260px,92%); height:auto; filter:drop-shadow(0 18px 18px rgba(56,43,99,.11)); }
+    .word-count { color:var(--violet); font-size:13px; font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
+    .food-word { margin:6px 0 0; font-size:clamp(38px,6vw,62px); line-height:1; letter-spacing:-.055em; }
+    .food-gender { display:inline-block; margin-top:12px; padding:5px 10px; border-radius:999px; background:white; color:var(--muted); font-size:13px; font-weight:800; }
+    .food-translation { margin:18px 0 22px; color:#433a86; font-size:clamp(22px,3vw,29px); font-weight:800; }
+    .examples-title { margin:0 0 10px; color:var(--muted); font-size:13px; font-weight:850; text-transform:uppercase; letter-spacing:.08em; }
+    .example-list { display:grid; gap:10px; }
+    .example {
+      padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.78); border:1px solid rgba(255,255,255,.95);
+    }
+    .example strong { display:block; font-size:16px; }
+    .example span { display:block; margin-top:2px; color:var(--muted); font-size:14px; }
+    .study-nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px; }
+    .study-dots { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+    .study-dot { width:7px; height:7px; border:0; padding:0; border-radius:50%; background:#d9d4e7; }
+    .study-dot.active { width:20px; border-radius:999px; background:var(--violet); }
+
     @media (max-width:820px) {
       .app { padding:14px; }
       header { align-items:flex-start; }
@@ -152,6 +183,9 @@
       .card-area { padding:28px 20px; }
       .question { font-size:29px; }
       .card-footer { padding:14px 16px; }
+      .study-card { grid-template-columns:1fr; }
+      .food-art { min-height:220px; }
+      .study-intro { align-items:flex-start; }
     }
     @media (max-width:520px) {
       header { flex-direction:column; }
@@ -161,6 +195,12 @@
       .progress-wrap { width:100%; }
       .actions .btn { flex:1 1 140px; }
       .question { font-size:26px; }
+      .study-intro { flex-direction:column; }
+      .study-intro .btn { width:100%; }
+      .study-card { padding:18px; gap:20px; }
+      .food-art { min-height:190px; }
+      .study-nav { flex-wrap:wrap; }
+      .study-dots { order:3; width:100%; }
     }
   </style>
 </head>
@@ -203,6 +243,35 @@
           </div>
         </div>
 
+
+        <div id="studyView" hidden>
+          <div class="study-shell">
+            <div class="study-intro">
+              <div>
+                <h2>Сначала познакомимся со словами</h2>
+                <p>Посмотри перевод и примеры, затем переходи к заданиям без подсказок.</p>
+              </div>
+              <button class="btn btn-primary" id="startFoodPractice" type="button">К упражнениям →</button>
+            </div>
+            <article class="study-card">
+              <div class="food-art" id="foodArt" aria-hidden="true"></div>
+              <div>
+                <div class="word-count" id="wordCount">Слово 1</div>
+                <h2 class="food-word" id="foodWord"></h2>
+                <span class="food-gender" id="foodGender"></span>
+                <div class="food-translation" id="foodTranslation"></div>
+                <div class="examples-title">В контексте</div>
+                <div class="example-list" id="foodExamples"></div>
+              </div>
+            </article>
+            <div class="study-nav">
+              <button class="btn btn-soft" id="prevWord" type="button">← Предыдущее</button>
+              <div class="study-dots" id="studyDots" aria-label="Прогресс изучения слов"></div>
+              <button class="btn btn-primary" id="nextWord" type="button">Следующее →</button>
+            </div>
+          </div>
+        </div>
+
         <div id="exerciseView">
           <div class="card-area">
             <div class="question-meta">
@@ -225,6 +294,7 @@
             </div>
           </div>
           <div class="card-footer">
+            <button class="nav-btn" id="backToWordsBtn" type="button" hidden>← Учить слова</button>
             <button class="nav-btn" id="prevBtn" type="button">← Назад</button>
             <span class="subtitle">Enter — проверить ответ</span>
             <button class="nav-btn" id="skipBtn" type="button">Пропустить →</button>
@@ -284,7 +354,66 @@
       { id:"prepositions", title:"Предлоги", icon:"⌁" },
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
       { id:"city", title:"Город и район", icon:"⌂" },
+      { id:"foods", title:"Продукты питания", icon:"◉" },
       { id:"custom", title:"Свои задания", icon:"＋" }
+    ];
+
+
+    const FOOD_WORDS = [
+      {id:"bread",word:"el pan",base:"pan",gender:"мужской род",tr:"хлеб",ru:["хлеб"],answers:["pan","el pan"],art:"bread",
+        examples:[["Compro pan fresco.","Я покупаю свежий хлеб."],["El pan está en la mesa.","Хлеб находится на столе."]],
+        cloze:"Compro ___ fresco.",clozeAnswers:["pan"]},
+      {id:"milk",word:"la leche",base:"leche",gender:"женский род",tr:"молоко",ru:["молоко"],answers:["leche","la leche"],art:"milk",
+        examples:[["Bebo leche por la mañana.","Я пью молоко утром."],["Necesitamos un litro de leche.","Нам нужен литр молока."]],
+        cloze:"Bebo ___ por la mañana.",clozeAnswers:["leche"]},
+      {id:"cheese",word:"el queso",base:"queso",gender:"мужской род",tr:"сыр",ru:["сыр"],answers:["queso","el queso"],art:"cheese",
+        examples:[["Me gusta el queso.","Мне нравится сыр."],["Este queso es muy suave.","Этот сыр очень нежный."]],
+        cloze:"Me gusta el ___.",clozeAnswers:["queso"]},
+      {id:"egg",word:"el huevo",base:"huevo",gender:"мужской род",tr:"яйцо",ru:["яйцо"],answers:["huevo","el huevo"],art:"egg",
+        examples:[["Como un huevo en el desayuno.","Я ем яйцо на завтрак."],["Los huevos están en la nevera.","Яйца находятся в холодильнике."]],
+        cloze:"Como un ___ en el desayuno.",clozeAnswers:["huevo"]},
+      {id:"rice",word:"el arroz",base:"arroz",gender:"мужской род",tr:"рис",ru:["рис"],answers:["arroz","el arroz"],art:"rice",
+        examples:[["Cocinamos arroz con verduras.","Мы готовим рис с овощами."],["Quiero una porción de arroz.","Я хочу порцию риса."]],
+        cloze:"Cocinamos ___ con verduras.",clozeAnswers:["arroz"]},
+      {id:"pasta",word:"la pasta",base:"pasta",gender:"женский род",tr:"макароны, паста",ru:["макароны","паста","макароны паста"],answers:["pasta","la pasta"],art:"pasta",
+        examples:[["Hoy comemos pasta.","Сегодня мы едим пасту."],["La pasta está caliente.","Паста горячая."]],
+        cloze:"Hoy comemos ___.",clozeAnswers:["pasta"]},
+      {id:"chicken",word:"el pollo",base:"pollo",gender:"мужской род",tr:"курица, куриное мясо",ru:["курица","куриное мясо","курятина"],answers:["pollo","el pollo"],art:"chicken",
+        examples:[["Como pollo con patatas.","Я ем курицу с картофелем."],["El pollo está en el horno.","Курица находится в духовке."]],
+        cloze:"Como ___ con patatas.",clozeAnswers:["pollo"]},
+      {id:"fish",word:"el pescado",base:"pescado",gender:"мужской род",tr:"рыба как продукт",ru:["рыба","рыба как продукт"],answers:["pescado","el pescado"],art:"fish",
+        examples:[["Prefiero el pescado.","Я предпочитаю рыбу."],["Compramos pescado fresco.","Мы покупаем свежую рыбу."]],
+        cloze:"Prefiero el ___.",clozeAnswers:["pescado"]},
+      {id:"meat",word:"la carne",base:"carne",gender:"женский род",tr:"мясо",ru:["мясо"],answers:["carne","la carne"],art:"meat",
+        examples:[["No como mucha carne.","Я не ем много мяса."],["La carne está lista.","Мясо готово."]],
+        cloze:"No como mucha ___.",clozeAnswers:["carne"]},
+      {id:"potato",word:"la patata",base:"patata",gender:"женский род",tr:"картофель, картофелина",ru:["картофель","картошка","картофелина"],answers:["patata","la patata","papa","la papa"],art:"potato",
+        examples:[["Pelo una patata.","Я чищу картофелину."],["Necesito dos patatas.","Мне нужны две картофелины."]],
+        cloze:"Pelo una ___.",clozeAnswers:["patata","papa"]},
+      {id:"tomato",word:"el tomate",base:"tomate",gender:"мужской род",tr:"помидор",ru:["помидор","томат"],answers:["tomate","el tomate"],art:"tomato",
+        examples:[["Corto un tomate.","Я режу помидор."],["Los tomates están maduros.","Помидоры спелые."]],
+        cloze:"Corto un ___.",clozeAnswers:["tomate"]},
+      {id:"apple",word:"la manzana",base:"manzana",gender:"женский род",tr:"яблоко",ru:["яблоко"],answers:["manzana","la manzana"],art:"apple",
+        examples:[["Como una manzana.","Я ем яблоко."],["La manzana es roja.","Яблоко красное."]],
+        cloze:"Como una ___.",clozeAnswers:["manzana"]},
+      {id:"banana",word:"el plátano",base:"plátano",gender:"мужской род",tr:"банан",ru:["банан"],answers:["plátano","el plátano","banana","la banana"],art:"banana",
+        examples:[["Compro plátanos.","Я покупаю бананы."],["El plátano está maduro.","Банан спелый."]],
+        cloze:"El ___ está maduro.",clozeAnswers:["plátano"]},
+      {id:"orange",word:"la naranja",base:"naranja",gender:"женский род",tr:"апельсин",ru:["апельсин"],answers:["naranja","la naranja"],art:"orange",
+        examples:[["Quiero zumo de naranja.","Я хочу апельсиновый сок."],["La naranja es dulce.","Апельсин сладкий."]],
+        cloze:"La ___ es dulce.",clozeAnswers:["naranja"]},
+      {id:"water",word:"el agua",base:"agua",gender:"женский род",tr:"вода",ru:["вода"],answers:["agua","el agua"],art:"water",
+        examples:[["Bebo agua todos los días.","Я пью воду каждый день."],["Quiero un vaso de agua.","Я хочу стакан воды."]],
+        cloze:"Bebo ___ todos los días.",clozeAnswers:["agua"]},
+      {id:"coffee",word:"el café",base:"café",gender:"мужской род",tr:"кофе",ru:["кофе"],answers:["café","el café"],art:"coffee",
+        examples:[["Tomo café sin azúcar.","Я пью кофе без сахара."],["El café está caliente.","Кофе горячий."]],
+        cloze:"Tomo ___ sin azúcar.",clozeAnswers:["café"]},
+      {id:"tea",word:"el té",base:"té",gender:"мужской род",tr:"чай",ru:["чай"],answers:["té","el té"],art:"tea",
+        examples:[["Bebo té por la tarde.","Я пью чай после обеда."],["Prefiero el té verde.","Я предпочитаю зелёный чай."]],
+        cloze:"Bebo ___ por la tarde.",clozeAnswers:["té"]},
+      {id:"salt",word:"la sal",base:"sal",gender:"женский род",tr:"соль",ru:["соль"],answers:["sal","la sal"],art:"salt",
+        examples:[["Añade un poco de sal.","Добавь немного соли."],["La sal está en la mesa.","Соль находится на столе."]],
+        cloze:"Añade un poco de ___.",clozeAnswers:["sal"]}
     ];
 
     const BUILTIN = [
@@ -365,6 +494,54 @@
       {id:"ct14",topic:"city",skill:"Противоположности",q:"Напиши антоним слова agradable.",a:["desagradable"]}
     ];
 
+
+    function foodExercises(){
+      const items=[];
+      FOOD_WORDS.forEach(function(word){
+        items.push({
+          id:"food_"+word.id+"_es",topic:"foods",skill:"Вспомни слово",
+          q:"Переведи на испанский: "+word.tr+".",a:word.answers,
+          e:"Базовая форма: "+word.word+"."
+        });
+        items.push({
+          id:"food_"+word.id+"_ru",topic:"foods",skill:"Узнай слово",
+          q:"Переведи на русский: "+word.word+".",a:word.ru,
+          e:word.word+" — "+word.tr+"."
+        });
+        items.push({
+          id:"food_"+word.id+"_ctx",topic:"foods",skill:"Слово в контексте",
+          q:"Вставь пропущенное слово: "+word.cloze,a:word.clozeAnswers,
+          e:word.examples[0][0]+" — "+word.examples[0][1]
+        });
+      });
+      return items;
+    }
+
+    function foodArt(kind){
+      const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
+      const art={
+        bread:'<path d="M40 119V76c0-28 22-47 50-47s50 19 50 47v43c0 13-10 23-23 23H63c-13 0-23-10-23-23Z" fill="#F1B85B" stroke="#463B75" stroke-width="5"/><path d="M67 54c8 5 10 13 7 24M91 47c8 6 10 15 7 25M116 54c7 6 9 14 6 23" fill="none" stroke="#FFF2C5" stroke-width="7" stroke-linecap="round"/>',
+        milk:'<path d="m61 49 16-18h42l-9 19 12 18v73H58V68l3-19Z" fill="#FCFCFF" stroke="#463B75" stroke-width="5"/><path d="M58 88h64v53H58z" fill="#A9DCFF"/><path d="M77 31v37h45M77 31l33 19" fill="none" stroke="#463B75" stroke-width="5"/>',
+        cheese:'<path d="m35 111 95-65 18 35-39 59H35v-29Z" fill="#FFD557" stroke="#463B75" stroke-width="5" stroke-linejoin="round"/><circle cx="91" cy="104" r="10" fill="#E7A931"/><circle cx="119" cy="77" r="7" fill="#E7A931"/><path d="M35 111h74v29" fill="none" stroke="#463B75" stroke-width="5"/>',
+        egg:'<path d="M91 28c22 0 47 46 47 78 0 27-21 46-47 46s-47-19-47-46c0-32 25-78 47-78Z" fill="#FFFDF5" stroke="#463B75" stroke-width="5"/><circle cx="91" cy="105" r="23" fill="#FFD447"/>',
+        rice:'<path d="M37 86h106c-3 40-22 62-53 62S40 126 37 86Z" fill="#8174ED" stroke="#463B75" stroke-width="5"/><path d="M47 87c8-25 28-36 43-36s35 11 43 36" fill="#FFF9E8" stroke="#463B75" stroke-width="5"/><g fill="#E7C58B"><ellipse cx="67" cy="70" rx="8" ry="3" transform="rotate(-20 67 70)"/><ellipse cx="90" cy="64" rx="8" ry="3" transform="rotate(12 90 64)"/><ellipse cx="113" cy="73" rx="8" ry="3" transform="rotate(-8 113 73)"/></g>',
+        pasta:'<path d="M38 117h104l-14 28H52l-14-28Z" fill="#FF786C" stroke="#463B75" stroke-width="5"/><path d="M53 118c5-43 20-68 37-68s32 25 37 68M69 118c1-38 9-63 21-63s20 25 21 63M85 118V54" fill="none" stroke="#E8B44A" stroke-width="7" stroke-linecap="round"/>',
+        chicken:'<path d="M51 111c-9-26 15-58 46-54 27 3 42 32 27 54-15 23-63 28-73 0Z" fill="#E7A47F" stroke="#463B75" stroke-width="5"/><path d="M119 69c14-9 26-5 30 3 5 10-2 23-17 25" fill="#FFF8E5" stroke="#463B75" stroke-width="7" stroke-linecap="round"/>',
+        fish:'<path d="M42 91c19-29 55-38 85-15l24-18-4 33 4 33-24-18c-30 23-66 14-85-15Z" fill="#66C9D3" stroke="#463B75" stroke-width="5" stroke-linejoin="round"/><circle cx="75" cy="82" r="5" fill="#463B75"/><path d="M102 72c-7 10-7 28 0 38" fill="none" stroke="#463B75" stroke-width="4"/>',
+        meat:'<path d="M43 112c-16-26 8-61 41-67 31-6 61 14 58 43-3 32-34 53-65 48-15-2-27-10-34-24Z" fill="#E05E66" stroke="#463B75" stroke-width="5"/><path d="M70 84c12-12 32-12 40 0 8 13-2 31-18 33-17 2-33-20-22-33Z" fill="#FFD8CA"/>',
+        potato:'<path d="M50 120c-18-24-2-65 28-78 35-15 70 9 66 45-4 37-47 64-78 50-7-3-12-9-16-17Z" fill="#C99C63" stroke="#463B75" stroke-width="5"/><g fill="#8A6749"><circle cx="78" cy="72" r="4"/><circle cx="115" cy="90" r="4"/><circle cx="88" cy="118" r="4"/></g>',
+        tomato:'<circle cx="90" cy="96" r="50" fill="#FF655D" stroke="#463B75" stroke-width="5"/><path d="m90 47 9-17M90 54l-18-16M90 54l20-13M90 54l-25 7M90 54l23 8" fill="none" stroke="#2B9A74" stroke-width="8" stroke-linecap="round"/>',
+        apple:'<path d="M91 58c-35-20-57 4-53 38 4 34 29 58 52 47 24 12 50-13 53-48 3-34-20-56-52-37Z" fill="#F25E65" stroke="#463B75" stroke-width="5"/><path d="M90 56c0-14 5-23 14-30M96 42c16-9 29-2 33 10-17 6-28 3-33-10Z" fill="#65B56C" stroke="#463B75" stroke-width="5" stroke-linecap="round"/>',
+        banana:'<path d="M46 47c16 54 53 79 96 60-4 35-38 51-69 34-34-18-45-61-27-94Z" fill="#FFD447" stroke="#463B75" stroke-width="5" stroke-linejoin="round"/><path d="m47 48-6-13M142 107l9 5" stroke="#463B75" stroke-width="7" stroke-linecap="round"/>',
+        orange:'<circle cx="90" cy="96" r="48" fill="#FFA33B" stroke="#463B75" stroke-width="5"/><path d="M90 48c0-13 4-20 12-27M98 39c15-7 27-1 31 11-15 5-25 2-31-11Z" fill="#65B56C" stroke="#463B75" stroke-width="5" stroke-linecap="round"/>',
+        water:'<path d="M91 25c14 26 39 53 39 80 0 23-17 42-39 42s-40-19-40-42c0-27 26-54 40-80Z" fill="#7ACFF2" stroke="#463B75" stroke-width="5"/><path d="M71 111c3 10 10 15 20 17" fill="none" stroke="#E9FAFF" stroke-width="7" stroke-linecap="round"/>',
+        coffee:'<path d="M43 58h83v52c0 24-17 38-41 38S43 134 43 110V58Z" fill="#FFF6E2" stroke="#463B75" stroke-width="5"/><path d="M126 73h8c17 0 18 29 0 31h-8" fill="none" stroke="#463B75" stroke-width="8"/><path d="M54 73h61" stroke="#825239" stroke-width="14"/><path d="M68 43c-8-9 8-14 0-23M91 43c-8-9 8-14 0-23" fill="none" stroke="#B3A8D8" stroke-width="5" stroke-linecap="round"/>',
+        tea:'<path d="M43 62h83v49c0 23-17 37-41 37s-42-14-42-37V62Z" fill="#F1FAE7" stroke="#463B75" stroke-width="5"/><path d="M126 75h8c17 0 18 28 0 30h-8" fill="none" stroke="#463B75" stroke-width="8"/><path d="M77 63v32h29V63" fill="#86C479" stroke="#463B75" stroke-width="4"/><path d="M91 37v26" stroke="#463B75" stroke-width="4"/>',
+        salt:'<path d="M62 64h56l9 76H53l9-76Z" fill="#FDFDFF" stroke="#463B75" stroke-width="5"/><path d="M59 64c0-18 13-29 31-29s31 11 31 29H59Z" fill="#A9DCFF" stroke="#463B75" stroke-width="5"/><g fill="#463B75"><circle cx="79" cy="51" r="3"/><circle cx="91" cy="47" r="3"/><circle cx="103" cy="51" r="3"/></g><path d="M57 101h66" stroke="#A9DCFF" stroke-width="18"/>'
+      };
+      return '<svg '+common+'>'+art[kind]+'</svg>';
+    }
+
     const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1" };
     let stats = read(STORAGE.stats,{});
     let custom = read(STORAGE.custom,[]);
@@ -374,6 +551,8 @@
     let queue = [];
     let index = 0;
     let checkedCurrent = false;
+    let wordIndex = 0;
+    let foodPhase = "study";
 
     const $ = (id) => document.getElementById(id);
     const els = {
@@ -382,12 +561,15 @@
       feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
-      customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast")
+      customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
+      studyView:$("studyView"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
+      foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
+      studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn")
     };
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foodExercises()).concat(custom); }
     function topicById(id){ return TOPICS.find(function(t){return t.id===id;}) || TOPICS[0]; }
     function normalize(value){
       return value.toLowerCase().trim().replace(/[¿?¡!.,;:]+/g,"").replace(/\s+/g," ");
@@ -415,10 +597,17 @@
       els.topicList.innerHTML=TOPICS.map(function(t){
         return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
-          '</span><span class="topic-count">'+counts[t.id]+'</span></button>';
+          '</span><span class="topic-count">'+(t.id==="foods" ? FOOD_WORDS.length+" слов" : counts[t.id])+'</span></button>';
       }).join("");
       els.topicList.querySelectorAll("[data-topic]").forEach(function(btn){
-        btn.addEventListener("click",function(){ selectedTopic=btn.dataset.topic; index=0; renderTopics(); buildQueue(false); });
+        btn.addEventListener("click",function(){
+          selectedTopic=btn.dataset.topic;
+          index=0;
+          wordIndex=0;
+          foodPhase=(selectedTopic==="foods" && selectedMode==="all") ? "study" : "practice";
+          renderTopics();
+          buildQueue(false);
+        });
       });
     }
     function renderStats(){
@@ -438,9 +627,40 @@
       els.answerBox.classList.remove("open");
       els.answerInput.focus();
     }
+
+    function renderStudy(){
+      const word=FOOD_WORDS[wordIndex];
+      els.studyView.hidden=false;
+      els.exerciseView.hidden=true;
+      els.emptyView.hidden=true;
+      els.foodArt.innerHTML=foodArt(word.art);
+      els.foodWord.textContent=word.word;
+      els.foodGender.textContent=word.gender;
+      els.foodTranslation.textContent=word.tr;
+      els.wordCount.textContent="Слово "+(wordIndex+1)+" из "+FOOD_WORDS.length;
+      els.foodExamples.innerHTML=word.examples.map(function(example){
+        return '<div class="example"><strong>'+escapeHtml(example[0])+'</strong><span>'+escapeHtml(example[1])+'</span></div>';
+      }).join("");
+      els.studyDots.innerHTML=FOOD_WORDS.map(function(_,i){
+        return '<button class="study-dot '+(i===wordIndex?"active":"")+'" data-word-index="'+i+'" type="button" aria-label="Слово '+(i+1)+'"></button>';
+      }).join("");
+      els.studyDots.querySelectorAll("[data-word-index]").forEach(function(btn){
+        btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.wordIndex);renderStudy();});
+      });
+      $("prevWord").disabled=wordIndex===0;
+      els.nextWord.textContent=wordIndex===FOOD_WORDS.length-1 ? "Начать тренировку →" : "Следующее →";
+      els.progressLabel.textContent=(wordIndex+1)+" / "+FOOD_WORDS.length;
+      els.progressBar.style.width=((wordIndex+1)/FOOD_WORDS.length*100)+"%";
+    }
+
     function render(){
       renderTopics(); renderStats();
       els.topicName.textContent=topicById(selectedTopic).title;
+      if(selectedTopic==="foods" && selectedMode==="all" && foodPhase==="study"){
+        renderStudy();
+        return;
+      }
+      els.studyView.hidden=true;
       if(!queue.length){
         els.exerciseView.hidden=true; els.emptyView.hidden=false;
         if(selectedMode==="mistakes"){
@@ -453,6 +673,7 @@
         return;
       }
       els.exerciseView.hidden=false; els.emptyView.hidden=true;
+      els.backToWordsBtn.hidden=selectedTopic!=="foods";
       const item=queue[index];
       els.questionText.textContent=item.q;
       els.skillLabel.textContent=item.skill || "Практика";
@@ -523,6 +744,17 @@
       setTimeout(function(){els.toast.classList.remove("show");},1800);
     }
 
+    function startFoodPractice(){
+      foodPhase="practice";
+      index=0;
+      buildQueue(false);
+    }
+    $("startFoodPractice").addEventListener("click",startFoodPractice);
+    $("prevWord").addEventListener("click",function(){if(wordIndex>0){wordIndex--;renderStudy();}});
+    els.nextWord.addEventListener("click",function(){
+      if(wordIndex<FOOD_WORDS.length-1){wordIndex++;renderStudy();} else {startFoodPractice();}
+    });
+    els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
     $("checkBtn").addEventListener("click",checkAnswer);
     $("nextBtn").addEventListener("click",function(){move(1);});
     $("skipBtn").addEventListener("click",function(){move(1);});
@@ -537,6 +769,7 @@
     document.querySelectorAll("[data-mode]").forEach(function(btn){
       btn.addEventListener("click",function(){
         selectedMode=btn.dataset.mode; index=0;
+        if(selectedTopic==="foods") foodPhase=selectedMode==="all" ? "study" : "practice";
         document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x===btn);});
         buildQueue(false);
       });
