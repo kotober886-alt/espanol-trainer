@@ -1,0 +1,38 @@
+name: Integrate generated illustrations
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/generated-art.css'
+      - 'assets/generated-art.js'
+      - 'assets/img-clothes.js'
+      - 'assets/img-foods.js'
+      - 'assets/img-activities.js'
+      - 'scripts/inject_generated_art.py'
+      - '.github/workflows/integrate-generated-art.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inject generated illustration assets
+        run: python scripts/inject_generated_art.py
+      - name: Commit trainer integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nothing to update"
+            exit 0
+          fi
+          git commit -m "Integrate generated flat illustrations"
+          git push
