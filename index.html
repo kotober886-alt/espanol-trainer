@@ -2501,9 +2501,63 @@
       return items;
     }
 
+    function outfitVariantScene(kind,start){
+      const configs={
+        clothes_woman_2:{person:"woman",head:"hat",headColor:"#e7c98f",top:"blouse",topColor:"#b7a7df",bottom:"skirt",bottomColor:"#c95d68",accessory:"handbag",accessoryColor:"#4d9b91",shoes:"boots",shoeColor:"#8b5d45"},
+        clothes_woman_3:{person:"woman",head:"glasses",headColor:"#343247",top:"coat",topColor:"#e2b64f",bottom:"trousers",bottomColor:"#4c5b86",accessory:"scarf",accessoryColor:"#c94f55",shoes:"ankleboots",shoeColor:"#76503d"},
+        clothes_woman_4:{person:"woman",head:"necklace",headColor:"#d1a83c",top:"sweater",topColor:"#5ca77f",bottom:"jeans",bottomColor:"#527da5",accessory:"backpack",accessoryColor:"#e17b6e",shoes:"sneakers",shoeColor:"#f7f5ee"},
+        clothes_woman_5:{person:"woman",head:"sunhat",headColor:"#e89aaa",top:"jacket",topColor:"#8c74c9",bottom:"shorts",bottomColor:"#dfc79d",accessory:"shoulderbag",accessoryColor:"#e5b84f",shoes:"sandals",shoeColor:"#4c9a7d"},
+        clothes_man_2:{person:"man",head:"cap",headColor:"#4f8e69",top:"shirt",topColor:"#8dbbd2",bottom:"jeans",bottomColor:"#3f6289",accessory:"belt",accessoryColor:"#815239",shoes:"boots",shoeColor:"#76503d"},
+        clothes_man_3:{person:"man",head:"hat",headColor:"#8e684b",top:"coat",topColor:"#727687",bottom:"trousers",bottomColor:"#393b4c",accessory:"scarf",accessoryColor:"#bd5147",shoes:"shoes",shoeColor:"#292936"},
+        clothes_man_4:{person:"man",head:"glasses",headColor:"#343247",top:"sweater",topColor:"#e0b74b",bottom:"shorts",bottomColor:"#6d9d72",accessory:"shoulderbag",accessoryColor:"#405f87",shoes:"sandals",shoeColor:"#8a5a42"},
+        clothes_man_5:{person:"man",head:"bowtie",headColor:"#292936",top:"suit",topColor:"#46557e",bottom:"trousers",bottomColor:"#46557e",accessory:"belt",accessoryColor:"#815239",shoes:"shoes",shoeColor:"#292936"}
+      };
+      const c=configs[kind];
+      if(!c) return "";
+      const headY=(c.head==="necklace" || c.head==="bowtie") ? 210 : (c.head==="glasses" ? 132 : 88);
+      const accessoryTarget=c.accessory==="scarf" ? [326,205] : (c.accessory==="belt" ? [342,420] : [402,370]);
+      const lines='<path d="M177 102C222 102 255 103 300 '+headY+'"/><path d="M423 230C382 230 350 245 325 274"/><path d="M177 463C221 463 252 466 279 478"/><path d="M423 376C414 376 408 373 '+accessoryTarget[0]+' '+accessoryTarget[1]+'"/><path d="M177 615C219 615 246 621 276 628"/>';
+      const female=c.person==="woman";
+      const hair=female
+        ? '<path d="M255 127c-4-70 95-82 99-4l-9 58h-87Z" fill="#3d3548"/><path d="M260 136c-25 22-30 69-17 101" fill="none"/><path d="M345 136c24 22 29 67 16 101" fill="none"/>'
+        : '<path d="M257 118c5-57 87-65 92-4-34-9-62-3-92 4Z" fill="#4c3b37"/>';
+      let headItem="";
+      if(c.head==="hat" || c.head==="sunhat") headItem='<path d="M245 92h113" fill="none" stroke="'+c.headColor+'" stroke-width="15"/><path d="M267 91c2-41 66-41 70 0Z" fill="'+c.headColor+'"/>';
+      if(c.head==="cap") headItem='<path d="M260 104c0-38 69-41 78-5-25-9-51-6-78 5Z" fill="'+c.headColor+'"/><path d="M330 99h31" fill="none" stroke="'+c.headColor+'" stroke-width="11"/>';
+      if(c.head==="glasses") headItem='<rect x="266" y="122" width="27" height="22" rx="9" fill="#d9eff2"/><rect x="309" y="122" width="27" height="22" rx="9" fill="#d9eff2"/><path d="M293 132h16" fill="none"/>';
+      if(c.head==="necklace") headItem='<path d="M282 185c5 32 34 41 42 0" fill="none" stroke="'+c.headColor+'" stroke-width="5"/><circle cx="304" cy="214" r="8" fill="'+c.headColor+'"/>';
+      if(c.head==="bowtie") headItem='<path d="m283 196 20 13-20 14-9-14 9-13Zm40 0-20 13 20 14 9-14-9-13Z" fill="'+c.headColor+'"/>';
+      let back="";
+      if(c.accessory==="backpack") back='<path d="M350 245c48 3 68 34 61 92l-8 112h-72Z" fill="'+c.accessoryColor+'"/><path d="M366 261c21 25 23 59 18 92" fill="none"/>';
+      let top="";
+      if(c.top==="coat") top='<path d="M269 198c-55 13-70 47-62 116l8 190h65l21-225 22 225h66l8-190c7-69-8-103-64-116l-32 35Z" fill="'+c.topColor+'"/><path d="m270 202 31 31-24 69m56-100-32 31 25 69" fill="none"/>';
+      else if(c.top==="jacket" || c.top==="suit") top='<path d="M270 201c-50 10-67 42-61 109l11 128h65l16-190 16 190h65l11-128c6-67-11-99-60-109l-32 31Z" fill="'+c.topColor+'"/><path d="m270 205 31 27-22 62m54-89-32 27 22 62M301 232v204" fill="none"/>';
+      else {
+        const collar=c.top==="shirt" || c.top==="blouse" ? '<path d="m279 205 22 28 23-28" fill="#fffdf8"/>' : '<path d="M280 205c7 24 35 24 43 0" fill="none"/>';
+        top='<path d="M269 201c-48 12-62 45-55 111l11 117h151l11-117c7-66-7-99-54-111l-32 31Z" fill="'+c.topColor+'"/>'+collar+(c.top==="shirt"?'<path d="M301 232v195" fill="none"/>':'');
+      }
+      let bottom="";
+      if(c.bottom==="skirt") bottom='<path d="m251 424-33 171h167l-34-171Z" fill="'+c.bottomColor+'"/><path d="M251 424h100" fill="none"/>';
+      else if(c.bottom==="shorts") bottom='<path d="M240 424h122l15 104h-67l-9-58-10 58h-67Z" fill="'+c.bottomColor+'"/><path d="M301 426v44" fill="none"/><path d="M261 528v75m81-75v75" fill="none" stroke="#d89d78" stroke-width="24"/>';
+      else bottom='<path d="M239 424h124l18 189h-66l-14-134-14 134h-66Z" fill="'+c.bottomColor+'"/><path d="M301 425v54" fill="none"/>';
+      let accessory="";
+      if(c.accessory==="handbag") accessory='<rect x="373" y="330" width="72" height="94" rx="12" fill="'+c.accessoryColor+'"/><path d="M387 333c2-34 42-34 44 0" fill="none"/>';
+      if(c.accessory==="shoulderbag") accessory='<path d="M377 341h68v94h-68Z" fill="'+c.accessoryColor+'"/><path d="M330 215 411 344" fill="none" stroke="'+c.accessoryColor+'" stroke-width="10"/>';
+      if(c.accessory==="scarf") accessory='<path d="M276 190c16 26 37 28 54 0l8 72-31-18-28 18Z" fill="'+c.accessoryColor+'"/>';
+      if(c.accessory==="belt") accessory='<path d="M242 420h119" fill="none" stroke="'+c.accessoryColor+'" stroke-width="15"/><rect x="294" y="410" width="24" height="21" rx="3" fill="#e4bd55"/>';
+      let shoes="";
+      if(c.shoes==="boots") shoes='<path d="M235 564h63v78h-79c0-18 6-29 18-38Z" fill="'+c.shoeColor+'"/><path d="M310 564h61l16 40c11 9 15 21 15 38h-90Z" fill="'+c.shoeColor+'"/>';
+      else if(c.shoes==="ankleboots") shoes='<path d="M228 588h68v54h-82c0-18 5-29 14-36Z" fill="'+c.shoeColor+'"/><path d="M312 588h67l13 18c9 8 13 20 13 36h-92Z" fill="'+c.shoeColor+'"/>';
+      else if(c.shoes==="sandals") shoes='<path d="M226 620h72v23h-82c0-12 4-20 10-23Zm87 0h72c9 5 14 13 14 23h-86Z" fill="'+c.shoeColor+'"/><path d="m235 615 40 27m98-27-39 27" fill="none"/>';
+      else shoes='<path d="M227 607h70v36h-82c0-16 5-26 12-36Zm86 0h70c10 8 15 20 15 36h-85Z" fill="'+c.shoeColor+'"/>';
+      return start+lines+'</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+back+hair+'<circle cx="301" cy="137" r="43" fill="'+(female?'#f0b88f':'#d9976f')+'"/>'+headItem+'<circle cx="285" cy="137" r="3" fill="#433a6f" stroke="none"/><circle cx="317" cy="137" r="3" fill="#433a6f" stroke="none"/><path d="M289 157c9 7 17 7 25 0" fill="none" stroke-width="3"/>'+top+bottom+accessory+shoes+'</g></svg>';
+    }
+
     function pictureScene(kind){
       const start='<svg class="picture-scene" viewBox="0 0 600 720" role="img" aria-label="Схематичная иллюстрация для подписей" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pictureArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#6758d7"/></marker></defs><rect width="600" height="720" rx="28" fill="#fffdf8"/><circle cx="300" cy="340" r="226" fill="#f2efff"/><g fill="none" stroke="#6758d7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#pictureArrow)">';
       const end='</g></svg>';
+      const variant=outfitVariantScene(kind,start);
+      if(variant) return variant;
       if(kind==="clothes_woman") return start+
         '<path d="M177 101C220 101 238 106 271 113"/><path d="M423 179C383 179 354 183 326 194"/><path d="M177 317C225 317 247 330 276 351"/><path d="M423 407C402 407 393 400 385 387"/><path d="M177 612C218 612 244 619 273 627"/>'+
         '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
@@ -2537,6 +2591,45 @@
         '<path d="M355 184h58l15 146h-89Z" fill="#f7f1df"/><path d="M355 214h64" stroke="#72a7d8" stroke-width="22"/><path d="M354 183l17-24h28l15 24" fill="#f7f1df"/>'+
         '<path d="M188 322 155 220l30-9 47 111Z" fill="#c9854d"/><path d="M157 222c10-24 29-33 53-26" fill="none"/>'+
         '</g>'+end.slice(4);
+      if(kind==="food_shelf") return start+
+        '<path d="M177 130C210 152 229 184 245 220"/><path d="M423 130C398 157 376 193 355 240"/><path d="M177 330C206 349 227 366 245 380"/><path d="M423 330C397 348 376 365 355 380"/><path d="M177 530C223 530 265 525 300 520"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<rect x="185" y="104" width="230" height="492" rx="18" fill="#f6e4c9"/><path d="M198 286h204M198 444h204" fill="none" stroke="#b98556" stroke-width="15"/>'+
+        '<path d="M214 154h67l13 116h-92Z" fill="#f8f2df"/><path d="M216 184h72" stroke="#73a7d7" stroke-width="22"/><path d="m214 154 20-28h31l16 28" fill="#f8f2df"/>'+
+        '<path d="m326 247 38-89 42 82Z" fill="#f2c94c"/><circle cx="366" cy="211" r="7" fill="#d7a93b" stroke="none"/><circle cx="383" cy="229" r="5" fill="#d7a93b" stroke="none"/>'+
+        '<path d="M206 322h78l-7 108h-64Z" fill="#d88a4b"/><path d="M218 344c18 13 36 13 53 0m-48 30c14 10 28 10 43 0m-39 30c11 8 23 8 34 0" fill="none" stroke="#f5d59b"/>'+
+        '<path d="M319 319h78l-8 111h-63Z" fill="#efe5c9"/><path d="M330 345h55M330 370h55M330 395h55" fill="none" stroke="#d0b889"/>'+
+        '<path d="M245 473h111l-11 103h-89Z" fill="#d9eff2"/><path d="M258 498c22-20 62-20 84 0" fill="none" stroke="#c67a52"/><circle cx="277" cy="529" r="15" fill="#c9854d"/><circle cx="309" cy="540" r="15" fill="#c9854d"/><circle cx="335" cy="516" r="15" fill="#c9854d"/>'+
+        '</g>'+end.slice(4);
+      if(kind==="food_bag") return start+
+        '<path d="M177 135C191 170 204 211 218 255"/><path d="M423 135C402 170 386 216 371 264"/><path d="M177 330C220 325 252 318 278 307"/><path d="M423 333C389 329 358 326 329 324"/><path d="M177 526C220 470 250 400 270 348"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M171 318 143 174l39-8 51 152Z" fill="#c9854d"/><path d="M149 178c15-25 37-31 63-19" fill="none"/>'+
+        '<path d="M342 169h55l16 176h-85Z" fill="#83c7df"/><path d="M352 169v-42h35v42m-39 61h57" fill="none"/><path d="M348 243h58" stroke="#f5fbff" stroke-width="27"/>'+
+        '<circle cx="286" cy="276" r="46" fill="#f0a24c"/><path d="M286 229c-4-23 8-38 31-44" fill="none" stroke="#5b9c58"/>'+
+        '<path d="M294 292h77l18 77h-112Z" fill="#6e4b3d"/><path d="M307 310h49M303 331h58" fill="none" stroke="#f0c06b"/>'+
+        '<path d="M217 323h106l-9 59H226Z" fill="#e4c79b"/><path d="M235 321c5-37 64-37 70 0" fill="none"/><ellipse cx="251" cy="348" rx="15" ry="12" fill="#fff7d6"/><ellipse cx="285" cy="348" rx="15" ry="12" fill="#fff7d6"/>'+
+        '<path d="M181 357h246l-27 246H207Z" fill="#d9a45f"/><path d="M219 357c3-64 44-94 85-94s83 30 87 94" fill="none" stroke="#a36e43" stroke-width="14"/><path d="M199 410h210M242 382l7 190m111-190-9 190" fill="none" stroke="#efc981" stroke-width="7"/>'+
+        '</g>'+end.slice(4);
+      if(kind==="food_fridge") return start+
+        '<path d="M177 139C212 151 237 171 258 196"/><path d="M423 139C389 155 365 177 344 205"/><path d="M177 338C215 338 246 340 271 344"/><path d="M423 338C388 338 360 342 337 350"/><path d="M177 536C223 536 262 522 293 499"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<rect x="169" y="76" width="262" height="568" rx="28" fill="#dfe9ed"/><rect x="194" y="105" width="212" height="505" rx="15" fill="#f9fcfd"/><path d="M198 273h205M198 437h205" fill="none" stroke="#9bb3bd" stroke-width="10"/>'+
+        '<rect x="219" y="145" width="79" height="84" rx="10" fill="#f2c94c"/><path d="M230 174h57M230 197h57" fill="none" stroke="#d1a63e"/>'+
+        '<path d="m330 231 35-88 38 83Z" fill="#f0c849"/><circle cx="366" cy="196" r="7" fill="#d29d36" stroke="none"/>'+
+        '<path d="M210 318c39-35 88-27 111 13-20 50-72 70-116 40Z" fill="#ef8b78"/><path d="M222 342c27 10 56 8 84-5" fill="none" stroke="#f6c4ad"/>'+
+        '<path d="M335 305h57l10 103h-76Z" fill="#f6e6ad"/><path d="M337 328h62" stroke="#e99b47" stroke-width="22"/><path d="m337 305 15-22h26l14 22" fill="#f6e6ad"/>'+
+        '<path d="M238 477h126l-19 96H253Z" fill="#f1b7c8"/><path d="M238 477h126l-17 34h-102Z" fill="#fff0d1"/><circle cx="284" cy="492" r="9" fill="#df5668"/><circle cx="322" cy="492" r="9" fill="#df5668"/>'+
+        '</g>'+end.slice(4);
+      if(kind==="food_table") return start+
+        '<path d="M177 140C191 211 199 290 207 365"/><path d="M423 140C387 205 318 314 239 385"/><path d="M177 340C220 345 267 352 309 365"/><path d="M423 340C394 355 366 374 340 397"/><path d="M177 548C253 512 343 448 425 386"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M91 458h418v44H91Z" fill="#c78b5b"/><path d="M132 500v138m336-138v138" fill="none" stroke="#8e613f" stroke-width="18"/>'+
+        '<ellipse cx="215" cy="397" rx="92" ry="56" fill="#f7f1df"/><path d="M139 397c8 64 145 64 153 0" fill="#d28e55"/><ellipse cx="215" cy="390" rx="72" ry="37" fill="#f2bd5f"/>'+
+        '<rect x="179" y="349" width="45" height="36" rx="10" fill="#f6e5bc" transform="rotate(-9 201 367)"/><rect x="225" y="375" width="46" height="35" rx="10" fill="#fff1d2" transform="rotate(12 248 392)"/><path d="M186 361l26 15m22 5 27 17" fill="none" stroke="#d49958" stroke-width="4"/>'+
+        '<ellipse cx="324" cy="397" rx="81" ry="54" fill="#f7f1df"/><path d="M255 397c8 58 130 58 138 0" fill="#6aa379"/><path d="M278 373c16-30 54-26 65 1-18 1-34 10-45 29-17-4-25-14-20-30Z" fill="#e85b50"/><path d="M327 389c22-25 48-14 49 10-20 0-34 8-45 24-12-7-14-20-4-34Z" fill="#8a8b91"/>'+
+        '<path d="m393 424 56-105 74 105Z" fill="#6d3d32"/><path d="m404 404 45-85 60 85Z" fill="#6d3d32"/><path d="M449 319h60l-7 24h-65Z" fill="#f1b6c4"/><circle cx="471" cy="318" r="9" fill="#d95568"/>'+
+        '</g>'+end.slice(4);
       return start+
         '<path d="M177 178C231 202 270 251 300 300"/><path d="M423 177C411 239 397 312 380 370"/><path d="M177 491C207 470 230 447 250 425"/><path d="M423 488C398 470 379 455 360 445"/>'+
         '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
@@ -2563,6 +2656,34 @@
           label("right",57,"el bolso marrón",["bolso marrón"]),
           label("left",85,"los zapatos amarillos",["zapatos amarillos"])
         ],"Цвет согласуется с названием предмета по роду и числу."),
+        item("woman_clothes_2","clothes","Подпиши второй женский образ вместе с цветами.","clothes_woman_2","Назови пять отмеченных предметов и добавь к каждому его цвет.",[
+          label("left",14,"el sombrero beige",["sombrero beige"]),
+          label("right",32,"la blusa lila",["blusa lila","blusa violeta"]),
+          label("left",64,"la falda roja",["falda roja"]),
+          label("right",52,"el bolso verde",["bolso verde"]),
+          label("left",86,"las botas marrones",["botas marrones","botas cafés"])
+        ],"Все предметы относятся к одному образу, поэтому форма цвета должна согласоваться с существительным."),
+        item("woman_clothes_3","clothes","Подпиши третий женский образ вместе с цветами.","clothes_woman_3","Назови одежду и аксессуары. Артикль писать необязательно.",[
+          label("left",14,"las gafas de sol negras",["gafas de sol negras"]),
+          label("right",32,"el abrigo amarillo",["abrigo amarillo"]),
+          label("left",64,"los pantalones azules",["pantalones azules"]),
+          label("right",52,"la bufanda roja",["bufanda roja"]),
+          label("left",86,"los botines marrones",["botines marrones","botines cafés"])
+        ],"Следи за множественным числом в pantalones и botines."),
+        item("woman_clothes_4","clothes","Подпиши четвёртый женский образ вместе с цветами.","clothes_woman_4","Назови пять отмеченных предметов. Можно использовать знакомые варианты названий одежды.",[
+          label("left",14,"el collar dorado",["collar dorado"]),
+          label("right",32,"el jersey verde",["jersey verde","suéter verde"]),
+          label("left",64,"los vaqueros azules",["vaqueros azules","jeans azules"]),
+          label("right",52,"la mochila coral",["mochila coral","mochila rosa"]),
+          label("left",86,"las zapatillas deportivas blancas",["zapatillas deportivas blancas","zapatillas blancas","tenis blancos"])
+        ],"Jersey и suéter, а также vaqueros и jeans принимаются как равноправные варианты."),
+        item("woman_clothes_5","clothes","Подпиши пятый женский образ вместе с цветами.","clothes_woman_5","Назови предмет и цвет в каждом поле.",[
+          label("left",14,"el sombrero rosa",["sombrero rosa"]),
+          label("right",32,"la chaqueta morada",["chaqueta morada","chaqueta violeta"]),
+          label("left",64,"los pantalones cortos beige",["pantalones cortos beige","shorts beige"]),
+          label("right",52,"el bolso amarillo",["bolso amarillo"]),
+          label("left",86,"las sandalias verdes",["sandalias verdes"])
+        ],"Rosa и beige не изменяются по роду, а verdes согласуется с sandalias по числу."),
         item("man_clothes","clothes","Подпиши одежду мужчины вместе с её цветами.","clothes_man","В каждом поле напиши название предмета и его цвет. Два цвета можно разделить y, запятой, слешем или пробелом.",[
           label("left",31,"la chaqueta roja",["chaqueta roja"]),
           label("right",24,"la camiseta blanca y azul",["camiseta blanca azul"]),
@@ -2570,6 +2691,34 @@
           label("left",64,"los pantalones beige",["pantalones beige"]),
           label("right",86,"las zapatillas deportivas blancas",["zapatillas deportivas blancas","zapatillas blancas","tenis blancos"])
         ],"Можно писать с артиклем или без него; важны существительное и правильная форма цвета."),
+        item("man_clothes_2","clothes","Подпиши второй мужской образ вместе с цветами.","clothes_man_2","Назови пять отмеченных предметов и их цвета.",[
+          label("left",14,"la gorra verde",["gorra verde"]),
+          label("right",32,"la camisa azul",["camisa azul"]),
+          label("left",64,"los vaqueros azules",["vaqueros azules","jeans azules"]),
+          label("right",52,"el cinturón marrón",["cinturón marrón","cinturón café"]),
+          label("left",86,"las botas marrones",["botas marrones","botas cafés"])
+        ],"Если не поставишь ударение в cinturón или marrón, тренажёр отметит ответ как почти верный."),
+        item("man_clothes_3","clothes","Подпиши третий мужской образ вместе с цветами.","clothes_man_3","Назови одежду и аксессуары мужчины. Артикль необязателен.",[
+          label("left",14,"el sombrero marrón",["sombrero marrón","sombrero café"]),
+          label("right",32,"el abrigo gris",["abrigo gris"]),
+          label("left",64,"los pantalones negros",["pantalones negros"]),
+          label("right",52,"la bufanda roja",["bufanda roja"]),
+          label("left",86,"los zapatos negros",["zapatos negros"])
+        ],"Цвет negro меняет форму во множественном числе: negros."),
+        item("man_clothes_4","clothes","Подпиши четвёртый мужской образ вместе с цветами.","clothes_man_4","Назови пять отмеченных предметов и добавь цвета.",[
+          label("left",14,"las gafas de sol negras",["gafas de sol negras"]),
+          label("right",32,"el jersey amarillo",["jersey amarillo","suéter amarillo"]),
+          label("left",64,"los pantalones cortos verdes",["pantalones cortos verdes","shorts verdes"]),
+          label("right",52,"el bolso azul",["bolso azul"]),
+          label("left",86,"las sandalias marrones",["sandalias marrones","sandalias cafés"])
+        ],"Можно использовать jersey или suéter, pantalones cortos или shorts."),
+        item("man_clothes_5","clothes","Подпиши пятый мужской образ вместе с цветами.","clothes_man_5","Назови детали более официального образа.",[
+          label("left",14,"la pajarita negra",["pajarita negra"]),
+          label("right",32,"la chaqueta azul",["chaqueta azul","chaqueta de traje azul"]),
+          label("left",64,"los pantalones azules",["pantalones azules"]),
+          label("right",52,"el cinturón marrón",["cinturón marrón","cinturón café"]),
+          label("left",86,"los zapatos negros",["zapatos negros"])
+        ],"Pajarita — галстук-бабочка; chaqueta здесь означает пиджак."),
         item("food_basket","foods","Подпиши продукты в корзине.","food_basket","Напиши название каждого продукта по-испански. Артикль необязателен.",[
           label("left",19,"el pan",["pan"]),
           label("right",18,"la leche",["leche"]),
@@ -2577,12 +2726,34 @@
           label("right",45,"los tomates",["tomates","tomate"]),
           label("left",71,"la manzana",["manzana"])
         ],"Единственное и множественное число принимаются там, где на рисунке лежит несколько одинаковых продуктов."),
-        item("paella","foods","Подпиши четыре заметных ингредиента блюда.","food_paella","Напиши название ингредиента по-испански. Подсказок со списком нет.",[
-          label("left",25,"el arroz",["arroz"]),
-          label("right",25,"las gambas",["gambas","camarones"]),
-          label("left",68,"los mejillones",["mejillones"]),
-          label("right",68,"el pollo",["pollo"])
-        ],"На схеме показана условная паэлья: каждое отмеченное изображение соответствует только одному ингредиенту.")
+        item("food_shelf","foods","Подпиши продукты на магазинной полке.","food_shelf","Назови пять отмеченных продуктов. Артикль можно не писать.",[
+          label("left",18,"la leche",["leche"]),
+          label("right",18,"el queso",["queso"]),
+          label("left",46,"la pasta",["pasta"]),
+          label("right",46,"el arroz",["arroz"]),
+          label("left",73,"las galletas",["galletas","galleta"])
+        ],"Упаковки отличаются формой и расположением, поэтому у каждой стрелки только один ответ."),
+        item("food_bag","foods","Подпиши продукты, которые выглядывают из пакета с покупками.","food_bag","Назови каждый отмеченный продукт по-испански.",[
+          label("left",19,"el pan",["pan"]),
+          label("right",19,"el agua",["agua"]),
+          label("left",46,"la naranja",["naranja"]),
+          label("right",46,"el chocolate",["chocolate"]),
+          label("left",73,"los huevos",["huevos","huevo"])
+        ],"Agua — слово женского рода, но в единственном числе употребляется с артиклем el."),
+        item("food_fridge","foods","Подпиши продукты на полках холодильника.","food_fridge","Назови пять отмеченных продуктов. Артикль необязателен.",[
+          label("left",19,"la mantequilla",["mantequilla"]),
+          label("right",19,"el queso",["queso"]),
+          label("left",47,"el salmón",["salmón"]),
+          label("right",47,"el zumo",["zumo","jugo"]),
+          label("left",74,"la tarta",["tarta","pastel"])
+        ],"Zumo и jugo, а также tarta и pastel принимаются как варианты."),
+        item("food_table","foods","Подпиши заметные ингредиенты супа, салата и торта на столе.","food_table","Стрелки указывают именно на ингредиенты внутри блюд, а не на посуду.",[
+          label("left",19,"la patata",["patata","papa"]),
+          label("right",19,"el pollo",["pollo"]),
+          label("left",47,"el tomate",["tomate"]),
+          label("right",47,"el atún",["atún"]),
+          label("left",76,"el chocolate",["chocolate"])
+        ],"В супе видны картофель и курица, в салате — помидор и тунец, а справа стоит шоколадный торт.")
       ];
     }
 
