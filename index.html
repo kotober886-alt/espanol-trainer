@@ -854,9 +854,10 @@
 
 
     const PRONOUN_CATEGORIES = [
-      {id:"all",title:"Все лица"},
+      {id:"all",title:"Все"},
       {id:"singular",title:"Единственное число"},
-      {id:"plural",title:"Множественное число"}
+      {id:"plural",title:"Множественное число"},
+      {id:"gustar",title:"С gustar: кому и сколько"}
     ];
 
     const PRONOUN_WORDS = [
@@ -903,6 +904,24 @@
         examples:[["Ellos van al gimnasio.","Они ходят в спортзал."],["Sus amigos viven aquí.","Их друзья живут здесь."]]
       }
     ];
+
+    const PRONOUN_STUDY_WORDS = PRONOUN_WORDS.concat([
+      {
+        id:"gustar_indirect_pronouns",cat:"gustar",word:"me / te / le / nos / os / les",nav:"me / te / le… · кому",gender:"косвенные местоимения",tr:"кому нравится, интересно, мешает или безразлично",
+        table:{headers:["Кому","Краткая форма","С уточнением"],rows:[
+          ["мне","me","a mí"],["тебе","te","a ti"],["ему / ей / Вам","le","a él / a ella / a usted"],
+          ["нам","nos","a nosotros / a nosotras"],["вам · vosotros","os","a vosotros / a vosotras"],["им / Вам","les","a ellos / a ellas / a ustedes"]
+        ]},
+        examples:[["A mí me gusta el té, pero a ella le gusta el café.","Мне нравится чай, а ей нравится кофе."],["¿A ti te interesan los idiomas?","Тебе интересны языки?"]]
+      },
+      {
+        id:"gustar_singular_plural",cat:"gustar",word:"gusta / gustan",nav:"gusta / gustan · сколько",gender:"согласование с тем, что нравится",tr:"gusta — один предмет или действие; gustan — несколько предметов",
+        table:{headers:["Что нравится","Форма","Пример"],rows:[
+          ["один предмет","gusta","Me gusta el café."],["действие","gusta","Me gusta leer."],["несколько предметов","gustan","Me gustan los libros."]
+        ]},
+        examples:[["Le gusta esta película, pero le gustan más los libros.","Ей нравится этот фильм, но книги нравятся больше."],["Nos gusta viajar y nos gustan los viajes largos.","Нам нравится путешествовать и нравятся долгие поездки."]]
+      }
+    ]);
 
     const CONNECTOR_CATEGORIES = [
       {id:"all",title:"Все"},
@@ -1085,35 +1104,56 @@
 
     const GUSTAR_CATEGORIES = [
       {id:"all",title:"Все"},
-      {id:"persons",title:"Кому нравится"},
-      {id:"number",title:"Один или несколько"},
-      {id:"similar",title:"Похожие глаголы"}
+      {id:"positive",title:"Нравится"},
+      {id:"neutral",title:"Интерес / безразличие"},
+      {id:"negative",title:"Не нравится"},
+      {id:"sensation",title:"Ощущения / люди"}
     ];
     const GUSTAR_WORDS = [
-      {id:"me_gusta",cat:"persons",word:"me gusta",gender:"мне · один предмет или действие",tr:"мне нравится",ru:["мне нравится"],answers:["me gusta"],
+      {id:"me_gusta",cat:"positive",word:"me gusta",gender:"мне · один предмет или действие",tr:"мне нравится",ru:["мне нравится"],answers:["me gusta"],
         examples:[["Me gusta el café.","Мне нравится кофе."],["Me gusta leer.","Мне нравится читать."]],cloze:"___ el café.",clozeAnswers:["me gusta"]},
-      {id:"te_gusta",cat:"persons",word:"te gusta",gender:"тебе · один предмет или действие",tr:"тебе нравится",ru:["тебе нравится"],answers:["te gusta"],
+      {id:"te_gusta",cat:"positive",word:"te gusta",gender:"тебе · один предмет или действие",tr:"тебе нравится",ru:["тебе нравится"],answers:["te gusta"],
         examples:[["¿Te gusta Madrid?","Тебе нравится Мадрид?"],["Te gusta cocinar.","Тебе нравится готовить."]],cloze:"¿___ Madrid?",clozeAnswers:["te gusta"]},
-      {id:"le_gusta",cat:"persons",word:"le gusta",gender:"ему, ей или Вам",tr:"ему, ей или Вам нравится",ru:["ему нравится","ей нравится","вам нравится"],answers:["le gusta"],
+      {id:"le_gusta",cat:"positive",word:"le gusta",gender:"ему, ей или Вам",tr:"ему, ей или Вам нравится",ru:["ему нравится","ей нравится","вам нравится"],answers:["le gusta"],
         examples:[["A ella le gusta bailar.","Ей нравится танцевать."],["¿A usted le gusta este barrio?","Вам нравится этот район?"]],cloze:"A ella ___ bailar.",clozeAnswers:["le gusta"]},
-      {id:"nos_gusta",cat:"persons",word:"nos gusta",gender:"нам",tr:"нам нравится",ru:["нам нравится"],answers:["nos gusta"],
+      {id:"nos_gusta",cat:"positive",word:"nos gusta",gender:"нам",tr:"нам нравится",ru:["нам нравится"],answers:["nos gusta"],
         examples:[["Nos gusta viajar.","Нам нравится путешествовать."],["Nos gusta esta película.","Нам нравится этот фильм."]],cloze:"___ viajar.",clozeAnswers:["nos gusta"]},
-      {id:"os_gusta",cat:"persons",word:"os gusta",gender:"вам · неформально, Испания",tr:"вам нравится",ru:["вам нравится"],answers:["os gusta"],
+      {id:"os_gusta",cat:"positive",word:"os gusta",gender:"вам · неформально, Испания",tr:"вам нравится",ru:["вам нравится"],answers:["os gusta"],
         examples:[["¿Os gusta la música?","Вам нравится музыка?"],["Os gusta vivir aquí.","Вам нравится жить здесь."]],cloze:"¿___ la música?",clozeAnswers:["os gusta"]},
-      {id:"les_gusta",cat:"persons",word:"les gusta",gender:"им или вам",tr:"им или вам нравится",ru:["им нравится","вам нравится"],answers:["les gusta"],
+      {id:"les_gusta",cat:"positive",word:"les gusta",gender:"им или вам",tr:"им или вам нравится",ru:["им нравится","вам нравится"],answers:["les gusta"],
         examples:[["A ellos les gusta el deporte.","Им нравится спорт."],["¿A ustedes les gusta la ciudad?","Вам нравится город?"]],cloze:"A ellos ___ el deporte.",clozeAnswers:["les gusta"]},
-      {id:"me_gustan",cat:"number",word:"me gustan",gender:"несколько предметов",tr:"мне нравятся",ru:["мне нравятся"],answers:["me gustan"],
+      {id:"me_gustan",cat:"positive",word:"me gustan",gender:"несколько предметов",tr:"мне нравятся",ru:["мне нравятся"],answers:["me gustan"],
         examples:[["Me gustan los libros.","Мне нравятся книги."],["Me gustan estas zapatillas.","Мне нравятся эти кроссовки."]],cloze:"___ los libros.",clozeAnswers:["me gustan"]},
-      {id:"encantar",cat:"similar",word:"encantar",gender:"строится как gustar",tr:"очень нравиться, восхищать",ru:["очень нравиться","восхищать"],answers:["encantar"],
+      {id:"no_me_gusta",cat:"negative",word:"no me gusta",gender:"отрицание с gustar",tr:"мне не нравится",ru:["мне не нравится"],answers:["no me gusta"],
+        examples:[["No me gusta madrugar.","Мне не нравится рано вставать."],["No me gustan las películas de terror.","Мне не нравятся фильмы ужасов."]],cloze:"___ madrugar.",clozeAnswers:["no me gusta"]},
+      {id:"encantar",cat:"positive",word:"encantar",gender:"строится как gustar",tr:"очень нравиться, обожать",ru:["очень нравиться","обожать"],answers:["encantar"],
         examples:[["Me encanta esta canción.","Мне очень нравится эта песня."],["Nos encantan los viajes.","Мы обожаем путешествия."]],cloze:"Me ___ esta canción.",clozeAnswers:["encanta"]},
-      {id:"interesar",cat:"similar",word:"interesar",gender:"строится как gustar",tr:"интересовать",ru:["интересовать"],answers:["interesar"],
+      {id:"fascinar",cat:"positive",word:"fascinar",gender:"строится как gustar",tr:"восхищать, очень увлекать",ru:["восхищать","очень увлекать"],answers:["fascinar"],
+        examples:[["Me fascina la fotografía.","Я в восторге от фотографии."],["Les fascinan otras culturas.","Их восхищают другие культуры."]],cloze:"Me ___ la fotografía.",clozeAnswers:["fascina"]},
+      {id:"preferir",cat:"positive",word:"preferir",gender:"обычный глагол · e → ie",tr:"предпочитать",ru:["предпочитать"],answers:["preferir"],
+        examples:[["Prefiero el té al café.","Я предпочитаю чай кофе."],["Preferimos viajar en tren.","Мы предпочитаем путешествовать на поезде."]],cloze:"Yo ___ el té.",clozeAnswers:["prefiero"]},
+      {id:"interesar",cat:"neutral",word:"interesar",gender:"строится как gustar",tr:"интересовать",ru:["интересовать"],answers:["interesar"],
         examples:[["Me interesa el arte.","Меня интересует искусство."],["Le interesan los idiomas.","Его интересуют языки."]],cloze:"Me ___ el arte.",clozeAnswers:["interesa"]},
-      {id:"molestar",cat:"similar",word:"molestar",gender:"строится как gustar",tr:"мешать, раздражать",ru:["мешать","раздражать"],answers:["molestar"],
+      {id:"importar",cat:"neutral",word:"importar",gender:"строится как gustar",tr:"иметь значение, быть важным",ru:["иметь значение","быть важным"],answers:["importar"],
+        examples:[["Me importa tu opinión.","Мне важно твоё мнение."],["No le importan los comentarios.","Ему безразличны комментарии."]],cloze:"Me ___ tu opinión.",clozeAnswers:["importa"]},
+      {id:"dar_igual",cat:"neutral",word:"dar igual",gender:"me da igual / me dan igual",tr:"быть безразличным; мне всё равно",ru:["быть безразличным","мне всё равно","мне все равно"],answers:["dar igual","me da igual"],
+        examples:[["Me da igual el color.","Мне безразличен цвет."],["Me dan igual las marcas.","Мне безразличны бренды."]],cloze:"Me ___ el color.",clozeAnswers:["da igual"]},
+      {id:"molestar",cat:"negative",word:"molestar",gender:"строится как gustar",tr:"мешать, раздражать",ru:["мешать","раздражать"],answers:["molestar"],
         examples:[["Me molesta el ruido.","Мне мешает шум."],["¿Te molestan las luces?","Тебя раздражает свет?"]],cloze:"Me ___ el ruido.",clozeAnswers:["molesta"]},
-      {id:"doler",cat:"similar",word:"doler",gender:"duele · duelen",tr:"болеть, причинять боль",ru:["болеть","причинять боль"],answers:["doler"],
+      {id:"aburrir",cat:"negative",word:"aburrir",gender:"строится как gustar",tr:"наводить скуку, быть скучным",ru:["наводить скуку","быть скучным"],answers:["aburrir"],
+        examples:[["Me aburre esta película.","Этот фильм мне скучен."],["Nos aburren las reuniones largas.","Долгие собрания навевают на нас скуку."]],cloze:"Me ___ esta película.",clozeAnswers:["aburre"]},
+      {id:"odiar",cat:"negative",word:"odiar",gender:"обычный глагол",tr:"ненавидеть",ru:["ненавидеть"],answers:["odiar"],
+        examples:[["Odio levantarme temprano.","Я ненавижу рано вставать."],["Ella odia el ruido.","Она ненавидит шум."]],cloze:"Yo ___ levantarme temprano.",clozeAnswers:["odio"]},
+      {id:"detestar",cat:"negative",word:"detestar",gender:"обычный глагол",tr:"терпеть не мочь, ненавидеть",ru:["терпеть не мочь","ненавидеть"],answers:["detestar"],
+        examples:[["Detesto esperar.","Я терпеть не могу ждать."],["Detestamos la comida fría.","Мы терпеть не можем холодную еду."]],cloze:"Yo ___ esperar.",clozeAnswers:["detesto"]},
+      {id:"no_soportar",cat:"negative",word:"no soportar",gender:"обычный глагол с отрицанием",tr:"не выносить, не терпеть",ru:["не выносить","не терпеть"],answers:["no soportar"],
+        examples:[["No soporto el calor.","Я не выношу жару."],["No soportamos las mentiras.","Мы не терпим ложь."]],cloze:"Yo ___ el calor.",clozeAnswers:["no soporto"]},
+      {id:"doler",cat:"sensation",word:"doler",gender:"duele / duelen",tr:"болеть, причинять боль",ru:["болеть","причинять боль"],answers:["doler"],
         examples:[["Me duele la cabeza.","У меня болит голова."],["Me duelen los ojos.","У меня болят глаза."]],cloze:"Me ___ la cabeza.",clozeAnswers:["duele"]},
-      {id:"a_mi",cat:"number",word:"a mí / a ti / a él…",gender:"для акцента или уточнения",tr:"мне / тебе / ему…",ru:["мне","тебе","ему"],answers:["a mí","a mi","a ti","a él","a el"],
-        examples:[["A mí me gusta el té.","Мне нравится чай."],["A ella le encantan los libros.","Ей очень нравятся книги."]],cloze:"___ me gusta el té.",clozeAnswers:["a mí","a mi"]}
+      {id:"caer_bien",cat:"sensation",word:"caer bien",gender:"обычно о людях",tr:"нравиться как человек",ru:["нравиться как человек","симпатизировать"],answers:["caer bien"],
+        examples:[["Me cae bien tu amiga.","Мне нравится твоя подруга как человек."],["Nos caen bien los vecinos.","Нам симпатичны соседи."]],cloze:"Me ___ tu amiga.",clozeAnswers:["cae bien"]},
+      {id:"caer_mal",cat:"sensation",word:"caer mal",gender:"обычно о людях",tr:"не нравиться как человек",ru:["не нравиться как человек","быть неприятным"],answers:["caer mal"],
+        examples:[["Me cae mal ese compañero.","Мне неприятен этот коллега."],["Les caen mal los vecinos.","Им не нравятся соседи."]],cloze:"Me ___ ese compañero.",clozeAnswers:["cae mal"]}
     ];
 
     const ROUTINE_CATEGORIES = [
@@ -1270,16 +1310,104 @@
         examples:[["La semana pasada estuve enferma.","На прошлой неделе я болела."],["El año pasado viajamos a España.","В прошлом году мы ездили в Испанию."]],cloze:"___ viajamos a España.",clozeAnswers:["el año pasado"]}
     ];
 
+    function gustarPatternTable(one,many,oneLabel,manyLabel){
+      const pronouns=[["мне","me"],["тебе","te"],["ему / ей / Вам","le"],["нам","nos"],["вам · vosotros","os"],["им / Вам","les"]];
+      return {headers:["Кому",oneLabel || "Один предмет / действие",manyLabel || "Несколько предметов"],rows:pronouns.map(function(row){return [row[0],row[1]+" "+one,row[1]+" "+many];})};
+    }
+    function regularVerbTable(forms){
+      const persons=["yo","tú","él / ella / usted","nosotros / nosotras","vosotros / vosotras","ellos / ellas / ustedes"];
+      return {headers:["Лицо","Форма"],rows:persons.map(function(person,i){return [person,forms[i]];})};
+    }
+
     const GUSTAR_STUDY_WORDS=[
       {
-        id:"gustar_system",cat:"persons",word:"gustar",base:"gustar",gender:"кому + gusta / gustan",tr:"нравиться",
-        table:{headers:["Кому","Один предмет / действие","Несколько предметов"],rows:[
-          ["мне","me gusta","me gustan"],["тебе","te gusta","te gustan"],["ему / ей / Вам","le gusta","le gustan"],
-          ["нам","nos gusta","nos gustan"],["вам · vosotros","os gusta","os gustan"],["им / Вам","les gusta","les gustan"]
+        id:"attitude_scale",cat:"positive",word:"От «обожаю» до «ненавижу»",base:"шкала отношения",gender:"быстрая шкала",tr:"выбери выражение по силе отношения",
+        table:{headers:["Отношение","Испанский","Значение"],rows:[
+          ["очень положительное","me encanta / me fascina","обожаю / я в восторге"],
+          ["положительное","me gusta","мне нравится"],
+          ["нейтральное","me interesa","мне интересно"],
+          ["безразличное","me da igual / no me importa","мне всё равно"],
+          ["отрицательное","no me gusta / me molesta","не нравится / раздражает"],
+          ["очень отрицательное","no lo soporto / lo odio","не выношу / ненавижу"]
         ]},
+        examples:[["Me encanta viajar, pero me da igual el destino.","Я обожаю путешествовать, но направление мне неважно."],["No soporto el ruido; lo odio.","Я не выношу шум; я его ненавижу."]]
+      },
+      {
+        id:"gustar_system",cat:"positive",word:"gustar",base:"gustar",gender:"конструкция типа gustar",tr:"нравиться",
+        table:gustarPatternTable("gusta","gustan"),
         examples:[["Me gusta el café, pero me gustan más los postres.","Мне нравится кофе, но десерты нравятся больше."],["A ellos les gusta viajar y les gustan los viajes largos.","Им нравится путешествовать и нравятся долгие поездки."]]
+      },
+      {
+        id:"encantar_system",cat:"positive",word:"encantar",base:"encantar",gender:"конструкция типа gustar",tr:"очень нравиться, обожать",
+        table:gustarPatternTable("encanta","encantan"),
+        examples:[["Me encanta esta canción.","Я обожаю эту песню."],["Nos encantan los viajes.","Мы обожаем путешествия."]]
+      },
+      {
+        id:"fascinar_system",cat:"positive",word:"fascinar",base:"fascinar",gender:"конструкция типа gustar",tr:"восхищать, очень увлекать",
+        table:gustarPatternTable("fascina","fascinan"),
+        examples:[["Me fascina la fotografía.","Я в восторге от фотографии."],["Les fascinan otras culturas.","Их восхищают другие культуры."]]
+      },
+      {
+        id:"preferir_system",cat:"positive",word:"preferir",base:"preferir",gender:"обычный глагол · e → ie",tr:"предпочитать",
+        table:regularVerbTable(["prefiero","prefieres","prefiere","preferimos","preferís","prefieren"]),
+        examples:[["Prefiero el té al café.","Я предпочитаю чай кофе."],["Preferimos viajar en tren.","Мы предпочитаем путешествовать на поезде."]]
+      },
+      {
+        id:"interesar_system",cat:"neutral",word:"interesar",base:"interesar",gender:"конструкция типа gustar",tr:"интересовать",
+        table:gustarPatternTable("interesa","interesan"),
+        examples:[["Me interesa el arte.","Меня интересует искусство."],["Le interesan los idiomas.","Его интересуют языки."]]
+      },
+      {
+        id:"importar_system",cat:"neutral",word:"importar",base:"importar",gender:"конструкция типа gustar",tr:"иметь значение, быть важным",
+        table:gustarPatternTable("importa","importan"),
+        examples:[["Me importa tu opinión.","Мне важно твоё мнение."],["No le importan los comentarios.","Ему безразличны комментарии."]]
+      },
+      {
+        id:"dar_igual_system",cat:"neutral",word:"dar igual",base:"dar igual",gender:"конструкция типа gustar",tr:"быть безразличным; быть всё равно",
+        table:gustarPatternTable("da igual","dan igual","Один вопрос / действие","Несколько вещей"),
+        examples:[["Me da igual el color.","Мне безразличен цвет."],["Me dan igual las marcas.","Мне безразличны бренды."]]
+      },
+      {
+        id:"molestar_system",cat:"negative",word:"molestar",base:"molestar",gender:"конструкция типа gustar",tr:"мешать, раздражать",
+        table:gustarPatternTable("molesta","molestan"),
+        examples:[["Me molesta el ruido.","Мне мешает шум."],["¿Te molestan las luces?","Тебя раздражает свет?"]]
+      },
+      {
+        id:"aburrir_system",cat:"negative",word:"aburrir",base:"aburrir",gender:"конструкция типа gustar",tr:"наводить скуку, быть скучным",
+        table:gustarPatternTable("aburre","aburren"),
+        examples:[["Me aburre esta película.","Этот фильм мне скучен."],["Nos aburren las reuniones largas.","Долгие собрания навевают на нас скуку."]]
+      },
+      {
+        id:"odiar_system",cat:"negative",word:"odiar",base:"odiar",gender:"обычный глагол",tr:"ненавидеть",
+        table:regularVerbTable(["odio","odias","odia","odiamos","odiáis","odian"]),
+        examples:[["Odio levantarme temprano.","Я ненавижу рано вставать."],["Ella odia el ruido.","Она ненавидит шум."]]
+      },
+      {
+        id:"detestar_system",cat:"negative",word:"detestar",base:"detestar",gender:"обычный глагол",tr:"терпеть не мочь, ненавидеть",
+        table:regularVerbTable(["detesto","detestas","detesta","detestamos","detestáis","detestan"]),
+        examples:[["Detesto esperar.","Я терпеть не могу ждать."],["Detestamos la comida fría.","Мы терпеть не можем холодную еду."]]
+      },
+      {
+        id:"no_soportar_system",cat:"negative",word:"no soportar",base:"soportar",gender:"обычный глагол с отрицанием",tr:"не выносить, не терпеть",
+        table:regularVerbTable(["no soporto","no soportas","no soporta","no soportamos","no soportáis","no soportan"]),
+        examples:[["No soporto el calor.","Я не выношу жару."],["No soportamos las mentiras.","Мы не терпим ложь."]]
+      },
+      {
+        id:"doler_system",cat:"sensation",word:"doler",base:"doler",gender:"конструкция типа gustar",tr:"болеть, причинять боль",
+        table:gustarPatternTable("duele","duelen","Одна часть тела","Несколько частей тела"),
+        examples:[["Me duele la cabeza.","У меня болит голова."],["Me duelen los ojos.","У меня болят глаза."]]
+      },
+      {
+        id:"caer_bien_system",cat:"sensation",word:"caer bien",base:"caer bien",gender:"о симпатии к людям",tr:"нравиться как человек",
+        table:gustarPatternTable("cae bien","caen bien","Один человек","Несколько людей"),
+        examples:[["Me cae bien tu amiga.","Мне нравится твоя подруга как человек."],["Nos caen bien los vecinos.","Нам симпатичны соседи."]]
+      },
+      {
+        id:"caer_mal_system",cat:"sensation",word:"caer mal",base:"caer mal",gender:"об антипатии к людям",tr:"не нравиться как человек",
+        table:gustarPatternTable("cae mal","caen mal","Один человек","Несколько людей"),
+        examples:[["Me cae mal ese compañero.","Мне неприятен этот коллега."],["Les caen mal los vecinos.","Им не нравятся соседи."]]
       }
-    ].concat(GUSTAR_WORDS.filter(function(item){return ["encantar","interesar","molestar","doler","a_mi"].indexOf(item.id)>=0;}));
+    ];
 
     const AGREEMENT_STUDY_WORDS=[
       {
@@ -2186,8 +2314,8 @@
       ["c_hay","constructions","presence","Собери: «В моём районе есть парк»",["En","mi","barrio","hay","un","parque."],"En mi barrio hay un parque.","Hay сообщает о наличии объекта."],
       ["c_plan","constructions","plans","Собери: «Я собираюсь работать завтра»",["Voy","a","trabajar","mañana."],"Voy a trabajar mañana.","ir a + infinitivo"],
       ["c_need","constructions","obligation","Собери: «Мне нужно купить хлеб»",["Tengo","que","comprar","pan."],"Tengo que comprar pan.","tener que + infinitivo"],
-      ["g_books","gustar","number","Собери: «Мне нравятся книги»",["Me","gustan","los","libros."],"Me gustan los libros.","С множественным объектом используется gustan."],
-      ["g_ella","gustar","persons","Собери: «Ей нравится танцевать»",["A","ella","le","gusta","bailar."],"A ella le gusta bailar.","A ella уточняет, к кому относится le."],
+      ["g_books","pronouns","gustar","Собери: «Мне нравятся книги»",["Me","gustan","los","libros."],"Me gustan los libros.","С множественным объектом используется gustan."],
+      ["g_ella","pronouns","gustar","Собери: «Ей нравится танцевать»",["A","ella","le","gusta","bailar."],"A ella le gusta bailar.","A ella уточняет, к кому относится le."],
       ["r_morning","routine","morning","Собери: «Я встаю в семь»",["Me","levanto","a","las","siete."],"Me levanto a las siete.","Возвратное me ставится перед глаголом."],
       ["r_teeth","routine","morning","Собери: «Я чищу зубы после завтрака»",["Me","cepillo","los","dientes","después","del","desayuno."],"Me cepillo los dientes después del desayuno.","После de + el используется del."],
       ["r_home","routine","evening","Собери: «Я возвращаюсь домой вечером»",["Vuelvo","a","casa","por","la","noche."],"Vuelvo a casa por la noche.","Домой — a casa, без артикля."],
@@ -2205,8 +2333,8 @@
       ["q_spacing","questions","reason","Исправь ошибку: ¿Porqué estudias español?","¿Por qué estudias español?","Вопросительное por qué пишется раздельно."],
       ["c_location","constructions","presence","Исправь ошибку: Hay la farmacia cerca.","La farmacia está cerca.","Hay — наличие, estar — место известного объекта."],
       ["c_tener","constructions","obligation","Исправь ошибку: Tengo trabajar mañana.","Tengo que trabajar mañana.","После tener необходимо que."],
-      ["g_number","gustar","number","Исправь ошибку: Me gusto los libros.","Me gustan los libros.","Los libros — множественное число, поэтому gustan."],
-      ["g_pronoun","gustar","persons","Исправь ошибку: A ella la gusta bailar.","A ella le gusta bailar.","С gustar используется косвенное местоимение le."],
+      ["g_number","pronouns","gustar","Исправь ошибку: Me gusto los libros.","Me gustan los libros.","Los libros — множественное число, поэтому gustan."],
+      ["g_pronoun","pronouns","gustar","Исправь ошибку: A ella la gusta bailar.","A ella le gusta bailar.","С gustar используется косвенное местоимение le."],
       ["r_person","routine","morning","Исправь ошибку: Yo me levantas a las siete.","Yo me levanto a las siete.","Для yo нужна форма levanto."],
       ["r_vestir","routine","morning","Исправь ошибку: Ella se visto rápido.","Ella se viste rápido.","Для ella: se viste."],
       ["pr_clock","practical","time","Исправь ошибку: Es las tres.","Son las tres.","Для двух часов и больше используется son las."],
@@ -2225,8 +2353,11 @@
       ["q_destination","questions","place","Закончи диалог: — ¿Adónde vas? — Я иду на работу.",["Voy al trabajo."],"Для направления используется a; a + el = al."],
       ["c_evening","constructions","plans","Ответь: — ¿Qué vas a hacer esta noche? — Я собираюсь читать.",["Voy a leer."],"ir a + infinitivo выражает план."],
       ["c_help","constructions","ability","Ответь: — ¿Puedes ayudarme? — Да, могу.",["Sí, puedo.","Si, puedo."],"Краткий естественный ответ — Sí, puedo."],
-      ["g_coffee","gustar","persons","Ответь: — ¿Te gusta el café? — Да, мне нравится.",["Sí, me gusta.","Si, me gusta."],"В ответе меняется te на me."],
-      ["g_hobby","gustar","persons","Ответь: — ¿Qué te gusta hacer? — Мне нравится читать.",["Me gusta leer."],"После gusta можно поставить инфинитив."],
+      ["g_coffee","gustar","positive","Ответь: — ¿Te gusta el café? — Да, мне нравится.",["Sí, me gusta.","Si, me gusta."],"В ответе меняется te на me."],
+      ["g_hobby","gustar","positive","Ответь: — ¿Qué te gusta hacer? — Мне нравится читать.",["Me gusta leer."],"После gusta можно поставить инфинитив."],
+      ["g_indifferent","gustar","neutral","Ответь: — ¿Te importa el color? — Нет, мне всё равно.",["No, me da igual.","No me importa.","No, no me importa."],"Me da igual и no me importa выражают безразличие."],
+      ["g_hate","gustar","negative","Ответь: — ¿Qué odias? — Я ненавижу рано вставать.",["Odio levantarme temprano."],"Odiar — обычный глагол: yo odio."],
+      ["g_person","gustar","sensation","Ответь: — ¿Te cae bien Ana? — Да, она мне нравится.",["Sí, me cae bien.","Si, me cae bien."],"О симпатии к человеку говорят caer bien."],
       ["r_wakeup","routine","morning","Ответь: — ¿A qué hora te levantas? — Я встаю в семь.",["Me levanto a las siete."],"Для yo используется me levanto."],
       ["pr_time_reply","practical","time","Ответь: — ¿Qué hora es? — Сейчас три часа.",["Son las tres."],"Для трёх часов используется son las."],
       ["pr_cost_reply","practical","prices","Ответь: — ¿Cuánto cuesta? — Это стоит десять евро.",["Cuesta diez euros."],"Подлежащее можно не повторять."],
@@ -2238,7 +2369,7 @@
       ["tener_present","present","irregular","Заполни формы tener в Presente.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["tengo|tienes|tiene|tenemos|tenéis|tienen","tengo|tienes|tiene|tenemos|teneis|tienen"],"tengo · tienes · tiene · tenemos · tenéis · tienen"],
       ["possessives","pronouns","all","Заполни притяжательные формы перед существительным.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["mi|tu|su|nuestro|vuestro|su"],"mi · tu · su · nuestro · vuestro · su"],
       ["levantarse","routine","morning","Проспрягай levantarse в Presente.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["me levanto|te levantas|se levanta|nos levantamos|os levantáis|se levantan","me levanto|te levantas|se levanta|nos levantamos|os levantais|se levantan"],"me levanto · te levantas · se levanta · nos levantamos · os levantáis · se levantan"],
-      ["gustar_persons","gustar","persons","Заполни формы «кому нравится» с gusta.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["me gusta|te gusta|le gusta|nos gusta|os gusta|les gusta"],"me gusta · te gusta · le gusta · nos gusta · os gusta · les gusta"],
+      ["gustar_persons","pronouns","gustar","Заполни формы «кому нравится» с gusta.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["me gusta|te gusta|le gusta|nos gusta|os gusta|les gusta"],"me gusta · te gusta · le gusta · nos gusta · os gusta · les gusta"],
       ["haber_perfect","past","perfect","Заполни формы haber для Pretérito Perfecto.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["he|has|ha|hemos|habéis|han","he|has|ha|hemos|habeis|han"],"he · has · ha · hemos · habéis · han"],
       ["hablar_indef","past","indefinite","Проспрягай hablar в Pretérito Indefinido.",["yo","tú","él / ella","nosotros","vosotros","ellos"],["hablé|hablaste|habló|hablamos|hablasteis|hablaron","hable|hablaste|hablo|hablamos|hablasteis|hablaron"],"hablé · hablaste · habló · hablamos · hablasteis · hablaron"]
     ];
@@ -2250,7 +2381,9 @@
       ["porque_question","questions","reason","Выбери форму: ¿___ estudias español?",["Porque","Por qué","Porqué"],"Por qué","Вопросительное por qué пишется раздельно."],
       ["muy_mucho_noun","practical","quantity","Выбери форму: Tengo ___ trabajo.",["muy","mucho","muchos"],"mucho","С существительным trabajo используется mucho."],
       ["muy_mucho_adj","practical","quantity","Выбери форму: Es ___ interesante.",["muy","mucho","mucha"],"muy","Перед прилагательным используется muy."],
-      ["gusta_gustan","gustar","number","Выбери форму: Me ___ los libros.",["gusta","gustan","gusto"],"gustan","Los libros — множественное число."],
+      ["gusta_gustan","pronouns","gustar","Выбери форму: Me ___ los libros.",["gusta","gustan","gusto"],"gustan","Los libros — множественное число."],
+      ["gusta_indifference","gustar","neutral","Выбери естественный вариант: «Мне всё равно, какой цвет».",["Me da igual el color.","Yo soy igual el color.","Me gusto el color."],"Me da igual el color.","Me da igual — естественный разговорный способ сказать «мне всё равно»."],
+      ["gusta_person","gustar","sensation","Выбери вариант о симпатии к человеку: Ana ___.",["me cae bien","me gusta bien","me interesa bien"],"me cae bien","Caer bien используют, когда человек приятен или симпатичен."],
       ["a_el_al","agreement","contractions","Выбери форму: Voy ___ cine.",["a el","al","del"],"al","a + el всегда превращается в al."],
       ["past_ayer","past","indefinite","Выбери форму: Ayer ___ al cine.",["he ido","fui","voy"],"fui","Ayer — завершённый период, поэтому здесь Indefinido."]
     ];
@@ -2671,6 +2804,7 @@
     function studyVocabularyWords(){
       if(selectedTopic==="verbs") return VERB_STUDY_WORDS;
       if(selectedTopic==="present") return PRESENT_STUDY_WORDS;
+      if(selectedTopic==="pronouns") return PRONOUN_STUDY_WORDS;
       if(selectedTopic==="gustar") return GUSTAR_STUDY_WORDS;
       if(selectedTopic==="agreement") return AGREEMENT_STUDY_WORDS;
       if(selectedTopic==="past") return PAST_STUDY_WORDS;
@@ -2823,7 +2957,7 @@
           '</span><span class="topic-count">'+(
             t.id==="verbs" ? VERB_STUDY_WORDS.length+" глаголов" :
             t.id==="present" ? PRESENT_STUDY_WORDS.length+" глагола" :
-            t.id==="pronouns" ? PRONOUN_WORDS.length+" лиц" :
+            t.id==="pronouns" ? PRONOUN_STUDY_WORDS.length+" карточек" :
             t.id==="questions" ? QUESTION_WORDS.length+" вопросов" :
             t.id==="constructions" ? CONSTRUCTION_WORDS.length+" конструкций" :
             t.id==="gustar" ? GUSTAR_STUDY_WORDS.length+" схем" :
@@ -3246,10 +3380,10 @@
     function studyIntro(){
       if(selectedTopic==="verbs") return "На каждой карточке сразу видны все формы глагола в Presente, перевод и живые примеры.";
       if(selectedTopic==="present") return "Все шесть форм одного глагола собраны вместе. Стрелки переключают между глаголами.";
-      if(selectedTopic==="pronouns") return "Переключайся между лицами: смотри притяжательные формы и спряжение пяти базовых глаголов.";
+      if(selectedTopic==="pronouns") return "Переключайся между лицами, смотри притяжательные формы, а в отдельной группе разбери me / te / le и разницу gusta / gustan.";
       if(selectedTopic==="questions") return "Смотри, о чём спрашивает слово, и сравнивай готовые вопросы с переводом.";
       if(selectedTopic==="constructions") return "Разбери схему, значение и два живых примера, затем собери собственную фразу.";
-      if(selectedTopic==="gustar") return "Следи, кому что нравится и стоит ли после местоимения форма gusta или gustan.";
+      if(selectedTopic==="gustar") return "Сравнивай оттенки отношения — от «обожаю» до «ненавижу». На каждой карточке сразу видны все формы конструкции.";
       if(selectedTopic==="agreement") return "Смотри на род и число существительного: артикль и прилагательное должны с ним согласоваться.";
       if(selectedTopic==="past") return "Сначала освой Pretérito Perfecto, затем переходи к завершённым событиям в Indefinido.";
       if(selectedTopic==="routine") return "Учи возвратные глаголы сразу с me, te, se, nos и os в бытовом контексте.";
@@ -3261,7 +3395,7 @@
     }
     function studyUnitLabel(){
       if(selectedTopic==="present") return "Глагол";
-      if(selectedTopic==="pronouns") return "Местоимение";
+      if(selectedTopic==="pronouns") return "Карточка";
       if(selectedTopic==="questions") return "Вопрос";
       if(selectedTopic==="constructions") return "Конструкция";
       if(selectedTopic==="gustar") return "Модель";
@@ -3337,6 +3471,10 @@
         els.pronounTabs.querySelectorAll("[data-pronoun-index]").forEach(function(btn){
           btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.pronounIndex);renderStudy();});
         });
+      } else {
+        els.pronounTabs.innerHTML="";
+      }
+      if(isPronouns && !hasTable){
         const note=word.possessive.note ? '<div class="pronoun-note">'+escapeHtml(word.possessive.note)+'</div>' : "";
         els.pronounDetails.innerHTML=
           '<div class="pronoun-block"><div class="pronoun-kicker">Перед существительным</div><div class="pronoun-form">'+escapeHtml(word.possessive.short)+'</div>'+
@@ -3348,7 +3486,6 @@
           '</div></div>';
       } else if(hasTable){
         const wide=word.table.headers.length>3 ? " wide" : "";
-        els.pronounTabs.innerHTML="";
         els.pronounDetails.innerHTML=
           '<div class="pronoun-block conjugation present-conjugation"><div class="pronoun-kicker">Вся система на одной карточке</div><div class="present-table-wrap"><table class="present-table'+wide+'"><thead><tr>'+
           word.table.headers.map(function(header){return '<th scope="col">'+escapeHtml(header)+'</th>';}).join("")+
