@@ -3,7 +3,7 @@ import re
 
 p = Path('index.html')
 s = p.read_text(encoding='utf-8')
-version = '9'
+version = '10'
 
 css = f'<link rel="stylesheet" href="assets/generated-art.css?v={version}">'
 s = re.sub(r'<link rel="stylesheet" href="assets/generated-art\.css(?:\?v=\d+)?">', css, s)
