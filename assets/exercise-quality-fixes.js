@@ -47,13 +47,6 @@
     return 'Правильное предложение: '+completed+(translation ? ' — '+translation : '');
   }
 
-  /*
-    Старый вариант брал русский перевод из examples[0] независимо от того,
-    какое именно предложение находилось в cloze. Из-за этого появлялись пары
-    вроде «Я рисую пейзажи акварелью» + «Los domingos me gusta ___».
-    Теперь перевод показывается только если он относится РОВНО к этому
-    завершённому предложению; иначе контекст остаётся без выдуманной подсказки.
-  */
   try {
     clozeQuestion=function(word,label){
       return safeContextQuestion(word,label || 'пропущенную часть');
@@ -183,6 +176,49 @@
     };
   }
   window.exerciseQualityAudit=auditContextData;
+
+  /* Make pañuelo unambiguous in both study cards and context practice. */
+  try {
+    if(Array.isArray(CLOTHING_WORDS)){
+      const scarfLike=CLOTHING_WORDS.find(function(item){return item && item.id==='handkerchief';});
+      if(scarfLike){
+        scarfLike.examples=[
+          ['Se pone un pañuelo de seda en el cuello.','Она надевает на шею шёлковый платок.'],
+          ['El pañuelo tiene flores.','На платке цветочный узор.']
+        ];
+        scarfLike.cloze='Se pone un ___ de seda en el cuello.';
+        scarfLike.clozeAnswers=['pañuelo'];
+      }
+    }
+  } catch(e){}
+
+  /* Correction tasks must clearly require the whole corrected sentence. */
+  try {
+    if(typeof allExercises==='function'){
+      const baseAllExercises=allExercises;
+      allExercises=function(){
+        return baseAllExercises().map(function(item){
+          if(!item || item.type!=='correct') return item;
+          item.skill='Исправь и перепиши';
+          item.q=String(item.q || '').replace(/^Исправь ошибку:\s*/,'Исправь ошибку и перепиши всё предложение целиком: ');
+          return item;
+        });
+      };
+    }
+  } catch(e){}
+
+  try {
+    if(typeof setupExercise==='function'){
+      const baseSetupExercise=setupExercise;
+      setupExercise=function(item){
+        baseSetupExercise(item);
+        if(item && item.type==='correct'){
+          try { els.answerLabel.textContent='Исправленное предложение целиком'; } catch(e){}
+          try { els.answerInput.placeholder='Перепиши всё предложение полностью, уже без ошибки…'; } catch(e){}
+        }
+      };
+    }
+  } catch(e){}
 
   try { if(typeof renderTopics==='function') renderTopics(); } catch(e){}
 })();
