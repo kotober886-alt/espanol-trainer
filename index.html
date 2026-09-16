@@ -264,7 +264,15 @@
     }
     .example strong { display:block; font-size:16px; }
     .example span { display:block; margin-top:2px; color:var(--muted); font-size:14px; }
-    .study-nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px; }
+    .study-nav { display:grid; grid-template-columns:minmax(120px,1fr) minmax(220px,1.4fr) minmax(120px,1fr); align-items:center; gap:12px; margin-top:18px; }
+    .study-nav > :last-child { justify-self:end; }
+    .study-picker-trigger {
+      min-width:0; min-height:54px; display:grid; place-items:center; gap:1px; padding:8px 14px;
+      border:1px solid #dcd7ec; border-radius:15px; background:#fff; color:var(--ink); text-align:center;
+    }
+    .study-picker-trigger span { color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+    .study-picker-trigger strong { width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--violet); font-size:15px; }
+    .study-picker-trigger:hover { border-color:var(--violet); background:#faf9ff; }
     .study-dots { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
     .study-dot { width:7px; height:7px; border:0; padding:0; border-radius:50%; background:#d9d4e7; }
     .study-dot.active { width:20px; border-radius:999px; background:var(--violet); }
@@ -384,6 +392,19 @@
     .more-grid { display:grid; gap:12px; }
     .more-action { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border:1px solid var(--line); border-radius:15px; background:white; color:var(--ink); text-align:left; font-weight:800; }
     .audio-settings { margin-top:0; }
+    .study-picker-dialog { width:min(760px,calc(100% - 24px)); max-height:min(82vh,760px); }
+    .study-picker-body { padding-top:16px; }
+    .study-picker-search { position:sticky; top:0; z-index:2; width:100%; min-height:48px; padding:11px 14px; border:1.5px solid var(--line); border-radius:14px; background:#fff; }
+    .study-picker-list { display:grid; gap:18px; max-height:58vh; overflow:auto; padding:2px 3px 6px; }
+    .study-picker-group { display:grid; gap:8px; }
+    .study-picker-group h3 { margin:0; color:var(--muted); font-size:12px; font-weight:850; text-transform:uppercase; letter-spacing:.08em; }
+    .study-picker-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .study-picker-item { min-width:0; padding:11px 13px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--ink); text-align:left; }
+    .study-picker-item strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; }
+    .study-picker-item span { display:block; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); font-size:12px; }
+    .study-picker-item:hover { border-color:#c9c2ff; background:#faf9ff; }
+    .study-picker-item.active { border-color:var(--violet); background:#f0edff; box-shadow:0 0 0 2px rgba(98,83,217,.08); }
+    .study-picker-empty { padding:30px 12px; color:var(--muted); text-align:center; }
 
     @media (max-width:820px) {
       .app { width:100%; max-width:100%; padding:10px; }
@@ -495,7 +516,10 @@
       .example span { font-size:13px; line-height:1.35; }
       .study-nav { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
       .study-nav .btn { width:100%; min-width:0; padding:10px 7px; font-size:13px; white-space:normal; }
-      .study-dots { grid-column:1/-1; order:3; width:100%; max-height:46px; overflow-y:auto; }
+      .study-picker-trigger { grid-column:1/-1; grid-row:1; width:100%; }
+      .study-nav #prevWord,.study-nav #nextWord { grid-row:2; }
+      .study-dots { display:none; }
+      .study-picker-grid { grid-template-columns:minmax(0,1fr); }
       .home-hero { grid-template-columns:1fr; padding:24px 19px; border-radius:23px; }
       .home-hero h2 { font-size:32px; }
       .home-stats { margin-top:8px; }
@@ -511,8 +535,7 @@
     }
     @media (max-width:360px) {
       .form-grid,.header-actions,.audio-actions { grid-template-columns:minmax(0,1fr); }
-      .study-nav { grid-template-columns:minmax(0,1fr); }
-      .study-dots { grid-column:auto; }
+      .study-nav { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
       .food-word { font-size:27px; }
     }
   </style>
@@ -625,7 +648,10 @@
             <div class="study-search-empty" id="studySearchEmpty" hidden>Ничего не нашлось. Попробуй другой запрос.</div>
             <div class="study-nav" id="studyNav">
               <button class="btn btn-soft" id="prevWord" type="button">← Предыдущее</button>
-              <div class="study-dots" id="studyDots" aria-label="Прогресс изучения слов"></div>
+              <button class="study-picker-trigger" id="studyPickerBtn" type="button">
+                <span id="studyPickerPosition">Карточка 1 из 1</span><strong id="studyPickerCurrent">Выбрать карточку</strong>
+              </button>
+              <div class="study-dots" id="studyDots" hidden></div>
               <button class="btn btn-primary" id="nextWord" type="button">Следующее →</button>
             </div>
           </div>
@@ -718,6 +744,17 @@
           <button class="focus-option" data-session-mode="audio" type="button">Аудио</button>
         </div></div>
         <button class="btn btn-primary" id="startSessionBtn" type="button">Начать занятие →</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="study-picker-dialog" id="studyPickerDialog">
+    <form method="dialog">
+      <div class="modal-head"><div><h2>Перейти к карточке</h2><p class="subtitle" id="studyPickerTopic">Выбери нужное слово или правило</p></div><button class="close" type="submit" aria-label="Закрыть">×</button></div>
+      <div class="modal-body study-picker-body">
+        <input class="study-picker-search" id="studyPickerSearch" type="search" placeholder="Найти слово или перевод…" aria-label="Найти карточку">
+        <div class="study-picker-list" id="studyPickerList"></div>
+        <div class="study-picker-empty" id="studyPickerEmpty" hidden>Ничего не нашлось. Попробуй другой запрос.</div>
       </div>
     </form>
   </dialog>
@@ -2569,6 +2606,7 @@
     let catalogIntent = "learn";
     let topicSearch = "";
     let studySearch = "";
+    let studyPickerQuery = "";
     let pendingSessionTopic = selectedTopic;
     let sessionSize = Number(uiSettings.sessionSize) || 10;
     let sessionActive = false;
@@ -2597,7 +2635,10 @@
       sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionResult:$("sessionResult"),
       resultTotal:$("resultTotal"), resultCorrect:$("resultCorrect"), resultWrong:$("resultWrong"), resultMessage:$("resultMessage"),
       learnTab:$("learnTab"), practiceTab:$("practiceTab"), topicTabs:$("topicTabs"), moreDialog:$("moreDialog"),
-      wordSearch:$("wordSearch"), studySearchEmpty:$("studySearchEmpty"), studyNav:$("studyNav")
+      wordSearch:$("wordSearch"), studySearchEmpty:$("studySearchEmpty"), studyNav:$("studyNav"),
+      studyPickerBtn:$("studyPickerBtn"), studyPickerPosition:$("studyPickerPosition"), studyPickerCurrent:$("studyPickerCurrent"),
+      studyPickerDialog:$("studyPickerDialog"), studyPickerSearch:$("studyPickerSearch"), studyPickerList:$("studyPickerList"),
+      studyPickerEmpty:$("studyPickerEmpty"), studyPickerTopic:$("studyPickerTopic")
     };
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
@@ -3139,6 +3180,43 @@
       const item=vocabularyCategories().find(function(cat){return cat.id===id;});
       return item ? item.title : topicById(selectedTopic).title;
     }
+    function studyPickerLabel(item){
+      return item.nav || item.word || item.id;
+    }
+    function renderStudyPicker(){
+      const allWords=studyVocabularyWords();
+      const current=currentFoodWords()[wordIndex];
+      const query=fold(studyPickerQuery);
+      const categories=vocabularyCategories();
+      const categoryIds=categories.filter(function(cat){return cat.id!=="all";}).map(function(cat){return cat.id;});
+      const groups=categories.filter(function(cat){return cat.id!=="all";}).map(function(cat){
+        return {id:cat.id,title:cat.title,items:allWords.map(function(item,index){return {item:item,index:index};}).filter(function(row){return row.item.cat===cat.id;})};
+      });
+      const ungrouped=allWords.map(function(item,index){return {item:item,index:index};}).filter(function(row){return categoryIds.indexOf(row.item.cat)<0;});
+      if(ungrouped.length) groups.push({id:"other",title:"Другие",items:ungrouped});
+      let visibleCount=0;
+      els.studyPickerList.innerHTML=groups.map(function(group){
+        const rows=group.items.filter(function(row){
+          if(!query) return true;
+          return fold([studyPickerLabel(row.item),row.item.tr,row.item.gender].filter(Boolean).join(" ")).indexOf(query)>=0;
+        });
+        visibleCount+=rows.length;
+        if(!rows.length) return "";
+        return '<section class="study-picker-group"><h3>'+escapeHtml(group.title)+'</h3><div class="study-picker-grid">'+rows.map(function(row){
+          const active=current && row.item.id===current.id;
+          return '<button class="study-picker-item '+(active?"active":"")+'" data-study-index="'+row.index+'" type="button"><strong>'+escapeHtml(studyPickerLabel(row.item))+'</strong><span>'+escapeHtml(row.item.tr || row.item.gender || "")+'</span></button>';
+        }).join("")+'</div></section>';
+      }).join("");
+      els.studyPickerEmpty.hidden=visibleCount>0;
+    }
+    function openStudyPicker(){
+      studyPickerQuery="";
+      els.studyPickerSearch.value="";
+      els.studyPickerTopic.textContent=topicById(selectedTopic).title+" · "+studyVocabularyWords().length+" карточек";
+      renderStudyPicker();
+      els.studyPickerDialog.showModal();
+      setTimeout(function(){els.studyPickerSearch.focus();},50);
+    }
     function studyTitle(){
       const titles={
         verbs:"Сначала познакомимся с основными глаголами",
@@ -3287,15 +3365,11 @@
       els.foodExamples.innerHTML=word.examples.map(function(example){
         return '<div class="example"><strong>'+escapeHtml(example[0])+'</strong><span>'+escapeHtml(example[1])+'</span></div>';
       }).join("");
-      els.studyDots.innerHTML=words.map(function(_,i){
-        return '<button class="study-dot '+(i===wordIndex?"active":"")+'" data-word-index="'+i+'" type="button" aria-label="'+unitLabel+' '+(i+1)+'"></button>';
-      }).join("");
-      els.studyDots.querySelectorAll("[data-word-index]").forEach(function(btn){
-        btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.wordIndex);renderStudy();});
-      });
+      els.studyDots.innerHTML="";
+      els.studyPickerPosition.textContent=unitLabel+" "+(wordIndex+1)+" из "+words.length;
+      els.studyPickerCurrent.textContent=studyPickerLabel(word);
       $("prevWord").disabled=wordIndex===0;
-      const consolidatedTopic=["verbs","present","gustar","agreement","past","practical"].indexOf(selectedTopic)>=0;
-      els.studyDots.hidden=isPronouns || consolidatedTopic;
+      els.studyDots.hidden=true;
       $("prevWord").textContent=isPronouns && wordIndex>0 ? "← "+words[wordIndex-1].nav : "← Предыдущее";
       const namedVerbNavigation=isPresent || selectedTopic==="verbs";
       els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : (namedVerbNavigation ? words[wordIndex+1].word+" →" : "Следующее →"));
@@ -3498,6 +3572,18 @@
     $("moreAddBtn").addEventListener("click",function(){els.moreDialog.close();openDialog();});
     els.topicSearch.addEventListener("input",function(){topicSearch=els.topicSearch.value;renderTopics();});
     els.wordSearch.addEventListener("input",function(){studySearch=els.wordSearch.value;wordIndex=0;renderStudy();});
+    els.studyPickerBtn.addEventListener("click",openStudyPicker);
+    els.studyPickerSearch.addEventListener("input",function(){studyPickerQuery=els.studyPickerSearch.value;renderStudyPicker();});
+    els.studyPickerList.addEventListener("click",function(event){
+      const btn=event.target.closest("[data-study-index]");
+      if(!btn) return;
+      foodCategory="all";
+      studySearch=""; els.wordSearch.value="";
+      wordIndex=Number(btn.dataset.studyIndex);
+      els.studyPickerDialog.close();
+      renderStudy();
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
     els.learnTab.addEventListener("click",function(){
       if(!isVocabularyTopic()) return;
       sessionActive=false; selectedMode="all"; foodPhase="study"; wordIndex=0; showWorkspace(); render();
