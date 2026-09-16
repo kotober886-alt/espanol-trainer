@@ -237,21 +237,26 @@
     .sort-token.result-bad { border-color:#e99aa4; background:#fff0f2; color:#a53643; }
     .picture-widget { margin:0 0 22px; }
     .picture-help { margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.4; }
-    .picture-stage {
-      position:relative; width:min(680px,100%); aspect-ratio:5/6; margin:auto; overflow:hidden;
-      border:1px solid #e2ddef; border-radius:22px; background:linear-gradient(155deg,#fffdf8,#f2efff);
+    .picture-stage { width:min(720px,100%); margin:auto; }
+    .picture-visual {
+      position:relative; width:min(640px,100%); aspect-ratio:5/6; margin:0 auto 14px; overflow:hidden;
+      border:1px solid #e7e2ef; border-radius:22px; background:#fff;
     }
-    .picture-scene { position:absolute; inset:0; width:100%; height:100%; }
-    .picture-field { position:absolute; width:30%; display:flex; align-items:center; gap:5px; transform:translateY(-50%); z-index:2; }
-    .picture-field.left { left:2.5%; }
-    .picture-field.right { right:2.5%; }
+    .picture-raster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; }
+    .picture-marker {
+      position:absolute; width:28px; height:28px; display:grid; place-items:center; transform:translate(-50%,-50%); z-index:2;
+      border:3px solid #fff; border-radius:50%; color:#fff; background:var(--violet); font-size:12px; font-weight:900;
+      box-shadow:0 3px 10px rgba(35,28,89,.28);
+    }
+    .picture-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    .picture-field { min-width:0; display:flex; align-items:center; gap:7px; padding:8px; border:1px solid #e7e2ef; border-radius:14px; background:#fbfaff; }
     .picture-field span {
-      flex:0 0 22px; width:22px; height:22px; display:grid; place-items:center; border-radius:50%;
-      color:white; background:var(--violet); font-size:11px; font-weight:900; box-shadow:0 4px 10px rgba(98,83,217,.22);
+      flex:0 0 25px; width:25px; height:25px; display:grid; place-items:center; border-radius:50%;
+      color:white; background:var(--violet); font-size:11px; font-weight:900;
     }
     .picture-field input {
-      min-width:0; width:100%; height:42px; padding:8px 9px; border:1.5px solid #d8d2e8; border-radius:11px;
-      color:var(--ink); background:rgba(255,255,255,.96); font-size:13px; font-weight:750; box-shadow:0 5px 14px rgba(35,28,89,.08);
+      min-width:0; width:100%; height:42px; padding:8px 9px; border:1.5px solid #d8d2e8; border-radius:10px;
+      color:var(--ink); background:#fff; font-size:14px; font-weight:750;
     }
     .picture-field input:focus { outline:0; border-color:var(--violet); box-shadow:0 0 0 3px rgba(98,83,217,.11); }
     .picture-field input.result-good { border-color:#6bc29a; background:#e9f8f1; color:#187052; }
@@ -563,12 +568,12 @@
       .sort-column { min-height:126px; padding:9px; }
       .sort-column h3 { font-size:12px; }
       .sort-token { padding:7px 8px; font-size:12px; }
-      .picture-stage { width:100%; border-radius:17px; }
-      .picture-field { width:34%; gap:3px; }
-      .picture-field.left { left:1.5%; }
-      .picture-field.right { right:1.5%; }
-      .picture-field span { flex-basis:18px; width:18px; height:18px; font-size:9px; }
-      .picture-field input { height:37px; padding:6px 5px; font-size:16px; border-radius:9px; }
+      .picture-visual { border-radius:17px; margin-bottom:11px; }
+      .picture-marker { width:25px; height:25px; border-width:2px; font-size:11px; }
+      .picture-fields { grid-template-columns:1fr; gap:7px; }
+      .picture-field { padding:7px; gap:6px; }
+      .picture-field span { flex-basis:23px; width:23px; height:23px; font-size:10px; }
+      .picture-field input { height:39px; padding:6px 8px; font-size:16px; border-radius:9px; }
       .order-built { min-height:64px; padding:10px; }
       .word-chip { max-width:100%; padding:8px 10px; overflow-wrap:anywhere; }
       .actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; position:sticky; bottom:70px; z-index:8; padding:8px 0; background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%); }
@@ -633,7 +638,7 @@
       .food-word { font-size:27px; }
     }
   </style>
-<link rel="stylesheet" href="assets/generated-art.css?v=8">
+  <link rel="stylesheet" href="assets/generated-art.css?v=9">
 </head>
 <body>
   <main class="app">
@@ -2714,8 +2719,45 @@
         '</g>'+end.slice(4);
     }
 
+    const PICTURE_MARKERS={
+      clothes_woman:[[50,16],[50,27],[50,53],[40,49],[50,87]],
+      clothes_woman_2:[[50,12],[50,33],[50,57],[40,42],[50,85]],
+      clothes_woman_3:[[50,16],[50,43],[50,66],[50,27],[50,86]],
+      clothes_woman_4:[[50,27],[50,39],[50,63],[40,40],[50,86]],
+      clothes_woman_5:[[50,12],[50,36],[50,55],[61,43],[50,86]],
+      clothes_man:[[45,39],[50,34],[40,32],[50,64],[50,86]],
+      clothes_man_2:[[50,13],[50,35],[50,63],[50,49],[50,85]],
+      clothes_man_3:[[50,13],[50,43],[50,66],[50,27],[50,86]],
+      clothes_man_4:[[50,16],[50,38],[50,57],[40,40],[50,86]],
+      clothes_man_5:[[50,23],[45,41],[50,66],[50,49],[50,86]],
+      food_basket:[[33,37],[47,31],[58,39],[47,55],[65,54]],
+      food_shelf:[[43,29],[64,29],[45,55],[64,55],[53,76]],
+      food_bag:[[28,32],[47,23],[53,41],[68,32],[65,45]],
+      food_fridge:[[42,28],[39,47],[62,47],[39,72],[62,72]],
+      food_table:[[31,29],[39,31],[66,29],[73,31],[50,69]],
+      dish_soup_chicken:[[18,23],[72,23],[14,67],[37,75],[78,69]],
+      dish_soup_lentil:[[18,20],[72,20],[22,70],[53,73],[85,65]],
+      dish_soup_seafood:[[20,21],[75,22],[23,69],[62,70],[87,59]],
+      dish_salad_tuna:[[20,21],[70,21],[37,77],[13,69],[86,69]],
+      dish_salad_chicken:[[16,20],[72,18],[22,70],[52,74],[83,68]],
+      dish_salad_seafood:[[18,20],[72,19],[85,70],[23,70],[52,74]],
+      dish_cake_chocolate:[[18,21],[70,21],[85,70],[15,72],[46,77]],
+      dish_flan:[[18,21],[78,21],[25,73],[72,72]],
+      dish_cookies:[[18,21],[70,21],[15,72],[60,75],[89,72]],
+      dish_tortilla:[[16,24],[48,25],[72,23],[90,38]],
+      dish_pizza:[[15,29],[45,22],[71,29],[52,46],[88,29]],
+      dish_stew:[[18,21],[57,21],[20,44],[58,44],[88,38]]
+    };
+
+    function pictureAsset(scene){return "assets/picture-labels/"+scene+".webp";}
+
     function pictureLabelExercises(){
       function item(id,topic,question,scene,hint,labels,explanation){
+        const markers=PICTURE_MARKERS[scene] || [];
+        labels.forEach(function(label,index){
+          label.markerX=markers[index] ? markers[index][0] : 50;
+          label.markerY=markers[index] ? markers[index][1] : 50;
+        });
         return {id:"picture_"+id,topic:topic,foodCat:"all",type:"picture-label",skill:"Подпиши картинку",q:question,pictureScene:scene,pictureHint:hint,pictureLabels:labels,
           a:[labels.map(function(label){return label.reveal;}).join(" | ")],displayAnswer:labels.map(function(label,index){return (index+1)+". "+label.reveal;}).join(" · "),e:explanation};
       }
@@ -2808,7 +2850,7 @@
           label("left",46,"la pasta",["pasta"]),
           label("right",46,"el arroz",["arroz"]),
           label("left",73,"las galletas",["galletas","galleta"])
-        ],"Упаковки отличаются формой и расположением, поэтому у каждой стрелки только один ответ."),
+        ],"Упаковки отличаются формой и расположением, поэтому у каждого номера только один ответ."),
         item("food_bag","foods","Подпиши продукты, которые выглядывают из пакета с покупками.","food_bag","Назови каждый отмеченный продукт по-испански.",[
           label("left",19,"el pan",["pan"]),
           label("right",19,"el agua",["agua"]),
@@ -2823,7 +2865,7 @@
           label("right",47,"el zumo",["zumo","jugo"]),
           label("left",74,"la tarta",["tarta","pastel"])
         ],"Zumo и jugo, а также tarta и pastel принимаются как варианты."),
-        item("food_table","foods","Подпиши заметные ингредиенты супа, салата и торта на столе.","food_table","Стрелки указывают именно на ингредиенты внутри блюд, а не на посуду.",[
+        item("food_table","foods","Подпиши заметные ингредиенты супа, салата и торта на столе.","food_table","Номера стоят рядом с ингредиентами внутри блюд, а не с посудой.",[
           label("left",19,"la patata",["patata","papa"]),
           label("right",19,"el pollo",["pollo"]),
           label("left",47,"el tomate",["tomate"]),
@@ -2839,13 +2881,13 @@
         item("soup_seafood","foods","Суп с морепродуктами: подпиши ингредиенты.","dish_soup_seafood","Назови пять отчётливо показанных продуктов.",dishLabels([
           ["el pescado",["pescado"]],["las gambas",["gambas","camarones"]],["el calamar",["calamar"]],["el tomate",["tomate"]],["el arroz",["arroz"]]
         ]),"Суп включает рыбу, креветки, кальмара, помидор и рис."),
-        item("salad_tuna","foods","Салат с тунцом: подпиши ингредиенты.","dish_salad_tuna","Стрелки ведут к отдельным продуктам вокруг салата.",dishLabels([
+        item("salad_tuna","foods","Салат с тунцом: подпиши ингредиенты.","dish_salad_tuna","Номера стоят прямо у отдельных продуктов вокруг салата.",dishLabels([
           ["el tomate",["tomate"]],["el atún",["atún"]],["el huevo",["huevo"]],["el aceite",["aceite"]],["el vinagre",["vinagre"]]
         ]),"Для салата показаны tomate, atún, huevo, aceite и vinagre."),
         item("salad_chicken","foods","Салат с курицей: подпиши ингредиенты.","dish_salad_chicken","Назови ингредиенты без подсказки-списка.",dishLabels([
           ["el pollo",["pollo"]],["el queso",["queso"]],["la manzana",["manzana"]],["el aceite",["aceite"]],["el huevo",["huevo"]]
         ]),"В салате показаны курица, сыр, яблоко, масло и яйцо."),
-        item("salad_seafood","foods","Рисовый салат с морепродуктами: подпиши ингредиенты.","dish_salad_seafood","Каждой стрелке соответствует только один продукт.",dishLabels([
+        item("salad_seafood","foods","Рисовый салат с морепродуктами: подпиши ингредиенты.","dish_salad_seafood","Каждому номеру соответствует только один продукт.",dishLabels([
           ["el arroz",["arroz"]],["las gambas",["gambas","camarones"]],["los mejillones",["mejillones"]],["el tomate",["tomate"]],["el aceite",["aceite"]]
         ]),"В этом салате сочетаются arroz, gambas, mejillones, tomate и aceite."),
         item("cake_chocolate","foods","Шоколадный торт: подпиши ингредиенты.","dish_cake_chocolate","Назови продукты, из которых приготовлен торт.",dishLabels([
@@ -4030,10 +4072,15 @@
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
         els.pictureWidget.hidden=false;
-        els.pictureHelp.textContent=item.pictureHint || "Подпиши отмеченные предметы по-испански.";
-        els.pictureStage.innerHTML=pictureScene(item.pictureScene)+(item.pictureLabels || []).map(function(label,i){
-          return '<label class="picture-field '+escapeHtml(label.side)+'" style="top:'+Number(label.top)+'%"><span>'+(i+1)+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+(i+1)+'" placeholder="По-испански"></label>';
+        els.pictureHelp.textContent=item.pictureHint || "Номер на картинке соответствует полю ответа ниже.";
+        const pictureLabels=item.pictureLabels || [];
+        const pictureMarkers=pictureLabels.map(function(label,i){
+          return '<span class="picture-marker" style="left:'+Number(label.markerX)+'%;top:'+Number(label.markerY)+'%" aria-hidden="true">'+(i+1)+'</span>';
         }).join("");
+        const pictureFields=pictureLabels.map(function(label,i){
+          return '<label class="picture-field"><span>'+(i+1)+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+(i+1)+'" placeholder="По-испански"></label>';
+        }).join("");
+        els.pictureStage.innerHTML='<div class="picture-visual"><img class="picture-raster" src="'+escapeHtml(pictureAsset(item.pictureScene))+'" alt="'+escapeHtml(item.q)+'" decoding="async">'+pictureMarkers+'</div><div class="picture-fields">'+pictureFields+'</div>';
         els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input){
           input.addEventListener("keydown",function(event){if(event.key==="Enter"){event.preventDefault();checkAnswer();}});
         });
@@ -4699,10 +4746,6 @@
     renderTopics();
     showHome();
   </script>
-<script src="assets/hq-clothes-row1.js?v=8"></script>
-<script src="assets/img-clothes.js?v=8"></script>
-<script src="assets/img-foods.js?v=8"></script>
-<script src="assets/img-activities.js?v=8"></script>
-<script src="assets/generated-art.js?v=8"></script>
+  <script src="assets/generated-art.js?v=9"></script>
 </body>
 </html>
