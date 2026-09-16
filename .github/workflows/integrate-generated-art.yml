@@ -9,6 +9,8 @@ on:
       - 'assets/img-clothes.js'
       - 'assets/img-foods.js'
       - 'assets/img-activities.js'
+      - 'assets/visual-coverage.js'
+      - 'assets/exercise-quality-fixes.js'
       - 'scripts/inject_generated_art.py'
       - '.github/workflows/integrate-generated-art.yml'
 
