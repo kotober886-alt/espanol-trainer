@@ -10,6 +10,17 @@
   background:rgba(255,255,255,.78);
   border-radius:22px;
 }
+.study-card.no-art .food-art,
+.study-card .food-art[hidden] {
+  display:none!important;
+}
+.study-card.no-art {
+  grid-template-columns:minmax(0,1fr)!important;
+}
+.study-card.no-art > div:last-child {
+  width:min(800px,100%);
+  margin:auto;
+}
 
 .generated-sprite {
   display:block;
@@ -23,6 +34,14 @@
   border-radius:16px;
   transform-origin:center;
 }
+.precise-art {
+  display:block;
+  width:min(100%,245px)!important;
+  height:auto!important;
+  max-height:100%;
+  margin:auto;
+  filter:none!important;
+}
 
 .generated-sprite-clothes { transform:scale(1.40); }
 .generated-sprite-foods { transform:scale(1.25); }
@@ -35,6 +54,7 @@
     padding:6px!important;
   }
   .food-art .generated-sprite { width:min(100%,225px)!important; }
+  .food-art .precise-art { width:min(100%,205px)!important; }
 }
 
 @media (max-width:520px) {
@@ -134,6 +154,10 @@
     width:142px!important;
     max-width:none!important;
   }
+  .food-art .precise-art {
+    width:136px!important;
+    max-width:100%!important;
+  }
   .food-art .generated-sprite-clothes { transform:scale(1.42); }
   .food-art .generated-sprite-foods { transform:scale(1.28); }
   .food-art .generated-sprite-activities { transform:scale(1.44); }
@@ -166,7 +190,7 @@
     grid-column:3!important;
     justify-self:stretch!important;
   }
-  .study-picker-trigger span { display:none; }
+  .study-picker-trigger span { display:none!important; }
   .study-picker-trigger strong {
     font-size:12px!important;
     line-height:1.1;
@@ -182,6 +206,7 @@
     height:136px!important;
   }
   .food-art .generated-sprite { width:132px!important; }
+  .food-art .precise-art { width:126px!important; }
   .study-nav {
     grid-template-columns:minmax(0,.72fr) minmax(0,1.12fr) minmax(0,.72fr)!important;
     gap:4px!important;
