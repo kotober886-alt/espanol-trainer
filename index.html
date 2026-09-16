@@ -110,7 +110,7 @@
       border-radius:15px; color:white; background:linear-gradient(135deg,var(--violet),var(--violet-2)); font-weight:850;
       box-shadow:0 10px 24px rgba(80,62,170,.2);
     }
-    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden],.match-widget[hidden],.cloze-widget[hidden],.sort-widget[hidden] { display:none; }
+    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden],.match-widget[hidden],.cloze-widget[hidden],.sort-widget[hidden],.picture-widget[hidden] { display:none; }
     .audio-prompt span { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(255,255,255,.18); }
     .audio-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:0 0 22px; }
     .audio-actions[hidden] { display:none; }
@@ -235,6 +235,28 @@
     .sort-token:hover,.sort-token.selected { border-color:var(--violet); color:var(--violet); background:#f1eeff; }
     .sort-token.result-good { border-color:#6bc29a; background:#e9f8f1; color:#187052; }
     .sort-token.result-bad { border-color:#e99aa4; background:#fff0f2; color:#a53643; }
+    .picture-widget { margin:0 0 22px; }
+    .picture-help { margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.4; }
+    .picture-stage {
+      position:relative; width:min(680px,100%); aspect-ratio:5/6; margin:auto; overflow:hidden;
+      border:1px solid #e2ddef; border-radius:22px; background:linear-gradient(155deg,#fffdf8,#f2efff);
+    }
+    .picture-scene { position:absolute; inset:0; width:100%; height:100%; }
+    .picture-field { position:absolute; width:30%; display:flex; align-items:center; gap:5px; transform:translateY(-50%); z-index:2; }
+    .picture-field.left { left:2.5%; }
+    .picture-field.right { right:2.5%; }
+    .picture-field span {
+      flex:0 0 22px; width:22px; height:22px; display:grid; place-items:center; border-radius:50%;
+      color:white; background:var(--violet); font-size:11px; font-weight:900; box-shadow:0 4px 10px rgba(98,83,217,.22);
+    }
+    .picture-field input {
+      min-width:0; width:100%; height:42px; padding:8px 9px; border:1.5px solid #d8d2e8; border-radius:11px;
+      color:var(--ink); background:rgba(255,255,255,.96); font-size:13px; font-weight:750; box-shadow:0 5px 14px rgba(35,28,89,.08);
+    }
+    .picture-field input:focus { outline:0; border-color:var(--violet); box-shadow:0 0 0 3px rgba(98,83,217,.11); }
+    .picture-field input.result-good { border-color:#6bc29a; background:#e9f8f1; color:#187052; }
+    .picture-field input.result-near { border-color:#e0bb55; background:#fff8d9; color:#8d6610; }
+    .picture-field input.result-bad { border-color:#e99aa4; background:#fff0f2; color:#a53643; }
     .feedback { min-height:48px; display:flex; align-items:center; margin:12px 0 4px; padding:10px 13px; border-radius:13px; font-weight:750; }
     .feedback:empty { padding:0; margin:0; min-height:20px; }
     .feedback.good { color:#187052; background:#e9f8f1; }
@@ -541,6 +563,12 @@
       .sort-column { min-height:126px; padding:9px; }
       .sort-column h3 { font-size:12px; }
       .sort-token { padding:7px 8px; font-size:12px; }
+      .picture-stage { width:100%; border-radius:17px; }
+      .picture-field { width:34%; gap:3px; }
+      .picture-field.left { left:1.5%; }
+      .picture-field.right { right:1.5%; }
+      .picture-field span { flex-basis:18px; width:18px; height:18px; font-size:9px; }
+      .picture-field input { height:37px; padding:6px 5px; font-size:16px; border-radius:9px; }
       .order-built { min-height:64px; padding:10px; }
       .word-chip { max-width:100%; padding:8px 10px; overflow-wrap:anywhere; }
       .actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; position:sticky; bottom:70px; z-index:8; padding:8px 0; background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%); }
@@ -754,6 +782,10 @@
               <p class="drag-help">Перетащи каждое слово в одну колонку. На телефоне нажми на слово, затем на нужную колонку.</p>
               <div class="sort-columns" id="sortColumns"></div>
               <div class="sort-bank" id="sortBank" aria-label="Слова для распределения"></div>
+            </div>
+            <div class="picture-widget" id="pictureWidget" hidden>
+              <p class="picture-help" id="pictureHelp">Подпиши отмеченные предметы по-испански.</p>
+              <div class="picture-stage" id="pictureStage"></div>
             </div>
             <div class="form-grid" id="formGrid" hidden></div>
             <label class="answer-label" id="answerLabel" for="answerInput">Твой ответ</label>
@@ -2469,6 +2501,91 @@
       return items;
     }
 
+    function pictureScene(kind){
+      const start='<svg class="picture-scene" viewBox="0 0 600 720" role="img" aria-label="Схематичная иллюстрация для подписей" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pictureArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#6758d7"/></marker></defs><rect width="600" height="720" rx="28" fill="#fffdf8"/><circle cx="300" cy="340" r="226" fill="#f2efff"/><g fill="none" stroke="#6758d7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#pictureArrow)">';
+      const end='</g></svg>';
+      if(kind==="clothes_woman") return start+
+        '<path d="M177 101C220 101 238 106 271 113"/><path d="M423 179C383 179 354 183 326 194"/><path d="M177 317C225 317 247 330 276 351"/><path d="M423 407C402 407 393 400 385 387"/><path d="M177 612C218 612 244 619 273 627"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M258 118c0-49 84-56 91-4l-8 59h-78Z" fill="#2f3147"/><circle cx="302" cy="135" r="42" fill="#f3b98f"/><path d="M271 123c18-8 42-20 70-5" fill="none"/>'+
+        '<path d="M286 132h-25m78 0h-24m-24 0h18" fill="none"/><rect x="267" y="120" width="25" height="22" rx="10" fill="#d9eff2"/><rect x="309" y="120" width="25" height="22" rx="10" fill="#d9eff2"/>'+
+        '<path d="M290 173 275 205l28 20 27-20-18-32" fill="#ffd447"/><path d="M255 205 221 555h164l-36-350-46 20Z" fill="#62b7a5"/>'+
+        '<path d="M254 235c28 24 55 26 96 2M242 300c41 30 77 30 120 0M231 372c50 34 91 34 139 0M221 446c55 34 105 34 159 0" fill="none" stroke="#ffe59a" stroke-width="10"/>'+
+        '<path d="M254 217c-42 28-57 89-62 153m157-153c37 34 47 89 51 151" fill="none"/><path d="M267 555v69m69-69v69" fill="none"/>'+
+        '<path d="M244 634c14-17 32-20 49-5l-6 20h-47Z" fill="#ffd447"/><path d="M313 629c18-14 34-12 46 5l3 15h-48Z" fill="#ffd447"/>'+
+        '<path d="M397 330c23 0 38 16 38 39v89h-74v-89c0-23 14-39 36-39Z" fill="#9a5b46"/><path d="M375 345c3-35 40-35 45 0" fill="none"/>'+
+        '<circle cx="302" cy="151" r="3" fill="#433a6f" stroke="none"/><path d="M292 158c8 6 15 6 23 0" fill="none" stroke-width="3"/>'+
+        '</g>'+end.slice(4);
+      if(kind==="clothes_man") return start+
+        '<path d="M177 219C218 219 240 229 267 250"/><path d="M423 167C386 167 354 180 322 215"/><path d="M423 330C407 330 394 326 382 315"/><path d="M177 457C222 457 250 462 278 476"/><path d="M423 615C382 615 356 622 329 633"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M366 226c45 7 67 43 55 108l-12 104h-70Z" fill="#4b78a8"/><path d="M377 240c20 24 24 57 17 98" fill="none"/>'+
+        '<circle cx="301" cy="124" r="44" fill="#d99569"/><path d="M257 117c5-55 86-63 92-3-36-8-62-2-92 3Z" fill="#503b35"/><path d="M278 151c15 11 31 11 46 0" fill="none" stroke-width="3"/>'+
+        '<path d="M269 181h64l18 194h-101Z" fill="#fff9e8"/><path d="M269 216h66M265 250h73M260 286h81" fill="none" stroke="#5f8fab" stroke-width="11"/>'+
+        '<path d="M269 181c-55 7-69 39-63 109l10 125h56l8-169-11-65Zm64 0c51 8 68 41 62 107l-13 127h-55l-7-170 13-64Z" fill="#bd5147"/>'+
+        '<path d="M272 375 255 604h60l-4-176 23 176h59l-13-229Z" fill="#d9c39f"/><path d="M248 604h69v39h-82c0-18 5-29 13-39Zm83 0h68c10 9 15 22 15 39h-82Z" fill="#f7f5ee"/>'+
+        '<path d="M250 185 280 245m53-60-13 60" fill="none"/><circle cx="285" cy="130" r="3" fill="#433a6f" stroke="none"/><circle cx="319" cy="130" r="3" fill="#433a6f" stroke="none"/>'+
+        '</g>'+end.slice(4);
+      if(kind==="food_basket") return start+
+        '<path d="M177 135C184 168 187 210 188 250"/><path d="M423 132C412 166 401 199 390 230"/><path d="M177 320C220 316 262 312 300 310"/><path d="M423 323C387 295 351 255 330 220"/><path d="M177 510C204 445 221 331 235 235"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<path d="M170 357h266l-31 221H201Z" fill="#d59a55"/><path d="M190 410h225M184 473h223M235 363l10 210m65-210v212m64-212-18 210" fill="none" stroke="#f5ca79" stroke-width="12"/>'+
+        '<path d="M213 355c8-116 60-170 90-170s83 54 91 170" fill="none" stroke="#8d633e" stroke-width="16"/>'+
+        '<path d="M216 286c-39-34-35-91 17-96 41-4 62 45 31 79-13 14-28 20-48 17Z" fill="#e85b50"/><path d="M232 193c-2-18 6-30 23-37" fill="none" stroke="#5d9a55"/>'+
+        '<path d="M290 207c8-49 57-59 78-20 18 34-8 73-46 82-30-12-39-35-32-62Z" fill="#e9584f"/><path d="M328 176c11-14 25-17 40-9" fill="none" stroke="#5d9a55"/>'+
+        '<path d="M258 321c-51-25-54-66-12-77 35-9 64 20 59 63Z" fill="#ffd447"/><path d="M273 315c-17-42 9-77 45-62 31 13 29 48 9 72Z" fill="#ffd447"/><path d="M285 319c5-44 39-63 67-40 21 18 9 50-13 65Z" fill="#ffd447"/>'+
+        '<path d="M355 184h58l15 146h-89Z" fill="#f7f1df"/><path d="M355 214h64" stroke="#72a7d8" stroke-width="22"/><path d="M354 183l17-24h28l15 24" fill="#f7f1df"/>'+
+        '<path d="M188 322 155 220l30-9 47 111Z" fill="#c9854d"/><path d="M157 222c10-24 29-33 53-26" fill="none"/>'+
+        '</g>'+end.slice(4);
+      return start+
+        '<path d="M177 178C231 202 270 251 300 300"/><path d="M423 177C411 239 397 312 380 370"/><path d="M177 491C207 470 230 447 250 425"/><path d="M423 488C398 470 379 455 360 445"/>'+
+        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
+        '<ellipse cx="303" cy="386" rx="178" ry="116" fill="#d9c2a1"/><ellipse cx="303" cy="366" rx="151" ry="90" fill="#f4c94f"/>'+
+        '<path d="M168 386c-19 68 1 133 135 133s158-65 136-133" fill="#4c7995"/><path d="M159 382h289" fill="none"/>'+
+        '<g fill="#ef7f73"><path d="M340 350c19-27 57-26 71 1 12 23-4 50-31 53-19 2-35-8-40-23 16 7 33 2 38-10 5-13-7-23-19-17-8 3-13 9-19 16Z"/><path d="m405 345 24-13-6 27 16 17-29 1"/></g><path d="M359 360c8 5 13 12 13 21m17-25c7 6 10 13 9 21" fill="none" stroke="#bd5147" stroke-width="4"/>'+
+        '<g fill="#393344"><path d="M215 398c24-14 54 2 55 30 1 27-25 44-49 33-22-10-28-48-6-63Z"/><path d="M296 293c22-13 49 1 51 27 1 25-23 41-46 31-21-9-26-44-5-58Z"/></g><path d="M226 407c16 6 27 21 29 40m51-145c15 6 25 19 27 36" fill="none" stroke="#77708f" stroke-width="4"/>'+
+        '<g fill="#fff1cf"><rect x="330" y="419" width="57" height="48" rx="14" transform="rotate(-12 358 443)"/><rect x="271" y="339" width="56" height="47" rx="14" transform="rotate(10 299 362)"/></g><path d="M341 432l30 20m-87-99 28 19" fill="none" stroke="#d59a55" stroke-width="4"/>'+
+        '<path d="M105 418h77m242 0h78" fill="none" stroke="#4c7995" stroke-width="18"/>'+
+        '</g>'+end.slice(4);
+    }
+
+    function pictureLabelExercises(){
+      function item(id,topic,question,scene,hint,labels,explanation){
+        return {id:"picture_"+id,topic:topic,foodCat:"all",type:"picture-label",skill:"Подпиши картинку",q:question,pictureScene:scene,pictureHint:hint,pictureLabels:labels,
+          a:[labels.map(function(label){return label.reveal;}).join(" | ")],displayAnswer:labels.map(function(label,index){return (index+1)+". "+label.reveal;}).join(" · "),e:explanation};
+      }
+      function label(side,top,reveal,answers){return {side:side,top:top,reveal:reveal,answers:answers};}
+      return [
+        item("woman_clothes","clothes","Подпиши одежду и аксессуары девушки вместе с их цветами.","clothes_woman","В каждом поле напиши название предмета и его цвет. Артикль можно не писать.",[
+          label("left",14,"las gafas de sol negras",["gafas de sol negras"]),
+          label("right",25,"el pañuelo amarillo",["pañuelo amarillo"]),
+          label("left",44,"el vestido verde y amarillo",["vestido verde amarillo"]),
+          label("right",57,"el bolso marrón",["bolso marrón"]),
+          label("left",85,"los zapatos amarillos",["zapatos amarillos"])
+        ],"Цвет согласуется с названием предмета по роду и числу."),
+        item("man_clothes","clothes","Подпиши одежду мужчины вместе с её цветами.","clothes_man","В каждом поле напиши название предмета и его цвет. Два цвета можно разделить y, запятой, слешем или пробелом.",[
+          label("left",31,"la chaqueta roja",["chaqueta roja"]),
+          label("right",24,"la camiseta blanca y azul",["camiseta blanca azul"]),
+          label("right",46,"la mochila azul",["mochila azul"]),
+          label("left",64,"los pantalones beige",["pantalones beige"]),
+          label("right",86,"las zapatillas deportivas blancas",["zapatillas deportivas blancas","zapatillas blancas","tenis blancos"])
+        ],"Можно писать с артиклем или без него; важны существительное и правильная форма цвета."),
+        item("food_basket","foods","Подпиши продукты в корзине.","food_basket","Напиши название каждого продукта по-испански. Артикль необязателен.",[
+          label("left",19,"el pan",["pan"]),
+          label("right",18,"la leche",["leche"]),
+          label("left",44,"los plátanos",["plátanos","plátano","bananas","banana"]),
+          label("right",45,"los tomates",["tomates","tomate"]),
+          label("left",71,"la manzana",["manzana"])
+        ],"Единственное и множественное число принимаются там, где на рисунке лежит несколько одинаковых продуктов."),
+        item("paella","foods","Подпиши четыре заметных ингредиента блюда.","food_paella","Напиши название ингредиента по-испански. Подсказок со списком нет.",[
+          label("left",25,"el arroz",["arroz"]),
+          label("right",25,"las gambas",["gambas","camarones"]),
+          label("left",68,"los mejillones",["mejillones"]),
+          label("right",68,"el pollo",["pollo"])
+        ],"На схеме показана условная паэлья: каждое отмеченное изображение соответствует только одному ингредиенту.")
+      ];
+    }
+
     const ORDER_DATA = [
       ["q_where","questions","place","Собери вопрос: «Где ты работаешь?»",["¿Dónde","trabajas?"],"¿Dónde trabajas?","Dónde ставится в начале вопроса."],
       ["q_why","questions","reason","Собери вопрос: «Почему ты учишь испанский?»",["¿Por","qué","estudias","español?"],"¿Por qué estudias español?","В вопросе por qué пишется раздельно."],
@@ -3016,6 +3133,7 @@
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
       clozeWidget:$("clozeWidget"), clozePassage:$("clozePassage"), clozeBank:$("clozeBank"),
       sortWidget:$("sortWidget"), sortColumns:$("sortColumns"), sortBank:$("sortBank"),
+      pictureWidget:$("pictureWidget"), pictureHelp:$("pictureHelp"), pictureStage:$("pictureStage"),
       feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
@@ -3039,7 +3157,7 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(pictureLabelExercises()).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
@@ -3096,6 +3214,18 @@
       return String(value).toLowerCase().trim().replace(/[\p{P}\p{S}]+/gu," ").replace(/\s+/g," ").trim();
     }
     function fold(value){ return normalize(value).normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+
+    function normalizePictureAnswer(value,transform){
+      const articles=["el","la","los","las","un","una","unos","unas"];
+      return transform(value).split(" ").filter(function(word){return word!=="y" && word!=="e" && articles.indexOf(word)<0;}).sort().join(" ");
+    }
+    function pictureAnswersMatch(item,transform){
+      const inputs=Array.from(els.pictureStage.querySelectorAll("[data-picture-input]"));
+      return inputs.length===(item.pictureLabels || []).length && inputs.every(function(input,index){
+        const value=normalizePictureAnswer(input.value,transform);
+        return value && (item.pictureLabels[index].answers || []).some(function(answer){return value===normalizePictureAnswer(answer,transform);});
+      });
+    }
 
     function matchesAccepted(value,answers,transform){
       const input=transform(value);
@@ -3190,7 +3320,7 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
+      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","picture-label","ser-estar-hay"].indexOf(x.type)>=0; });
       if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
       return items;
     }
@@ -3370,6 +3500,8 @@
       els.sortWidget.hidden=true;
       els.sortColumns.innerHTML="";
       els.sortBank.innerHTML="";
+      els.pictureWidget.hidden=true;
+      els.pictureStage.innerHTML="";
       els.formGrid.hidden=true;
       els.formGrid.innerHTML="";
       els.feedback.textContent="";
@@ -3558,6 +3690,17 @@
           const token=(item.sortTokens || []).find(function(value){return value.id===tokenButton.dataset.sortToken;});
           if(token) tokenButton.classList.add(sortState[token.id]===token.category ? "result-good" : "result-bad");
         });
+      } else if(item.type==="picture-label"){
+        els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input,index){
+          const label=(item.pictureLabels || [])[index];
+          const exact=label && (label.answers || []).some(function(answer){
+            return normalizePictureAnswer(input.value,normalize)===normalizePictureAnswer(answer,normalize);
+          });
+          const near=!exact && label && (label.answers || []).some(function(answer){
+            return normalizePictureAnswer(input.value,fold)===normalizePictureAnswer(answer,fold);
+          });
+          input.classList.add(exact ? "result-good" : (near ? "result-near" : "result-bad"));
+        });
       }
     }
 
@@ -3600,6 +3743,19 @@
         sortPool=shuffle((item.sortTokens || []).slice());
         sortSelection=null;
         renderSortWidget();
+      } else if(type==="picture-label"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.pictureWidget.hidden=false;
+        els.pictureHelp.textContent=item.pictureHint || "Подпиши отмеченные предметы по-испански.";
+        els.pictureStage.innerHTML=pictureScene(item.pictureScene)+(item.pictureLabels || []).map(function(label,i){
+          return '<label class="picture-field '+escapeHtml(label.side)+'" style="top:'+Number(label.top)+'%"><span>'+(i+1)+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+(i+1)+'" placeholder="По-испански"></label>';
+        }).join("");
+        els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input){
+          input.addEventListener("keydown",function(event){if(event.key==="Enter"){event.preventDefault();checkAnswer();}});
+        });
+        const firstPictureInput=els.pictureStage.querySelector("[data-picture-input]");
+        if(firstPictureInput) firstPictureInput.focus();
       } else if(type==="order"){
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
@@ -3648,6 +3804,10 @@
       if(item.type==="category-sort"){
         if((item.sortTokens || []).some(function(token){return !sortState[token.id];})) return "";
         return item.sortTokens.map(function(token){return sortState[token.id];}).join(" | ");
+      }
+      if(item.type==="picture-label"){
+        const values=Array.from(els.pictureStage.querySelectorAll("[data-picture-input]")).map(function(input){return input.value.trim();});
+        return values.length && values.every(Boolean) ? values.join(" | ") : "";
       }
       if(item.type==="order"){
         return orderState.map(function(id){
@@ -4051,13 +4211,14 @@
         else if(item.type==="match") els.feedback.textContent="Сначала заполни все соответствия.";
         else if(item.type==="cloze-passage") els.feedback.textContent="Сначала заполни все пропуски в тексте.";
         else if(item.type==="category-sort") els.feedback.textContent="Сначала распредели все слова по колонкам.";
+        else if(item.type==="picture-label") els.feedback.textContent="Сначала подпиши все отмеченные предметы.";
         else els.feedback.textContent="Сначала напиши или собери свой вариант.";
         els.feedback.className="feedback bad";
         if(!els.answerInput.hidden) els.answerInput.focus();
         return;
       }
-      const exact=matchesAccepted(value,item.a,normalize);
-      const near=!exact && matchesAccepted(value,item.a,fold);
+      const exact=item.type==="picture-label" ? pictureAnswersMatch(item,normalize) : matchesAccepted(value,item.a,normalize);
+      const near=!exact && (item.type==="picture-label" ? pictureAnswersMatch(item,fold) : matchesAccepted(value,item.a,fold));
       markStructuredAnswers(item);
       let scheduled=false;
       if(!checkedCurrent){
