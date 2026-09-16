@@ -311,12 +311,15 @@
     .home-stat { min-width:0; padding:14px 8px; text-align:center; border:1px solid rgba(255,255,255,.13); border-radius:16px; background:rgba(255,255,255,.09); }
     .home-stat strong { display:block; font-size:25px; }
     .home-stat span { display:block; color:#d8d2ff; font-size:11px; }
-    .home-actions { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:14px; margin-top:16px; }
+    .home-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:16px; }
     .home-card {
       display:flex; flex-direction:column; align-items:flex-start; min-height:190px; padding:22px; text-align:left;
       border:1px solid rgba(255,255,255,.9); border-radius:24px; background:rgba(255,255,255,.9); color:var(--ink); box-shadow:0 14px 35px rgba(35,28,89,.08);
     }
     .home-card.primary { color:white; background:linear-gradient(145deg,var(--violet),#7a6dea); border-color:transparent; }
+    .home-card.primary { grid-column:1/-1; min-height:155px; }
+    .home-card.learn { background:linear-gradient(145deg,#fff9dd,#fffdf6); border-color:#f1e4a7; }
+    .home-card.learn .home-card-icon { color:#76580a; background:#fff0ac; }
     .home-card-icon { display:grid; place-items:center; width:42px; height:42px; margin-bottom:18px; border-radius:14px; background:#f0edff; color:var(--violet); font-size:20px; }
     .home-card.primary .home-card-icon { color:white; background:rgba(255,255,255,.16); }
     .home-card strong { display:block; font-size:20px; line-height:1.15; }
@@ -404,6 +407,7 @@
       .bottom-nav { display:flex; }
       .home-actions { grid-template-columns:1fr 1fr; }
       .home-card.primary { grid-column:1/-1; }
+      .home-card:last-child { grid-column:1/-1; min-height:140px; }
       .topic-groups { grid-template-columns:1fr; gap:12px; }
       .catalog-head { align-items:stretch; flex-direction:column; }
       .topic-search { width:100%; }
@@ -510,7 +514,7 @@
       </div>
       <div class="header-actions">
         <button class="btn btn-soft desktop-secondary" id="homeBtn" type="button">⌂ Главная</button>
-        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">▦ Темы</button>
+        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">◫ Учить</button>
         <button class="btn btn-primary" id="addBtn" type="button">＋ Своё задание</button>
       </div>
     </header>
@@ -532,6 +536,10 @@
         <button class="home-card primary" id="todayBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">✦</i><strong>Тренировка на сегодня</strong>
           <span>10 разнообразных заданий из разных тем</span><b>Начать примерно на 7 минут →</b>
+        </button>
+        <button class="home-card learn" id="learnWordsBtn" type="button">
+          <i class="home-card-icon" aria-hidden="true">Aa</i><strong>Учить слова</strong>
+          <span>Слово, перевод и живые примеры в контексте</span><b>Выбрать тему →</b>
         </button>
         <button class="home-card" id="continueBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">↻</i><strong>Продолжить</strong>
@@ -3296,8 +3304,9 @@
     els.dialog.addEventListener("click",function(e){ if(e.target===els.dialog) els.dialog.close(); });
     els.answerInput.addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();checkAnswer();} });
     $("homeBtn").addEventListener("click",showHome);
-    $("topicsBtn").addEventListener("click",function(){showCatalog("practice");});
+    $("topicsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("todayBtn").addEventListener("click",function(){selectedMode="all";startSession("all",10,"all");});
+    $("learnWordsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});
     $("chooseTopicBtn").addEventListener("click",function(){showCatalog("practice");});
     $("navLearn").addEventListener("click",function(){showCatalog("learn");});
