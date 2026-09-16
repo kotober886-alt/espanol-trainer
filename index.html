@@ -110,7 +110,7 @@
       border-radius:15px; color:white; background:linear-gradient(135deg,var(--violet),var(--violet-2)); font-weight:850;
       box-shadow:0 10px 24px rgba(80,62,170,.2);
     }
-    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden] { display:none; }
+    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden],.match-widget[hidden],.cloze-widget[hidden] { display:none; }
     .audio-prompt span { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(255,255,255,.18); }
     .audio-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:0 0 22px; }
     .audio-actions[hidden] { display:none; }
@@ -183,6 +183,39 @@
     .form-cell label { display:block; margin-bottom:6px; color:var(--muted); font-size:12px; font-weight:850; }
     .form-cell input { width:100%; min-width:0; padding:9px 10px; border:1.5px solid #d8d2e8; border-radius:10px; background:#fff; color:var(--ink); }
     .form-cell input:focus { outline:0; border-color:var(--violet); box-shadow:0 0 0 3px rgba(98,83,217,.08); }
+    .match-widget,.cloze-widget { margin:0 0 22px; }
+    .drag-help { margin:0 0 11px; color:var(--muted); font-size:13px; line-height:1.4; }
+    .match-list { display:grid; gap:8px; }
+    .match-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:stretch; gap:8px; }
+    .match-prompt,.match-drop {
+      min-width:0; min-height:52px; display:flex; align-items:center; padding:11px 13px; border-radius:14px; font-size:15px; font-weight:800;
+      overflow-wrap:anywhere;
+    }
+    .match-prompt { border:1px solid #e5e1f0; background:#f7f5fc; color:var(--ink); }
+    .match-drop {
+      justify-content:space-between; gap:8px; border:2px dashed #cec8e4; background:#fff; color:var(--muted); text-align:left;
+    }
+    .match-drop.filled { border-style:solid; border-color:#c9c2ff; background:#f0edff; color:#433a86; }
+    .drag-bank { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; padding:12px; border-radius:15px; background:#faf9ff; border:1px solid var(--line); }
+    .drag-token {
+      padding:9px 12px; border:1px solid #d8d2ea; border-radius:11px; background:#fff; color:var(--ink); font-weight:800;
+      box-shadow:0 4px 10px rgba(40,31,86,.05); cursor:grab; touch-action:manipulation; overflow-wrap:anywhere;
+    }
+    .drag-token:hover,.drag-token.selected { border-color:var(--violet); color:var(--violet); background:#f1eeff; }
+    .drag-token.selected { box-shadow:0 0 0 3px rgba(98,83,217,.1); }
+    .drag-token.used { opacity:.28; pointer-events:none; }
+    .match-drop.drop-hover,.cloze-blank.drop-hover { border-color:var(--violet); background:#ebe7ff; }
+    .match-drop.result-good,.cloze-blank.result-good { border-color:#6bc29a; background:#e9f8f1; color:#187052; }
+    .match-drop.result-bad,.cloze-blank.result-bad { border-color:#e99aa4; background:#fff0f2; color:#a53643; }
+    .cloze-passage {
+      padding:18px; border:1px solid #e2ddee; border-radius:18px; background:#fcfbff; color:var(--ink);
+      font-size:18px; font-weight:650; line-height:2.35; white-space:pre-line;
+    }
+    .cloze-blank {
+      min-width:104px; min-height:38px; display:inline-flex; align-items:center; justify-content:center; margin:2px 4px; padding:5px 10px;
+      border:2px dashed #c8c0e1; border-radius:10px; background:#fff; color:var(--muted); font:inherit; font-size:15px; line-height:1.2; vertical-align:middle;
+    }
+    .cloze-blank.filled { border-style:solid; border-color:#c9c2ff; background:#f0edff; color:#433a86; }
     .feedback { min-height:48px; display:flex; align-items:center; margin:12px 0 4px; padding:10px 13px; border-radius:13px; font-weight:750; }
     .feedback:empty { padding:0; margin:0; min-height:20px; }
     .feedback.good { color:#187052; background:#e9f8f1; }
@@ -479,6 +512,12 @@
       .audio-settings { margin-top:9px; }
       .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
       .form-cell { min-width:0; padding:8px; }
+      .match-row { gap:6px; }
+      .match-prompt,.match-drop { min-height:48px; padding:9px 10px; font-size:13px; line-height:1.25; }
+      .drag-bank { gap:6px; padding:9px; }
+      .drag-token { padding:8px 9px; font-size:13px; }
+      .cloze-passage { padding:14px; font-size:16px; line-height:2.45; }
+      .cloze-blank { min-width:86px; min-height:35px; margin:2px; padding:5px 7px; font-size:13px; }
       .order-built { min-height:64px; padding:10px; }
       .word-chip { max-width:100%; padding:8px 10px; overflow-wrap:anywhere; }
       .actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; position:sticky; bottom:70px; z-index:8; padding:8px 0; background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%); }
@@ -677,6 +716,16 @@
               <div class="order-built" id="orderBuilt" aria-label="Собранное предложение"></div>
               <div class="order-bank" id="orderBank" aria-label="Доступные слова"></div>
               <button class="order-clear" id="clearOrder" type="button">Очистить</button>
+            </div>
+            <div class="match-widget" id="matchWidget" hidden>
+              <p class="drag-help">Перетащи ответы вправо или сначала нажми на ответ, а затем на нужное место.</p>
+              <div class="match-list" id="matchList"></div>
+              <div class="drag-bank" id="matchBank" aria-label="Варианты для сопоставления"></div>
+            </div>
+            <div class="cloze-widget" id="clozeWidget" hidden>
+              <p class="drag-help">Перетащи слова в пропуски или выбирай слово и пропуск по очереди.</p>
+              <div class="cloze-passage" id="clozePassage"></div>
+              <div class="drag-bank" id="clozeBank" aria-label="Слова для текста"></div>
             </div>
             <div class="form-grid" id="formGrid" hidden></div>
             <label class="answer-label" id="answerLabel" for="answerInput">Твой ответ</label>
@@ -2395,6 +2444,91 @@
       .concat(FORM_DATA.map(function(x){return {id:"forms_"+x[0],topic:x[1],foodCat:x[2],type:"forms",skill:"Таблица спряжения",q:x[3],formLabels:x[4],a:x[5],displayAnswer:x[6],e:"Заполняй формы слева направо по лицам."};}))
       .concat(COMPARE_DATA.map(function(x){return {id:"compare_"+x[0],topic:x[1],foodCat:x[2],type:"choice",skill:"Сравни формы",q:x[3],options:x[4],a:[x[5]],e:x[6]};}));
 
+    const MATCH_DATA = [
+      ["hablar","present","ar","Соедини местоимения с формами hablar в Presente.",[["yo","hablo"],["tú","hablas"],["él / ella","habla"],["nosotros","hablamos"],["vosotros","habláis"],["ellos","hablan"]],"Форма глагола должна совпадать с лицом и числом."],
+      ["vivir","present","ir","Соедини местоимения с формами vivir в Presente.",[["yo","vivo"],["tú","vives"],["él / ella","vive"],["nosotros","vivimos"],["vosotros","vivís"],["ellos","viven"]],"У глаголов на -ir меняются личные окончания."],
+      ["tener","verbs","core","Соедини местоимения с формами tener.",[["yo","tengo"],["tú","tienes"],["él / ella","tiene"],["nosotros","tenemos"],["vosotros","tenéis"],["ellos","tienen"]],"Tener — неправильный глагол: yo tengo, но nosotros tenemos."],
+      ["ser","verbs","core","Соедини местоимения с формами ser.",[["yo","soy"],["tú","eres"],["él / ella","es"],["nosotros","somos"],["vosotros","sois"],["ellos","son"]],"Все формы ser нужно запомнить."],
+      ["levantarse","routine","morning","Соедини местоимения с формами levantarse.",[["yo","me levanto"],["tú","te levantas"],["él / ella","se levanta"],["nosotros","nos levantamos"],["vosotros","os levantáis"],["ellos","se levantan"]],"У возвратного глагола меняются и местоимение, и окончание."],
+      ["gustar","pronouns","gustar","Соедини человека с формой «кому нравится».",[["a mí","me gusta"],["a ti","te gusta"],["a él / ella","le gusta"],["a nosotros","nos gusta"],["a vosotros","os gusta"],["a ellos","les gusta"]],"Перед gusta используются косвенные местоимения me, te, le, nos, os, les."],
+      ["articles","agreement","articles","Соедини существительные с правильными артиклями.",[["barrio · муж. ед.","el barrio"],["farmacia · жен. ед.","la farmacia"],["libros · муж. мн.","los libros"],["tiendas · жен. мн.","las tiendas"]],"Артикль согласуется с существительным в роде и числе."],
+      ["haber","past","perfect","Соедини местоимения с формами haber для Pretérito Perfecto.",[["yo","he"],["tú","has"],["él / ella","ha"],["nosotros","hemos"],["vosotros","habéis"],["ellos","han"]],"После этих форм ставится причастие: he trabajado, has comido."],
+      ["weekdays","calendar","days","Соедини дни недели с переводом.",[["lunes","понедельник"],["martes","вторник"],["miércoles","среда"],["jueves","четверг"],["viernes","пятница"],["sábado","суббота"],["domingo","воскресенье"]],"Названия дней недели в испанском пишутся со строчной буквы."]
+    ];
+
+    const MATCH_EXERCISES = MATCH_DATA.map(function(x){
+      const answer=x[4].map(function(pair){return pair[1];}).join(" | ");
+      return {id:"match_"+x[0],topic:x[1],foodCat:x[2],type:"match",skill:"Соедини соответствия",q:x[3],pairs:x[4],a:[answer],displayAnswer:x[4].map(function(pair){return pair[0]+" — "+pair[1];}).join(" · "),e:x[5]};
+    });
+
+    const CLOZE_PASSAGE_DATA = [
+      ["weekday_routine","Обычный рабочий день","El {{0}} yo {{1}} a las siete. Después {{2}} y tomo café con leche; luego {{3}} al trabajo. Mi oficina {{4}} cerca del metro.",["lunes","me levanto","desayuno","voy","está"],"El lunes yo me levanto a las siete. Después desayuno y tomo café con leche; luego voy al trabajo. Mi oficina está cerca del metro."],
+      ["neighborhood","В моём районе","En mi barrio {{0}} una farmacia. La farmacia {{1}} al lado del {{2}}. El banco {{3}} a las seis y yo {{4}} allí los viernes.",["hay","está","banco","cierra","voy"],"En mi barrio hay una farmacia. La farmacia está al lado del banco. El banco cierra a las seis y yo voy allí los viernes."],
+      ["shopping","Покупки одежды","El sábado quiero comprar {{0}} chaqueta negra y unos zapatos {{1}}. La chaqueta {{2}} cara, pero los zapatos {{3}} baratos.",["una","cómodos","es","son"],"El sábado quiero comprar una chaqueta negra y unos zapatos cómodos. La chaqueta es cara, pero los zapatos son baratos."],
+      ["family_food","Семейный обед","Los domingos mi familia {{0}} junta. Yo {{1}} pollo, mi hermana no {{2}} el marisco y a mi padre le {{3}} los postres.",["come","prefiero","soporta","encantan"],"Los domingos mi familia come junta. Yo prefiero pollo, mi hermana no soporta el marisco y a mi padre le encantan los postres."],
+      ["past_today","Вчера, сегодня и завтра","Ayer Ana {{0}} al cine con sus amigos. Hoy {{1}} trabajado en casa porque {{2}} cansada. Mañana {{3}} a descansar.",["fue","ha","está","va"],"Ayer Ana fue al cine con sus amigos. Hoy ha trabajado en casa porque está cansada. Mañana va a descansar."],
+      ["likes_hobbies","Что нам нравится","A mí me {{0}} leer, pero a mi novio le {{1}} los videojuegos. Los sábados nosotros {{2}} a videojuegos juntos y después {{3}} con amigos en una cafetería.",["gusta","encantan","jugamos","quedamos"],"A mí me gusta leer, pero a mi novio le encantan los videojuegos. Los sábados nosotros jugamos a videojuegos juntos y después quedamos con amigos en una cafetería."]
+    ];
+
+    const CLOZE_PASSAGE_EXERCISES = CLOZE_PASSAGE_DATA.map(function(x){
+      return {id:"passage_"+x[0],topic:"all",foodCat:"all",type:"cloze-passage",skill:"Текст с пропусками",q:x[1]+": расставь слова по однозначным пропускам.",template:x[2],blanks:x[3],a:[x[3].join(" | ")],displayAnswer:x[4],e:"Каждое слово из банка используется один раз."};
+    });
+
+    const CONTEXT_CHOICE_DATA = [
+      ["yo_hablar","present","ar","Cada mañana yo ___ español durante veinte minutos.",["hablar","hablo","hablas","hablamos"],"hablo","Подлежащее yo требует форму hablo."],
+      ["ellas_vivir","present","ir","Marta y Ana ___ en Madrid desde enero.",["vive","vivo","viven","vivimos"],"viven","Marta y Ana — множественное число, поэтому viven."],
+      ["nos_beber","verbs","food","Después del gimnasio nosotros ___ mucha agua.",["bebo","bebes","bebemos","beber"],"bebemos","С nosotros используется bebemos."],
+      ["jacket_article","agreement","articles","Ayer compré ___ chaqueta negra para el otoño.",["un","una","unos","unas"],"una","Chaqueta — существительное женского рода в единственном числе."],
+      ["books_article","agreement","articles","___ libros que están sobre la mesa son de Ana.",["El","La","Los","Un"],"Los","Libros — мужской род, множественное число."],
+      ["shoes_agreement","agreement","adjectives","Estas zapatillas son muy ___ para caminar todo el día.",["cómoda","cómodo","cómodas","cómodos"],"cómodas","Zapatillas — женский род, множественное число."],
+      ["monday_article","calendar","days","___ lunes que viene voy al trabajo en metro.",["El","En","Al","Un"],"El","Перед конкретным днём недели используется определённый артикль el."],
+      ["pedro_games","gustar","positive","A Pedro le ___ los videojuegos de estrategia.",["gusta","gustan","gusto","gustas"],"gustan","Los videojuegos — множественное число, поэтому gustan."],
+      ["noise_bothers","gustar","negative","Me ___ el ruido de la calle cuando trabajo.",["molesta","molestan","molesto","molestar"],"molesta","El ruido — единственное число, поэтому molesta."],
+      ["prefer_tea","gustar","positive","Cuando desayuno, yo ___ el té al café.",["preferir","prefiero","prefieres","preferimos"],"prefiero","Для yo форма preferir — prefiero."],
+      ["today_worked","past","perfect","Hoy yo ___ trabajado desde casa.",["he","has","ha","han"],"he","Для yo в Pretérito Perfecto используется he."],
+      ["yesterday_went","past","indefinite","Ayer Laura ___ al cine después del trabajo.",["fui","fue","va","ir"],"fue","Ayer требует завершённую форму; для Laura — fue."],
+      ["to_work","agreement","contractions","Salgo de casa a las ocho y voy ___ trabajo en metro.",["a el","al","del","en"],"al","a + el обязательно объединяются в al."],
+      ["pharmacy_location","city","places","La farmacia ___ junto al banco, enfrente del parque.",["es","está","hay","son"],"está","Для местонахождения известного объекта используется estar."],
+      ["two_markets","city","places","En mi calle ___ dos supermercados y una panadería.",["hay","están","es","tiene"],"hay","Hay сообщает о наличии новых объектов."],
+      ["sister_dentist","verbs","core","Mi hermana ___ dentista y trabaja en una clínica privada.",["es","está","hay","son"],"es","Профессия указывается с ser и без артикля."]
+    ];
+
+    const CONTEXT_CHOICE_EXERCISES = CONTEXT_CHOICE_DATA.map(function(x){
+      return {id:"context_choice_"+x[0],topic:x[1],foodCat:x[2],type:"context-choice",skill:"Выбери точную форму",q:x[3],options:x[4],a:[x[5]],e:x[6]};
+    });
+
+    const SER_ESTAR_HAY_DATA = [
+      ["capital","verbs","core","Madrid ___ la capital de España.",["es"],"Постоянная характеристика и определение требуют ser."],
+      ["pharmacy","city","places","La farmacia ___ al lado del banco.",["está","esta"],"Местонахождение известного объекта выражается estar."],
+      ["parks","city","places","En mi barrio ___ dos parques grandes.",["hay"],"Для наличия неопределённых объектов используется hay."],
+      ["friends_home","verbs","core","Mis amigos ___ en casa ahora.",["están","estan"],"Местонахождение людей сейчас: están."],
+      ["students","verbs","core","Nosotros ___ estudiantes de español.",["somos"],"Кто мы по статусу — ser: somos."],
+      ["monday","calendar","days","Mañana ___ lunes.",["es"],"День недели называют с ser."],
+      ["cup_exists","city","places","En la mesa ___ una taza de café.",["hay"],"Впервые сообщаем о наличии чашки: hay."],
+      ["cup_location","city","places","La taza de café ___ en la mesa.",["está","esta"],"Теперь речь об известной чашке и её местонахождении: está."],
+      ["shops_closed","city","places","Las tiendas ___ cerradas ahora.",["están","estan"],"Временное состояние сейчас выражается estar."],
+      ["quiet_area","city","opposites","Este barrio ___ muy tranquilo y limpio.",["es"],"Характеристика района выражается ser."],
+      ["gym_where","city","places","¿Dónde ___ el gimnasio?",["está","esta"],"Вопрос о местонахождении требует estar."],
+      ["no_pharmacy","city","places","Aquí no ___ ninguna farmacia.",["hay"],"Отсутствие объекта выражается no hay."],
+      ["tired_today","verbs","core","Hoy yo ___ cansada después del trabajo.",["estoy"],"Временное состояние yo: estoy."],
+      ["birthday_march","practical","dates","Mi cumpleaños ___ en marzo.",["es"],"Дата события оформляется с ser."],
+      ["concert_theater","city","places","El concierto ___ en el teatro municipal.",["es"],"Место проведения события выражается ser, а не estar."],
+      ["leather_shoes","clothes","shoes","Estas zapatillas ___ de cuero.",["son"],"Материал и характеристика предмета выражаются ser."],
+      ["from_mexico","verbs","core","Ana y Luis ___ de México.",["son"],"Происхождение выражается ser."],
+      ["food_hot","foods","dishes","La comida todavía ___ caliente.",["está","esta"],"Состояние еды в данный момент выражается estar."],
+      ["people_office","city","places","Hoy ___ muchas personas en la oficina.",["hay"],"Сообщаем о наличии людей: hay."]
+    ];
+
+    const SER_ESTAR_HAY_EXERCISES = SER_ESTAR_HAY_DATA.map(function(x){
+      return {id:"ser_estar_hay_"+x[0],topic:x[1],foodCat:x[2],type:"ser-estar-hay",skill:"Ser, estar или hay",q:"Впиши нужную форму ser, estar или hay: "+x[3],a:x[4],displayAnswer:x[4][0],e:x[5]};
+    });
+
+    const NEW_CHECK_EXERCISES = []
+      .concat(MATCH_EXERCISES)
+      .concat(CLOZE_PASSAGE_EXERCISES)
+      .concat(CONTEXT_CHOICE_EXERCISES)
+      .concat(SER_ESTAR_HAY_EXERCISES);
+
     const GRAMMAR_TASKS={
       "constructions:estar_location":{esQ:"Какой испанский глагол используют для местонахождения уже известного предмета?",ruQ:"Что выражает estar, когда после него указано место?",skill:"Конструкция"},
       "constructions:ir_a":{esQ:"Какая испанская конструкция означает «собираться что-то сделать»?",ruQ:"Что означает конструкция ir a + infinitivo?",skill:"Конструкция"},
@@ -2740,6 +2874,11 @@
     let foodCategory = "all";
     let orderPool = [];
     let orderState = [];
+    let matchPool = [];
+    let matchState = [];
+    let clozePool = [];
+    let clozeState = [];
+    let dragSelection = null;
     let catalogIntent = "learn";
     let topicSearch = "";
     let studySearch = "";
@@ -2757,7 +2896,10 @@
       answerLabel:$("answerLabel"), audioActions:$("audioActions"), audioPrompt:$("audioPrompt"), slowAudioPrompt:$("slowAudioPrompt"),
       audioSettings:$("audioSettings"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
       studyListen:$("studyListen"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
-      orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"), feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
+      orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"),
+      matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
+      clozeWidget:$("clozeWidget"), clozePassage:$("clozePassage"), clozeBank:$("clozeBank"),
+      feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
@@ -2780,7 +2922,7 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
@@ -2929,7 +3071,7 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-      if(selectedMode==="tests") items=items.filter(function(x){ return x.type==="choice"; });
+      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","ser-estar-hay"].indexOf(x.type)>=0; });
       if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
       return items;
     }
@@ -3081,6 +3223,11 @@
       checkedCurrent=false;
       orderPool=[];
       orderState=[];
+      matchPool=[];
+      matchState=[];
+      clozePool=[];
+      clozeState=[];
+      dragSelection=null;
       els.answerInput.value="";
       els.answerInput.disabled=false;
       els.answerInput.hidden=false;
@@ -3092,6 +3239,12 @@
       els.orderWidget.hidden=true;
       els.orderBuilt.innerHTML="";
       els.orderBank.innerHTML="";
+      els.matchWidget.hidden=true;
+      els.matchList.innerHTML="";
+      els.matchBank.innerHTML="";
+      els.clozeWidget.hidden=true;
+      els.clozePassage.innerHTML="";
+      els.clozeBank.innerHTML="";
       els.formGrid.hidden=true;
       els.formGrid.innerHTML="";
       els.feedback.textContent="";
@@ -3122,10 +3275,109 @@
       });
     }
 
+    function structuredToken(pool,id){
+      return pool.find(function(token){return token.id===Number(id);});
+    }
+    function renderStructuredBank(container,pool,state,kind){
+      const used=state.filter(function(id){return id!==null && id!==undefined;});
+      container.innerHTML=pool.map(function(token){
+        const isUsed=used.indexOf(token.id)>=0;
+        const isSelected=dragSelection && dragSelection.kind===kind && dragSelection.id===token.id;
+        return '<button class="drag-token '+(isUsed?'used ':'')+(isSelected?'selected':'')+'" data-drag-kind="'+kind+'" data-drag-token="'+token.id+'" draggable="'+(!isUsed)+'" type="button">'+escapeHtml(token.text)+'</button>';
+      }).join("");
+      container.querySelectorAll("[data-drag-token]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          if(btn.classList.contains("used")) return;
+          const id=Number(btn.dataset.dragToken);
+          dragSelection=dragSelection && dragSelection.kind===kind && dragSelection.id===id ? null : {kind:kind,id:id};
+          if(kind==="match") renderMatchWidget(); else renderClozeWidget();
+        });
+        btn.addEventListener("dragstart",function(event){
+          if(btn.classList.contains("used")){event.preventDefault();return;}
+          const id=Number(btn.dataset.dragToken);
+          dragSelection={kind:kind,id:id};
+          event.dataTransfer.effectAllowed="move";
+          event.dataTransfer.setData("text/plain",kind+":"+id);
+        });
+      });
+    }
+    function structuredState(kind){ return kind==="match" ? matchState : clozeState; }
+    function assignStructuredToken(kind,slot,tokenId){
+      const state=structuredState(kind);
+      const pool=kind==="match" ? matchPool : clozePool;
+      if(!structuredToken(pool,tokenId)) return;
+      for(let i=0;i<state.length;i++) if(state[i]===tokenId) state[i]=null;
+      state[slot]=tokenId;
+      dragSelection=null;
+      if(kind==="match") renderMatchWidget(); else renderClozeWidget();
+    }
+    function clearStructuredSlot(kind,slot){
+      structuredState(kind)[slot]=null;
+      dragSelection=null;
+      if(kind==="match") renderMatchWidget(); else renderClozeWidget();
+    }
+    function bindStructuredTargets(selector,kind){
+      document.querySelectorAll(selector).forEach(function(target){
+        const slot=Number(kind==="match" ? target.dataset.matchSlot : target.dataset.clozeSlot);
+        target.addEventListener("click",function(){
+          if(dragSelection && dragSelection.kind===kind) assignStructuredToken(kind,slot,dragSelection.id);
+          else if(structuredState(kind)[slot]!==null) clearStructuredSlot(kind,slot);
+        });
+        target.addEventListener("dragover",function(event){event.preventDefault();target.classList.add("drop-hover");});
+        target.addEventListener("dragleave",function(){target.classList.remove("drop-hover");});
+        target.addEventListener("drop",function(event){
+          event.preventDefault();
+          target.classList.remove("drop-hover");
+          const raw=event.dataTransfer.getData("text/plain");
+          const parts=raw.split(":");
+          if(parts[0]===kind) assignStructuredToken(kind,slot,Number(parts[1]));
+        });
+      });
+    }
+    function renderMatchWidget(){
+      const item=queue[index];
+      if(!item || item.type!=="match") return;
+      els.matchList.innerHTML=item.pairs.map(function(pair,i){
+        const token=matchState[i]===null ? null : structuredToken(matchPool,matchState[i]);
+        return '<div class="match-row"><div class="match-prompt">'+escapeHtml(pair[0])+'</div><button class="match-drop '+(token?'filled':'')+'" data-match-slot="'+i+'" type="button"><span>'+(token?escapeHtml(token.text):'Перетащи сюда')+'</span>'+(token?'<span aria-hidden="true">×</span>':'')+'</button></div>';
+      }).join("");
+      renderStructuredBank(els.matchBank,matchPool,matchState,"match");
+      bindStructuredTargets("#matchList [data-match-slot]","match");
+    }
+    function renderClozeWidget(){
+      const item=queue[index];
+      if(!item || item.type!=="cloze-passage") return;
+      const pieces=String(item.template || "").split(/(\{\{\d+\}\})/g);
+      els.clozePassage.innerHTML=pieces.map(function(piece){
+        const match=piece.match(/^\{\{(\d+)\}\}$/);
+        if(!match) return escapeHtml(piece);
+        const slot=Number(match[1]);
+        const token=clozeState[slot]===null ? null : structuredToken(clozePool,clozeState[slot]);
+        return '<button class="cloze-blank '+(token?'filled':'')+'" data-cloze-slot="'+slot+'" type="button">'+(token?escapeHtml(token.text):'пропуск '+(slot+1))+'</button>';
+      }).join("");
+      renderStructuredBank(els.clozeBank,clozePool,clozeState,"cloze");
+      bindStructuredTargets("#clozePassage [data-cloze-slot]","cloze");
+    }
+    function markStructuredAnswers(item){
+      if(item.type==="match"){
+        els.matchList.querySelectorAll("[data-match-slot]").forEach(function(target){
+          const slot=Number(target.dataset.matchSlot);
+          const token=structuredToken(matchPool,matchState[slot]);
+          target.classList.add(token && normalize(token.text)===normalize(item.pairs[slot][1]) ? "result-good" : "result-bad");
+        });
+      } else if(item.type==="cloze-passage"){
+        els.clozePassage.querySelectorAll("[data-cloze-slot]").forEach(function(target){
+          const slot=Number(target.dataset.clozeSlot);
+          const token=structuredToken(clozePool,clozeState[slot]);
+          target.classList.add(token && normalize(token.text)===normalize(item.blanks[slot]) ? "result-good" : "result-bad");
+        });
+      }
+    }
+
     function setupExercise(item){
       resetCard();
       const type=item.type || "text";
-      if(type==="choice"){
+      if(type==="choice" || type==="context-choice"){
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
         els.choiceGrid.hidden=false;
@@ -3138,6 +3390,20 @@
             els.choiceGrid.querySelectorAll(".choice-option").forEach(function(option){option.classList.toggle("selected",option===btn);});
           });
         });
+      } else if(type==="match"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.matchWidget.hidden=false;
+        matchState=(item.pairs || []).map(function(){return null;});
+        matchPool=shuffle((item.pairs || []).map(function(pair,i){return {id:i,text:pair[1]};}));
+        renderMatchWidget();
+      } else if(type==="cloze-passage"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.clozeWidget.hidden=false;
+        clozeState=(item.blanks || []).map(function(){return null;});
+        clozePool=shuffle((item.blanks || []).map(function(answer,i){return {id:i,text:answer};}));
+        renderClozeWidget();
       } else if(type==="order"){
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
@@ -3164,6 +3430,9 @@
         } else if(type==="dialogue"){
           els.answerLabel.textContent="Твоя реплика";
           els.answerInput.placeholder="Ответь по-испански…";
+        } else if(type==="ser-estar-hay"){
+          els.answerLabel.textContent="Нужная форма";
+          els.answerInput.placeholder="Например: es, estoy, están или hay…";
         } else {
           els.answerInput.placeholder="Напиши ответ сама…";
         }
@@ -3172,6 +3441,14 @@
     }
 
     function currentAnswer(item){
+      if(item.type==="match"){
+        if(matchState.some(function(value){return value===null;})) return "";
+        return matchState.map(function(id){const token=structuredToken(matchPool,id);return token ? token.text : "";}).join(" | ");
+      }
+      if(item.type==="cloze-passage"){
+        if(clozeState.some(function(value){return value===null;})) return "";
+        return clozeState.map(function(id){const token=structuredToken(clozePool,id);return token ? token.text : "";}).join(" | ");
+      }
       if(item.type==="order"){
         return orderState.map(function(id){
           const token=orderPool.find(function(value){return value.id===id;});
@@ -3570,13 +3847,17 @@
       const item=queue[index];
       const value=currentAnswer(item);
       if(!value.trim()){
-        els.feedback.textContent=item.type==="choice" ? "Сначала выбери вариант." : "Сначала напиши или собери свой вариант.";
+        if(item.type==="choice" || item.type==="context-choice") els.feedback.textContent="Сначала выбери вариант.";
+        else if(item.type==="match") els.feedback.textContent="Сначала заполни все соответствия.";
+        else if(item.type==="cloze-passage") els.feedback.textContent="Сначала заполни все пропуски в тексте.";
+        else els.feedback.textContent="Сначала напиши или собери свой вариант.";
         els.feedback.className="feedback bad";
         if(!els.answerInput.hidden) els.answerInput.focus();
         return;
       }
       const exact=matchesAccepted(value,item.a,normalize);
       const near=!exact && matchesAccepted(value,item.a,fold);
+      markStructuredAnswers(item);
       let scheduled=false;
       if(!checkedCurrent){
         const statsId=item.originalId || item.id;
