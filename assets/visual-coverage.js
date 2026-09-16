@@ -68,11 +68,36 @@
     return result;
   }
 
+  /*
+   * Picture-task quality rule:
+   * never ask the learner to infer an ingredient from an ambiguous patch inside
+   * a finished dish. Ingredient exercises must show the dish plus separately
+   * drawn, unmistakable ingredients around it.
+   */
+  const AMBIGUOUS_PICTURE_SCENES={food_table:true};
+  function isAmbiguousPictureTask(item){
+    if(!item) return false;
+    const scene=String(item.pictureScene || '').toLowerCase();
+    const id=String(item.id || '').toLowerCase();
+    const text=[item.q,item.pictureHint,item.e].join(' ').toLowerCase();
+    return !!AMBIGUOUS_PICTURE_SCENES[scene] || id.indexOf('food_table')!==-1 || text.indexOf('заметные ингредиенты')!==-1 || text.indexOf('ингредиентами внутри блюд')!==-1;
+  }
+  function polishDishTask(item){
+    if(!item || String(item.pictureScene || '').indexOf('dish_')!==0) return item;
+    const title=String(item.q || '').split(':')[0].trim() || 'Блюдо';
+    item.skill='Блюдо и ингредиенты';
+    item.q=title+': подпиши ингредиенты вокруг блюда.';
+    item.pictureHint='Подпиши отдельно нарисованные продукты вокруг блюда по-испански. Артикль можно не писать.';
+    return item;
+  }
+
   var basePictureLabelExercises=null;
   try { if(typeof pictureLabelExercises==='function') basePictureLabelExercises=pictureLabelExercises; } catch(e){}
   if(basePictureLabelExercises){
     pictureLabelExercises=function(){
-      const existing=basePictureLabelExercises();
+      const existing=basePictureLabelExercises()
+        .filter(function(item){ return !isAmbiguousPictureTask(item); })
+        .map(polishDishTask);
       const ids={};
       existing.forEach(function(item){ ids[item.id]=true; });
       return existing.concat(visualVocabularyExercises().filter(function(item){return !ids[item.id];}));
