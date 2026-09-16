@@ -4478,9 +4478,9 @@
       els.studyPickerCurrent.textContent=studyPickerLabel(word);
       $("prevWord").disabled=wordIndex===0;
       els.studyDots.hidden=true;
-      $("prevWord").textContent=isPronouns && wordIndex>0 ? "← "+words[wordIndex-1].nav : "← Предыдущее";
+      $("prevWord").textContent=isPronouns && wordIndex>0 ? "← "+words[wordIndex-1].nav : "← Назад";
       const namedVerbNavigation=isPresent || selectedTopic==="verbs";
-      els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : (namedVerbNavigation ? words[wordIndex+1].word+" →" : "Следующее →"));
+      els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : (namedVerbNavigation ? words[wordIndex+1].word+" →" : "Далее →"));
       if(namedVerbNavigation && wordIndex>0) $("prevWord").textContent="← "+words[wordIndex-1].word;
       els.progressLabel.textContent=(wordIndex+1)+" / "+words.length;
       els.progressBar.style.width=((wordIndex+1)/words.length*100)+"%";
