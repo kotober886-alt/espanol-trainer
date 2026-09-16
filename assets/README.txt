@@ -1,0 +1,1 @@
+Generated flat 2D illustration assets for the Spanish trainer. Do not replace with photorealistic imagery.
