@@ -1,40 +1,60 @@
 .study-card .food-art {
   width:100%;
-  min-height:clamp(310px,36vw,430px)!important;
-  height:auto!important;
+  height:clamp(220px,24vw,300px)!important;
+  min-height:0!important;
   display:flex!important;
   align-items:center;
   justify-content:center;
-  overflow:visible!important;
-  padding:18px;
+  overflow:hidden!important;
+  padding:10px;
   background:rgba(255,255,255,.78);
   border-radius:22px;
 }
 
 .generated-sprite {
   display:block;
-  width:min(100%,410px)!important;
+  width:min(100%,280px)!important;
   aspect-ratio:1/1;
   flex:0 0 auto;
   margin:auto;
   background-repeat:no-repeat;
   background-color:#fff;
   image-rendering:auto;
-  border-radius:18px;
+  border-radius:16px;
+  transform:scale(1.14);
+  transform-origin:center;
 }
 
 @media (max-width:820px) {
   .study-card .food-art {
-    min-height:min(86vw,410px)!important;
-    padding:14px!important;
+    height:220px!important;
+    min-height:0!important;
+    padding:8px!important;
   }
-  .food-art .generated-sprite { width:min(100%,380px)!important; }
+  .food-art .generated-sprite {
+    width:min(100%,230px)!important;
+    transform:scale(1.12);
+  }
 }
 
 @media (max-width:520px) {
-  .study-card .food-art {
-    min-height:min(84vw,350px)!important;
-    padding:10px!important;
+  .study-shell { padding:14px 10px!important; }
+  .study-intro { margin-bottom:10px!important; }
+  .study-card {
+    padding:12px!important;
+    gap:12px!important;
   }
-  .food-art .generated-sprite { width:min(100%,340px)!important; }
+  .study-card .food-art {
+    height:168px!important;
+    min-height:0!important;
+    padding:4px!important;
+    border-radius:15px;
+  }
+  .food-art .generated-sprite {
+    width:178px!important;
+    max-width:100%!important;
+    transform:scale(1.16);
+    border-radius:12px;
+  }
+  .study-nav { margin-top:12px!important; }
 }
