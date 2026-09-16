@@ -11,7 +11,7 @@ on:
       - 'assets/img-activities.js'
       - 'assets/visual-coverage.js'
       - 'assets/exercise-quality-fixes.js'
-      - 'assets/study-art-fixes.js'
+      - 'assets/trainer-v13-fixes.js'
       - 'scripts/inject_generated_art.py'
       - '.github/workflows/integrate-generated-art.yml'
 
