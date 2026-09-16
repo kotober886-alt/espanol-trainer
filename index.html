@@ -110,7 +110,7 @@
       border-radius:15px; color:white; background:linear-gradient(135deg,var(--violet),var(--violet-2)); font-weight:850;
       box-shadow:0 10px 24px rgba(80,62,170,.2);
     }
-    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden],.match-widget[hidden],.cloze-widget[hidden] { display:none; }
+    .audio-prompt[hidden],.choice-grid[hidden],.order-widget[hidden],.form-grid[hidden],.match-widget[hidden],.cloze-widget[hidden],.sort-widget[hidden] { display:none; }
     .audio-prompt span { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:rgba(255,255,255,.18); }
     .audio-actions { display:flex; align-items:stretch; gap:10px; flex-wrap:wrap; margin:0 0 22px; }
     .audio-actions[hidden] { display:none; }
@@ -216,6 +216,25 @@
       border:2px dashed #c8c0e1; border-radius:10px; background:#fff; color:var(--muted); font:inherit; font-size:15px; line-height:1.2; vertical-align:middle;
     }
     .cloze-blank.filled { border-style:solid; border-color:#c9c2ff; background:#f0edff; color:#433a86; }
+    .sort-widget { margin:0 0 22px; }
+    .sort-columns { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px; }
+    .sort-column {
+      min-width:0; min-height:150px; padding:11px; border:2px dashed #d3cde7; border-radius:16px; background:#faf9ff;
+      transition:border-color .15s,background .15s;
+    }
+    .sort-column h3 { margin:0 0 9px; color:#433a86; font-size:13px; line-height:1.25; }
+    .sort-column.drop-hover { border-color:var(--violet); background:#efecff; }
+    .sort-column-list { display:flex; align-content:flex-start; flex-wrap:wrap; gap:6px; min-height:88px; }
+    .sort-column-list:empty::before { content:"Перетащи сюда"; color:#aaa3bd; font-size:12px; font-weight:700; }
+    .sort-bank { min-height:62px; display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; padding:12px; border:1px solid var(--line); border-radius:15px; background:#fff; }
+    .sort-bank:empty::before { content:"Все слова распределены"; color:var(--muted); font-size:13px; }
+    .sort-token {
+      max-width:100%; padding:8px 10px; border:1px solid #d8d2ea; border-radius:10px; background:#fff; color:var(--ink);
+      font-size:13px; font-weight:800; text-align:left; overflow-wrap:anywhere; cursor:grab; touch-action:manipulation;
+    }
+    .sort-token:hover,.sort-token.selected { border-color:var(--violet); color:var(--violet); background:#f1eeff; }
+    .sort-token.result-good { border-color:#6bc29a; background:#e9f8f1; color:#187052; }
+    .sort-token.result-bad { border-color:#e99aa4; background:#fff0f2; color:#a53643; }
     .feedback { min-height:48px; display:flex; align-items:center; margin:12px 0 4px; padding:10px 13px; border-radius:13px; font-weight:750; }
     .feedback:empty { padding:0; margin:0; min-height:20px; }
     .feedback.good { color:#187052; background:#e9f8f1; }
@@ -518,6 +537,10 @@
       .drag-token { padding:8px 9px; font-size:13px; }
       .cloze-passage { padding:14px; font-size:16px; line-height:2.45; }
       .cloze-blank { min-width:86px; min-height:35px; margin:2px; padding:5px 7px; font-size:13px; }
+      .sort-columns { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+      .sort-column { min-height:126px; padding:9px; }
+      .sort-column h3 { font-size:12px; }
+      .sort-token { padding:7px 8px; font-size:12px; }
       .order-built { min-height:64px; padding:10px; }
       .word-chip { max-width:100%; padding:8px 10px; overflow-wrap:anywhere; }
       .actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; position:sticky; bottom:70px; z-index:8; padding:8px 0; background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%); }
@@ -726,6 +749,11 @@
               <p class="drag-help">Перетащи слова в пропуски или выбирай слово и пропуск по очереди.</p>
               <div class="cloze-passage" id="clozePassage"></div>
               <div class="drag-bank" id="clozeBank" aria-label="Слова для текста"></div>
+            </div>
+            <div class="sort-widget" id="sortWidget" hidden>
+              <p class="drag-help">Перетащи каждое слово в одну колонку. На телефоне нажми на слово, затем на нужную колонку.</p>
+              <div class="sort-columns" id="sortColumns"></div>
+              <div class="sort-bank" id="sortBank" aria-label="Слова для распределения"></div>
             </div>
             <div class="form-grid" id="formGrid" hidden></div>
             <label class="answer-label" id="answerLabel" for="answerInput">Твой ответ</label>
@@ -2356,6 +2384,86 @@
       return items;
     }
 
+    function makeSortExercise(id,topic,title,groups,explanation){
+      const columns=groups.map(function(group,index){return {id:"c"+index,title:group[0]};});
+      const tokens=[];
+      groups.forEach(function(group,columnIndex){
+        group[1].forEach(function(word,wordIndex){tokens.push({id:"t"+columnIndex+"_"+wordIndex,text:word,category:"c"+columnIndex});});
+      });
+      return {
+        id:"sort_"+id,topic:topic,foodCat:"all",type:"category-sort",skill:"Распредели по категориям",q:title,
+        sortColumns:columns,sortTokens:tokens,a:[tokens.map(function(token){return token.category;}).join(" | ")],
+        displayAnswer:groups.map(function(group){return group[0]+": "+group[1].join(", ");}).join(" · "),
+        e:explanation || "Каждое слово относится только к одной колонке в этом задании."
+      };
+    }
+
+    function categoryChunks(categories){
+      if(categories.length<=4) return categories.length>=3 ? [categories] : [];
+      const chunks=[];
+      for(let start=0;start<categories.length;start+=4){
+        let chunk=categories.slice(start,start+4);
+        if(chunk.length<3) chunk=categories.slice(Math.max(0,categories.length-3));
+        const key=chunk.map(function(item){return item.id;}).join("|");
+        if(!chunks.some(function(existing){return existing.map(function(item){return item.id;}).join("|")===key;})) chunks.push(chunk);
+      }
+      return chunks;
+    }
+
+    function categorySortExercises(){
+      const items=[];
+      const manualTopics=["foods","pronouns","city"];
+      exerciseGroups().forEach(function(group){
+        if(manualTopics.indexOf(group.topic)>=0) return;
+        const categoryDefs=categoriesForTopic(group.topic).filter(function(category){
+          return category.id!=="all" && group.words.filter(function(word){return word.cat===category.id;}).length>=2;
+        });
+        categoryChunks(categoryDefs).forEach(function(chunk,chunkIndex){
+          const columns=chunk.map(function(category){return {id:category.id,title:category.title};});
+          const tokens=[];
+          chunk.forEach(function(category,columnIndex){
+            const pool=group.words.filter(function(word){return word.cat===category.id;});
+            const take=Math.min(3,pool.length);
+            for(let offset=0;offset<take;offset++){
+              const word=pool[(offset+chunkIndex*3)%pool.length];
+              tokens.push({id:group.topic+"_"+chunkIndex+"_"+category.id+"_"+word.id,text:word.word,category:category.id});
+            }
+          });
+          items.push({
+            id:"sort_auto_"+group.topic+"_"+chunkIndex,topic:group.topic,foodCat:"all",type:"category-sort",skill:"Распредели по категориям",
+            q:"Распредели слова темы «"+topicById(group.topic).title+"» по подходящим колонкам.",sortColumns:columns,sortTokens:tokens,
+            a:[tokens.map(function(token){return token.category;}).join(" | ")],
+            displayAnswer:columns.map(function(column){return column.title+": "+tokens.filter(function(token){return token.category===column.id;}).map(function(token){return token.text;}).join(", ");}).join(" · "),
+            e:"Категории не пересекаются внутри этого задания; каждое слово используется один раз."
+          });
+        });
+      });
+
+      items.push(makeSortExercise("foods_groups","foods","Распредели продукты по четырём группам.",[
+        ["Мясо и птица",["el pollo","la ternera","la carne de cerdo"]],
+        ["Молочные продукты",["la leche","el queso","la mantequilla"]],
+        ["Овощи и фрукты",["la manzana","el plátano","el tomate","la patata"]],
+        ["Сладости",["la galleta","la tarta","el helado"]]
+      ],"В этом наборе продукты подобраны так, чтобы ни один не относился сразу к двум колонкам."));
+      items.push(makeSortExercise("foods_more","foods","Распредели слова о еде по типам.",[
+        ["Морепродукты",["el salmón","el atún","las gambas"]],
+        ["Напитки",["el agua","el café","el té","el zumo"]],
+        ["Готовые блюда",["la sopa","la paella","la tortilla","el bocadillo"]],
+        ["Бакалея",["el arroz","la harina","el azúcar"]]
+      ]));
+      items.push(makeSortExercise("pronoun_types","pronouns","Распредели местоимения и притяжательные формы по функции.",[
+        ["Личные местоимения",["yo","tú","él","nosotros","ellos"]],
+        ["Притяжательные перед существительным",["mi","tu","su","nuestro","vuestro"]],
+        ["Косвенные с gustar",["me","te","le","nos","os","les"]]
+      ],"Формы подобраны без повторов: nosotros — личное местоимение, а nos — косвенное."));
+      items.push(makeSortExercise("city_words","city","Распредели городские слова по смыслу.",[
+        ["Места в городе",["la farmacia","el banco","el cine","la escuela"]],
+        ["Положительное описание",["bonito","limpio","tranquilo","seguro"]],
+        ["Отрицательное описание",["feo","sucio","ruidoso","peligroso"]]
+      ]));
+      return items;
+    }
+
     const ORDER_DATA = [
       ["q_where","questions","place","Собери вопрос: «Где ты работаешь?»",["¿Dónde","trabajas?"],"¿Dónde trabajas?","Dónde ставится в начале вопроса."],
       ["q_why","questions","reason","Собери вопрос: «Почему ты учишь испанский?»",["¿Por","qué","estudias","español?"],"¿Por qué estudias español?","В вопросе por qué пишется раздельно."],
@@ -2879,6 +2987,9 @@
     let clozePool = [];
     let clozeState = [];
     let dragSelection = null;
+    let sortState = {};
+    let sortSelection = null;
+    let sortPool = [];
     let catalogIntent = "learn";
     let topicSearch = "";
     let studySearch = "";
@@ -2899,6 +3010,7 @@
       orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"),
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
       clozeWidget:$("clozeWidget"), clozePassage:$("clozePassage"), clozeBank:$("clozeBank"),
+      sortWidget:$("sortWidget"), sortColumns:$("sortColumns"), sortBank:$("sortBank"),
       feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
@@ -2922,7 +3034,7 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
@@ -2953,25 +3065,27 @@
       if(selectedTopic==="practical") return PRACTICAL_STUDY_WORDS;
       return vocabularyWords();
     }
-    function vocabularyCategories(){
-      if(selectedTopic==="verbs") return VERB_CATEGORIES;
-      if(selectedTopic==="present") return PRESENT_CATEGORIES;
-      if(selectedTopic==="pronouns") return PRONOUN_CATEGORIES;
-      if(selectedTopic==="questions") return QUESTION_CATEGORIES;
-      if(selectedTopic==="constructions") return CONSTRUCTION_CATEGORIES;
-      if(selectedTopic==="gustar") return GUSTAR_CATEGORIES;
-      if(selectedTopic==="agreement") return AGREEMENT_CATEGORIES;
-      if(selectedTopic==="past") return PAST_CATEGORIES;
-      if(selectedTopic==="routine") return ROUTINE_CATEGORIES;
-      if(selectedTopic==="practical") return PRACTICAL_CATEGORIES;
-      if(selectedTopic==="prepositions") return PREPOSITION_CATEGORIES;
-      if(selectedTopic==="connectors") return CONNECTOR_CATEGORIES;
-      if(selectedTopic==="calendar") return CALENDAR_CATEGORIES;
-      if(selectedTopic==="city") return CITY_CATEGORIES;
-      if(selectedTopic==="clothes") return CLOTHING_CATEGORIES;
-      if(selectedTopic==="activities") return ACTIVITY_CATEGORIES;
-      return FOOD_CATEGORIES;
+    function categoriesForTopic(topic){
+      if(topic==="verbs") return VERB_CATEGORIES;
+      if(topic==="present") return PRESENT_CATEGORIES;
+      if(topic==="pronouns") return PRONOUN_CATEGORIES;
+      if(topic==="questions") return QUESTION_CATEGORIES;
+      if(topic==="constructions") return CONSTRUCTION_CATEGORIES;
+      if(topic==="gustar") return GUSTAR_CATEGORIES;
+      if(topic==="agreement") return AGREEMENT_CATEGORIES;
+      if(topic==="past") return PAST_CATEGORIES;
+      if(topic==="routine") return ROUTINE_CATEGORIES;
+      if(topic==="practical") return PRACTICAL_CATEGORIES;
+      if(topic==="prepositions") return PREPOSITION_CATEGORIES;
+      if(topic==="connectors") return CONNECTOR_CATEGORIES;
+      if(topic==="calendar") return CALENDAR_CATEGORIES;
+      if(topic==="city") return CITY_CATEGORIES;
+      if(topic==="clothes") return CLOTHING_CATEGORIES;
+      if(topic==="activities") return ACTIVITY_CATEGORIES;
+      if(topic==="foods") return FOOD_CATEGORIES;
+      return [];
     }
+    function vocabularyCategories(){ return categoriesForTopic(selectedTopic); }
     function topicById(id){ return TOPICS.find(function(t){return t.id===id;}) || TOPICS[0]; }
     function normalize(value){
       return String(value).toLowerCase().trim().replace(/[\p{P}\p{S}]+/gu," ").replace(/\s+/g," ").trim();
@@ -3071,7 +3185,7 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","ser-estar-hay"].indexOf(x.type)>=0; });
+      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
       if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
       return items;
     }
@@ -3228,6 +3342,9 @@
       clozePool=[];
       clozeState=[];
       dragSelection=null;
+      sortState={};
+      sortSelection=null;
+      sortPool=[];
       els.answerInput.value="";
       els.answerInput.disabled=false;
       els.answerInput.hidden=false;
@@ -3245,6 +3362,9 @@
       els.clozeWidget.hidden=true;
       els.clozePassage.innerHTML="";
       els.clozeBank.innerHTML="";
+      els.sortWidget.hidden=true;
+      els.sortColumns.innerHTML="";
+      els.sortBank.innerHTML="";
       els.formGrid.hidden=true;
       els.formGrid.innerHTML="";
       els.feedback.textContent="";
@@ -3358,6 +3478,63 @@
       renderStructuredBank(els.clozeBank,clozePool,clozeState,"cloze");
       bindStructuredTargets("#clozePassage [data-cloze-slot]","cloze");
     }
+    function renderSortWidget(){
+      const item=queue[index];
+      if(!item || item.type!=="category-sort") return;
+      function tokenButton(token,assigned){
+        const selected=sortSelection===token.id;
+        return '<button class="sort-token '+(selected?'selected':'')+'" data-sort-token="'+escapeHtml(token.id)+'" data-sort-assigned="'+(assigned?'true':'false')+'" draggable="true" type="button">'+escapeHtml(token.text)+'</button>';
+      }
+      els.sortColumns.innerHTML=(item.sortColumns || []).map(function(column){
+        const assigned=sortPool.filter(function(token){return sortState[token.id]===column.id;});
+        return '<section class="sort-column" data-sort-column="'+escapeHtml(column.id)+'" tabindex="0"><h3>'+escapeHtml(column.title)+'</h3><div class="sort-column-list">'+assigned.map(function(token){return tokenButton(token,true);}).join("")+'</div></section>';
+      }).join("");
+      const unassigned=sortPool.filter(function(token){return !sortState[token.id];});
+      els.sortBank.innerHTML=unassigned.map(function(token){return tokenButton(token,false);}).join("");
+
+      function bindToken(button){
+        button.addEventListener("click",function(event){
+          event.stopPropagation();
+          const tokenId=button.dataset.sortToken;
+          if(button.dataset.sortAssigned==="true"){
+            sortState[tokenId]=null;
+            sortSelection=null;
+          } else {
+            sortSelection=sortSelection===tokenId ? null : tokenId;
+          }
+          renderSortWidget();
+        });
+        button.addEventListener("dragstart",function(event){
+          sortSelection=button.dataset.sortToken;
+          event.dataTransfer.effectAllowed="move";
+          event.dataTransfer.setData("text/plain","sort:"+button.dataset.sortToken);
+        });
+      }
+      els.sortWidget.querySelectorAll("[data-sort-token]").forEach(bindToken);
+      els.sortColumns.querySelectorAll("[data-sort-column]").forEach(function(column){
+        function assignSelected(){
+          if(!sortSelection) return;
+          sortState[sortSelection]=column.dataset.sortColumn;
+          sortSelection=null;
+          renderSortWidget();
+        }
+        column.addEventListener("click",assignSelected);
+        column.addEventListener("keydown",function(event){if((event.key==="Enter" || event.key===" ") && sortSelection){event.preventDefault();assignSelected();}});
+        column.addEventListener("dragover",function(event){event.preventDefault();column.classList.add("drop-hover");});
+        column.addEventListener("dragleave",function(){column.classList.remove("drop-hover");});
+        column.addEventListener("drop",function(event){
+          event.preventDefault();column.classList.remove("drop-hover");
+          const raw=event.dataTransfer.getData("text/plain");
+          if(raw.indexOf("sort:")===0){sortSelection=raw.slice(5);assignSelected();}
+        });
+      });
+      els.sortBank.ondragover=function(event){event.preventDefault();};
+      els.sortBank.ondrop=function(event){
+        event.preventDefault();
+        const raw=event.dataTransfer.getData("text/plain");
+        if(raw.indexOf("sort:")===0){sortState[raw.slice(5)]=null;sortSelection=null;renderSortWidget();}
+      };
+    }
     function markStructuredAnswers(item){
       if(item.type==="match"){
         els.matchList.querySelectorAll("[data-match-slot]").forEach(function(target){
@@ -3370,6 +3547,11 @@
           const slot=Number(target.dataset.clozeSlot);
           const token=structuredToken(clozePool,clozeState[slot]);
           target.classList.add(token && normalize(token.text)===normalize(item.blanks[slot]) ? "result-good" : "result-bad");
+        });
+      } else if(item.type==="category-sort"){
+        els.sortWidget.querySelectorAll("[data-sort-token]").forEach(function(tokenButton){
+          const token=(item.sortTokens || []).find(function(value){return value.id===tokenButton.dataset.sortToken;});
+          if(token) tokenButton.classList.add(sortState[token.id]===token.category ? "result-good" : "result-bad");
         });
       }
     }
@@ -3404,6 +3586,15 @@
         clozeState=(item.blanks || []).map(function(){return null;});
         clozePool=shuffle((item.blanks || []).map(function(answer,i){return {id:i,text:answer};}));
         renderClozeWidget();
+      } else if(type==="category-sort"){
+        els.answerInput.hidden=true;
+        els.answerLabel.hidden=true;
+        els.sortWidget.hidden=false;
+        sortState={};
+        (item.sortTokens || []).forEach(function(token){sortState[token.id]=null;});
+        sortPool=shuffle((item.sortTokens || []).slice());
+        sortSelection=null;
+        renderSortWidget();
       } else if(type==="order"){
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
@@ -3448,6 +3639,10 @@
       if(item.type==="cloze-passage"){
         if(clozeState.some(function(value){return value===null;})) return "";
         return clozeState.map(function(id){const token=structuredToken(clozePool,id);return token ? token.text : "";}).join(" | ");
+      }
+      if(item.type==="category-sort"){
+        if((item.sortTokens || []).some(function(token){return !sortState[token.id];})) return "";
+        return item.sortTokens.map(function(token){return sortState[token.id];}).join(" | ");
       }
       if(item.type==="order"){
         return orderState.map(function(id){
@@ -3850,6 +4045,7 @@
         if(item.type==="choice" || item.type==="context-choice") els.feedback.textContent="Сначала выбери вариант.";
         else if(item.type==="match") els.feedback.textContent="Сначала заполни все соответствия.";
         else if(item.type==="cloze-passage") els.feedback.textContent="Сначала заполни все пропуски в тексте.";
+        else if(item.type==="category-sort") els.feedback.textContent="Сначала распредели все слова по колонкам.";
         else els.feedback.textContent="Сначала напиши или собери свой вариант.";
         els.feedback.className="feedback bad";
         if(!els.answerInput.hidden) els.answerInput.focus();
