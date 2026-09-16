@@ -14,7 +14,7 @@
     if(!pos||!IMG[type]) return '';
     const x=cols===1?0:(pos[0]/(cols-1))*100;
     const y=rows===1?0:(pos[1]/(rows-1))*100;
-    return '<div class="generated-sprite" aria-hidden="true" style="background-image:url('+IMG[type]+');background-size:'+(cols*100)+'% '+(rows*100)+'%;background-position:'+x+'% '+y+'%;"></div>';
+    return '<div class="generated-sprite generated-sprite-'+type+'" aria-hidden="true" style="background-image:url('+IMG[type]+');background-size:'+(cols*100)+'% '+(rows*100)+'%;background-position:'+x+'% '+y+'%;"></div>';
   }
   window.foodArt=function(kind){return sprite('foods',kind,7,5)||sprite('foods','bread',7,5);};
   window.clothingArt=function(kind){return sprite('clothes',kind,6,5)||sprite('clothes','tshirt',6,5);};
