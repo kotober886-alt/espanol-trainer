@@ -293,6 +293,13 @@
     .conjugation-item { padding:9px 8px; border-radius:11px; background:#f7f5ff; text-align:center; }
     .conjugation-item span { display:block; color:var(--muted); font-size:11px; font-weight:800; }
     .conjugation-item strong { display:block; margin-top:2px; color:var(--ink); font-size:16px; }
+    .present-conjugation { margin:0 0 22px; }
+    .present-table-wrap { overflow:hidden; border:1px solid #e5e0f4; border-radius:16px; background:rgba(255,255,255,.82); }
+    .present-table { width:100%; border-collapse:collapse; }
+    .present-table th,.present-table td { padding:11px 14px; text-align:left; border-bottom:1px solid #ece8f6; }
+    .present-table tr:last-child th,.present-table tr:last-child td { border-bottom:0; }
+    .present-table th { width:48%; color:var(--muted); font-size:13px; font-weight:800; background:rgba(247,245,255,.72); }
+    .present-table td { color:#433a86; font-size:17px; font-weight:900; }
 
     /* Облегчённая навигация и короткие занятия */
     .app-header { max-width:1040px; margin-inline:auto; }
@@ -463,6 +470,8 @@
       .pronoun-block { min-width:0; padding:13px; }
       .pronoun-block.conjugation { grid-column:auto; }
       .pronoun-form { font-size:18px; }
+      .present-table th,.present-table td { padding:10px 11px; }
+      .present-table td { font-size:16px; }
       .conjugation-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
       .conjugation-item { min-width:0; padding:8px 5px; }
       .study-shell { padding:20px 14px; }
@@ -1761,7 +1770,7 @@
       foundationItem("esperar","plans","esperar","глагол на -ar","ждать, надеяться",["ждать","надеяться"],["esperar"],"Espero el autobús.","Я жду автобус.","Esperamos viajar en verano.","Мы надеемся поехать летом.","Yo ___ el autobús.",["espero"])
     ];
 
-    const PRESENT_CATEGORIES=[{id:"all",title:"Все формы"},{id:"ar",title:"Глаголы -ar"},{id:"er",title:"Глаголы -er"},{id:"ir",title:"Глаголы -ir"}];
+    const PRESENT_CATEGORIES=[{id:"all",title:"Все глаголы"},{id:"ar",title:"Глаголы -ar"},{id:"er",title:"Глаголы -er"},{id:"ir",title:"Глаголы -ir"}];
     const PRESENT_WORDS=[
       foundationItem("hablo","ar","yo hablo","-ar · yo","я говорю",["я говорю"],["yo hablo","hablo"],"Yo hablo español.","Я говорю по-испански.","Hablo con mi amiga cada día.","Я разговариваю с подругой каждый день.","Yo ___ español.",["hablo"]),
       foundationItem("hablas","ar","tú hablas","-ar · tú","ты говоришь",["ты говоришь"],["tú hablas","tu hablas","hablas"],"Tú hablas muy rápido.","Ты говоришь очень быстро.","¿Hablas español en el trabajo?","Ты говоришь по-испански на работе?","Tú ___ muy rápido.",["hablas"]),
@@ -1781,6 +1790,24 @@
       foundationItem("vivimos","ir","nosotros vivimos","-ir · nosotros","мы живём",["мы живём","мы живем"],["nosotros vivimos","vivimos"],"Nosotros vivimos en España.","Мы живём в Испании.","Vivimos en un piso pequeño.","Мы живём в маленькой квартире.","Nosotros ___ en España.",["vivimos"]),
       foundationItem("vivis","ir","vosotros vivís","-ir · vosotros","вы живёте",["вы живёте","вы живете"],["vosotros vivís","vosotros vivis","vivís","vivis"],"Vosotros vivís muy lejos.","Вы живёте очень далеко.","¿Vivís cerca de la escuela?","Вы живёте рядом со школой?","Vosotros ___ muy lejos.",["vivís","vivis"]),
       foundationItem("viven","ir","ellos / ustedes viven","-ir · ellos, ustedes","они живут; вы живёте",["они живут","вы живёте"],["ellos viven","ellas viven","ustedes viven","viven"],"Ellos viven en Barcelona.","Они живут в Барселоне.","Ustedes viven en una casa grande.","Вы живёте в большом доме.","Ellos ___ en Barcelona.",["viven"])
+    ];
+
+    const PRESENT_STUDY_WORDS=[
+      {
+        id:"hablar",cat:"ar",word:"hablar",base:"hablar",gender:"правильный глагол · -ar",tr:"говорить, разговаривать",
+        forms:[["yo","hablo"],["tú","hablas"],["él / ella / usted","habla"],["nosotros / nosotras","hablamos"],["vosotros / vosotras","habláis"],["ellos / ellas / ustedes","hablan"]],
+        examples:[["Yo hablo español.","Я говорю по-испански."],["Hablamos con nuestros amigos cada día.","Мы разговариваем с друзьями каждый день."]]
+      },
+      {
+        id:"comer",cat:"er",word:"comer",base:"comer",gender:"правильный глагол · -er",tr:"есть, кушать",
+        forms:[["yo","como"],["tú","comes"],["él / ella / usted","come"],["nosotros / nosotras","comemos"],["vosotros / vosotras","coméis"],["ellos / ellas / ustedes","comen"]],
+        examples:[["Yo como fruta cada día.","Я ем фрукты каждый день."],["Ellos comen en el restaurante.","Они едят в ресторане."]]
+      },
+      {
+        id:"vivir",cat:"ir",word:"vivir",base:"vivir",gender:"правильный глагол · -ir",tr:"жить",
+        forms:[["yo","vivo"],["tú","vives"],["él / ella / usted","vive"],["nosotros / nosotras","vivimos"],["vosotros / vosotras","vivís"],["ellos / ellas / ustedes","viven"]],
+        examples:[["Yo vivo cerca del metro.","Я живу рядом с метро."],["Ellos viven en Barcelona.","Они живут в Барселоне."]]
+      }
     ];
 
 
@@ -2473,6 +2500,9 @@
       if(selectedTopic==="activities") return ACTIVITY_WORDS;
       return FOOD_WORDS;
     }
+    function studyVocabularyWords(){
+      return selectedTopic==="present" ? PRESENT_STUDY_WORDS : vocabularyWords();
+    }
     function vocabularyCategories(){
       if(selectedTopic==="verbs") return VERB_CATEGORIES;
       if(selectedTopic==="present") return PRESENT_CATEGORIES;
@@ -2618,7 +2648,7 @@
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
           '</span><span class="topic-count">'+(
             t.id==="verbs" ? VERB_WORDS.length+" слов" :
-            t.id==="present" ? PRESENT_WORDS.length+" форм" :
+            t.id==="present" ? PRESENT_STUDY_WORDS.length+" глагола" :
             t.id==="pronouns" ? PRONOUN_WORDS.length+" лиц" :
             t.id==="questions" ? QUESTION_WORDS.length+" вопросов" :
             t.id==="constructions" ? CONSTRUCTION_WORDS.length+" конструкций" :
@@ -2970,7 +3000,7 @@
     }
 
     function currentFoodWords(){
-      let words=vocabularyWords();
+      let words=studyVocabularyWords();
       if(foodCategory!=="all") words=words.filter(function(word){return word.cat===foodCategory;});
       const query=fold(studySearch);
       if(query) words=words.filter(function(word){return fold([word.word,word.tr,word.base].filter(Boolean).join(" ")).indexOf(query)>=0;});
@@ -2983,7 +3013,7 @@
     function studyTitle(){
       const titles={
         verbs:"Сначала познакомимся с основными глаголами",
-        present:"Сначала разберём формы Presente",
+        present:"Спряжение глаголов в Presente",
         pronouns:"Сначала разберём местоимения",
         questions:"Сначала разберём вопросы",
         constructions:"Сначала разберём разговорные конструкции",
@@ -3003,7 +3033,7 @@
       return titles[selectedTopic] || "Сначала познакомимся с материалом";
     }
     function studyIntro(){
-      if(selectedTopic==="present") return "Смотри на окончание и местоимение, затем закрепляй форму без подсказок.";
+      if(selectedTopic==="present") return "Все шесть форм одного глагола собраны вместе. Стрелки переключают между глаголами.";
       if(selectedTopic==="pronouns") return "Переключайся между лицами: смотри притяжательные формы и спряжение пяти базовых глаголов.";
       if(selectedTopic==="questions") return "Смотри, о чём спрашивает слово, и сравнивай готовые вопросы с переводом.";
       if(selectedTopic==="constructions") return "Разбери схему, значение и два живых примера, затем собери собственную фразу.";
@@ -3018,7 +3048,7 @@
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
     function studyUnitLabel(){
-      if(selectedTopic==="present") return "Форма";
+      if(selectedTopic==="present") return "Глагол";
       if(selectedTopic==="pronouns") return "Местоимение";
       if(selectedTopic==="questions") return "Вопрос";
       if(selectedTopic==="constructions") return "Конструкция";
@@ -3043,7 +3073,7 @@
     function renderStudy(){
       const words=currentFoodWords();
       const categories=vocabularyCategories();
-      els.wordSearch.hidden=vocabularyWords().length<20;
+      els.wordSearch.hidden=studyVocabularyWords().length<20;
       els.wordSearch.placeholder=selectedTopic==="verbs" ? "Найти глагол…" : "Найти слово в теме…";
       if(!words.length){
         els.studyView.hidden=false; els.exerciseView.hidden=true; els.emptyView.hidden=true;
@@ -3061,7 +3091,7 @@
       els.studyIntroText.textContent=studyIntro();
       els.foodFilters.setAttribute("aria-label",studyAriaLabel());
       els.foodFilters.innerHTML=categories.map(function(cat){
-        const allWords=vocabularyWords();
+        const allWords=studyVocabularyWords();
         const count=cat.id==="all" ? allWords.length : allWords.filter(function(word){return word.cat===cat.id;}).length;
         return '<button class="food-filter '+(cat.id===foodCategory?"active":"")+'" data-food-category="'+cat.id+'" type="button">'+
           cat.title+' · '+count+'</button>';
@@ -3075,6 +3105,7 @@
       });
       const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="activities";
       const isPronouns=selectedTopic==="pronouns";
+      const isPresent=selectedTopic==="present";
       els.studyCard.classList.toggle("no-art",!hasArt);
       els.foodArt.innerHTML=studyArt(word);
       els.foodWord.textContent=word.word;
@@ -3082,8 +3113,8 @@
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
       els.foodTranslation.textContent=word.tr;
       els.pronounTabs.hidden=!isPronouns;
-      els.pronounDetails.hidden=!isPronouns;
-      els.examplesTitle.textContent=isPronouns ? "Примеры" : "В контексте";
+      els.pronounDetails.hidden=!(isPronouns || isPresent);
+      els.examplesTitle.textContent=(isPronouns || isPresent) ? "Примеры" : "В контексте";
       if(isPronouns){
         els.pronounTabs.innerHTML=words.map(function(item,i){
           const parts=item.nav.split(" · ");
@@ -3102,6 +3133,12 @@
           '<div class="pronoun-block conjugation"><div class="pronoun-kicker">Спряжение в Presente</div><div class="conjugation-grid">'+
           word.conjugations.map(function(form){return '<div class="conjugation-item"><span>'+escapeHtml(form[0])+'</span><strong>'+escapeHtml(form[1])+'</strong></div>';}).join("")+
           '</div></div>';
+      } else if(isPresent){
+        els.pronounTabs.innerHTML="";
+        els.pronounDetails.innerHTML=
+          '<div class="pronoun-block conjugation present-conjugation"><div class="pronoun-kicker">Все формы в Presente</div><div class="present-table-wrap"><table class="present-table"><tbody>'+
+          word.forms.map(function(form){return '<tr><th scope="row">'+escapeHtml(form[0])+'</th><td>'+escapeHtml(form[1])+'</td></tr>';}).join("")+
+          '</tbody></table></div></div>';
       } else {
         els.pronounTabs.innerHTML="";
         els.pronounDetails.innerHTML="";
@@ -3118,9 +3155,10 @@
         btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.wordIndex);renderStudy();});
       });
       $("prevWord").disabled=wordIndex===0;
-      els.studyDots.hidden=isPronouns;
+      els.studyDots.hidden=isPronouns || isPresent;
       $("prevWord").textContent=isPronouns && wordIndex>0 ? "← "+words[wordIndex-1].nav : "← Предыдущее";
-      els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : "Следующее →");
+      els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : (isPresent ? words[wordIndex+1].word+" →" : "Следующее →"));
+      if(isPresent && wordIndex>0) $("prevWord").textContent="← "+words[wordIndex-1].word;
       els.progressLabel.textContent=(wordIndex+1)+" / "+words.length;
       els.progressBar.style.width=((wordIndex+1)/words.length*100)+"%";
     }
