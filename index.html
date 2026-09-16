@@ -2399,13 +2399,17 @@
     }
 
     function categoryChunks(categories){
-      if(categories.length<=4) return categories.length>=3 ? [categories] : [];
+      if(categories.length<2) return [];
+      if(categories.length<=4) return [categories];
       const chunks=[];
-      for(let start=0;start<categories.length;start+=4){
-        let chunk=categories.slice(start,start+4);
-        if(chunk.length<3) chunk=categories.slice(Math.max(0,categories.length-3));
-        const key=chunk.map(function(item){return item.id;}).join("|");
-        if(!chunks.some(function(existing){return existing.map(function(item){return item.id;}).join("|")===key;})) chunks.push(chunk);
+      const chunkCount=Math.ceil(categories.length/4);
+      const baseSize=Math.floor(categories.length/chunkCount);
+      const largerChunks=categories.length%chunkCount;
+      let start=0;
+      for(let index=0;index<chunkCount;index++){
+        const size=baseSize+(index<largerChunks ? 1 : 0);
+        chunks.push(categories.slice(start,start+size));
+        start+=size;
       }
       return chunks;
     }
@@ -2418,7 +2422,8 @@
         const categoryDefs=categoriesForTopic(group.topic).filter(function(category){
           return category.id!=="all" && group.words.filter(function(word){return word.cat===category.id;}).length>=2;
         });
-        categoryChunks(categoryDefs).forEach(function(chunk,chunkIndex){
+        const chunks=categoryChunks(categoryDefs);
+        chunks.forEach(function(chunk,chunkIndex){
           const columns=chunk.map(function(category){return {id:category.id,title:category.title};});
           const tokens=[];
           chunk.forEach(function(category,columnIndex){
@@ -2431,7 +2436,7 @@
           });
           items.push({
             id:"sort_auto_"+group.topic+"_"+chunkIndex,topic:group.topic,foodCat:"all",type:"category-sort",skill:"Распредели по категориям",
-            q:"Распредели слова темы «"+topicById(group.topic).title+"» по подходящим колонкам.",sortColumns:columns,sortTokens:tokens,
+            q:"Распредели слова темы «"+topicById(group.topic).title+"» по подходящим колонкам."+(chunks.length>1 ? " Набор "+(chunkIndex+1)+" из "+chunks.length+"." : ""),sortColumns:columns,sortTokens:tokens,
             a:[tokens.map(function(token){return token.category;}).join(" | ")],
             displayAnswer:columns.map(function(column){return column.title+": "+tokens.filter(function(token){return token.category===column.id;}).map(function(token){return token.text;}).join(", ");}).join(" · "),
             e:"Категории не пересекаются внутри этого задания; каждое слово используется один раз."
