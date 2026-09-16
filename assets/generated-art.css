@@ -6,7 +6,7 @@
   align-items:center;
   justify-content:center;
   overflow:hidden!important;
-  padding:10px;
+  padding:8px;
   background:rgba(255,255,255,.78);
   border-radius:22px;
 }
@@ -21,40 +21,174 @@
   background-color:#fff;
   image-rendering:auto;
   border-radius:16px;
-  transform:scale(1.14);
   transform-origin:center;
 }
 
+.generated-sprite-clothes { transform:scale(1.40); }
+.generated-sprite-foods { transform:scale(1.25); }
+.generated-sprite-activities { transform:scale(1.42); }
+
 @media (max-width:820px) {
   .study-card .food-art {
-    height:220px!important;
+    height:210px!important;
     min-height:0!important;
-    padding:8px!important;
+    padding:6px!important;
   }
-  .food-art .generated-sprite {
-    width:min(100%,230px)!important;
-    transform:scale(1.12);
-  }
+  .food-art .generated-sprite { width:min(100%,225px)!important; }
 }
 
 @media (max-width:520px) {
-  .study-shell { padding:14px 10px!important; }
-  .study-intro { margin-bottom:10px!important; }
+  .study-shell {
+    padding:12px 9px 16px!important;
+  }
+  .study-intro {
+    margin-bottom:8px!important;
+    gap:8px!important;
+  }
+  .study-intro p { display:none; }
+  .food-filters,.pronoun-tabs {
+    padding-bottom:8px!important;
+  }
+
   .study-card {
-    padding:12px!important;
-    gap:12px!important;
+    padding:11px!important;
+    gap:7px 11px!important;
+    border-radius:18px!important;
   }
-  .study-card .food-art {
-    height:168px!important;
+  .study-card:not(.no-art) {
+    grid-template-columns:minmax(104px,34%) minmax(0,1fr)!important;
+    align-items:start!important;
+  }
+  .study-card:not(.no-art) > div:last-child {
+    display:contents;
+  }
+  .study-card:not(.no-art) .food-art {
+    grid-column:1;
+    grid-row:1 / span 5;
+    width:100%!important;
+    height:148px!important;
     min-height:0!important;
-    padding:4px!important;
-    border-radius:15px;
+    align-self:start;
+    padding:2px!important;
+    border-radius:14px;
   }
+  .study-card:not(.no-art) .word-count {
+    grid-column:2;
+    grid-row:1;
+    align-self:end;
+    font-size:11px;
+  }
+  .study-card:not(.no-art) .food-word {
+    grid-column:2;
+    grid-row:2;
+    margin:0!important;
+    font-size:clamp(25px,7.4vw,34px)!important;
+  }
+  .study-card:not(.no-art) .food-tags {
+    grid-column:2;
+    grid-row:3;
+  }
+  .study-card:not(.no-art) .food-gender,
+  .study-card:not(.no-art) .food-category-label {
+    margin-top:2px!important;
+    padding:3px 7px;
+    font-size:11px;
+  }
+  .study-card:not(.no-art) .food-translation {
+    grid-column:2;
+    grid-row:4;
+    margin:2px 0!important;
+    font-size:clamp(17px,5vw,21px)!important;
+  }
+  .study-card:not(.no-art) .study-listen {
+    grid-column:2;
+    grid-row:5;
+    min-height:36px;
+    padding:7px 8px;
+    font-size:12px;
+  }
+  .study-card:not(.no-art) .examples-title {
+    grid-column:1 / -1;
+    grid-row:6;
+    margin:4px 0 0;
+    font-size:11px;
+  }
+  .study-card:not(.no-art) .example-list {
+    grid-column:1 / -1;
+    grid-row:7;
+    gap:6px;
+  }
+  .study-card:not(.no-art) .example {
+    padding:8px 10px!important;
+  }
+  .study-card:not(.no-art) .example strong {
+    font-size:13px!important;
+    line-height:1.25!important;
+  }
+  .study-card:not(.no-art) .example span {
+    font-size:12px!important;
+    line-height:1.25!important;
+  }
+
   .food-art .generated-sprite {
-    width:178px!important;
-    max-width:100%!important;
-    transform:scale(1.16);
-    border-radius:12px;
+    width:142px!important;
+    max-width:none!important;
   }
-  .study-nav { margin-top:12px!important; }
+  .food-art .generated-sprite-clothes { transform:scale(1.42); }
+  .food-art .generated-sprite-foods { transform:scale(1.28); }
+  .food-art .generated-sprite-activities { transform:scale(1.44); }
+
+  .study-nav {
+    grid-template-columns:minmax(0,.78fr) minmax(0,1.18fr) minmax(0,.78fr)!important;
+    align-items:stretch!important;
+    gap:6px!important;
+    margin-top:10px!important;
+  }
+  .study-nav .btn,
+  .study-nav .study-picker-trigger {
+    grid-row:1!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:42px!important;
+    padding:7px 5px!important;
+    border-radius:12px!important;
+    font-size:12px!important;
+    white-space:nowrap!important;
+  }
+  .study-nav #prevWord {
+    grid-column:1!important;
+    justify-self:stretch!important;
+  }
+  .study-nav .study-picker-trigger {
+    grid-column:2!important;
+  }
+  .study-nav #nextWord {
+    grid-column:3!important;
+    justify-self:stretch!important;
+  }
+  .study-picker-trigger span { display:none; }
+  .study-picker-trigger strong {
+    font-size:12px!important;
+    line-height:1.1;
+  }
+  .study-dots { display:none!important; }
+}
+
+@media (max-width:360px) {
+  .study-card:not(.no-art) {
+    grid-template-columns:minmax(94px,32%) minmax(0,1fr)!important;
+  }
+  .study-card:not(.no-art) .food-art {
+    height:136px!important;
+  }
+  .food-art .generated-sprite { width:132px!important; }
+  .study-nav {
+    grid-template-columns:minmax(0,.72fr) minmax(0,1.12fr) minmax(0,.72fr)!important;
+    gap:4px!important;
+  }
+  .study-nav .btn,
+  .study-nav .study-picker-trigger {
+    padding-inline:3px!important;
+    font-size:11px!important;
+  }
 }
