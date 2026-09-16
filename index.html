@@ -226,6 +226,8 @@
     .study-shell { padding:clamp(22px,4vw,40px); }
 
     .food-filters { display:flex; gap:8px; overflow-x:auto; padding:2px 1px 16px; scrollbar-width:thin; }
+    .word-search { width:100%; min-height:46px; margin:0 0 12px; padding:11px 14px; border:1.5px solid var(--line); border-radius:14px; background:white; }
+    .study-search-empty { padding:36px 16px; text-align:center; color:var(--muted); border:1px dashed #d8d3e8; border-radius:18px; }
     .food-filter {
       flex:0 0 auto; border:1px solid var(--line); background:white; color:var(--muted);
       border-radius:999px; padding:9px 13px; font-size:14px; font-weight:800;
@@ -292,19 +294,95 @@
     .conjugation-item span { display:block; color:var(--muted); font-size:11px; font-weight:800; }
     .conjugation-item strong { display:block; margin-top:2px; color:var(--ink); font-size:16px; }
 
+    /* Облегчённая навигация и короткие занятия */
+    .app-header { max-width:1040px; margin-inline:auto; }
+    .header-actions .desktop-secondary { display:inline-flex; }
+    .home-view { width:min(1040px,100%); margin:0 auto; }
+    .home-view[hidden],.layout[hidden],.session-result[hidden] { display:none; }
+    .home-hero {
+      display:grid; grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr); gap:18px;
+      padding:clamp(24px,5vw,52px); border-radius:32px; color:white;
+      background:linear-gradient(135deg,#17153b 0%,#45388d 68%,#6253d9 100%); box-shadow:var(--shadow);
+    }
+    .home-kicker { margin:0 0 10px; color:#d8d2ff; font-size:13px; font-weight:850; text-transform:uppercase; letter-spacing:.1em; }
+    .home-hero h2 { margin:0; max-width:680px; font-size:clamp(30px,5vw,54px); line-height:1.03; letter-spacing:-.055em; }
+    .home-hero p { margin:14px 0 0; max-width:630px; color:#e8e5ff; font-size:clamp(15px,2vw,18px); }
+    .home-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; align-self:end; }
+    .home-stat { min-width:0; padding:14px 8px; text-align:center; border:1px solid rgba(255,255,255,.13); border-radius:16px; background:rgba(255,255,255,.09); }
+    .home-stat strong { display:block; font-size:25px; }
+    .home-stat span { display:block; color:#d8d2ff; font-size:11px; }
+    .home-actions { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:14px; margin-top:16px; }
+    .home-card {
+      display:flex; flex-direction:column; align-items:flex-start; min-height:190px; padding:22px; text-align:left;
+      border:1px solid rgba(255,255,255,.9); border-radius:24px; background:rgba(255,255,255,.9); color:var(--ink); box-shadow:0 14px 35px rgba(35,28,89,.08);
+    }
+    .home-card.primary { color:white; background:linear-gradient(145deg,var(--violet),#7a6dea); border-color:transparent; }
+    .home-card-icon { display:grid; place-items:center; width:42px; height:42px; margin-bottom:18px; border-radius:14px; background:#f0edff; color:var(--violet); font-size:20px; }
+    .home-card.primary .home-card-icon { color:white; background:rgba(255,255,255,.16); }
+    .home-card strong { display:block; font-size:20px; line-height:1.15; }
+    .home-card span { display:block; margin-top:7px; color:var(--muted); font-size:14px; }
+    .home-card.primary span { color:#ece9ff; }
+    .home-card b { margin-top:auto; padding-top:18px; color:inherit; font-size:14px; }
+    .layout { width:min(1040px,100%); margin:0 auto; grid-template-columns:minmax(0,1fr); }
+    .sidebar { display:none; position:static; }
+    .layout.catalog-view .sidebar { display:block; }
+    .layout.catalog-view .workspace { display:none; }
+    .catalog-head { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .catalog-head h2 { margin:0; font-size:clamp(26px,4vw,38px); letter-spacing:-.04em; }
+    .catalog-head p { margin:4px 0 0; color:var(--muted); }
+    .topic-search { width:min(320px,100%); min-height:46px; padding:11px 14px; border:1.5px solid var(--line); border-radius:14px; background:white; }
+    .topic-groups { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+    .topic-group { padding:14px; border:1px solid var(--line); border-radius:20px; background:#faf9fe; }
+    .topic-group-title { margin:0 4px 9px; color:var(--muted); font-size:12px; font-weight:850; text-transform:uppercase; letter-spacing:.09em; }
+    .topic-group .topic-list { display:grid; gap:6px; }
+    .topic-group .topic { background:white; border:1px solid transparent; }
+    .topic-group .topic:hover { border-color:#d9d3fa; }
+    .topic-group .topic.active { color:white; background:var(--ink); }
+    .workspace { width:100%; }
+    .workspace-top { position:relative; }
+    .workspace-heading { min-width:0; }
+    .topic-tabs { display:flex; gap:7px; margin-top:7px; }
+    .topic-tab { padding:6px 10px; border:0; border-radius:10px; background:#f1eff8; color:var(--muted); font-size:12px; font-weight:800; }
+    .topic-tab.active { color:white; background:var(--ink); }
+    .session-result { padding:clamp(34px,7vw,80px) 24px; text-align:center; }
+    .result-icon { display:grid; place-items:center; width:68px; height:68px; margin:0 auto 18px; border-radius:22px; background:#eeeaff; color:var(--violet); font-size:30px; }
+    .session-result h2 { margin:0; font-size:clamp(28px,5vw,44px); letter-spacing:-.045em; }
+    .session-result > p { margin:8px auto 22px; color:var(--muted); }
+    .result-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; width:min(480px,100%); margin:0 auto 22px; }
+    .result-stat { padding:14px 8px; border-radius:16px; background:#f6f4fb; }
+    .result-stat strong { display:block; font-size:23px; }
+    .result-stat span { color:var(--muted); font-size:12px; }
+    .result-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:9px; }
+    .bottom-nav {
+      display:none; position:fixed; z-index:20; left:50%; bottom:max(8px,env(safe-area-inset-bottom)); transform:translateX(-50%);
+      width:min(480px,calc(100% - 16px)); padding:6px; border:1px solid rgba(231,227,244,.9); border-radius:19px;
+      background:rgba(255,255,255,.92); box-shadow:0 16px 45px rgba(24,20,66,.18); backdrop-filter:blur(16px);
+    }
+    .bottom-nav button { flex:1; display:grid; place-items:center; gap:1px; min-height:52px; padding:5px 3px; border:0; border-radius:14px; background:transparent; color:var(--muted); font-size:11px; font-weight:800; }
+    .bottom-nav button span { font-size:19px; line-height:1; }
+    .bottom-nav button.active { color:var(--violet); background:#f0edff; }
+    .session-dialog { width:min(510px,calc(100% - 24px)); }
+    .session-options { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .session-option { min-height:68px; border:1.5px solid var(--line); border-radius:15px; background:white; color:var(--ink); font-weight:850; }
+    .session-option.active { border-color:var(--violet); color:var(--violet); background:#f0edff; }
+    .focus-options { display:flex; flex-wrap:wrap; gap:7px; }
+    .focus-option { padding:9px 12px; border:1px solid var(--line); border-radius:999px; background:white; color:var(--muted); font-size:13px; font-weight:800; }
+    .focus-option.active { color:white; border-color:var(--violet); background:var(--violet); }
+    .more-grid { display:grid; gap:12px; }
+    .more-action { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border:1px solid var(--line); border-radius:15px; background:white; color:var(--ink); text-align:left; font-weight:800; }
+    .audio-settings { margin-top:0; }
+
     @media (max-width:820px) {
       .app { width:100%; max-width:100%; padding:10px; }
       header { align-items:flex-start; margin-bottom:14px; }
       .subtitle { display:none; }
+      body { padding-bottom:78px; }
       .layout { width:100%; grid-template-columns:minmax(0,1fr); gap:12px; }
       .sidebar,.workspace { width:100%; max-width:100%; min-width:0; }
-      .sidebar { position:static; padding:12px; }
+      .sidebar { position:static; padding:16px; }
       .stats { margin-bottom:10px; }
-      .topic-list {
-        display:flex; width:100%; max-width:calc(100vw - 44px); overflow-x:auto; overflow-y:hidden;
-        padding-bottom:6px; scroll-snap-type:x proximity; overscroll-behavior-x:contain;
-      }
-      .topic { flex:0 0 auto; width:auto; min-width:max-content; max-width:82vw; scroll-snap-align:start; }
+      .topic-list { display:grid; width:100%; max-width:none; overflow:visible; padding:0; }
+      .topic { width:100%; max-width:none; }
       .topic-text { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       .topic-count { display:none; }
       .sidebar-title,.side-divider { display:none; }
@@ -323,31 +401,38 @@
       .food-word { max-width:100%; font-size:clamp(32px,7vw,46px); line-height:1.08; letter-spacing:-.04em; }
       .study-intro { align-items:flex-start; }
       .conjugation-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .bottom-nav { display:flex; }
+      .home-actions { grid-template-columns:1fr 1fr; }
+      .home-card.primary { grid-column:1/-1; }
+      .topic-groups { grid-template-columns:1fr; gap:12px; }
+      .catalog-head { align-items:stretch; flex-direction:column; }
+      .topic-search { width:100%; }
     }
     @media (max-width:520px) {
       .app { padding:8px; }
-      header { flex-direction:column; gap:10px; margin-bottom:12px; }
+      header { flex-direction:row; align-items:center; gap:10px; margin-bottom:12px; }
       .brand { width:100%; min-width:0; }
       .mark { flex:0 0 42px; width:42px; height:42px; border-radius:13px; font-size:22px; }
       h1 { min-width:0; font-size:22px; line-height:1.12; overflow-wrap:anywhere; }
-      .header-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; gap:8px; }
-      .header-actions .btn { width:100%; min-width:0; padding:10px 8px; font-size:13px; }
+      .header-actions { display:flex; width:auto; gap:6px; }
+      .header-actions .desktop-secondary { display:none; }
+      .header-actions .btn { width:auto; min-width:42px; padding:9px 11px; font-size:13px; }
       .sidebar { padding:10px; border-radius:18px; }
       .stats { gap:6px; }
       .stat { min-width:0; padding:8px 4px; }
       .stat strong { font-size:18px; }
       .stat span { font-size:11px; }
-      .topic-list { max-width:calc(100vw - 36px); }
-      .topic { max-width:78vw; padding:9px 10px; }
+      .topic-list { max-width:none; }
+      .topic { max-width:none; padding:10px; }
       .mode-row { gap:6px; }
       .mode { min-width:0; padding:8px 5px; font-size:12px; }
       .workspace { min-height:520px; border-radius:18px; }
       .workspace-top { flex-direction:column; gap:8px; padding:13px 14px; }
       .eyebrow { max-width:100%; font-size:11px; line-height:1.3; overflow-wrap:anywhere; }
       .progress-wrap { width:100%; min-width:0; gap:8px; }
-      .card-area { padding:24px 15px; }
+      .card-area { padding:20px 15px 14px; }
       .question-meta { flex-wrap:wrap; margin-bottom:15px; }
-      .question { margin-bottom:22px; font-size:clamp(22px,7vw,27px); line-height:1.18; letter-spacing:-.025em; }
+      .question { margin-bottom:18px; font-size:clamp(21px,6.2vw,27px); line-height:1.18; letter-spacing:-.025em; }
       .answer-input { min-height:54px; padding:12px 13px; font-size:16px; }
       .choice-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
       .choice-option { width:100%; min-width:0; min-height:52px; padding:11px 12px; font-size:15px; }
@@ -358,8 +443,10 @@
       .form-cell { min-width:0; padding:8px; }
       .order-built { min-height:64px; padding:10px; }
       .word-chip { max-width:100%; padding:8px 10px; overflow-wrap:anywhere; }
-      .actions { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; }
+      .actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; position:sticky; bottom:70px; z-index:8; padding:8px 0; background:linear-gradient(180deg,rgba(255,255,255,0),#fff 24%); }
       .actions .btn { width:100%; min-width:0; }
+      .actions #checkBtn { grid-column:1/-1; }
+      .actions #showBtn,.actions #nextBtn { font-size:13px; padding:9px 12px; min-height:43px; }
       .answer-box { padding:14px; }
       dialog { width:calc(100% - 16px); max-width:calc(100vw - 16px); border-radius:18px; }
       .modal-head { padding:17px 16px; }
@@ -393,6 +480,18 @@
       .study-nav { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
       .study-nav .btn { width:100%; min-width:0; padding:10px 7px; font-size:13px; white-space:normal; }
       .study-dots { grid-column:1/-1; order:3; width:100%; max-height:46px; overflow-y:auto; }
+      .home-hero { grid-template-columns:1fr; padding:24px 19px; border-radius:23px; }
+      .home-hero h2 { font-size:32px; }
+      .home-stats { margin-top:8px; }
+      .home-actions { gap:9px; margin-top:10px; }
+      .home-card { min-height:160px; padding:16px; border-radius:19px; }
+      .home-card-icon { margin-bottom:13px; }
+      .home-card strong { font-size:17px; }
+      .home-card span { font-size:12px; }
+      .home-card b { padding-top:12px; font-size:12px; }
+      .workspace-top { position:sticky; top:0; z-index:9; background:rgba(255,255,255,.94); backdrop-filter:blur(12px); }
+      .card-footer .subtitle { display:none; }
+      .session-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (max-width:360px) {
       .form-grid,.header-actions,.audio-actions { grid-template-columns:minmax(0,1fr); }
@@ -404,57 +503,70 @@
 </head>
 <body>
   <main class="app">
-    <header>
+    <header class="app-header">
       <div class="brand">
         <div class="mark" aria-hidden="true">ñ</div>
         <div><h1>Español</h1><p class="subtitle">Личный тренажёр без подсказок</p></div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-soft" id="shuffleBtn" type="button">Перемешать</button>
-        <button class="btn btn-primary" id="addBtn" type="button">+ Своё задание</button>
+        <button class="btn btn-soft desktop-secondary" id="homeBtn" type="button">⌂ Главная</button>
+        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">▦ Темы</button>
+        <button class="btn btn-primary" id="addBtn" type="button">＋ Своё задание</button>
       </div>
     </header>
 
-    <div class="layout">
-      <aside class="sidebar">
+    <section class="home-view" id="homeView">
+      <div class="home-hero">
+        <div>
+          <p class="home-kicker">Твоя практика на сегодня</p>
+          <h2>Немного испанского — без перегруза</h2>
+          <p>Короткое занятие смешает новые задания, повторение и ошибки. Одинаковые слова не будут идти подряд.</p>
+        </div>
+        <div class="home-stats">
+          <div class="home-stat"><strong id="homeDoneStat">0</strong><span>решено</span></div>
+          <div class="home-stat"><strong id="homeAccuracyStat">0%</strong><span>верно</span></div>
+          <div class="home-stat"><strong id="homeStreakStat">0</strong><span>серия</span></div>
+        </div>
+      </div>
+      <div class="home-actions">
+        <button class="home-card primary" id="todayBtn" type="button">
+          <i class="home-card-icon" aria-hidden="true">✦</i><strong>Тренировка на сегодня</strong>
+          <span>10 разнообразных заданий из разных тем</span><b>Начать примерно на 7 минут →</b>
+        </button>
+        <button class="home-card" id="continueBtn" type="button">
+          <i class="home-card-icon" aria-hidden="true">↻</i><strong>Продолжить</strong>
+          <span id="continueTopic">Последняя выбранная тема</span><b>Выбрать длину занятия →</b>
+        </button>
+        <button class="home-card" id="chooseTopicBtn" type="button">
+          <i class="home-card-icon" aria-hidden="true">▦</i><strong>Выбрать тему</strong>
+          <span>Все темы разложены по понятным группам</span><b>Открыть каталог →</b>
+        </button>
+      </div>
+    </section>
+
+    <div class="layout" id="trainerLayout" hidden>
+      <aside class="sidebar" id="topicCatalog">
         <div class="stats">
           <div class="stat"><strong id="doneStat">0</strong><span>решено</span></div>
           <div class="stat"><strong id="rightStat">0</strong><span>верно</span></div>
           <div class="stat"><strong id="streakStat">0</strong><span>серия</span></div>
         </div>
-        <div class="sidebar-title">Темы</div>
-        <nav class="topic-list" id="topicList" aria-label="Темы упражнений"></nav>
-        <div class="side-divider"></div>
-        <div class="sidebar-title">Режим</div>
-        <div class="mode-row">
-          <button class="mode active" data-mode="all" type="button">Все</button>
-          <button class="mode" data-mode="mistakes" type="button">Ошибки</button>
-          <button class="mode" data-mode="tests" type="button">Тесты</button>
-          <button class="mode" data-mode="audio" type="button">Аудио</button>
+        <div class="catalog-head">
+          <div><h2 id="catalogTitle">Что будем учить?</h2><p id="catalogText">Выбери тему — сначала откроются карточки со словами и примерами.</p></div>
+          <input class="topic-search" id="topicSearch" type="search" placeholder="Найти тему…" aria-label="Найти тему">
         </div>
-        <details class="audio-settings" id="audioSettings">
-          <summary>🔊 Настройки голоса</summary>
-          <div class="audio-settings-body">
-            <label class="audio-control-label" for="voiceSelect">Испанский голос
-              <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus">
-                <option value="">Автоматически: лучший доступный</option>
-              </select>
-            </label>
-            <div class="audio-control-label">Скорость по умолчанию
-              <div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
-                <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
-                <button class="speed-option" data-audio-rate="0.68" type="button">Спокойно</button>
-              </div>
-            </div>
-            <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
-            <p class="voice-status" id="voiceStatus">Подбираем самый естественный голос на этом устройстве…</p>
-          </div>
-        </details>
+        <nav class="topic-list topic-groups" id="topicList" aria-label="Темы упражнений"></nav>
       </aside>
 
       <section class="workspace" aria-live="polite">
         <div class="workspace-top">
-          <div class="eyebrow" id="topicName">Все темы</div>
+          <div class="workspace-heading">
+            <div class="eyebrow" id="topicName">Все темы</div>
+            <div class="topic-tabs" id="topicTabs">
+              <button class="topic-tab" id="learnTab" type="button">Изучить</button>
+              <button class="topic-tab active" id="practiceTab" type="button">Тренироваться</button>
+            </div>
+          </div>
           <div class="progress-wrap" aria-label="Прогресс">
             <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
             <div class="progress-label" id="progressLabel">1 / 1</div>
@@ -471,6 +583,7 @@
               </div>
               <button class="btn btn-primary" id="startFoodPractice" type="button">К упражнениям →</button>
             </div>
+            <input class="word-search" id="wordSearch" type="search" placeholder="Найти слово в теме…" aria-label="Найти слово в теме" hidden>
             <div class="food-filters" id="foodFilters" aria-label="Категории слов"></div>
             <div class="pronoun-tabs" id="pronounTabs" role="tablist" aria-label="Переключение между местоимениями" hidden></div>
             <article class="study-card" id="studyCard">
@@ -489,7 +602,8 @@
                 <div class="example-list" id="foodExamples"></div>
               </div>
             </article>
-            <div class="study-nav">
+            <div class="study-search-empty" id="studySearchEmpty" hidden>Ничего не нашлось. Попробуй другой запрос.</div>
+            <div class="study-nav" id="studyNav">
               <button class="btn btn-soft" id="prevWord" type="button">← Предыдущее</button>
               <div class="study-dots" id="studyDots" aria-label="Прогресс изучения слов"></div>
               <button class="btn btn-primary" id="nextWord" type="button">Следующее →</button>
@@ -543,9 +657,73 @@
           <p id="emptyText">Выбери другую тему или добавь собственное задание.</p>
           <button class="btn btn-primary" id="emptyAddBtn" type="button">Добавить задание</button>
         </div>
+
+        <div class="session-result" id="sessionResult" hidden>
+          <div class="result-icon" aria-hidden="true">✓</div>
+          <h2>Занятие готово</h2>
+          <p id="resultMessage">Хорошая работа — короткая практика тоже считается.</p>
+          <div class="result-stats">
+            <div class="result-stat"><strong id="resultTotal">0</strong><span>заданий</span></div>
+            <div class="result-stat"><strong id="resultCorrect">0</strong><span>верно</span></div>
+            <div class="result-stat"><strong id="resultWrong">0</strong><span>повторить</span></div>
+          </div>
+          <div class="result-actions">
+            <button class="btn btn-primary" id="repeatMistakesBtn" type="button">Повторить ошибки</button>
+            <button class="btn btn-soft" id="resultHomeBtn" type="button">На главную</button>
+          </div>
+        </div>
       </section>
     </div>
   </main>
+
+  <nav class="bottom-nav" id="bottomNav" aria-label="Основная навигация">
+    <button id="navLearn" type="button"><span aria-hidden="true">◫</span>Учить</button>
+    <button id="navPractice" class="active" type="button"><span aria-hidden="true">✦</span>Практика</button>
+    <button id="navMistakes" type="button"><span aria-hidden="true">↻</span>Ошибки</button>
+    <button id="navMore" type="button"><span aria-hidden="true">•••</span>Ещё</button>
+  </nav>
+
+  <dialog class="session-dialog" id="sessionDialog">
+    <form method="dialog">
+      <div class="modal-head"><div><h2>Настроить занятие</h2><p class="subtitle" id="sessionTopicLabel">Все темы</p></div><button class="close" type="submit" aria-label="Закрыть">×</button></div>
+      <div class="modal-body">
+        <div class="field"><label>Сколько заданий?</label><div class="session-options">
+          <button class="session-option" data-session-size="5" type="button">5<br><small>быстро</small></button>
+          <button class="session-option active" data-session-size="10" type="button">10<br><small>обычно</small></button>
+          <button class="session-option" data-session-size="20" type="button">20<br><small>подольше</small></button>
+        </div></div>
+        <div class="field"><label>Что смешивать?</label><div class="focus-options">
+          <button class="focus-option active" data-session-mode="all" type="button">Всё</button>
+          <button class="focus-option" data-session-mode="tests" type="button">Тесты</button>
+          <button class="focus-option" data-session-mode="audio" type="button">Аудио</button>
+        </div></div>
+        <button class="btn btn-primary" id="startSessionBtn" type="button">Начать занятие →</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="moreDialog">
+    <form method="dialog">
+      <div class="modal-head"><h2>Ещё</h2><button class="close" type="submit" aria-label="Закрыть">×</button></div>
+      <div class="modal-body more-grid">
+        <details class="audio-settings" id="audioSettings">
+          <summary>🔊 Голос и скорость</summary>
+          <div class="audio-settings-body">
+            <label class="audio-control-label" for="voiceSelect">Испанский голос
+              <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus"><option value="">Автоматически: лучший доступный</option></select>
+            </label>
+            <div class="audio-control-label">Скорость по умолчанию<div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
+              <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
+              <button class="speed-option" data-audio-rate="0.68" type="button">Спокойно</button>
+            </div></div>
+            <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
+            <p class="voice-status" id="voiceStatus">Подбираем самый естественный голос на этом устройстве…</p>
+          </div>
+        </details>
+        <button class="more-action" id="moreAddBtn" type="button"><span>＋ Добавить своё задание</span><b>→</b></button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="addDialog">
     <form id="addForm">
@@ -603,6 +781,13 @@
       { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
       { id:"activities", title:"Занятия и увлечения", icon:"★" },
       { id:"custom", title:"Свои задания", icon:"＋" }
+    ];
+
+    const TOPIC_GROUPS = [
+      {title:"Основа",ids:["verbs","present","pronouns","agreement"]},
+      {title:"Общение",ids:["questions","constructions","connectors","gustar"]},
+      {title:"Повседневная жизнь",ids:["routine","calendar","practical","city","foods","clothes","activities"]},
+      {title:"Следующий уровень",ids:["past","prepositions","custom"]}
     ];
 
 
@@ -2203,16 +2388,17 @@
       return '<svg '+common+'>'+a[kind]+'</svg>';
     }
 
-    const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1", audio:"espanol_audio_v1" };
+    const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1", audio:"espanol_audio_v1", ui:"espanol_ui_v2" };
     let stats = read(STORAGE.stats,{});
     let custom = read(STORAGE.custom,[]);
     let streak = read(STORAGE.streak,0);
     let audioSettings = read(STORAGE.audio,{voiceURI:"",rate:.86});
+    let uiSettings = read(STORAGE.ui,{lastTopic:"verbs",sessionSize:10});
     if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",rate:.86};
     if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
     if(Math.abs(audioSettings.rate-.74)<.01) audioSettings.rate=.68;
     let spanishVoices = [];
-    let selectedTopic = "all";
+    let selectedTopic = uiSettings.lastTopic || "verbs";
     let selectedMode = "all";
     let queue = [];
     let index = 0;
@@ -2222,6 +2408,14 @@
     let foodCategory = "all";
     let orderPool = [];
     let orderState = [];
+    let catalogIntent = "learn";
+    let topicSearch = "";
+    let studySearch = "";
+    let pendingSessionTopic = selectedTopic;
+    let sessionSize = Number(uiSettings.sessionSize) || 10;
+    let sessionActive = false;
+    let sessionResults = {answered:0,correct:0,wrong:0,wrongIds:[]};
+    let sessionSeen = {};
 
     const $ = (id) => document.getElementById(id);
     const els = {
@@ -2238,7 +2432,14 @@
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
       foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn"),
-      pronounTabs:$("pronounTabs"), pronounDetails:$("pronounDetails"), examplesTitle:$("examplesTitle")
+      pronounTabs:$("pronounTabs"), pronounDetails:$("pronounDetails"), examplesTitle:$("examplesTitle"),
+      homeView:$("homeView"), trainerLayout:$("trainerLayout"), topicCatalog:$("topicCatalog"), topicSearch:$("topicSearch"),
+      catalogTitle:$("catalogTitle"), catalogText:$("catalogText"), continueTopic:$("continueTopic"),
+      homeDoneStat:$("homeDoneStat"), homeAccuracyStat:$("homeAccuracyStat"), homeStreakStat:$("homeStreakStat"),
+      sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionResult:$("sessionResult"),
+      resultTotal:$("resultTotal"), resultCorrect:$("resultCorrect"), resultWrong:$("resultWrong"), resultMessage:$("resultMessage"),
+      learnTab:$("learnTab"), practiceTab:$("practiceTab"), topicTabs:$("topicTabs"), moreDialog:$("moreDialog"),
+      wordSearch:$("wordSearch"), studySearchEmpty:$("studySearchEmpty"), studyNav:$("studyNav")
     };
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
@@ -2332,13 +2533,63 @@
       for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const temp=copy[i];copy[i]=copy[j];copy[j]=temp;}
       return copy;
     }
-    function buildQueue(keepIndex){
+    function exerciseConcept(item){
+      let id=String(item.originalId || item.reviewOf || item.id || "").replace(/__review$/,"");
+      id=id.replace(/^(choice|audio)_/,"").replace(/^study_/,"");
+      const aliases={foods:"food",clothes:"clothes",activities:"activity",pronouns:"pronoun"};
+      const prefix=(aliases[item.topic] || item.topic)+"_";
+      if(id.indexOf(item.topic+"_")===0) id=id.slice(item.topic.length+1);
+      if(id.indexOf(prefix)===0) id=id.slice(prefix.length);
+      id=id.replace(/_(es|ru|ctx|poss|verb_\d+)$/," ");
+      return item.topic+":"+id.trim();
+    }
+    function exerciseDirection(item){
+      const q=String(item.q || "").toLowerCase();
+      if(q.indexOf("на русский")>=0 || q.indexOf("узнай")>=0) return "to-ru";
+      if(q.indexOf("на испанский")>=0 || q.indexOf("вспомни")>=0) return "to-es";
+      return item.type || "text";
+    }
+    function diverseShuffle(items,limit){
+      const pool=shuffle(items);
+      const result=[];
+      const target=Math.min(Number(limit) || pool.length,pool.length);
+      while(pool.length && result.length<target){
+        const recent=result.slice(-9);
+        const recentConcepts=recent.map(exerciseConcept);
+        const recentQuestions=recent.slice(-12).map(function(x){return normalize(x.q);});
+        const recentTypes=recent.slice(-2).map(function(x){return x.type || "text";});
+        const recentTopics=recent.slice(-2).map(function(x){return x.topic;});
+        const previous=result[result.length-1];
+        let bestScore=-Infinity;
+        let candidates=[];
+        pool.forEach(function(item,i){
+          let score=Math.random()*8;
+          const concept=exerciseConcept(item);
+          const conceptDistance=recentConcepts.lastIndexOf(concept);
+          if(conceptDistance<0) score+=130; else score+=conceptDistance*12;
+          if(recentQuestions.indexOf(normalize(item.q))<0) score+=80; else score-=180;
+          if(recentTypes.indexOf(item.type || "text")<0) score+=24;
+          if(selectedTopic==="all" && recentTopics.indexOf(item.topic)<0) score+=22;
+          if(!previous || exerciseDirection(previous)!==exerciseDirection(item)) score+=18;
+          if(score>bestScore+0.01){bestScore=score;candidates=[i];}
+          else if(Math.abs(score-bestScore)<0.01) candidates.push(i);
+        });
+        const chosen=candidates[Math.floor(Math.random()*candidates.length)];
+        result.push(pool.splice(chosen,1)[0]);
+      }
+      return result;
+    }
+    function filteredExercises(){
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
-      if(selectedMode==="mistakes") items=items.filter(function(x){ return stats[x.id] && stats[x.id].wrong>0; });
+      if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
       if(selectedMode==="tests") items=items.filter(function(x){ return x.type==="choice"; });
       if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
-      queue=keepIndex ? items : shuffle(items);
+      return items;
+    }
+    function buildQueue(keepIndex){
+      const items=filteredExercises();
+      queue=keepIndex ? items : diverseShuffle(items,sessionActive ? sessionSize : items.length);
       if(!keepIndex || index>=queue.length) index=0;
       render();
     }
@@ -2346,8 +2597,16 @@
       const counts={};
       TOPICS.forEach(function(t){ counts[t.id]=allExercises().filter(function(x){return x.topic===t.id;}).length; });
       counts.all=allExercises().length;
-      els.topicList.innerHTML=TOPICS.map(function(t){
-        return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
+      const query=normalize(topicSearch);
+      const allowed=TOPICS.filter(function(t){
+        if(catalogIntent==="learn" && (t.id==="all" || t.id==="custom")) return false;
+        return !query || normalize(t.title).indexOf(query)>=0;
+      });
+      els.topicList.innerHTML=TOPIC_GROUPS.map(function(group){
+        const topics=group.ids.map(function(id){return allowed.find(function(t){return t.id===id;});}).filter(Boolean);
+        if(!topics.length) return "";
+        return '<section class="topic-group"><h3 class="topic-group-title">'+group.title+'</h3><div class="topic-list">'+topics.map(function(t){
+          return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
           '</span><span class="topic-count">'+(
             t.id==="verbs" ? VERB_WORDS.length+" слов" :
@@ -2368,16 +2627,24 @@
             t.id==="clothes" ? CLOTHING_WORDS.length+" слов" :
             t.id==="activities" ? ACTIVITY_WORDS.length+" фраз" : counts[t.id]
           )+'</span></button>';
+        }).join("")+'</div></section>';
       }).join("");
+      if(catalogIntent==="practice" && (!query || normalize("Все темы").indexOf(query)>=0)){
+        els.topicList.insertAdjacentHTML("afterbegin",'<section class="topic-group"><h3 class="topic-group-title">Смешанная практика</h3><div class="topic-list"><button type="button" class="topic '+(selectedTopic==="all"?'active':'')+'" data-topic="all"><span class="topic-icon">✦</span><span class="topic-text">Все темы</span><span class="topic-count">'+counts.all+'</span></button></div></section>');
+      }
       els.topicList.querySelectorAll("[data-topic]").forEach(function(btn){
         btn.addEventListener("click",function(){
           selectedTopic=btn.dataset.topic;
           index=0;
           wordIndex=0;
+          studySearch=""; els.wordSearch.value="";
           if(isVocabularyTopic()) foodCategory="all";
-          foodPhase=(isVocabularyTopic() && selectedMode==="all") ? "study" : "practice";
-          renderTopics();
-          buildQueue(false);
+          uiSettings.lastTopic=selectedTopic==="all" ? uiSettings.lastTopic : selectedTopic;
+          write(STORAGE.ui,uiSettings);
+          if(catalogIntent==="practice" || selectedTopic==="custom") openSessionDialog(selectedTopic);
+          else {
+            selectedMode="all"; foodPhase="study"; sessionActive=false; showWorkspace(); buildQueue(false);
+          }
         });
       });
     }
@@ -2388,6 +2655,81 @@
       els.doneStat.textContent=done;
       els.rightStat.textContent=right;
       els.streakStat.textContent=streak;
+      els.homeDoneStat.textContent=done;
+      els.homeAccuracyStat.textContent=done ? Math.round(right/done*100)+"%" : "0%";
+      els.homeStreakStat.textContent=streak;
+      const last=topicById(uiSettings.lastTopic || "verbs");
+      els.continueTopic.textContent=last.title;
+    }
+    function setNav(active){
+      ["Learn","Practice","Mistakes","More"].forEach(function(name){
+        const btn=$("nav"+name); if(btn) btn.classList.toggle("active",name.toLowerCase()===active);
+      });
+    }
+    function showHome(){
+      sessionActive=false;
+      els.homeView.hidden=false;
+      els.trainerLayout.hidden=true;
+      els.sessionResult.hidden=true;
+      setNav("practice");
+      renderStats();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function showCatalog(intent){
+      catalogIntent=intent || "learn";
+      topicSearch=""; els.topicSearch.value="";
+      els.homeView.hidden=true;
+      els.trainerLayout.hidden=false;
+      els.trainerLayout.classList.add("catalog-view");
+      els.catalogTitle.textContent=catalogIntent==="learn" ? "Что будем учить?" : "Что будем тренировать?";
+      els.catalogText.textContent=catalogIntent==="learn"
+        ? "Выбери тему — сначала откроются карточки со словами, переводом и примерами."
+        : "Выбери тему, длину занятия и при желании тип заданий.";
+      setNav(catalogIntent==="learn" ? "learn" : "practice");
+      renderTopics(); renderStats();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function showWorkspace(){
+      els.homeView.hidden=true;
+      els.trainerLayout.hidden=false;
+      els.trainerLayout.classList.remove("catalog-view");
+      els.sessionResult.hidden=true;
+      setNav(foodPhase==="study" ? "learn" : (selectedMode==="mistakes" ? "mistakes" : "practice"));
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function openSessionDialog(topic){
+      pendingSessionTopic=topic || selectedTopic;
+      if(["all","tests","audio"].indexOf(selectedMode)<0) selectedMode="all";
+      els.sessionTopicLabel.textContent=topicById(pendingSessionTopic).title;
+      document.querySelectorAll("[data-session-size]").forEach(function(btn){btn.classList.toggle("active",Number(btn.dataset.sessionSize)===sessionSize);});
+      document.querySelectorAll("[data-session-mode]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.sessionMode===selectedMode);});
+      els.sessionDialog.showModal();
+    }
+    function startSession(topic,size,mode){
+      selectedTopic=topic || pendingSessionTopic || "all";
+      sessionSize=Number(size || sessionSize) || 10;
+      selectedMode=mode || selectedMode || "all";
+      foodPhase="practice"; sessionActive=true; index=0;
+      sessionResults={answered:0,correct:0,wrong:0,wrongIds:[]};
+      sessionSeen={};
+      uiSettings.sessionSize=sessionSize;
+      if(selectedTopic!=="all") uiSettings.lastTopic=selectedTopic;
+      write(STORAGE.ui,uiSettings);
+      showWorkspace(); buildQueue(false);
+    }
+    function finishSession(){
+      sessionActive=false;
+      els.studyView.hidden=true; els.exerciseView.hidden=true; els.emptyView.hidden=true; els.sessionResult.hidden=false;
+      els.resultTotal.textContent=queue.length;
+      els.resultCorrect.textContent=sessionResults.correct;
+      els.resultWrong.textContent=sessionResults.wrong;
+      els.resultMessage.textContent=sessionResults.wrong
+        ? "Ошибки сохранены — их можно спокойно повторить сейчас или позже."
+        : "Отлично: занятие пройдено без ошибок.";
+      $("repeatMistakesBtn").hidden=!sessionResults.wrong;
+      els.progressLabel.textContent=sessionResults.answered+" / "+sessionResults.answered;
+      els.progressBar.style.width="100%";
+      window.scrollTo({top:0,behavior:"smooth"});
     }
     function resetCard(){
       checkedCurrent=false;
@@ -2607,20 +2949,24 @@
     }
 
     function scheduleReview(item){
+      if(sessionActive) return false;
       if(item.sessionReview || queue.some(function(value){return value.reviewOf===item.id;})) return false;
       const review=Object.assign({},item,{
         id:item.id+"__review",originalId:item.originalId || item.id,reviewOf:item.id,sessionReview:true,
         skill:"Повторение · "+(item.skill || "Практика")
       });
-      queue.splice(Math.min(index+4,queue.length),0,review);
+      queue.splice(Math.min(index+Math.max(8,Math.floor(queue.length*.35)),queue.length),0,review);
       els.progressLabel.textContent=(index+1)+" / "+queue.length;
       els.progressBar.style.width=((index+1)/queue.length*100)+"%";
       return true;
     }
 
     function currentFoodWords(){
-      const words=vocabularyWords();
-      return foodCategory==="all" ? words : words.filter(function(word){return word.cat===foodCategory;});
+      let words=vocabularyWords();
+      if(foodCategory!=="all") words=words.filter(function(word){return word.cat===foodCategory;});
+      const query=fold(studySearch);
+      if(query) words=words.filter(function(word){return fold([word.word,word.tr,word.base].filter(Boolean).join(" ")).indexOf(query)>=0;});
+      return words;
     }
     function foodCategoryTitle(id){
       const item=vocabularyCategories().find(function(cat){return cat.id===id;});
@@ -2689,6 +3035,15 @@
     function renderStudy(){
       const words=currentFoodWords();
       const categories=vocabularyCategories();
+      els.wordSearch.hidden=vocabularyWords().length<20;
+      els.wordSearch.placeholder=selectedTopic==="verbs" ? "Найти глагол…" : "Найти слово в теме…";
+      if(!words.length){
+        els.studyView.hidden=false; els.exerciseView.hidden=true; els.emptyView.hidden=true;
+        els.studyCard.hidden=true; els.studyNav.hidden=true; els.studySearchEmpty.hidden=false;
+        els.progressLabel.textContent="0 / 0"; els.progressBar.style.width="0";
+        return;
+      }
+      els.studyCard.hidden=false; els.studyNav.hidden=false; els.studySearchEmpty.hidden=true;
       if(wordIndex>=words.length) wordIndex=0;
       const word=words[wordIndex];
       els.studyView.hidden=false;
@@ -2763,8 +3118,15 @@
     }
 
     function render(){
-      renderTopics(); renderStats();
+      if(els.trainerLayout.classList.contains("catalog-view")) renderTopics();
+      renderStats();
       els.topicName.textContent=topicById(selectedTopic).title;
+      els.sessionResult.hidden=true;
+      const canStudy=isVocabularyTopic();
+      els.topicTabs.hidden=selectedTopic==="all" || selectedTopic==="custom";
+      els.learnTab.disabled=!canStudy;
+      els.learnTab.classList.toggle("active",canStudy && foodPhase==="study");
+      els.practiceTab.classList.toggle("active",foodPhase!=="study");
       if(isVocabularyTopic() && selectedMode==="all" && foodPhase==="study"){
         renderStudy();
         return;
@@ -2792,12 +3154,13 @@
       const item=queue[index];
       els.questionText.textContent=item.q;
       els.skillLabel.textContent=item.skill || "Практика";
-      els.questionNumber.textContent="Задание "+(index+1);
+      els.questionNumber.textContent="Задание "+(index+1)+" из "+queue.length;
       els.progressLabel.textContent=(index+1)+" / "+queue.length;
       els.progressBar.style.width=((index+1)/queue.length*100)+"%";
       els.answerText.textContent=item.displayAnswer || item.a.join(" / ");
       els.explanation.textContent=item.e || "";
       els.explanation.hidden=!item.e;
+      $("prevBtn").hidden=sessionActive && index===0;
       setupExercise(item);
     }
     function checkAnswer(){
@@ -2815,13 +3178,26 @@
       let scheduled=false;
       if(!checkedCurrent){
         const statsId=item.originalId || item.id;
-        const row=stats[statsId] || {tries:0,correct:0,wrong:0};
-        row.tries++;
-        if(exact) row.correct++; else row.wrong++;
-        stats[statsId]=row;
-        streak=exact ? streak+1 : 0;
-        if(!exact) scheduled=scheduleReview(item);
-        write(STORAGE.stats,stats); write(STORAGE.streak,streak);
+        const firstAttempt=!sessionActive || !sessionSeen[statsId];
+        if(firstAttempt){
+          const row=stats[statsId] || {tries:0,correct:0,wrong:0};
+          row.tries++;
+          if(exact) row.correct++; else row.wrong++;
+          stats[statsId]=row;
+          streak=exact ? streak+1 : 0;
+          if(!exact) scheduled=scheduleReview(item);
+        }
+        if(sessionActive && firstAttempt){
+          sessionSeen[statsId]=true;
+          sessionResults.answered++;
+          if(exact) sessionResults.correct++;
+          else {
+            sessionResults.wrong++;
+            const wrongId=item.originalId || item.id;
+            if(sessionResults.wrongIds.indexOf(wrongId)<0) sessionResults.wrongIds.push(wrongId);
+          }
+        }
+        if(firstAttempt){write(STORAGE.stats,stats); write(STORAGE.streak,streak);}
         checkedCurrent=true; renderStats();
       }
       if(exact){
@@ -2837,7 +3213,22 @@
     }
     function move(delta){
       if(!queue.length) return;
-      index=(index+delta+queue.length)%queue.length;
+      if(sessionActive && delta>0 && !checkedCurrent){
+        const item=queue[index];
+        const statsId=item.originalId || item.id;
+        if(!sessionSeen[statsId]){
+          sessionSeen[statsId]=true;
+          sessionResults.answered++;
+          sessionResults.wrong++;
+          if(sessionResults.wrongIds.indexOf(statsId)<0) sessionResults.wrongIds.push(statsId);
+          const row=stats[statsId] || {tries:0,correct:0,wrong:0};
+          row.tries++; row.wrong++; stats[statsId]=row; streak=0;
+          write(STORAGE.stats,stats); write(STORAGE.streak,streak);
+        }
+      }
+      if(sessionActive && delta>0 && index===queue.length-1){finishSession();return;}
+      if(sessionActive) index=Math.max(0,Math.min(queue.length-1,index+delta));
+      else index=(index+delta+queue.length)%queue.length;
       render();
     }
     function openDialog(){
@@ -2863,9 +3254,7 @@
     }
 
     function startFoodPractice(){
-      foodPhase="practice";
-      index=0;
-      buildQueue(false);
+      openSessionDialog(selectedTopic);
     }
     $("startFoodPractice").addEventListener("click",startFoodPractice);
     $("prevWord").addEventListener("click",function(){if(wordIndex>0){wordIndex--;renderStudy();}});
@@ -2873,7 +3262,7 @@
       const words=currentFoodWords();
       if(wordIndex<words.length-1){wordIndex++;renderStudy();} else {startFoodPractice();}
     });
-    els.backToWordsBtn.addEventListener("click",function(){foodPhase="study";wordIndex=0;render();});
+    els.backToWordsBtn.addEventListener("click",function(){sessionActive=false;selectedMode="all";foodPhase="study";wordIndex=0;showWorkspace();render();});
     $("checkBtn").addEventListener("click",checkAnswer);
     els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
     els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(slowerRate(),els.slowAudioPrompt);});
@@ -2901,20 +3290,46 @@
     $("skipBtn").addEventListener("click",function(){move(1);});
     $("prevBtn").addEventListener("click",function(){move(-1);});
     $("showBtn").addEventListener("click",function(){ els.answerBox.classList.toggle("open"); });
-    $("shuffleBtn").addEventListener("click",function(){ queue=shuffle(queue); index=0; render(); toast("Задания перемешаны"); });
     $("addBtn").addEventListener("click",openDialog);
     $("emptyAddBtn").addEventListener("click",openDialog);
     $("closeDialog").addEventListener("click",function(){els.dialog.close();});
     els.dialog.addEventListener("click",function(e){ if(e.target===els.dialog) els.dialog.close(); });
     els.answerInput.addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();checkAnswer();} });
-    document.querySelectorAll("[data-mode]").forEach(function(btn){
+    $("homeBtn").addEventListener("click",showHome);
+    $("topicsBtn").addEventListener("click",function(){showCatalog("practice");});
+    $("todayBtn").addEventListener("click",function(){selectedMode="all";startSession("all",10,"all");});
+    $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});
+    $("chooseTopicBtn").addEventListener("click",function(){showCatalog("practice");});
+    $("navLearn").addEventListener("click",function(){showCatalog("learn");});
+    $("navPractice").addEventListener("click",showHome);
+    $("navMistakes").addEventListener("click",function(){startSession("all",10,"mistakes");});
+    $("navMore").addEventListener("click",function(){setNav("more");els.moreDialog.showModal();});
+    els.moreDialog.addEventListener("close",function(){
+      setNav(els.homeView.hidden ? (foodPhase==="study" ? "learn" : (selectedMode==="mistakes" ? "mistakes" : "practice")) : "practice");
+    });
+    $("moreAddBtn").addEventListener("click",function(){els.moreDialog.close();openDialog();});
+    els.topicSearch.addEventListener("input",function(){topicSearch=els.topicSearch.value;renderTopics();});
+    els.wordSearch.addEventListener("input",function(){studySearch=els.wordSearch.value;wordIndex=0;renderStudy();});
+    els.learnTab.addEventListener("click",function(){
+      if(!isVocabularyTopic()) return;
+      sessionActive=false; selectedMode="all"; foodPhase="study"; wordIndex=0; showWorkspace(); render();
+    });
+    els.practiceTab.addEventListener("click",function(){selectedMode="all";openSessionDialog(selectedTopic);});
+    document.querySelectorAll("[data-session-size]").forEach(function(btn){
       btn.addEventListener("click",function(){
-        selectedMode=btn.dataset.mode; index=0;
-        if(isVocabularyTopic()) foodPhase=selectedMode==="all" ? "study" : "practice";
-        document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x===btn);});
-        buildQueue(false);
+        sessionSize=Number(btn.dataset.sessionSize);
+        document.querySelectorAll("[data-session-size]").forEach(function(x){x.classList.toggle("active",x===btn);});
       });
     });
+    document.querySelectorAll("[data-session-mode]").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        selectedMode=btn.dataset.sessionMode;
+        document.querySelectorAll("[data-session-mode]").forEach(function(x){x.classList.toggle("active",x===btn);});
+      });
+    });
+    $("startSessionBtn").addEventListener("click",function(){els.sessionDialog.close();startSession(pendingSessionTopic,sessionSize,selectedMode);});
+    $("resultHomeBtn").addEventListener("click",showHome);
+    $("repeatMistakesBtn").addEventListener("click",function(){startSession("all",Math.min(10,Math.max(5,sessionResults.wrong)),"mistakes");});
     $("addForm").addEventListener("submit",function(e){
       e.preventDefault();
       const q=$("customQuestion").value.trim();
@@ -2939,7 +3354,9 @@
     if("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged=refreshVoices;
     setTimeout(refreshVoices,300);
     setTimeout(refreshVoices,1200);
-    buildQueue(false);
+    renderStats();
+    renderTopics();
+    showHome();
   </script>
 </body>
 </html>
