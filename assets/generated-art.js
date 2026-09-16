@@ -1,0 +1,1 @@
+// Placeholder; generated illustration mappings will be injected here.
