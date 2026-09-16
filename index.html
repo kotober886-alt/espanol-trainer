@@ -294,11 +294,14 @@
     .conjugation-item span { display:block; color:var(--muted); font-size:11px; font-weight:800; }
     .conjugation-item strong { display:block; margin-top:2px; color:var(--ink); font-size:16px; }
     .present-conjugation { margin:0 0 22px; }
-    .present-table-wrap { overflow:hidden; border:1px solid #e5e0f4; border-radius:16px; background:rgba(255,255,255,.82); }
+    .present-table-wrap { overflow-x:auto; border:1px solid #e5e0f4; border-radius:16px; background:rgba(255,255,255,.82); }
     .present-table { width:100%; border-collapse:collapse; }
+    .present-table.wide { min-width:620px; }
     .present-table th,.present-table td { padding:11px 14px; text-align:left; border-bottom:1px solid #ece8f6; }
     .present-table tr:last-child th,.present-table tr:last-child td { border-bottom:0; }
-    .present-table th { width:48%; color:var(--muted); font-size:13px; font-weight:800; background:rgba(247,245,255,.72); }
+    .present-table th { color:var(--muted); font-size:13px; font-weight:800; background:rgba(247,245,255,.72); }
+    .present-table tbody th { width:32%; }
+    .present-table thead th { color:#4d438f; white-space:nowrap; }
     .present-table td { color:#433a86; font-size:17px; font-weight:900; }
 
     /* Облегчённая навигация и короткие занятия */
@@ -1225,6 +1228,79 @@
       {id:"past_period",cat:"markers",word:"la semana pasada / el año pasado",gender:"завершённый период",tr:"на прошлой неделе / в прошлом году",ru:["на прошлой неделе в прошлом году","на прошлой неделе","в прошлом году"],answers:["la semana pasada el año pasado","la semana pasada","el año pasado"],
         examples:[["La semana pasada estuve enferma.","На прошлой неделе я болела."],["El año pasado viajamos a España.","В прошлом году мы ездили в Испанию."]],cloze:"___ viajamos a España.",clozeAnswers:["el año pasado"]}
     ];
+
+    const GUSTAR_STUDY_WORDS=[
+      {
+        id:"gustar_system",cat:"persons",word:"gustar",base:"gustar",gender:"кому + gusta / gustan",tr:"нравиться",
+        table:{headers:["Кому","Один предмет / действие","Несколько предметов"],rows:[
+          ["мне","me gusta","me gustan"],["тебе","te gusta","te gustan"],["ему / ей / Вам","le gusta","le gustan"],
+          ["нам","nos gusta","nos gustan"],["вам · vosotros","os gusta","os gustan"],["им / Вам","les gusta","les gustan"]
+        ]},
+        examples:[["Me gusta el café, pero me gustan más los postres.","Мне нравится кофе, но десерты нравятся больше."],["A ellos les gusta viajar y les gustan los viajes largos.","Им нравится путешествовать и нравятся долгие поездки."]]
+      }
+    ].concat(GUSTAR_WORDS.filter(function(item){return ["encantar","interesar","molestar","doler","a_mi"].indexOf(item.id)>=0;}));
+
+    const AGREEMENT_STUDY_WORDS=[
+      {
+        id:"definite_articles",cat:"articles",word:"el / la / los / las",base:"артикли",gender:"определённые артикли",tr:"конкретный предмет или конкретные предметы",
+        table:{headers:["","Мужской род","Женский род"],rows:[["Единственное число","el","la"],["Множественное число","los","las"]]},
+        examples:[["El libro y la mesa están aquí.","Книга и стол находятся здесь."],["Los libros y las mesas son nuevos.","Книги и столы новые."]]
+      },
+      {
+        id:"indefinite_articles",cat:"articles",word:"un / una / unos / unas",base:"артикли",gender:"неопределённые артикли",tr:"один, какой-то или несколько предметов",
+        table:{headers:["","Мужской род","Женский род"],rows:[["Единственное число","un","una"],["Множественное число","unos","unas"]]},
+        examples:[["Hay un parque y una farmacia cerca.","Рядом есть парк и аптека."],["Compré unos libros y unas zapatillas.","Я купила несколько книг и кроссовки."]]
+      },
+      {
+        id:"contractions_system",cat:"contractions",word:"al / del",base:"al del",gender:"обязательные слияния",tr:"a + el и de + el всегда объединяются",
+        table:{headers:["Сочетание","Результат","Пример"],rows:[["a + el","al","Voy al trabajo."],["de + el","del","Vengo del trabajo."]]},
+        examples:[["Vamos al cine.","Мы идём в кино."],["Hablamos del libro.","Мы говорим о книге."]]
+      },
+      {
+        id:"adjective_system",cat:"adjectives",word:"tranquilo / tranquila / tranquilos / tranquilas",base:"согласование",gender:"род и число прилагательного",tr:"окончание прилагательного согласуется с существительным",
+        table:{headers:["Род и число","Форма","Пример"],rows:[["муж. · ед.","tranquilo","barrio tranquilo"],["жен. · ед.","tranquila","calle tranquila"],["муж. · мн.","tranquilos","barrios tranquilos"],["жен. · мн.","tranquilas","calles tranquilas"]]},
+        examples:[["Vivo en un barrio tranquilo.","Я живу в тихом районе."],["Son calles tranquilas.","Это тихие улицы."]]
+      },
+      {
+        id:"plural_system",cat:"plural",word:"-s / -es",base:"множественное число",gender:"два основных правила",tr:"после гласной добавляем -s, после согласной — -es",
+        table:{headers:["Окончание слова","Добавляем","Пример"],rows:[["гласная","-s","casa → casas"],["согласная","-es","papel → papeles"]]},
+        examples:[["Tengo dos libros.","У меня две книги."],["Las ciudades son grandes.","Города большие."]]
+      }
+    ];
+
+    const PAST_STUDY_WORDS=[
+      {
+        id:"perfect_system",cat:"perfect",word:"Pretérito Perfecto",base:"perfecto",gender:"haber + participio",tr:"событие уже произошло, но связано с настоящим",
+        table:{headers:["Лицо","haber","Пример"],rows:[["yo","he","he hablado"],["tú","has","has comido"],["él / ella / usted","ha","ha vivido"],["nosotros","hemos","hemos trabajado"],["vosotros","habéis","habéis leído"],["ellos / ustedes","han","han hecho"]]},
+        examples:[["Hoy he hablado con Ana.","Сегодня я поговорила с Аной."],["Ya han hecho la tarea.","Они уже сделали задание."]]
+      },
+      {
+        id:"indefinite_system",cat:"indefinite",word:"Pretérito Indefinido",base:"indefinido",gender:"окончания правильных глаголов",tr:"завершённое действие в завершённом периоде",
+        table:{headers:["Лицо","hablar · -ar","comer · -er","vivir · -ir"],rows:[["yo","hablé","comí","viví"],["tú","hablaste","comiste","viviste"],["él / ella / usted","habló","comió","vivió"],["nosotros","hablamos","comimos","vivimos"],["vosotros","hablasteis","comisteis","vivisteis"],["ellos / ustedes","hablaron","comieron","vivieron"]]},
+        examples:[["Ayer hablé con Ana.","Вчера я поговорила с Аной."],["El año pasado vivimos en Madrid.","В прошлом году мы жили в Мадриде."]]
+      }
+    ].concat(PAST_WORDS.filter(function(item){return ["fui","tuve","hice","hoy_marker","ayer_marker","past_period"].indexOf(item.id)>=0;}));
+
+    const PRACTICAL_STUDY_WORDS=[
+      PRACTICAL_WORDS.find(function(item){return item.id==="que_hora";}),
+      {
+        id:"time_system",cat:"time",word:"Es la una / Son las dos",base:"время",gender:"время и расписание",tr:"как назвать время и сказать, во сколько что-то происходит",
+        table:{headers:["Ситуация","Форма","Пример"],rows:[["сейчас час","Es la una","Es la una de la tarde."],["сейчас два и больше","Son las…","Son las cinco y media."],["в один час","a la una","Comemos a la una."],["в два и больше","a las…","Trabajo a las nueve."]]},
+        examples:[["¿Qué hora es? — Son las tres.","Который час? — Три часа."],["La clase empieza a la una.","Занятие начинается в час."]]
+      },
+      PRACTICAL_WORDS.find(function(item){return item.id==="que_fecha";}),PRACTICAL_WORDS.find(function(item){return item.id==="date_pattern";}),PRACTICAL_WORDS.find(function(item){return item.id==="year";}),
+      {
+        id:"price_system",cat:"prices",word:"¿Cuánto cuesta / cuestan?",base:"цена",gender:"единственное и множественное число",tr:"сколько стоит / сколько стоят",
+        table:{headers:["Предмет","Форма","Пример"],rows:[["один","¿Cuánto cuesta?","¿Cuánto cuesta esta camiseta?"],["несколько","¿Cuánto cuestan?","¿Cuánto cuestan estos zapatos?"]]},
+        examples:[["¿Cuánto cuesta el billete?","Сколько стоит билет?"],["Las entradas cuestan veinte euros.","Билеты стоят двадцать евро."]]
+      },
+      PRACTICAL_WORDS.find(function(item){return item.id==="euros";}),PRACTICAL_WORDS.find(function(item){return item.id==="muy";}),
+      {
+        id:"mucho_system",cat:"quantity",word:"mucho / mucha / muchos / muchas",base:"mucho",gender:"согласуется с существительным",tr:"много",
+        table:{headers:["Род и число","Форма","Пример"],rows:[["муж. · ед.","mucho","mucho trabajo"],["жен. · ед.","mucha","mucha agua"],["муж. · мн.","muchos","muchos parques"],["жен. · мн.","muchas","muchas cosas"]]},
+        examples:[["Tengo mucho trabajo.","У меня много работы."],["Hay muchas tiendas.","Здесь много магазинов."]]
+      }
+    ].concat(PRACTICAL_WORDS.filter(function(item){return ["poco","bastante","demasiado"].indexOf(item.id)>=0;})).filter(Boolean);
 
     const FOOD_CATEGORIES = [
       {id:"all",title:"Все продукты"},
@@ -2501,7 +2577,12 @@
       return FOOD_WORDS;
     }
     function studyVocabularyWords(){
-      return selectedTopic==="present" ? PRESENT_STUDY_WORDS : vocabularyWords();
+      if(selectedTopic==="present") return PRESENT_STUDY_WORDS;
+      if(selectedTopic==="gustar") return GUSTAR_STUDY_WORDS;
+      if(selectedTopic==="agreement") return AGREEMENT_STUDY_WORDS;
+      if(selectedTopic==="past") return PAST_STUDY_WORDS;
+      if(selectedTopic==="practical") return PRACTICAL_STUDY_WORDS;
+      return vocabularyWords();
     }
     function vocabularyCategories(){
       if(selectedTopic==="verbs") return VERB_CATEGORIES;
@@ -2652,11 +2733,11 @@
             t.id==="pronouns" ? PRONOUN_WORDS.length+" лиц" :
             t.id==="questions" ? QUESTION_WORDS.length+" вопросов" :
             t.id==="constructions" ? CONSTRUCTION_WORDS.length+" конструкций" :
-            t.id==="gustar" ? GUSTAR_WORDS.length+" форм" :
-            t.id==="agreement" ? AGREEMENT_WORDS.length+" правил" :
-            t.id==="past" ? PAST_WORDS.length+" форм" :
+            t.id==="gustar" ? GUSTAR_STUDY_WORDS.length+" схем" :
+            t.id==="agreement" ? AGREEMENT_STUDY_WORDS.length+" таблиц" :
+            t.id==="past" ? PAST_STUDY_WORDS.length+" карточек" :
             t.id==="routine" ? ROUTINE_WORDS.length+" действий" :
-            t.id==="practical" ? PRACTICAL_WORDS.length+" карточек" :
+            t.id==="practical" ? PRACTICAL_STUDY_WORDS.length+" карточек" :
             t.id==="prepositions" ? PREPOSITION_WORDS.length+" слов" :
             t.id==="connectors" ? CONNECTOR_WORDS.length+" конструкций" :
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
@@ -3106,6 +3187,7 @@
       const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="activities";
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
+      const hasTable=!!word.table;
       els.studyCard.classList.toggle("no-art",!hasArt);
       els.foodArt.innerHTML=studyArt(word);
       els.foodWord.textContent=word.word;
@@ -3113,8 +3195,8 @@
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
       els.foodTranslation.textContent=word.tr;
       els.pronounTabs.hidden=!isPronouns;
-      els.pronounDetails.hidden=!(isPronouns || isPresent);
-      els.examplesTitle.textContent=(isPronouns || isPresent) ? "Примеры" : "В контексте";
+      els.pronounDetails.hidden=!(isPronouns || isPresent || hasTable);
+      els.examplesTitle.textContent=(isPronouns || isPresent || hasTable) ? "Примеры" : "В контексте";
       if(isPronouns){
         els.pronounTabs.innerHTML=words.map(function(item,i){
           const parts=item.nav.split(" · ");
@@ -3133,6 +3215,14 @@
           '<div class="pronoun-block conjugation"><div class="pronoun-kicker">Спряжение в Presente</div><div class="conjugation-grid">'+
           word.conjugations.map(function(form){return '<div class="conjugation-item"><span>'+escapeHtml(form[0])+'</span><strong>'+escapeHtml(form[1])+'</strong></div>';}).join("")+
           '</div></div>';
+      } else if(hasTable){
+        const wide=word.table.headers.length>3 ? " wide" : "";
+        els.pronounTabs.innerHTML="";
+        els.pronounDetails.innerHTML=
+          '<div class="pronoun-block conjugation present-conjugation"><div class="pronoun-kicker">Вся система на одной карточке</div><div class="present-table-wrap"><table class="present-table'+wide+'"><thead><tr>'+
+          word.table.headers.map(function(header){return '<th scope="col">'+escapeHtml(header)+'</th>';}).join("")+
+          '</tr></thead><tbody>'+word.table.rows.map(function(row){return '<tr>'+row.map(function(cell,i){return i===0 ? '<th scope="row">'+escapeHtml(cell)+'</th>' : '<td>'+escapeHtml(cell)+'</td>';}).join("")+'</tr>';}).join("")+
+          '</tbody></table></div></div>';
       } else if(isPresent){
         els.pronounTabs.innerHTML="";
         els.pronounDetails.innerHTML=
@@ -3155,7 +3245,8 @@
         btn.addEventListener("click",function(){wordIndex=Number(btn.dataset.wordIndex);renderStudy();});
       });
       $("prevWord").disabled=wordIndex===0;
-      els.studyDots.hidden=isPronouns || isPresent;
+      const consolidatedTopic=["present","gustar","agreement","past","practical"].indexOf(selectedTopic)>=0;
+      els.studyDots.hidden=isPronouns || consolidatedTopic;
       $("prevWord").textContent=isPronouns && wordIndex>0 ? "← "+words[wordIndex-1].nav : "← Предыдущее";
       els.nextWord.textContent=wordIndex===words.length-1 ? "Начать тренировку →" : (isPronouns ? words[wordIndex+1].nav+" →" : (isPresent ? words[wordIndex+1].word+" →" : "Следующее →"));
       if(isPresent && wordIndex>0) $("prevWord").textContent="← "+words[wordIndex-1].word;
