@@ -51,6 +51,7 @@ jobs:
                 selectedMode='pictures';
                 foodPhase='practice';
                 sessionActive=true;
+                if(typeof showWorkspace==='function') showWorkspace();
                 queue=allExercises().filter(x=>x&&x.topic==='clothes'&&x.type==='picture-label'&&x.pictureScene===scene);
                 index=0;
                 if(!queue.length) return {scene,error:'missing exercise'};
@@ -58,18 +59,22 @@ jobs:
                 const visual=document.querySelector('#pictureStage .picture-visual');
                 const markers=[...(visual?.querySelectorAll('.outfit-callout-marker')||[])];
                 const lines=[...(visual?.querySelectorAll('.outfit-callout-line')||[])];
-                const w=visual?.getBoundingClientRect().width||1;
+                const vr=visual?.getBoundingClientRect();
+                const w=vr?.width||1;
                 const positions=markers.map(m=>{
-                  const r=m.getBoundingClientRect(),v=visual.getBoundingClientRect();
-                  return {n:m.textContent,cx:(r.left+r.width/2-v.left)/w*100,top:m.style.top,left:m.style.left};
+                  const r=m.getBoundingClientRect();
+                  return {n:m.textContent,cx:(r.left+r.width/2-vr.left)/w*100,cy:(r.top+r.height/2-vr.top)/(vr.height||1)*100,top:m.style.top,left:m.style.left};
                 });
-                return {scene,count:markers.length,lines:lines.length,positions,html:visual?.innerHTML||''};
+                return {scene,count:markers.length,lines:lines.length,positions,width:vr?.width||0,height:vr?.height||0};
               },scene);
               console.log('SCENE',JSON.stringify(result));
               if(result.error) throw new Error(scene+': '+result.error);
+              if(result.width<250 || result.height<250) throw new Error(scene+': picture is not visibly laid out on mobile');
               if(result.count!==5 || result.lines!==5) throw new Error(scene+': expected 5 callouts and 5 arrows');
               if(result.positions.some(p=>p.cx>15 && p.cx<85)) throw new Error(scene+': marker still overlaps central figure');
-              await page.locator('#pictureStage .picture-visual').screenshot({path:'outfit-'+scene+'.png'});
+              const visual=page.locator('#pictureStage .picture-visual');
+              await visual.scrollIntoViewIfNeeded();
+              await visual.screenshot({path:'outfit-'+scene+'.png',timeout:15000});
             }
             console.log('OUTFIT_CALLOUTS_LIVE_OK');
             await browser.close();
