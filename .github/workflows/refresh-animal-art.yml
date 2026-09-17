@@ -20,8 +20,8 @@ jobs:
       - name: Установить Pillow
         run: python -m pip install --quiet pillow
 
-      - name: Собрать новый растровый спрайт животных
-        run: python scripts/build_animal_sprite_v3.py
+      - name: Собрать новый stock-style спрайт животных
+        run: python scripts/build_animal_sprite_v4.py
 
       - name: Переключить тренажёр на новый спрайт
         run: |
@@ -31,47 +31,48 @@ jobs:
 
           p = Path('assets/animals-topic.js')
           s = p.read_text(encoding='utf-8')
-          s = s.replace('assets/generated/study-animals-v1.webp', 'assets/generated/study-animals-v3.webp')
+          s = s.replace('assets/generated/study-animals-v3.webp', 'assets/generated/study-animals-v4.webp')
           p.write_text(s, encoding='utf-8')
 
           p = Path('assets/animals-card-art-fix.js')
           s = p.read_text(encoding='utf-8')
-          s = re.sub(r"const SRC='[^']+';", "const SRC='./assets/generated/study-animals-v3.webp?v=1';", s, count=1)
-          s = re.sub(r"const FALLBACK='[^']+';", "const FALLBACK='./assets/generated/study-animals-v3.webp?v=1';", s, count=1)
+          s = re.sub(r"const SRC='[^']+';", "const SRC='./assets/generated/study-animals-v4.webp?v=1';", s, count=1)
+          s = re.sub(r"const FALLBACK='[^']+';", "const FALLBACK='./assets/generated/study-animals-v4.webp?v=1';", s, count=1)
           p.write_text(s, encoding='utf-8')
 
           p = Path('assets/trainer-v13-fixes.js')
           s = p.read_text(encoding='utf-8')
-          s = s.replace('assets/animals-card-art-fix.js?v=2', 'assets/animals-card-art-fix.js?v=3')
-          s = s.replace('assets/animals-topic.js?v=5', 'assets/animals-topic.js?v=6')
+          s = s.replace('assets/animals-card-art-fix.js?v=3', 'assets/animals-card-art-fix.js?v=4')
+          s = s.replace('assets/animals-topic.js?v=6', 'assets/animals-topic.js?v=7')
           p.write_text(s, encoding='utf-8')
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          s = s.replace('assets/trainer-v13-fixes.js?v=20260917animals1', 'assets/trainer-v13-fixes.js?v=20260917animals2')
+          s = s.replace('assets/trainer-v13-fixes.js?v=20260917animals2', 'assets/trainer-v13-fixes.js?v=20260917animals3')
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Проверить, что WebP реально декодируется
+      - name: Проверить новый WebP
         run: |
           python - <<'PY'
           from PIL import Image
-          p='assets/generated/study-animals-v3.webp'
+          p='assets/generated/study-animals-v4.webp'
           im=Image.open(p)
           im.load()
           assert im.size == (1350,600), im.size
+          assert im.mode in ('RGBA','RGB'), im.mode
           assert im.getbbox() is not None
-          print('OK', im.format, im.size)
+          print('OK', im.format, im.mode, im.size)
           PY
 
       - name: Сохранить новый спрайт и подключения
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/generated/study-animals-v3.webp assets/animals-topic.js assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
+          git add assets/generated/study-animals-v4.webp assets/animals-topic.js assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
           if git diff --cached --quiet; then
             echo "Изменений нет"
             exit 0
           fi
-          git commit -m "Rebuild working animal raster artwork"
+          git commit -m "Redraw all animal artwork in stock illustration style"
           git push origin HEAD:main
