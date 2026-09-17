@@ -146,9 +146,9 @@
   installPicturesButton();
   document.addEventListener('DOMContentLoaded',installPicturesButton);
 
-  /* Compact single-picture tasks: no giant white canvas on iPhone. */
+  /* Compact single-picture tasks and explicit animal sprite size. */
   const style=document.createElement('style');
-  style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}}\n';
+  style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}.generated-sprite-animals{display:block!important;width:min(260px,92%)!important;height:260px!important;max-width:92%!important;margin:auto!important;background-repeat:no-repeat!important;background-color:transparent!important;flex:0 0 auto!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}.generated-sprite-animals{width:210px!important;height:210px!important;max-width:90%!important}}\n';
   document.head.appendChild(style);
 
   function installAnimalsCardArt(){
@@ -175,7 +175,7 @@
   /* Load the self-contained animals vocabulary module after the trainer is initialized. */
   if(!document.querySelector('script[data-animals-topic]')){
     const animalsScript=document.createElement('script');
-    animalsScript.src='assets/animals-topic.js?v=2';
+    animalsScript.src='assets/animals-topic.js?v=3';
     animalsScript.dataset.animalsTopic='1';
     animalsScript.onload=function(){
       installAnimalsCardArt();
