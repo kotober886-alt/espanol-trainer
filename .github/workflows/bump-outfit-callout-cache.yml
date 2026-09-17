@@ -1,4 +1,4 @@
-name: Refine answer translation runtime
+name: Bump refined translation cache
 
 on:
   push:
@@ -10,125 +10,22 @@ permissions:
   contents: write
 
 jobs:
-  patch:
+  bump:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fix scoped sources, Russian color phrases, and bump cache
+      - name: Bump trainer cache key
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          p = Path('assets/answer-translations.js')
-          s = p.read_text(encoding='utf-8')
-
-          old_source = '''  function sourceMap(){
-            const map={};
-            lists().forEach(function(w){if(w&&w.id&&!map[w.id])map[w.id]=w;});
-            return map;
-          }
-
-          function sourceFor(item){
-            const id=String(item&&item.id||'');
-            const by=sourceMap(); let m;
-            if((m=id.match(/^study_[^_]+_(.+)_(es|ru|ctx)$/))) return by[m[1]]||null;
-            if((m=id.match(/^food_(.+)_(es|ru|ctx)$/))) return by[m[1]]||null;
-            if((m=id.match(/^clothes_(.+)_(es|ru|ctx)$/))) return by[m[1]]||null;
-            if((m=id.match(/^activity_(.+)_(es|ru|ctx)$/))) return by[m[1]]||null;
-            if((m=id.match(/^animals_(.+)_(es|ru|choice|ctx)$/))) return by[m[1]]||null;
-            if((m=id.match(/^visual_animals_(.+)$/))) return by[m[1]]||null;
-            if((m=id.match(/^pronoun_(.+)_(es|ru|poss|verb_\\d+)$/))) return by[m[1]]||null;
-            return null;
-          }
-'''
-          new_source = '''  function findById(list,key){
-            const rows=Array.isArray(list)?list:[];
-            for(let i=0;i<rows.length;i++) if(rows[i]&&rows[i].id===key) return rows[i];
-            return null;
-          }
-
-          function topicList(topic){
-            const sources={
-              verbs:function(){return VERB_WORDS;},present:function(){return PRESENT_WORDS;},questions:function(){return QUESTION_WORDS;},
-              constructions:function(){return CONSTRUCTION_WORDS;},gustar:function(){return GUSTAR_WORDS;},agreement:function(){return AGREEMENT_WORDS;},
-              prepositions:function(){return PREPOSITION_WORDS;},connectors:function(){return CONNECTOR_WORDS;},past:function(){return PAST_WORDS;},
-              routine:function(){return ROUTINE_WORDS;},calendar:function(){return CALENDAR_WORDS;},practical:function(){return PRACTICAL_WORDS;},city:function(){return CITY_WORDS;},
-              foods:function(){return FOOD_WORDS;},clothes:function(){return CLOTHING_WORDS;},activities:function(){return ACTIVITY_WORDS;},
-              pronouns:function(){return PRONOUN_WORDS;},animals:function(){return window.ANIMAL_WORDS;}
-            };
-            const fn=sources[topic];
-            return fn?safeList(fn):[];
-          }
-
-          function sourceFor(item){
-            const id=String(item&&item.id||''); let m;
-            if((m=id.match(/^study_([^_]+)_(.+)_(es|ru|ctx)$/))) return findById(topicList(m[1]),m[2]);
-            if((m=id.match(/^food_(.+)_(es|ru|ctx)$/))) return findById(safeList(function(){return FOOD_WORDS;}),m[1]);
-            if((m=id.match(/^clothes_(.+)_(es|ru|ctx)$/))) return findById(safeList(function(){return CLOTHING_WORDS;}),m[1]);
-            if((m=id.match(/^activity_(.+)_(es|ru|ctx)$/))) return findById(safeList(function(){return ACTIVITY_WORDS;}),m[1]);
-            if((m=id.match(/^animals_(.+)_(es|ru|choice|ctx)$/))) return findById(safeList(function(){return window.ANIMAL_WORDS;}),m[1]);
-            if((m=id.match(/^visual_animals_(.+)$/))) return findById(safeList(function(){return window.ANIMAL_WORDS;}),m[1]);
-            if((m=id.match(/^pronoun_(.+)_(es|ru|poss|verb_\\d+)$/))) return findById(safeList(function(){return PRONOUN_WORDS;}),m[1]);
-            return null;
-          }
-'''
-          if old_source not in s:
-              raise SystemExit('Expected sourceFor block not found')
-          s = s.replace(old_source, new_source, 1)
-
-          color_anchor = "  function colorForm(token,gender){\n"
-          color_gen = '''  const COLOR_GEN={
-            negro:'чёрного',negra:'чёрного',negros:'чёрного',negras:'чёрного',
-            amarillo:'жёлтого',amarilla:'жёлтого',amarillos:'жёлтого',amarillas:'жёлтого',
-            rojo:'красного',roja:'красного',rojos:'красного',rojas:'красного',
-            azul:'синего',azules:'синего',verde:'зелёного',verdes:'зелёного',
-            marrón:'коричневого',marrones:'коричневого',beige:'бежевого',
-            dorado:'золотого',dorada:'золотого',coral:'кораллового',rosa:'розового',
-            blanco:'белого',blanca:'белого',blancos:'белого',blancas:'белого',
-            morado:'фиолетового',morada:'фиолетового',violeta:'фиолетового',lila:'лилового',
-            gris:'серого',grises:'серого'
-          };
-
-'''
-          if '  const COLOR_GEN={' not in s:
-              if color_anchor not in s:
-                  raise SystemExit('Color anchor not found')
-              s = s.replace(color_anchor, color_gen + color_anchor, 1)
-
-          old_bits = "        const bits=remainder.split(/\\s+y\\s+|\\s+/).map(function(x){return colorForm(x,gender);}).filter(Boolean);\n        if(bits.length)return bits.join(' и ')+' '+clean(w.tr);"
-          new_bits = "        const bits=remainder.split(/\\s+y\\s+|\\s+/).map(function(x){return COLOR_GEN[norm(x)]||'';}).filter(Boolean);\n        if(bits.length)return clean(w.tr)+' '+bits.join(' и ')+' цвета';"
-          if old_bits not in s:
-              raise SystemExit('Color phrase block not found')
-          s = s.replace(old_bits, new_bits, 1)
-          p.write_text(s, encoding='utf-8')
-
-          trainer = Path('assets/trainer-v13-fixes.js')
-          s = trainer.read_text(encoding='utf-8')
-          old = 'assets/answer-translations.js?v=20260917-answertranslations2'
-          new = 'assets/answer-translations.js?v=20260917-answertranslations3'
-          if new not in s:
-              if old not in s:
-                  raise SystemExit('Answer translation child cache key not found')
-              trainer.write_text(s.replace(old, new, 1), encoding='utf-8')
-
-          index = Path('index.html')
-          s = index.read_text(encoding='utf-8')
-          old = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations2'
-          new = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations3'
-          if new not in s:
-              if old not in s:
-                  raise SystemExit('Trainer cache key not found')
-              index.write_text(s.replace(old, new, 1), encoding='utf-8')
-          PY
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); old='assets/trainer-v13-fixes.js?v=20260917-answertranslations2'; new='assets/trainer-v13-fixes.js?v=20260917-answertranslations3'; assert new in s or old in s, 'cache key not found'; p.write_text(s if new in s else s.replace(old,new,1),encoding='utf-8')"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/answer-translations.js assets/trainer-v13-fixes.js index.html
+          git add index.html
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Fix scoped answer translations and Russian color grammar"
+          git commit -m "Bump cache for refined answer translations"
           git push
