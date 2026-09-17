@@ -65,6 +65,10 @@
   function norm(v){
     return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[¡!¿?.,;:«»“”"'’]/g,' ').replace(/\s+/g,' ').trim();
   }
+  function originalIndex(label,i){
+    const n=Number(label && label.outfitIndex);
+    return Number.isInteger(n) && n>=0 ? n : i;
+  }
 
   function currentItem(){
     try{
@@ -102,16 +106,18 @@
   }
 
   function targetFor(item,label,i){
+    const idx=originalIndex(label,i);
     const override=TARGET_OVERRIDES[item.pictureScene];
-    if(override && override[i]) return override[i];
+    if(override && override[idx]) return override[idx];
     const base=[clamp(num(label.markerX,50),10,90),clamp(num(label.markerY,50),7,93)];
     return semanticTarget(label,base);
   }
 
   function labelFor(item,label,i){
+    const idx=originalIndex(label,i);
     const override=POSITION_OVERRIDES[item.pictureScene];
-    if(override && override[i]){
-      const p=override[i];
+    if(override && override[idx]){
+      const p=override[idx];
       return {side:p.side,x:p.side==='right'?92:8,y:p.y};
     }
     const side=label && label.side==='right' ? 'right' : 'left';
