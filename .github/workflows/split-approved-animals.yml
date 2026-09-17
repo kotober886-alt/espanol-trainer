@@ -1,0 +1,105 @@
+name: Split approved animal atlas into card images
+
+on:
+  push:
+    paths:
+      - '.split-approved-animals'
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Split 6x6 approved atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          src=Path('assets/generated/animals-approved-v2.webp')
+          im=Image.open(src).convert('RGB')
+          print('atlas size:', im.size)
+          assert im.width % 6 == 0 and im.height % 6 == 0, im.size
+          cw, ch = im.width//6, im.height//6
+
+          rows = [
+            ['dog','cat','rabbit','hamster','mouse','turtle'],
+            ['horse','cow','pig','sheep','goat','chicken'],
+            ['lion','tiger','bear','elephant','giraffe','monkey'],
+            ['eagle','owl','parrot','duck','penguin','flamingo'],
+            ['fish','shark','dolphin','whale','octopus','crab'],
+            ['snake','crocodile','lizard','frog','salamander','tortoise'],
+          ]
+          out=Path('assets/generated/animals')
+          out.mkdir(parents=True, exist_ok=True)
+          for y,row in enumerate(rows):
+              for x,key in enumerate(row):
+                  tile=im.crop((x*cw,y*ch,(x+1)*cw,(y+1)*ch))
+                  tile.save(out/f'{key}.webp','WEBP',quality=92,method=6)
+          print('wrote', len(list(out.glob('*.webp'))), 'animal images')
+          PY
+
+      - name: Use simple individual images in cards
+        shell: bash
+        run: |
+          cat > assets/animals-card-art-fix.js <<'EOF'
+          (function(){
+            'use strict';
+            const KEYS=new Set(['dog','cat','rabbit','hamster','mouse','turtle','horse','cow','pig','sheep','goat','chicken','lion','tiger','bear','elephant','giraffe','monkey','eagle','owl','parrot','duck','penguin','flamingo','fish','shark','dolphin','whale','octopus','crab','snake','crocodile','lizard','frog','salamander','tortoise']);
+            function art(key){
+              if(!KEYS.has(key)) return '';
+              const src='assets/generated/animals/'+key+'.webp?v=20260917-approved4';
+              return '<img class="approved-animal-single" src="'+src+'" alt="" loading="eager" decoding="async">';
+            }
+            window.animalArt=art;
+            const style=document.createElement('style');
+            style.textContent='.approved-animal-single{display:block!important;width:min(280px,94%)!important;height:auto!important;aspect-ratio:1/1!important;object-fit:contain!important;margin:auto!important;border-radius:18px!important;background:#fffdf8!important}.visual-single-art .approved-animal-single{width:min(230px,76%)!important}@media(max-width:520px){.approved-animal-single{width:min(215px,92%)!important}.visual-single-art .approved-animal-single{width:min(175px,74%)!important}}';
+            document.head.appendChild(style);
+            function install(){
+              window.animalArt=art;
+              try{if(typeof studyArt==='function'&&!studyArt.__approvedAnimalsV4){const b=studyArt;studyArt=function(w){try{if(selectedTopic==='animals'&&w)return art(w.art||w.id);}catch(e){}return b(w)};studyArt.__approvedAnimalsV4=true}}catch(e){}
+              try{if(typeof allExercises==='function'&&!allExercises.__approvedAnimalsV4){const b=allExercises;allExercises=function(){return b().map(function(i){if(i&&i.topic==='animals'&&i.type==='picture-label'){const id=String(i.id||'').replace(/^visual_animals_/,'');if(KEYS.has(id))i.pictureHtml=art(id)}return i})};allExercises.__approvedAnimalsV4=true}}catch(e){}
+              try{if(typeof renderStudy==='function'&&!renderStudy.__approvedAnimalsV4){const b=renderStudy;renderStudy=function(){b();try{if(selectedTopic==='animals'){const ws=currentFoodWords(),w=ws[wordIndex];els.studyCard.classList.remove('no-art');els.foodArt.style.display='grid';if(w)els.foodArt.innerHTML=art(w.art||w.id)}}catch(e){}};renderStudy.__approvedAnimalsV4=true}}catch(e){}
+              try{if(selectedTopic==='animals'&&foodPhase==='study'&&typeof renderStudy==='function')renderStudy()}catch(e){}
+            }
+            let n=0,t=setInterval(function(){install();if(++n>24)clearInterval(t)},250);
+            document.addEventListener('DOMContentLoaded',install);
+            window.addEventListener('load',function(){install();setTimeout(install,600)});
+            install();
+          })();
+          EOF
+
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/trainer-v13-fixes.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('animals-card-art-fix.js?v=20260917-approved3','animals-card-art-fix.js?v=20260917-approved4')
+          s=s.replace('animals-card-art-fix.js?v=20260917-approved2','animals-card-art-fix.js?v=20260917-approved4')
+          s=s.replace('animals-card-art-fix.js?v=20260917-final1','animals-card-art-fix.js?v=20260917-approved4')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('trainer-v13-fixes.js?v=20260917-approved3','trainer-v13-fixes.js?v=20260917-approved4')
+          s=s.replace('trainer-v13-fixes.js?v=20260917animals5','trainer-v13-fixes.js?v=20260917-approved4')
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit individual animal images
+        shell: bash
+        run: |
+          rm -f .split-approved-animals
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Use individual approved animal card images"
+          git push
