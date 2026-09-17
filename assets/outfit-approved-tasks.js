@@ -2,8 +2,8 @@
 'use strict';
 const scenes=['clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5','clothes_woman','clothes_woman_2','clothes_woman_3','clothes_woman_4','clothes_woman_5'];
 const S=new Set(scenes);
-function n(v){return String(v??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ñü\s]/gi,' ').replace(/\s+/g,' ').trim();}
-function V(names,colors){names=Array.isArray(names)?names:[names];colors=Array.isArray(colors)?colors:[colors];let a=[];for(const x of names)for(const c of colors){a.push(x+' '+c,c+' '+x,'el '+x+' '+c,'la '+x+' '+c,'los '+x+' '+c,'las '+x+' '+c)}return [...new Set(a.map(n))]}
+function n(v){return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+function V(names,colors){names=Array.isArray(names)?names:[names];colors=Array.isArray(colors)?colors:[colors];let a=[];for(const x of names)for(const c of colors){a.push(x+' '+c,c+' '+x,'el '+x+' '+c,'la '+x+' '+c,'los '+x+' '+c,'las '+x+' '+c,'un '+x+' '+c,'una '+x+' '+c)}return [...new Set(a.map(n))]}
 const L=(r,x,c)=>({reveal:r,answers:V(x,c)});
 const D={
 clothes_man:[L('el polo blanco','polo',['blanco','crema']),L('los pantalones deportivos grises',['pantalones deportivos','pantalones de chandal','pantalones de chándal'],['grises','gris']),L('la chaqueta deportiva azul marino',['chaqueta deportiva','chaqueta'],['azul marino','azul']),L('la mochila negra','mochila',['negra','negro']),L('las zapatillas beige','zapatillas',['beige','crema'])],
@@ -21,4 +21,5 @@ function task(s){let a=D[s];return{id:'approved_'+s,topic:'clothes',type:'pictur
 try{if(typeof pictureLabelExercises==='function'){const base=pictureLabelExercises;pictureLabelExercises=function(){return base().filter(x=>!(x&&x.topic==='clothes'&&S.has(String(x.pictureScene||'')))).concat(scenes.map(task))}}}catch(e){}
 const st=document.createElement('style');st.textContent='.approved-outfit-image{display:block;width:min(100%,600px);height:auto;max-height:72vh;object-fit:contain;margin:auto}.picture-visual:has(.approved-outfit-image) .picture-marker,.picture-visual:has(.approved-outfit-image) .outfit-callout-svg{display:none!important}@media(max-width:520px){.approved-outfit-image{width:100%;max-height:54vh}}';document.head.appendChild(st);
 window.normalizeOutfitAnswer=n;
+window.normalizePictureAnswer=n;
 })();
