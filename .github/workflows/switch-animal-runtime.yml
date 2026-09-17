@@ -14,39 +14,55 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Update animal runtime cache keys
+      - name: Fix animal picture rendering and refresh cache keys
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          replacements = {
-              Path('assets/animals-card-art-fix.js'): [
-                  ('?v=20260917-approved4', '?v=20260917-individual1'),
-              ],
-              Path('assets/trainer-v13-fixes.js'): [
-                  ('assets/animals-card-art-fix.js?v=20260917-approved3', 'assets/animals-card-art-fix.js?v=20260917-individual1'),
-              ],
-              Path('index.html'): [
-                  ('assets/trainer-v13-fixes.js?v=20260917-approved3', 'assets/trainer-v13-fixes.js?v=20260917-individual1'),
-              ],
-          }
+
           changed=[]
-          for path, reps in replacements.items():
-              text=path.read_text(encoding='utf-8')
-              new=text
-              for old, repl in reps:
-                  new=new.replace(old,repl)
-              if new!=text:
-                  path.write_text(new,encoding='utf-8')
-                  changed.append(str(path))
+
+          # 1) Make animal picture-label exercises reuse the already-rendered picture slot,
+          #    but point that image at the approved individual WebP.
+          p=Path('assets/animals-card-art-fix.js')
+          text=p.read_text(encoding='utf-8')
+          new=text.replace('20260917-individual1','20260917-individual2')
+          marker='__approvedAnimalsPictureV5'
+          if marker not in new:
+              needle="    try{if(selectedTopic==='animals'&&foodPhase==='study'&&typeof renderStudy==='function')renderStudy()}catch(e){}\n"
+              patch=(
+                  "    try{if(typeof render==='function'&&!render.__approvedAnimalsPictureV5){const b=render;render=function(){b();try{const item=(typeof queue!=='undefined'&&queue)?queue[index]:null;if(item&&item.topic==='animals'&&item.type==='picture-label'){const id=String(item.id||'').replace(/^visual_animals_/,'');if(KEYS.has(id)&&els&&els.pictureStage){const img=els.pictureStage.querySelector('.picture-raster');if(img){img.src='assets/generated/animals/'+id+'.webp?v=20260917-individual2';img.classList.add('approved-animal-single');img.alt='';img.loading='eager';}}}}catch(e){}};render.__approvedAnimalsPictureV5=true}}catch(e){}\n"
+              )
+              if needle not in new:
+                  raise SystemExit('Could not find animal install insertion point')
+              new=new.replace(needle, needle+patch)
+          if new!=text:
+              p.write_text(new,encoding='utf-8')
+              changed.append(str(p))
+
+          # 2) Bust the loader cache so existing browsers fetch the new patch.
+          p=Path('assets/trainer-v13-fixes.js')
+          text=p.read_text(encoding='utf-8')
+          new=text.replace('20260917-individual1','20260917-individual2')
+          if new!=text:
+              p.write_text(new,encoding='utf-8')
+              changed.append(str(p))
+
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          new=text.replace('assets/trainer-v13-fixes.js?v=20260917-individual1','assets/trainer-v13-fixes.js?v=20260917-individual2')
+          if new!=text:
+              p.write_text(new,encoding='utf-8')
+              changed.append(str(p))
+
           print('changed:', changed)
           PY
           if git diff --quiet -- assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html; then
-            echo "Runtime already switched"
+            echo "Animal picture rendering already fixed"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
-          git commit -m "Switch animal runtime to individual images"
+          git commit -m "Fix animal picture exercise rendering"
           git push
