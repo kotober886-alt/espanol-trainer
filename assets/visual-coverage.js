@@ -147,12 +147,15 @@
     pictureLabelExercises=function(){
       const existing=basePictureLabelExercises()
         .filter(function(item){ return !isAmbiguousPictureTask(item); })
+        .filter(function(item){ return !(item && item.topic==='clothes' && item.type==='picture-label'); })
         .map(polishDishTask)
         .map(keepLargeClothingLabels)
         .filter(Boolean);
       const ids={};
       existing.forEach(function(item){ ids[item.id]=true; });
-      return existing.concat(visualVocabularyExercises().filter(function(item){return !ids[item.id];}));
+      return existing.concat(visualVocabularyExercises().filter(function(item){
+        return item && item.topic!=='clothes' && !ids[item.id];
+      }));
     };
   }
 
