@@ -39,7 +39,7 @@ jobs:
             for(let i=0;i<60;i++){
               const r=await page.request.get(site+'?translationlive='+Date.now(),{headers:{'cache-control':'no-cache'}});
               const html=await r.text();
-              if(r.ok() && html.includes('trainer-v13-fixes.js?v=20260917-answertranslations1')){live=true;break;}
+              if(r.ok() && html.includes('trainer-v13-fixes.js?v=20260917-answertranslations2')){live=true;break;}
               await new Promise(r=>setTimeout(r,4000));
             }
             if(!live) throw new Error('Answer translation runtime did not reach Pages');
