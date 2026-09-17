@@ -1,0 +1,1 @@
+Approved outfit image binaries are being replaced in this commit sequence.
