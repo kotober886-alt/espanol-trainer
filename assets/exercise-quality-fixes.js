@@ -59,6 +59,88 @@
     return map;
   }
 
+  /*
+   * Small accessories must be learned from explicit language, not guessed from
+   * vague body-position clues. Each cloze below has one natural target in the
+   * current vocabulary and its first example matches the completed sentence,
+   * so the same precise wording is also used by the audio dictation.
+   */
+  const CLOTHING_CONTEXT_OVERRIDES={
+    belt:{
+      example:['Me abrocho el cinturón alrededor de la cintura.','Я застёгиваю ремень вокруг талии.'],
+      cloze:'Me abrocho el ___ alrededor de la cintura.',answers:['cinturón']
+    },
+    scarf:{
+      example:['Me enrollo la bufanda alrededor del cuello porque hace frío.','Я обматываю шарф вокруг шеи, потому что холодно.'],
+      cloze:'Me enrollo la ___ alrededor del cuello porque hace frío.',answers:['bufanda']
+    },
+    gloves:{
+      example:['Me pongo los guantes en las manos porque hace frío.','Я надеваю перчатки на руки, потому что холодно.'],
+      cloze:'Me pongo los ___ en las manos porque hace frío.',answers:['guantes']
+    },
+    sunglasses:{
+      example:['Me pongo las gafas de sol para proteger los ojos del sol.','Я надеваю солнцезащитные очки, чтобы защитить глаза от солнца.'],
+      cloze:'Me pongo las ___ para proteger los ojos del sol.',answers:['gafas de sol']
+    },
+    umbrella:{
+      example:['Abro el paraguas para no mojarme bajo la lluvia.','Я раскрываю зонт, чтобы не промокнуть под дождём.'],
+      cloze:'Abro el ___ para no mojarme bajo la lluvia.',answers:['paraguas']
+    },
+    tie:{
+      example:['Me anudo la corbata debajo del cuello de la camisa.','Я завязываю галстук под воротником рубашки.'],
+      cloze:'Me anudo la ___ debajo del cuello de la camisa.',answers:['corbata']
+    },
+    bowtie:{
+      example:['La pajarita tiene forma de lazo y se lleva con camisa.','Галстук-бабочка имеет форму банта и носится с рубашкой.'],
+      cloze:'La ___ tiene forma de lazo y se lleva con camisa.',answers:['pajarita']
+    },
+    handkerchief:{
+      example:['El pañuelo es una pieza cuadrada de seda que llevo al cuello.','Платок — это квадратный кусок шёлковой ткани, который я ношу на шее.'],
+      cloze:'El ___ es una pieza cuadrada de seda que llevo al cuello.',answers:['pañuelo']
+    },
+    necklace:{
+      example:['El collar de perlas rodea el cuello.','Жемчужное ожерелье окружает шею.'],
+      cloze:'El ___ de perlas rodea el cuello.',answers:['collar']
+    },
+    bracelet:{
+      example:['La pulsera de cuentas rodea la muñeca.','Браслет из бусин обхватывает запястье.'],
+      cloze:'La ___ de cuentas rodea la muñeca.',answers:['pulsera']
+    },
+    ring:{
+      example:['Me pongo el anillo en el dedo anular.','Я надеваю кольцо на безымянный палец.'],
+      cloze:'Me pongo el ___ en el dedo anular.',answers:['anillo']
+    },
+    earrings:{
+      example:['Me pongo los pendientes en las orejas.','Я надеваю серьги в уши.'],
+      cloze:'Me pongo los ___ en las orejas.',answers:['pendientes']
+    },
+    watch:{
+      example:['Miro la hora en mi reloj.','Я смотрю время на своих часах.'],
+      cloze:'Miro la hora en mi ___.',answers:['reloj']
+    },
+    brooch:{
+      example:['Sujeto el broche a la solapa de la chaqueta.','Я прикрепляю брошь к лацкану пиджака.'],
+      cloze:'Sujeto el ___ a la solapa de la chaqueta.',answers:['broche']
+    },
+    chain:{
+      example:['La cadena está formada por eslabones de metal.','Цепочка состоит из металлических звеньев.'],
+      cloze:'La ___ está formada por eslabones de metal.',answers:['cadena']
+    }
+  };
+
+  try {
+    if(Array.isArray(CLOTHING_WORDS)){
+      CLOTHING_WORDS.forEach(function(item){
+        const patch=item && CLOTHING_CONTEXT_OVERRIDES[item.id];
+        if(!patch) return;
+        const rest=Array.isArray(item.examples) ? item.examples.slice(1) : [];
+        item.examples=[patch.example].concat(rest);
+        item.cloze=patch.cloze;
+        item.clozeAnswers=patch.answers.slice();
+      });
+    }
+  } catch(e){}
+
   function patchItems(items,resolver,label){
     return (Array.isArray(items) ? items : []).map(function(item){
       if(!item || !/_ctx$/.test(String(item.id || ''))) return item;
@@ -176,21 +258,6 @@
     };
   }
   window.exerciseQualityAudit=auditContextData;
-
-  /* Make pañuelo unambiguous in both study cards and context practice. */
-  try {
-    if(Array.isArray(CLOTHING_WORDS)){
-      const scarfLike=CLOTHING_WORDS.find(function(item){return item && item.id==='handkerchief';});
-      if(scarfLike){
-        scarfLike.examples=[
-          ['Se pone un pañuelo de seda en el cuello.','Она надевает на шею шёлковый платок.'],
-          ['El pañuelo tiene flores.','На платке цветочный узор.']
-        ];
-        scarfLike.cloze='Se pone un ___ de seda en el cuello.';
-        scarfLike.clozeAnswers=['pañuelo'];
-      }
-    }
-  } catch(e){}
 
   /* Correction tasks must clearly require the whole corrected sentence. */
   try {
