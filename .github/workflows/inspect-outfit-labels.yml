@@ -1,4 +1,4 @@
-name: Inspect outfit label data
+name: Apply outfit callout cache
 
 on:
   push:
@@ -7,32 +7,43 @@ on:
       - ".github/workflows/inspect-outfit-labels.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  inspect:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Print outfit picture label definitions
+        with:
+          fetch-depth: 0
+      - name: Bump callout cache and remove duplicate trainer loader
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          needles=['clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5']
-          for p in Path('.').rglob('*'):
-              if not p.is_file() or p.suffix.lower() not in {'.js','.html','.json','.txt'}:
-                  continue
-              try:
-                  s=p.read_text(encoding='utf-8')
-              except Exception:
-                  continue
-              for n in needles:
-                  pos=0
-                  while True:
-                      i=s.find(n,pos)
-                      if i<0: break
-                      a=max(0,i-900); b=min(len(s),i+1800)
-                      print('\n===',p,n,'===\n',s[a:b])
-                      pos=i+len(n)
+
+          trainer=Path('assets/trainer-v13-fixes.js')
+          s=trainer.read_text(encoding='utf-8')
+          s=s.replace('assets/outfit-picture-callouts.js?v=20260917-callouts3','assets/outfit-picture-callouts.js?v=20260917-callouts4')
+          trainer.write_text(s,encoding='utf-8')
+
+          index=Path('index.html')
+          s=index.read_text(encoding='utf-8')
+          old='  <script src="assets/trainer-v13-fixes.js?v=20260917-answertranslations3"></script>\n<script src="assets/trainer-v13-fixes.js?v=13"></script>'
+          new='  <script src="assets/trainer-v13-fixes.js?v=20260917-outfitcallouts4"></script>'
+          if old in s:
+              s=s.replace(old,new,1)
+          else:
+              s=s.replace('assets/trainer-v13-fixes.js?v=20260917-answertranslations3','assets/trainer-v13-fixes.js?v=20260917-outfitcallouts4')
+              s=s.replace('\n<script src="assets/trainer-v13-fixes.js?v=13"></script>','',1)
+          index.write_text(s,encoding='utf-8')
           PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/trainer-v13-fixes.js index.html
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Publish unambiguous outfit callout targets"
+          git push
