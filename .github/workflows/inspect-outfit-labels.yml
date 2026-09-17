@@ -1,0 +1,38 @@
+name: Inspect outfit label data
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/inspect-outfit-labels.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print outfit picture label definitions
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          needles=['clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5']
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or p.suffix.lower() not in {'.js','.html','.json','.txt'}:
+                  continue
+              try:
+                  s=p.read_text(encoding='utf-8')
+              except Exception:
+                  continue
+              for n in needles:
+                  pos=0
+                  while True:
+                      i=s.find(n,pos)
+                      if i<0: break
+                      a=max(0,i-900); b=min(len(s),i+1800)
+                      print('\n===',p,n,'===\n',s[a:b])
+                      pos=i+len(n)
+          PY
