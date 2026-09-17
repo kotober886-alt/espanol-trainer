@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const IMG='assets/generated/study-animals-v1.webp';
+const IMG='assets/generated/study-animals-v3.webp';
 const POS={dog:[0,0],cat:[1,0],rabbit:[2,0],hamster:[3,0],mouse:[4,0],turtle:[5,0],horse:[6,0],cow:[7,0],pig:[8,0],sheep:[0,1],goat:[1,1],chicken:[2,1],lion:[3,1],tiger:[4,1],bear:[5,1],elephant:[6,1],giraffe:[7,1],monkey:[8,1],eagle:[0,2],owl:[1,2],parrot:[2,2],duck:[3,2],penguin:[4,2],flamingo:[5,2],fish:[6,2],shark:[7,2],dolphin:[8,2],whale:[0,3],octopus:[1,3],crab:[2,3],snake:[3,3],crocodile:[4,3],lizard:[5,3],frog:[6,3],salamander:[7,3],tortoise:[8,3]};
 function art(k){const p=POS[k];if(!p)return'';return '<div class="generated-sprite generated-sprite-animals" aria-hidden="true" style="background-image:url('+IMG+');background-size:900% 400%;background-position:'+(p[0]/8*100)+'% '+(p[1]/3*100)+'%;"></div>';}
 window.animalArt=art;
