@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
       - name: Draw callouts on original site asset
         shell: bash
         run: |
@@ -38,13 +40,12 @@ jobs:
           except Exception:
               font=ImageFont.load_default()
 
-          # label position -> exact target point, all in relative image coordinates
           callouts=[
-              (1,(0.13,0.38),(0.39,0.39)),  # red jacket
-              (2,(0.87,0.43),(0.505,0.405)),# striped shirt
-              (3,(0.84,0.24),(0.615,0.335)),# blue backpack strap
-              (4,(0.13,0.66),(0.47,0.64)),  # beige trousers
-              (5,(0.86,0.87),(0.565,0.855)),# white sneakers
+              (1,(0.13,0.38),(0.39,0.39)),
+              (2,(0.87,0.43),(0.505,0.405)),
+              (3,(0.84,0.24),(0.615,0.335)),
+              (4,(0.13,0.66),(0.47,0.64)),
+              (5,(0.86,0.87),(0.565,0.855)),
           ]
 
           def pt(p): return (round(p[0]*w), round(p[1]*h))
@@ -52,7 +53,6 @@ jobs:
               sx,sy=pt(start); ex,ey=pt(end)
               dx,dy=ex-sx,ey-sy
               L=max(1,math.hypot(dx,dy)); ux,uy=dx/L,dy/L
-              # line starts outside the numbered circle
               ls=(round(sx+ux*(r+5)), round(sy+uy*(r+5)))
               le=(round(ex-ux*2), round(ey-uy*2))
               draw.line([ls,le], fill=purple, width=lw)
@@ -68,7 +68,6 @@ jobs:
 
           for n,pos,target in callouts:
               x,y=pt(pos)
-              # soft shadow then purple circle with thin white border
               draw.ellipse([x-r+2,y-r+4,x+r+2,y+r+4], fill=shadow)
               draw.ellipse([x-r,y-r,x+r,y+r], fill=white)
               inner=max(2,round(s*0.004))
