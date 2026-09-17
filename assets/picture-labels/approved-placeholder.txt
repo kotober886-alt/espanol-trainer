@@ -1,0 +1,1 @@
+Image migration in progress; approved outfit tasks are now defined in assets/outfit-approved-tasks.js.
