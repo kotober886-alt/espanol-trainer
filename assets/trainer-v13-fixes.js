@@ -60,22 +60,12 @@
     return item;
   }
 
-  /* Ambiguous single-object visual cards are worse than no picture at all. */
   const BLOCKED_VISUAL_IDS={
-    visual_foods_lentils:1,
-    visual_foods_beans:1,
-    visual_foods_wine:1,
-    visual_foods_beer:1,
-    visual_foods_mussels:1,
-    visual_foods_squid:1,
-    visual_foods_octopus:1,
-    visual_foods_seafood:1,
-    visual_activities_shopping:1,
-    visual_activities_fish:1
+    visual_foods_lentils:1,visual_foods_beans:1,visual_foods_wine:1,visual_foods_beer:1,
+    visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1,
+    visual_activities_shopping:1,visual_activities_fish:1
   };
-  const HIDE_STUDY_ART_IDS={
-    lentils:1,beans:1,wine:1,beer:1,mussels:1,squid:1,octopus:1,seafood:1,shopping:1,fish:1
-  };
+  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,mussels:1,squid:1,octopus:1,seafood:1,shopping:1,fish:1};
 
   try{
     if(typeof allExercises==='function'){
@@ -88,7 +78,6 @@
     }
   }catch(e){}
 
-  /* Never show a misleading illustration in study cards. */
   try{
     if(typeof studyArt==='function'){
       const baseStudyArt=studyArt;
@@ -99,7 +88,6 @@
     }
   }catch(e){}
 
-  /* Session modes: tests = no typing; pictures = picture-only practice. */
   try{
     if(typeof filteredExercises==='function'){
       const baseFiltered=filteredExercises;
@@ -146,9 +134,8 @@
   installPicturesButton();
   document.addEventListener('DOMContentLoaded',installPicturesButton);
 
-  /* Compact single-picture tasks and explicit animal sprite size. */
   const style=document.createElement('style');
-  style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}.generated-sprite-animals{display:block!important;width:min(260px,92%)!important;height:260px!important;max-width:92%!important;margin:auto!important;background-repeat:no-repeat!important;background-color:transparent!important;flex:0 0 auto!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}.generated-sprite-animals{width:210px!important;height:210px!important;max-width:90%!important}}\n';
+  style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}}\n';
   document.head.appendChild(style);
 
   function installAnimalsCardArt(){
@@ -172,17 +159,29 @@
     }catch(e){}
   }
 
-  /* Load the self-contained animals vocabulary module after the trainer is initialized. */
-  if(!document.querySelector('script[data-animals-topic]')){
-    const animalsScript=document.createElement('script');
-    animalsScript.src='assets/animals-topic.js?v=3';
-    animalsScript.dataset.animalsTopic='1';
-    animalsScript.onload=function(){
+  function loadAnimalRasterFix(){
+    if(document.querySelector('script[data-animals-card-art-fix]')){
+      installAnimalsCardArt();
+      try{ if(selectedTopic==='animals' && foodPhase==='study') renderStudy(); }catch(e){}
+      return;
+    }
+    const fix=document.createElement('script');
+    fix.src='assets/animals-card-art-fix.js?v=1';
+    fix.dataset.animalsCardArtFix='1';
+    fix.onload=function(){
       installAnimalsCardArt();
       try{ if(selectedTopic==='animals' && foodPhase==='study') renderStudy(); }catch(e){}
     };
+    document.body.appendChild(fix);
+  }
+
+  if(!document.querySelector('script[data-animals-topic]')){
+    const animalsScript=document.createElement('script');
+    animalsScript.src='assets/animals-topic.js?v=4';
+    animalsScript.dataset.animalsTopic='1';
+    animalsScript.onload=loadAnimalRasterFix;
     document.body.appendChild(animalsScript);
   } else {
-    installAnimalsCardArt();
+    loadAnimalRasterFix();
   }
 })();
