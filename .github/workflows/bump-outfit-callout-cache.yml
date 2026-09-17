@@ -21,35 +21,34 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
-          trainer=Path('assets/trainer-v13-fixes.js')
-          s=trainer.read_text(encoding='utf-8')
-          marker="  function loadOutfitPictureCallouts(){"
-          loader="""  function loadAnswerTranslations(){
-            const old=document.querySelector('script[data-answer-translations]');
-            if(old) old.remove();
-            const script=document.createElement('script');
-            script.src='assets/answer-translations.js?v=20260917-answertranslations1';
-            script.dataset.answerTranslations='1';
-            document.body.appendChild(script);
-          }
-          loadAnswerTranslations();
-
-"""
+          trainer = Path('assets/trainer-v13-fixes.js')
+          s = trainer.read_text(encoding='utf-8')
+          marker = "  function loadOutfitPictureCallouts(){"
+          loader = "\n".join([
+              "  function loadAnswerTranslations(){",
+              "    const old=document.querySelector('script[data-answer-translations]');",
+              "    if(old) old.remove();",
+              "    const script=document.createElement('script');",
+              "    script.src='assets/answer-translations.js?v=20260917-answertranslations1';",
+              "    script.dataset.answerTranslations='1';",
+              "    document.body.appendChild(script);",
+              "  }",
+              "  loadAnswerTranslations();",
+              "",
+              ""
+          ])
           if "data-answer-translations" not in s:
               if marker not in s:
                   raise SystemExit('Expected trainer insertion marker not found')
-              s=s.replace(marker,loader+marker,1)
-              trainer.write_text(s,encoding='utf-8')
-
-          index=Path('index.html')
-          s=index.read_text(encoding='utf-8')
-          old='assets/trainer-v13-fixes.js?v=20260917-outfitcallouts2'
-          new='assets/trainer-v13-fixes.js?v=20260917-answertranslations1'
+              trainer.write_text(s.replace(marker, loader + marker, 1), encoding='utf-8')
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+          old = 'assets/trainer-v13-fixes.js?v=20260917-outfitcallouts2'
+          new = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations1'
           if new not in s:
               if old not in s:
                   raise SystemExit('Expected trainer cache key not found')
-              index.write_text(s.replace(old,new,1),encoding='utf-8')
+              index.write_text(s.replace(old, new, 1), encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
