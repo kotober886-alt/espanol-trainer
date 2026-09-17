@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/refresh-animal-art.yml"
+      - "scripts/build_animal_sprite_v4.py"
 
 permissions:
   contents: write
