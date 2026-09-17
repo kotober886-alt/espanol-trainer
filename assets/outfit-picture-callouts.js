@@ -135,6 +135,12 @@
     const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
     if(!labels.length) return;
 
+    if(item.pictureScene==='clothes_man'){
+      visual.classList.remove('outfit-callout-visual');
+      visual.querySelectorAll('.picture-marker,.outfit-callout-svg').forEach(function(node){ node.remove(); });
+      return;
+    }
+
     visual.classList.add('outfit-callout-visual');
     visual.querySelectorAll('.picture-marker,.outfit-callout-svg').forEach(function(node){ node.remove(); });
 
