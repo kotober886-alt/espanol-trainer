@@ -28,7 +28,7 @@ jobs:
             exit 1
           fi
           export CHROME
-          cat > /tmp/verify-animals.cjs <<'NODE'
+          cat > verify-animals.cjs <<'NODE'
           const { chromium } = require('playwright-core');
           const site = 'https://kotober886-alt.github.io/espanol-trainer/';
           const keys = ['dog','cat','rabbit','hamster','mouse','turtle','horse','cow','pig','sheep','goat','chicken','lion','tiger','bear','elephant','giraffe','monkey','eagle','owl','parrot','duck','penguin','flamingo','fish','shark','dolphin','whale','octopus','crab','snake','crocodile','lizard','frog','salamander','tortoise'];
@@ -39,7 +39,6 @@ jobs:
             page.on('console', msg => console.log('PAGE:', msg.text()));
             page.on('pageerror', err => console.log('PAGEERROR:', err.message));
 
-            // Wait until Pages serves the new cache-busted runtime.
             let live = false;
             for(let i=0;i<30;i++){
               const r = await page.request.get(site+'?livecheck='+Date.now(), {headers:{'cache-control':'no-cache'}});
@@ -104,6 +103,6 @@ jobs:
 
             console.log('LIVE_ANIMAL_RENDER_VERIFY_OK');
             await browser.close();
-          })().catch(async err=>{ console.error(err.stack||err); process.exit(1); });
+          })().catch(err=>{ console.error(err.stack||err); process.exit(1); });
           NODE
-          node /tmp/verify-animals.cjs
+          node verify-animals.cjs
