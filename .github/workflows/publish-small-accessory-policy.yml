@@ -1,0 +1,71 @@
+name: Publish small accessory practice policy
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/publish-small-accessory-policy.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Cache bust updated trainer scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          python - <<'PY'
+          from pathlib import Path
+
+          trainer=Path('assets/trainer-v13-fixes.js')
+          s=trainer.read_text(encoding='utf-8')
+          old="assets/outfit-picture-callouts.js?v=20260917-rasterman1"
+          new="assets/outfit-picture-callouts.js?v=20260917-smallaccessory1"
+          if old not in s:
+              raise SystemExit('outfit callout cache key not found')
+          trainer.write_text(s.replace(old,new,1),encoding='utf-8')
+
+          index=Path('index.html')
+          s=index.read_text(encoding='utf-8')
+          replacements={
+              'assets/visual-coverage.js?v=13':'assets/visual-coverage.js?v=20260917-smallaccessory1',
+              'assets/exercise-quality-fixes.js?v=13':'assets/exercise-quality-fixes.js?v=20260917-smallaccessory1',
+              'assets/trainer-v13-fixes.js?v=20260917-rasterman1':'assets/trainer-v13-fixes.js?v=20260917-smallaccessory1',
+          }
+          for old,new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'cache key not found: {old}')
+              s=s.replace(old,new,1)
+          index.write_text(s,encoding='utf-8')
+          PY
+
+          node --check assets/visual-coverage.js
+          node --check assets/exercise-quality-fixes.js
+          node --check assets/outfit-picture-callouts.js
+          node --check assets/trainer-v13-fixes.js
+
+          python - <<'PY'
+          from pathlib import Path
+          visual=Path('assets/visual-coverage.js').read_text(encoding='utf-8')
+          quality=Path('assets/exercise-quality-fixes.js').read_text(encoding='utf-8')
+          assert "accessories:true,jewelry:true" in visual
+          for word in ['belt','scarf','gloves','sunglasses','umbrella','tie','bowtie','handkerchief','necklace','bracelet','ring','earrings','watch','brooch','chain']:
+              assert word+':{' in quality, word
+          assert "outfitIndex" in visual
+          assert "originalIndex" in Path('assets/outfit-picture-callouts.js').read_text(encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/publish-small-accessory-policy.yml
+          git add -A
+          git commit -m "Publish large-item picture policy for clothes"
+          git pull --rebase origin main
+          git push origin main
