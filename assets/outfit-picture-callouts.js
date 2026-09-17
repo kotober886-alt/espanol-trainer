@@ -6,12 +6,40 @@
     'clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5'
   ]);
 
-  // More precise endpoints for the three layouts reported from mobile.
+  // Precise endpoints for the three layouts reported from mobile.
   // Coordinates are percentages inside the picture area.
   const TARGET_OVERRIDES={
+    // jacket, shirt, backpack, trousers, shoes
     clothes_man:[[38,39],[50,34],[66,31],[50,64],[50,86]],
-    clothes_man_3:[[50,13],[38,44],[50,66],[50,28],[50,86]],
-    clothes_woman_3:[[50,16],[38,43],[50,66],[50,28],[50,86]]
+    // hat, coat, trousers, scarf, shoes
+    clothes_man_3:[[50,13],[67,45],[50,66],[44,27],[50,86]],
+    // sunglasses, coat, trousers, scarf, ankle boots
+    clothes_woman_3:[[50,16],[67,45],[50,66],[45,25],[50,86]]
+  };
+
+  // Keep labels in the white margins and arrange them so arrows do not cross.
+  const POSITION_OVERRIDES={
+    clothes_man:[
+      {side:'left',y:39},
+      {side:'right',y:34},
+      {side:'right',y:20},
+      {side:'left',y:64},
+      {side:'right',y:86}
+    ],
+    clothes_man_3:[
+      {side:'left',y:14},
+      {side:'right',y:44},
+      {side:'left',y:64},
+      {side:'right',y:27},
+      {side:'left',y:86}
+    ],
+    clothes_woman_3:[
+      {side:'left',y:14},
+      {side:'right',y:45},
+      {side:'left',y:64},
+      {side:'right',y:25},
+      {side:'left',y:86}
+    ]
   };
 
   function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
@@ -30,7 +58,12 @@
     return [clamp(num(label.markerX,50),10,90),clamp(num(label.markerY,50),7,93)];
   }
 
-  function labelFor(label,i){
+  function labelFor(item,label,i){
+    const override=POSITION_OVERRIDES[item.pictureScene];
+    if(override && override[i]){
+      const p=override[i];
+      return {side:p.side,x:p.side==='right'?92:8,y:p.y};
+    }
     const side=label && label.side==='right' ? 'right' : 'left';
     const fallback=14+i*18;
     const y=clamp(num(label && label.top,fallback),8,92);
@@ -75,7 +108,7 @@
     svg.appendChild(defs);
 
     labels.forEach(function(label,i){
-      const pos=labelFor(label,i);
+      const pos=labelFor(item,label,i);
       const target=targetFor(item,label,i);
       const startX=(pos.side==='right'?88.5:11.5)*10;
       const startY=pos.y*12;
@@ -104,13 +137,13 @@
 
   function install(){
     try{
-      if(typeof render==='function' && !render.__outfitCalloutsV1){
+      if(typeof render==='function' && !render.__outfitCalloutsV2){
         const base=render;
         const patched=function(){
           base();
           try{ renderOutfitCallouts(); }catch(e){}
         };
-        patched.__outfitCalloutsV1=true;
+        patched.__outfitCalloutsV2=true;
         render=patched;
       }
     }catch(e){}
