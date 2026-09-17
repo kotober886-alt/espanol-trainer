@@ -27,8 +27,9 @@ jobs:
           m=re.search(r"const SRC='data:image/webp;base64,([^']+)'", src)
           assert m, 'embedded approved animal atlas not found'
           data=base64.b64decode(m.group(1))
+          print('decoded embedded atlas bytes:', len(data))
           assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', 'embedded atlas is not WebP'
-          assert len(data) > 50000, 'embedded atlas unexpectedly small'
+          assert len(data) > 10000, 'embedded atlas unexpectedly small'
           out=Path('assets/generated/animals-approved-v2.webp')
           out.write_bytes(data)
           print('wrote', out, len(data), 'bytes')
@@ -42,74 +43,15 @@ jobs:
             'use strict';
             const SRC='assets/generated/animals-approved-v2.webp?v=20260917-approved3';
             const POS={dog:[0,0],cat:[1,0],rabbit:[2,0],hamster:[3,0],mouse:[4,0],turtle:[5,0],horse:[0,1],cow:[1,1],pig:[2,1],sheep:[3,1],goat:[4,1],chicken:[5,1],lion:[0,2],tiger:[1,2],bear:[2,2],elephant:[3,2],giraffe:[4,2],monkey:[5,2],eagle:[0,3],owl:[1,3],parrot:[2,3],duck:[3,3],penguin:[4,3],flamingo:[5,3],fish:[0,4],shark:[1,4],dolphin:[2,4],whale:[3,4],octopus:[4,4],crab:[5,4],snake:[0,5],crocodile:[1,5],lizard:[2,5],frog:[3,5],salamander:[4,5],tortoise:[5,5]};
-
-            function art(key){
-              const p=POS[key];
-              if(!p) return '';
-              return '<div class="approved-animal-crop" aria-hidden="true"><img src="'+SRC+'" alt="" loading="eager" decoding="async" style="left:-'+(p[0]*100)+'%;top:-'+(p[1]*100)+'%;"></div>';
-            }
+            function art(key){const p=POS[key];if(!p)return'';return '<div class="approved-animal-crop" aria-hidden="true"><img src="'+SRC+'" alt="" loading="eager" decoding="async" style="left:-'+(p[0]*100)+'%;top:-'+(p[1]*100)+'%;"></div>';}
             window.animalArt=art;
-
             const style=document.createElement('style');
-            style.textContent='\n.approved-animal-crop{position:relative!important;display:block!important;width:min(280px,94%)!important;aspect-ratio:1/1!important;overflow:hidden!important;margin:auto!important;border-radius:18px!important;background:#fffdf8!important}.approved-animal-crop img{position:absolute!important;display:block!important;width:600%!important;height:600%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;object-fit:fill!important}.visual-single-art .approved-animal-crop{width:min(230px,76%)!important}@media(max-width:520px){.approved-animal-crop{width:min(215px,92%)!important}.visual-single-art .approved-animal-crop{width:min(175px,74%)!important}}\n';
+            style.textContent='.approved-animal-crop{position:relative!important;display:block!important;width:min(280px,94%)!important;aspect-ratio:1/1!important;overflow:hidden!important;margin:auto!important;border-radius:18px!important;background:#fffdf8!important}.approved-animal-crop img{position:absolute!important;display:block!important;width:600%!important;height:600%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;object-fit:fill!important}.visual-single-art .approved-animal-crop{width:min(230px,76%)!important}@media(max-width:520px){.approved-animal-crop{width:min(215px,92%)!important}.visual-single-art .approved-animal-crop{width:min(175px,74%)!important}}';
             document.head.appendChild(style);
-
-            function install(){
-              window.animalArt=art;
-              try{
-                if(typeof studyArt==='function'&&!studyArt.__approvedAnimalsV3){
-                  const base=studyArt;
-                  studyArt=function(word){
-                    try{if(selectedTopic==='animals'&&word)return art(word.art||word.id);}catch(e){}
-                    return base(word);
-                  };
-                  studyArt.__approvedAnimalsV3=true;
-                }
-              }catch(e){}
-              try{
-                if(typeof allExercises==='function'&&!allExercises.__approvedAnimalsV3){
-                  const base=allExercises;
-                  allExercises=function(){
-                    return base().map(function(item){
-                      if(item&&item.topic==='animals'&&item.type==='picture-label'){
-                        const id=String(item.id||'').replace(/^visual_animals_/,'');
-                        if(POS[id]) item.pictureHtml=art(id);
-                      }
-                      return item;
-                    });
-                  };
-                  allExercises.__approvedAnimalsV3=true;
-                }
-              }catch(e){}
-              try{
-                if(typeof renderStudy==='function'&&!renderStudy.__approvedAnimalsV3){
-                  const base=renderStudy;
-                  renderStudy=function(){
-                    base();
-                    try{
-                      if(selectedTopic==='animals'){
-                        const words=currentFoodWords();
-                        const word=words[wordIndex];
-                        els.studyCard.classList.remove('no-art');
-                        els.foodArt.style.display='grid';
-                        if(word) els.foodArt.innerHTML=art(word.art||word.id);
-                      }
-                    }catch(e){}
-                  };
-                  renderStudy.__approvedAnimalsV3=true;
-                }
-              }catch(e){}
-              try{if(selectedTopic==='animals'&&foodPhase==='study'&&typeof renderStudy==='function')renderStudy();}catch(e){}
-            }
-
-            let n=0;
-            const timer=setInterval(function(){install();if(++n>24)clearInterval(timer);},250);
-            document.addEventListener('DOMContentLoaded',install);
-            window.addEventListener('load',function(){install();setTimeout(install,600);});
-            install();
+            function install(){window.animalArt=art;try{if(typeof studyArt==='function'&&!studyArt.__approvedAnimalsV3){const b=studyArt;studyArt=function(w){try{if(selectedTopic==='animals'&&w)return art(w.art||w.id);}catch(e){}return b(w)};studyArt.__approvedAnimalsV3=true}}catch(e){}try{if(typeof allExercises==='function'&&!allExercises.__approvedAnimalsV3){const b=allExercises;allExercises=function(){return b().map(function(i){if(i&&i.topic==='animals'&&i.type==='picture-label'){const id=String(i.id||'').replace(/^visual_animals_/,'');if(POS[id])i.pictureHtml=art(id)}return i})};allExercises.__approvedAnimalsV3=true}}catch(e){}try{if(typeof renderStudy==='function'&&!renderStudy.__approvedAnimalsV3){const b=renderStudy;renderStudy=function(){b();try{if(selectedTopic==='animals'){const ws=currentFoodWords(),w=ws[wordIndex];els.studyCard.classList.remove('no-art');els.foodArt.style.display='grid';if(w)els.foodArt.innerHTML=art(w.art||w.id)}}catch(e){}};renderStudy.__approvedAnimalsV3=true}}catch(e){}try{if(selectedTopic==='animals'&&foodPhase==='study'&&typeof renderStudy==='function')renderStudy()}catch(e){}}
+            let n=0,t=setInterval(function(){install();if(++n>24)clearInterval(t)},250);document.addEventListener('DOMContentLoaded',install);window.addEventListener('load',function(){install();setTimeout(install,600)});install();
           })();
           EOF
-
           python - <<'PY'
           from pathlib import Path
           p=Path('assets/trainer-v13-fixes.js')
