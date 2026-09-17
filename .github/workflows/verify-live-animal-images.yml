@@ -94,15 +94,15 @@ jobs:
               const first=queue[0]||null;
               const before={wrapped:!!(render&&render.__approvedAnimalsPictureV5),count:queue.length,first:first?{id:first.id,topic:first.topic,type:first.type,pictureScene:first.pictureScene}:null};
               render();
-              const img=document.querySelector('#pictureStage img.picture-raster');
+              const img=document.querySelector('#pictureStage img.approved-animal-single');
               return {before,html:document.querySelector('#pictureStage')?.innerHTML||'',img:img?{src:img.src,className:img.className,complete:img.complete,w:img.naturalWidth,h:img.naturalHeight}:null};
             });
             console.log('PICTURE_DIAG', JSON.stringify(diag));
             await page.waitForFunction(()=>{
-              const img=document.querySelector('#pictureStage img.picture-raster.approved-animal-single');
+              const img=document.querySelector('#pictureStage img.approved-animal-single');
               return !!img && img.complete && img.naturalWidth>0 && img.naturalHeight>0;
             }, null, {timeout:15000});
-            const picture = await page.$eval('#pictureStage img.picture-raster.approved-animal-single', img=>({src:img.src,w:img.naturalWidth,h:img.naturalHeight}));
+            const picture = await page.$eval('#pictureStage img.approved-animal-single', img=>({src:img.src,w:img.naturalWidth,h:img.naturalHeight}));
             console.log('PICTURE_EXERCISE_IMAGE', JSON.stringify(picture));
             if(!picture.src.includes('/assets/generated/animals/dog.webp')) throw new Error('Picture exercise did not use dog.webp: '+picture.src);
 
