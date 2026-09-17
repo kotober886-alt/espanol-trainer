@@ -1,0 +1,43 @@
+name: Обновить загрузчик картинок животных
+
+on:
+  push:
+    paths:
+      - ".github/workflows/refresh-animal-art.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить репозиторий
+        uses: actions/checkout@v5
+        with:
+          ref: main
+      - name: Обновить версию загрузчика
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'assets/trainer-v13-fixes.js?v=13'
+          new = 'assets/trainer-v13-fixes.js?v=20260917animals1'
+          if old in s:
+              s = s.replace(old, new)
+          elif new not in s:
+              raise SystemExit('Не найден ожидаемый script tag trainer-v13-fixes.js')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Сохранить изменение index.html
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html уже обновлён"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Bust cached animal art loader"
+          git push origin HEAD:main
