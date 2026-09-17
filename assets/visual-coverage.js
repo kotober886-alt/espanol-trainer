@@ -15,6 +15,55 @@
     return String(value || '').replace(/^(el|la|los|las|un|una|unos|unas)\s+/i,'').trim();
   }
   function artKey(word){ return word.art || word.kind || word.image || word.icon || word.id; }
+
+  /*
+   * Visual quality policy for clothes:
+   * standalone picture tasks and outfit callouts are reserved for large,
+   * clearly readable objects. Small accessories and jewellery stay in text/audio
+   * practice so the learner is never asked to identify a tiny stretched sprite.
+   */
+  const NO_VISUAL_CLOTHING_CATEGORIES={accessories:true,jewelry:true};
+  function clothingVisualAllowed(word){
+    return !word || !NO_VISUAL_CLOTHING_CATEGORIES[String(word.cat || '').toLowerCase()];
+  }
+  function noVisualClothingBases(){
+    const result=[];
+    try {
+      safeArray(CLOTHING_WORDS).forEach(function(word){
+        if(!clothingVisualAllowed(word)){
+          const base=stripArticles(word.base || word.word || '').toLowerCase();
+          if(base) result.push(base);
+        }
+      });
+    } catch(e){}
+    return unique(result);
+  }
+  function labelUsesSmallAccessory(label){
+    const text=stripArticles(label && (label.reveal || label.answer || '')).toLowerCase();
+    if(!text) return false;
+    return noVisualClothingBases().some(function(base){
+      return text===base || text.indexOf(base+' ')===0;
+    });
+  }
+  function keepLargeClothingLabels(item){
+    if(!item || item.topic!=='clothes' || String(item.pictureScene || '').indexOf('clothes_')!==0) return item;
+    const original=safeArray(item.pictureLabels);
+    if(!original.length) return item;
+    const kept=[];
+    original.forEach(function(label,index){
+      label.outfitIndex=index;
+      if(!labelUsesSmallAccessory(label)) kept.push(label);
+    });
+    if(!kept.length) return null;
+    item.pictureLabels=kept;
+    item.a=[kept.map(function(label){return label.reveal;}).join(' | ')];
+    item.displayAnswer=kept.map(function(label,index){return (index+1)+'. '+label.reveal;}).join(' · ');
+    item.pictureHint=String(item.pictureHint || '')
+      .replace(/Назови пять отмеченных предметов/gi,'Назови отмеченные предметы')
+      .replace(/пять отмеченных предметов/gi,'отмеченные предметы');
+    return item;
+  }
+
   function artFor(topic,word){
     const key=artKey(word);
     try {
@@ -28,6 +77,7 @@
     return unique(safeArray(word.answers).concat([word.word,stripArticles(word.word)]));
   }
   function makeVisualTask(topic,word){
+    if(topic==='clothes' && !clothingVisualAllowed(word)) return null;
     const html=artFor(topic,word);
     if(!html) return null;
     const answers=acceptedAnswers(word);
@@ -97,7 +147,9 @@
     pictureLabelExercises=function(){
       const existing=basePictureLabelExercises()
         .filter(function(item){ return !isAmbiguousPictureTask(item); })
-        .map(polishDishTask);
+        .map(polishDishTask)
+        .map(keepLargeClothingLabels)
+        .filter(Boolean);
       const ids={};
       existing.forEach(function(item){ ids[item.id]=true; });
       return existing.concat(visualVocabularyExercises().filter(function(item){return !ids[item.id];}));
@@ -136,14 +188,17 @@
     try { source.activities=typeof ACTIVITY_WORDS!=='undefined' ? ACTIVITY_WORDS : []; } catch(e){ source.activities=[]; }
     const report={};
     topics.forEach(function(topic){
-      const total=safeArray(source[topic]).length;
+      const all=safeArray(source[topic]);
+      const eligible=topic==='clothes' ? all.filter(clothingVisualAllowed) : all;
+      const writtenOnly=topic==='clothes' ? all.length-eligible.length : 0;
       const covered=tasks.filter(function(task){return task.topic===topic;}).length;
-      report[topic]={total:total,covered:covered,percent:total ? Math.round(covered/total*100) : 0};
+      report[topic]={total:eligible.length,covered:covered,writtenOnly:writtenOnly,percent:eligible.length ? Math.round(covered/eligible.length*100) : 0};
     });
     report.overall=(function(){
       const total=topics.reduce(function(sum,topic){return sum+report[topic].total;},0);
       const covered=topics.reduce(function(sum,topic){return sum+report[topic].covered;},0);
-      return {total:total,covered:covered,percent:total ? Math.round(covered/total*100) : 0};
+      const writtenOnly=topics.reduce(function(sum,topic){return sum+(report[topic].writtenOnly || 0);},0);
+      return {total:total,covered:covered,writtenOnly:writtenOnly,percent:total ? Math.round(covered/total*100) : 0};
     })();
     return report;
   }
