@@ -203,7 +203,7 @@
     const old=document.querySelector('script[data-outfit-picture-callouts]');
     if(old) old.remove();
     const script=document.createElement('script');
-    script.src='assets/outfit-picture-callouts.js?v=20260917-rasterman1';
+    script.src='assets/outfit-picture-callouts.js?v=20260917-smallaccessory1';
     script.dataset.outfitPictureCallouts='1';
     document.body.appendChild(script);
   }
