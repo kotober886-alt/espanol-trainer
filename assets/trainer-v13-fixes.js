@@ -187,6 +187,14 @@
     const script=document.createElement('script');
     script.src='assets/answer-translations.js?v=20260917-answertranslations2';
     script.dataset.answerTranslations='1';
+    script.onload=function(){
+      const oldRefine=document.querySelector('script[data-answer-translations-refine]');
+      if(oldRefine) oldRefine.remove();
+      const refine=document.createElement('script');
+      refine.src='assets/answer-translations-refine.js?v=20260917-answertranslations3';
+      refine.dataset.answerTranslationsRefine='1';
+      document.body.appendChild(refine);
+    };
     document.body.appendChild(script);
   }
   loadAnswerTranslations();
