@@ -1,0 +1,52 @@
+name: Switch animal runtime to individual files
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Update animal runtime cache keys
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          replacements = {
+              Path('assets/animals-card-art-fix.js'): [
+                  ('?v=20260917-approved4', '?v=20260917-individual1'),
+              ],
+              Path('assets/trainer-v13-fixes.js'): [
+                  ('assets/animals-card-art-fix.js?v=20260917-approved3', 'assets/animals-card-art-fix.js?v=20260917-individual1'),
+              ],
+              Path('index.html'): [
+                  ('assets/trainer-v13-fixes.js?v=20260917-approved3', 'assets/trainer-v13-fixes.js?v=20260917-individual1'),
+              ],
+          }
+          changed=[]
+          for path, reps in replacements.items():
+              text=path.read_text(encoding='utf-8')
+              new=text
+              for old, repl in reps:
+                  new=new.replace(old,repl)
+              if new!=text:
+                  path.write_text(new,encoding='utf-8')
+                  changed.append(str(path))
+          print('changed:', changed)
+          PY
+          if git diff --quiet -- assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html; then
+            echo "Runtime already switched"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
+          git commit -m "Switch animal runtime to individual images"
+          git push
