@@ -8,6 +8,14 @@
   function stripFinal(v){return clean(v).replace(/[.!?]+$/,'').trim();}
 
   const SENTENCE_RU={
+    p2:'lee / usted lee — Вы читаете / Вы читаете (usted).',
+    p3:'no escucháis / vosotros no escucháis / no escucháis vosotros — вы не слушаете.',
+    ct9:'pequeño / pequeña — маленький / маленькая.',
+    ct10:'feo / fea — некрасивый / некрасивая.',
+    ct11:'caro / cara — дорогой / дорогая.',
+    ct12:'sucio / sucia — грязный / грязная.',
+    ct13:'ruidoso / ruidosa — шумный / шумная.',
+    ct14:'desagradable — неприятный / неприятная.',
     correct_q_accent:'Где ты живёшь?',
     correct_q_spacing:'Почему ты учишь испанский?',
     correct_c_location:'Аптека находится рядом.',
