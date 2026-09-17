@@ -181,6 +181,16 @@
   animalsScript.onload=loadAnimalRasterFix;
   document.body.appendChild(animalsScript);
 
+  function loadAnswerTranslations(){
+    const old=document.querySelector('script[data-answer-translations]');
+    if(old) old.remove();
+    const script=document.createElement('script');
+    script.src='assets/answer-translations.js?v=20260917-answertranslations1';
+    script.dataset.answerTranslations='1';
+    document.body.appendChild(script);
+  }
+  loadAnswerTranslations();
+
   function loadOutfitPictureCallouts(){
     const old=document.querySelector('script[data-outfit-picture-callouts]');
     if(old) old.remove();
