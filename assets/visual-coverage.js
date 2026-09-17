@@ -160,7 +160,7 @@
   try { if(typeof setupExercise==='function') baseSetupExercise=setupExercise; } catch(e){}
   if(baseSetupExercise){
     setupExercise=function(item){
-      if(!item || item.type!=='picture-label' || !item.pictureHtml) return baseSetupExercise(item);
+      if(!item || item.type!=='picture-label') return baseSetupExercise(item);
       resetCard();
       els.answerInput.hidden=true;
       els.answerLabel.hidden=true;
@@ -170,7 +170,25 @@
       const fields=labels.map(function(label,i){
         return '<label class="picture-field"><span>'+(i+1)+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+(i+1)+'" placeholder="По-испански"></label>';
       }).join('');
-      els.pictureStage.innerHTML='<div class="picture-visual visual-single-art">'+item.pictureHtml+'</div><div class="picture-fields">'+fields+'</div>';
+      const pictureMarkers=labels.map(function(label,i){
+        return '<span class="picture-marker" style="left:'+Number(label.markerX)+'%;top:'+Number(label.markerY)+'%" aria-hidden="true">'+(i+1)+'</span>';
+      }).join('');
+      const finalPicture = item.pictureHtml
+        ? item.pictureHtml
+        : '<img class="picture-raster" src="' +
+          escapeHtml(pictureAsset(item.pictureScene)) +
+          '" alt="' +
+          escapeHtml(item.q) +
+          '" decoding="async">';
+
+      els.pictureStage.innerHTML =
+        '<div class="picture-visual">' +
+        finalPicture +
+        pictureMarkers +
+        '</div>' +
+        '<div class="picture-fields">' +
+        fields +
+        '</div>';
       els.pictureStage.querySelectorAll('[data-picture-input]').forEach(function(input){
         input.addEventListener('keydown',function(event){ if(event.key==='Enter'){ event.preventDefault(); checkAnswer(); } });
       });
