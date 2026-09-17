@@ -13,6 +13,8 @@
     clothes_man:[[38,39],[50,34],[66,31],[50,64],[50,86]],
     // cap, shirt, jeans, belt, boots
     clothes_man_2:[[50,14],[50,35],[50,66],[50,45],[50,88]],
+    // hat, blouse, skirt, handbag, boots
+    clothes_woman_2:[[50,14],[50,35],[58,61],[41,43],[46,86]],
     // hat, coat, trousers, scarf, shoes
     clothes_man_3:[[50,13],[67,45],[50,66],[44,27],[50,86]],
     // sunglasses, coat, trousers, scarf, ankle boots
@@ -33,6 +35,13 @@
       {side:'right',y:32},
       {side:'left',y:64},
       {side:'right',y:48},
+      {side:'left',y:86}
+    ],
+    clothes_woman_2:[
+      {side:'left',y:14},
+      {side:'right',y:32},
+      {side:'right',y:64},
+      {side:'left',y:43},
       {side:'left',y:86}
     ],
     clothes_man_3:[
@@ -183,13 +192,13 @@
 
   function install(){
     try{
-      if(typeof render==='function' && !render.__outfitCalloutsV4){
+      if(typeof render==='function' && !render.__outfitCalloutsV5){
         const base=render;
         const patched=function(){
           base();
           try{ renderOutfitCallouts(); }catch(e){}
         };
-        patched.__outfitCalloutsV4=true;
+        patched.__outfitCalloutsV5=true;
         render=patched;
       }
     }catch(e){}
