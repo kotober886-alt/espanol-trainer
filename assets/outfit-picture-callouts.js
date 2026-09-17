@@ -44,6 +44,9 @@
 
   function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
   function num(v,fallback){ const n=Number(v); return Number.isFinite(n)?n:fallback; }
+  function norm(v){
+    return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[¡!¿?.,;:«»“”"'’]/g,' ').replace(/\s+/g,' ').trim();
+  }
 
   function currentItem(){
     try{
@@ -52,10 +55,39 @@
     }catch(e){ return null; }
   }
 
+  function semanticTarget(label,base){
+    const s=norm(label && (label.reveal || label.answer || label.text || ''));
+    const x=clamp(num(base&&base[0],50),12,88);
+
+    // Distinct vertical zones stop nearby garments from sharing the same endpoint.
+    if(/\b(cinturon|cinturones)\b/.test(s)) return [50,47];
+    if(/\b(pantalon|pantalones|vaquero|vaqueros|jeans)\b/.test(s)) return [x,66];
+    if(/\b(short|shorts|pantalones cortos)\b/.test(s)) return [x,58];
+    if(/\b(falda|faldas)\b/.test(s)) return [x,61];
+    if(/\b(vestido|vestidos)\b/.test(s)) return [x,54];
+
+    if(/\b(gorra|gorras|sombrero|sombreros|gorro|gorros)\b/.test(s)) return [x,14];
+    if(/\b(gafas|gafas de sol)\b/.test(s)) return [x,16];
+    if(/\b(bufanda|bufandas|panuelo|panuelos|corbata|corbatas)\b/.test(s)) return [x,27];
+
+    if(/\b(camisa|camisas|camiseta|camisetas|blusa|blusas|jersey|jerséis|sudadera|sudaderas)\b/.test(s)) return [x,35];
+    if(/\b(chaqueta|chaquetas|abrigo|abrigos|cazadora|cazadoras|gabardina|gabardinas)\b/.test(s)) return [x,43];
+    if(/\b(mochila|mochilas|bolso|bolsos|bolsa|bolsas)\b/.test(s)) return [x,35];
+
+    if(/\b(calcetin|calcetines|media|medias)\b/.test(s)) return [x,81];
+    if(/\b(zapato|zapatos|bota|botas|botin|botines|zapatilla|zapatillas)\b/.test(s)) return [x,88];
+
+    if(/\b(guante|guantes)\b/.test(s)) return [x,49];
+    if(/\b(reloj|pulsera)\b/.test(s)) return [x,48];
+
+    return [x,clamp(num(base&&base[1],50),7,93)];
+  }
+
   function targetFor(item,label,i){
     const override=TARGET_OVERRIDES[item.pictureScene];
     if(override && override[i]) return override[i];
-    return [clamp(num(label.markerX,50),10,90),clamp(num(label.markerY,50),7,93)];
+    const base=[clamp(num(label.markerX,50),10,90),clamp(num(label.markerY,50),7,93)];
+    return semanticTarget(label,base);
   }
 
   function labelFor(item,label,i){
@@ -123,6 +155,11 @@
       });
       svg.appendChild(line);
 
+      const dot=svgEl('circle',{
+        cx:targetX,cy:targetY,r:'2.2',class:'outfit-callout-target'
+      });
+      svg.appendChild(dot);
+
       const marker=document.createElement('span');
       marker.className='picture-marker outfit-callout-marker';
       marker.style.left=pos.x+'%';
@@ -137,13 +174,13 @@
 
   function install(){
     try{
-      if(typeof render==='function' && !render.__outfitCalloutsV2){
+      if(typeof render==='function' && !render.__outfitCalloutsV3){
         const base=render;
         const patched=function(){
           base();
           try{ renderOutfitCallouts(); }catch(e){}
         };
-        patched.__outfitCalloutsV2=true;
+        patched.__outfitCalloutsV3=true;
         render=patched;
       }
     }catch(e){}
@@ -151,7 +188,7 @@
   }
 
   const style=document.createElement('style');
-  style.textContent='\n.outfit-callout-visual .picture-raster{z-index:0}.outfit-callout-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible;color:#716b8d}.outfit-callout-line{fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.9;vector-effect:non-scaling-stroke}.outfit-callout-marker{z-index:2!important}.outfit-callout-visual .outfit-callout-marker{box-shadow:0 3px 10px rgba(35,28,89,.22)}@media(max-width:520px){.outfit-callout-line{stroke-width:1.25}.outfit-callout-visual .outfit-callout-marker{width:24px;height:24px;font-size:10px;border-width:2px}}\n';
+  style.textContent='\n.outfit-callout-visual .picture-raster{z-index:0}.outfit-callout-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible;color:#716b8d}.outfit-callout-line{fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;opacity:.9;vector-effect:non-scaling-stroke}.outfit-callout-target{fill:#716b8d;opacity:.9;vector-effect:non-scaling-stroke}.outfit-callout-marker{z-index:2!important}.outfit-callout-visual .outfit-callout-marker{box-shadow:0 3px 10px rgba(35,28,89,.22)}@media(max-width:520px){.outfit-callout-line{stroke-width:1.25}.outfit-callout-target{r:2.5}.outfit-callout-visual .outfit-callout-marker{width:24px;height:24px;font-size:10px;border-width:2px}}\n';
   document.head.appendChild(style);
 
   let tries=0;
