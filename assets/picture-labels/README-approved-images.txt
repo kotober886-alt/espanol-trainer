@@ -1,1 +1,2 @@
-Approved outfit image binaries are being replaced in this commit sequence.
+approved clothing images upload status
+clothes_man_4 replaced via direct blob
