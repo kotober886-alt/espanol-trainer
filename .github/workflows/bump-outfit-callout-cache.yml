@@ -1,4 +1,4 @@
-name: Install answer translation runtime
+name: Patch remaining answer translations
 
 on:
   push:
@@ -10,52 +10,61 @@ permissions:
   contents: write
 
 jobs:
-  install:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install answer translation layer and bump cache
+      - name: Add missing translations and bump cache
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          trainer = Path('assets/trainer-v13-fixes.js')
-          s = trainer.read_text(encoding='utf-8')
-          marker = "  function loadOutfitPictureCallouts(){"
-          loader = "\n".join([
-              "  function loadAnswerTranslations(){",
-              "    const old=document.querySelector('script[data-answer-translations]');",
-              "    if(old) old.remove();",
-              "    const script=document.createElement('script');",
-              "    script.src='assets/answer-translations.js?v=20260917-answertranslations1';",
-              "    script.dataset.answerTranslations='1';",
-              "    document.body.appendChild(script);",
-              "  }",
-              "  loadAnswerTranslations();",
-              "",
+
+          p = Path('assets/answer-translations.js')
+          s = p.read_text(encoding='utf-8')
+          anchor = "  const SENTENCE_RU={\n"
+          additions = "\n".join([
+              "    p2:'lee / usted lee — Вы читаете / Вы читаете (usted).',",
+              "    p3:'no escucháis / vosotros no escucháis / no escucháis vosotros — вы не слушаете.',",
+              "    ct9:'pequeño / pequeña — маленький / маленькая.',",
+              "    ct10:'feo / fea — некрасивый / некрасивая.',",
+              "    ct11:'caro / cara — дорогой / дорогая.',",
+              "    ct12:'sucio / sucia — грязный / грязная.',",
+              "    ct13:'ruidoso / ruidosa — шумный / шумная.',",
+              "    ct14:'desagradable — неприятный / неприятная.',",
               ""
           ])
-          if "data-answer-translations" not in s:
-              if marker not in s:
-                  raise SystemExit('Expected trainer insertion marker not found')
-              trainer.write_text(s.replace(marker, loader + marker, 1), encoding='utf-8')
-          index = Path('index.html')
-          s = index.read_text(encoding='utf-8')
-          old = 'assets/trainer-v13-fixes.js?v=20260917-outfitcallouts2'
-          new = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations1'
+          if "    p2:'lee / usted lee" not in s:
+              if anchor not in s:
+                  raise SystemExit('SENTENCE_RU anchor not found')
+              p.write_text(s.replace(anchor, anchor + additions, 1), encoding='utf-8')
+
+          trainer = Path('assets/trainer-v13-fixes.js')
+          s = trainer.read_text(encoding='utf-8')
+          old = 'assets/answer-translations.js?v=20260917-answertranslations1'
+          new = 'assets/answer-translations.js?v=20260917-answertranslations2'
           if new not in s:
               if old not in s:
-                  raise SystemExit('Expected trainer cache key not found')
+                  raise SystemExit('Answer translation child cache key not found')
+              trainer.write_text(s.replace(old, new, 1), encoding='utf-8')
+
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+          old = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations1'
+          new = 'assets/trainer-v13-fixes.js?v=20260917-answertranslations2'
+          if new not in s:
+              if old not in s:
+                  raise SystemExit('Trainer cache key not found')
               index.write_text(s.replace(old, new, 1), encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html assets/trainer-v13-fixes.js
+          git add assets/answer-translations.js assets/trainer-v13-fixes.js index.html
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Enable Russian translations in correct answers"
+          git commit -m "Complete Russian translations for correct answers"
           git push
