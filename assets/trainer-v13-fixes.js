@@ -140,7 +140,7 @@
 
   function installAnimalsCardArt(){
     try{
-      if(typeof renderStudy==='function' && !renderStudy.__animalsArtFixed){
+      if(typeof renderStudy==='function' && !renderStudy.__animalsArtFinal){
         const baseRenderStudy=renderStudy;
         const patched=function(){
           baseRenderStudy();
@@ -149,24 +149,22 @@
               const words=currentFoodWords();
               const word=words[wordIndex];
               els.studyCard.classList.remove('no-art');
-              if(word && typeof animalArt==='function') els.foodArt.innerHTML=animalArt(word.art);
+              els.foodArt.style.display='grid';
+              if(word && typeof animalArt==='function') els.foodArt.innerHTML=animalArt(word.art || word.id);
             }
           }catch(e){}
         };
-        patched.__animalsArtFixed=true;
+        patched.__animalsArtFinal=true;
         renderStudy=patched;
       }
     }catch(e){}
   }
 
   function loadAnimalRasterFix(){
-    if(document.querySelector('script[data-animals-card-art-fix]')){
-      installAnimalsCardArt();
-      try{ if(selectedTopic==='animals' && foodPhase==='study') renderStudy(); }catch(e){}
-      return;
-    }
+    const old=document.querySelector('script[data-animals-card-art-fix]');
+    if(old) old.remove();
     const fix=document.createElement('script');
-    fix.src='assets/animals-card-art-fix.js?v=5';
+    fix.src='assets/animals-card-art-fix.js?v=20260917-final1';
     fix.dataset.animalsCardArtFix='1';
     fix.onload=function(){
       installAnimalsCardArt();
@@ -175,13 +173,11 @@
     document.body.appendChild(fix);
   }
 
-  if(!document.querySelector('script[data-animals-topic]')){
-    const animalsScript=document.createElement('script');
-    animalsScript.src='assets/animals-topic.js?v=8';
-    animalsScript.dataset.animalsTopic='1';
-    animalsScript.onload=loadAnimalRasterFix;
-    document.body.appendChild(animalsScript);
-  } else {
-    loadAnimalRasterFix();
-  }
+  const oldAnimals=document.querySelector('script[data-animals-topic]');
+  if(oldAnimals) oldAnimals.remove();
+  const animalsScript=document.createElement('script');
+  animalsScript.src='assets/animals-topic.js?v=20260917-final1';
+  animalsScript.dataset.animalsTopic='1';
+  animalsScript.onload=loadAnimalRasterFix;
+  document.body.appendChild(animalsScript);
 })();
