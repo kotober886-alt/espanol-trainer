@@ -3,7 +3,7 @@
   const KEYS=new Set(['dog','cat','rabbit','hamster','mouse','turtle','horse','cow','pig','sheep','goat','chicken','lion','tiger','bear','elephant','giraffe','monkey','eagle','owl','parrot','duck','penguin','flamingo','fish','shark','dolphin','whale','octopus','crab','snake','crocodile','lizard','frog','salamander','tortoise']);
   function art(key){
     if(!KEYS.has(key)) return '';
-    const src='assets/generated/animals/'+key+'.webp?v=20260917-approved4';
+    const src='assets/generated/animals/'+key+'.webp?v=20260917-individual1';
     return '<img class="approved-animal-single" src="'+src+'" alt="" loading="eager" decoding="async">';
   }
   window.animalArt=art;

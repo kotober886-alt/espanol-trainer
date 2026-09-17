@@ -164,7 +164,7 @@
     const old=document.querySelector('script[data-animals-card-art-fix]');
     if(old) old.remove();
     const fix=document.createElement('script');
-    fix.src='assets/animals-card-art-fix.js?v=20260917-approved3';
+    fix.src='assets/animals-card-art-fix.js?v=20260917-individual1';
     fix.dataset.animalsCardArtFix='1';
     fix.onload=function(){
       installAnimalsCardArt();
