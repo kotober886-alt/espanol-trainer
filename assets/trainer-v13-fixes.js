@@ -166,7 +166,7 @@
       return;
     }
     const fix=document.createElement('script');
-    fix.src='assets/animals-card-art-fix.js?v=3';
+    fix.src='assets/animals-card-art-fix.js?v=4';
     fix.dataset.animalsCardArtFix='1';
     fix.onload=function(){
       installAnimalsCardArt();
@@ -177,7 +177,7 @@
 
   if(!document.querySelector('script[data-animals-topic]')){
     const animalsScript=document.createElement('script');
-    animalsScript.src='assets/animals-topic.js?v=6';
+    animalsScript.src='assets/animals-topic.js?v=7';
     animalsScript.dataset.animalsTopic='1';
     animalsScript.onload=loadAnimalRasterFix;
     document.body.appendChild(animalsScript);
