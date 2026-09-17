@@ -6,11 +6,13 @@
     'clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5'
   ]);
 
-  // Precise endpoints for the three layouts reported from mobile.
+  // Precise endpoints for layouts that need manual disambiguation.
   // Coordinates are percentages inside the picture area.
   const TARGET_OVERRIDES={
     // jacket, shirt, backpack, trousers, shoes
     clothes_man:[[38,39],[50,34],[66,31],[50,64],[50,86]],
+    // cap, shirt, jeans, belt, boots
+    clothes_man_2:[[50,14],[50,35],[50,66],[50,45],[50,88]],
     // hat, coat, trousers, scarf, shoes
     clothes_man_3:[[50,13],[67,45],[50,66],[44,27],[50,86]],
     // sunglasses, coat, trousers, scarf, ankle boots
@@ -25,6 +27,13 @@
       {side:'right',y:20},
       {side:'left',y:64},
       {side:'right',y:86}
+    ],
+    clothes_man_2:[
+      {side:'left',y:14},
+      {side:'right',y:32},
+      {side:'left',y:64},
+      {side:'right',y:48},
+      {side:'left',y:86}
     ],
     clothes_man_3:[
       {side:'left',y:14},
@@ -60,7 +69,7 @@
     const x=clamp(num(base&&base[0],50),12,88);
 
     // Distinct vertical zones stop nearby garments from sharing the same endpoint.
-    if(/\b(cinturon|cinturones)\b/.test(s)) return [50,47];
+    if(/\b(cinturon|cinturones)\b/.test(s)) return [50,45];
     if(/\b(pantalon|pantalones|vaquero|vaqueros|jeans)\b/.test(s)) return [x,66];
     if(/\b(short|shorts|pantalones cortos)\b/.test(s)) return [x,58];
     if(/\b(falda|faldas)\b/.test(s)) return [x,61];
@@ -174,13 +183,13 @@
 
   function install(){
     try{
-      if(typeof render==='function' && !render.__outfitCalloutsV3){
+      if(typeof render==='function' && !render.__outfitCalloutsV4){
         const base=render;
         const patched=function(){
           base();
           try{ renderOutfitCallouts(); }catch(e){}
         };
-        patched.__outfitCalloutsV3=true;
+        patched.__outfitCalloutsV4=true;
         render=patched;
       }
     }catch(e){}
