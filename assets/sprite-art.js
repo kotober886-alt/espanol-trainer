@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  const ASSET_VERSION = "20260918-5";
+  const ASSET_VERSION = "20260918-food-raster2";
   const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
 
   const SPRITE_IMAGES = {
@@ -74,7 +74,15 @@
     return "";
   }
 
+  function directFoodArt(id){
+    const value=String(id || "");
+    if(!/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.png$/i.test(value)) return "";
+    return '<img class="food-direct-image" src="'+value+'?v='+ASSET_VERSION+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async" style="width:min(260px,92%);max-height:260px;aspect-ratio:1/1;object-fit:contain;display:block;margin:auto">';
+  }
+
   window.foodArt=function(id){
+    const direct=directFoodArt(id);
+    if(direct) return direct;
     return firstSprite([
       ["foods","foods",id,7,5],
       ["foodsExtra","foodsExtra",id,3,3]
