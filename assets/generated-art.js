@@ -41,8 +41,16 @@
     ]);
   };
   window.clothingArt=function(kind){
+    const directRaster={
+      hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-raster-final1",
+      vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-raster-final1",
+      polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-raster-final1",
+      cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-raster-final1"
+    };
+    if(directRaster[kind]){
+      return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';
+    }
     return firstSprite([
-      ["clothesNew","clothesNew",kind,2,2],
       ["clothes","clothes",kind,6,5],
       ["clothesExtra","clothesExtra",kind,6,3]
     ]);
