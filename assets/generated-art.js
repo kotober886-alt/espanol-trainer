@@ -53,4 +53,10 @@
       ["activitiesExtra","activitiesExtra",kind,4,2]
     ]);
   };
+
+  const generatedSpriteStyle=document.createElement('style');
+  generatedSpriteStyle.textContent=
+    '.food-art .generated-sprite{width:min(100%,360px);aspect-ratio:1/1;background-repeat:no-repeat;flex:0 0 auto}'+
+    '@media(max-width:520px){.food-art .generated-sprite{width:min(100%,260px)}}';
+  document.head.appendChild(generatedSpriteStyle);
 })();
