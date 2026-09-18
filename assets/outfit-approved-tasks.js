@@ -2,24 +2,130 @@
 'use strict';
 const scenes=['clothes_man','clothes_man_2','clothes_man_3','clothes_man_4','clothes_man_5','clothes_woman','clothes_woman_2','clothes_woman_3','clothes_woman_4','clothes_woman_5'];
 const S=new Set(scenes);
-function n(v){return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
-function V(names,colors){names=Array.isArray(names)?names:[names];colors=Array.isArray(colors)?colors:[colors];let a=[];for(const x of names)for(const c of colors){a.push(x+' '+c,c+' '+x,'el '+x+' '+c,'la '+x+' '+c,'los '+x+' '+c,'las '+x+' '+c,'un '+x+' '+c,'una '+x+' '+c)}return [...new Set(a.map(n))]}
-const L=(r,x,c)=>({reveal:r,answers:V(x,c)});
+
+function n(v){
+  return String(v==null?'':v).toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function V(reveal,names,colors){
+  names=Array.isArray(names)?names:[names];
+  colors=Array.isArray(colors)?colors:[colors];
+  const out=[reveal];
+  for(const x of names) for(const c of colors) out.push(x+' '+c);
+  return [...new Set(out.map(n))];
+}
+const L=(reveal,ru,names,colors)=>({reveal:reveal,translation:ru,answers:V(reveal,names,colors)});
+
 const D={
-clothes_man:[L('el polo blanco','polo',['blanco','crema']),L('los pantalones deportivos grises',['pantalones deportivos','pantalones de chandal','pantalones de chándal'],['grises','gris']),L('la chaqueta deportiva azul marino',['chaqueta deportiva','chaqueta'],['azul marino','azul']),L('la mochila negra','mochila',['negra','negro']),L('las zapatillas beige','zapatillas',['beige','crema'])],
-clothes_man_2:[L('el gorro negro','gorro','negro'),L('el jersey crema','jersey',['crema','beige']),L('el abrigo negro','abrigo','negro'),L('la bufanda gris','bufanda','gris'),L('las botas negras',['botas','botines'],['negras','negro'])],
-clothes_man_3:[L('la gorra beige','gorra','beige'),L('la camisa verde a cuadros',['camisa','sobrecamisa'],['verde','verde oliva','verde a cuadros']),L('los vaqueros azul claro',['vaqueros','jeans'],['azul claro','azules claros']),L('las zapatillas blancas','zapatillas',['blancas','blanco'])],
-clothes_man_4:[L('el chaleco beige','chaleco',['beige','crema']),L('la sudadera verde',['sudadera','sudadera con capucha','hoodie'],'verde'),L('los pantalones cargo marrones',['pantalones cargo','pantalones'],['marrones','marron','marrón']),L('las zapatillas blancas y verdes','zapatillas',['blancas y verdes','blanco y verde','blancas verdes'])],
-clothes_man_5:[L('la sudadera azul marino',['sudadera','sudadera con capucha','hoodie'],['azul marino','azul oscuro']),L('la sudadera azul marino',['sudadera','sudadera con capucha','hoodie'],['azul marino','azul oscuro']),L('la mochila negra','mochila',['negra','negro']),L('los vaqueros azul claro',['vaqueros','jeans'],['azul claro','azules claros']),L('las zapatillas blancas y grises','zapatillas',['blancas y grises','blanco y gris','blancas grises'])],
-clothes_woman:[L('el sujetador blanco','sujetador','blanco'),L('el pijama rosa a cuadros','pijama',['rosa','rosa a cuadros']),L('las zapatillas de casa blancas',['zapatillas de casa','pantuflas'],['blancas','blanco','crema'])],
-clothes_woman_2:[L('la blusa blanca','blusa',['blanca','blanco','crema']),L('la americana marrón a cuadros',['americana','blazer','chaqueta'],['marron a cuadros','marrón a cuadros','marron','marrón']),L('la falda marrón oscuro','falda',['marron oscuro','marrón oscuro']),L('los tacones marrones',['tacones','zapatos de tacon','zapatos de tacón'],['marrones','marron','marrón']),L('el sombrero marrón','sombrero',['marron','marrón'])],
-clothes_woman_3:[L('la chaqueta marrón',['chaqueta','cazadora'],['marron','marrón']),L('el jersey crema',['jersey','jersey de cuello alto'],['crema','beige','blanco']),L('el vestido marrón oscuro','vestido',['marron oscuro','marrón oscuro','negro']),L('el bolso negro','bolso','negro'),L('las botas marrones','botas',['marrones','marron','marrón'])],
-clothes_woman_4:[L('las gafas de sol marrones','gafas de sol',['marrones','marron','marrón']),L('la camiseta blanca','camiseta',['blanca','blanco']),L('la camisa azul claro','camisa',['azul claro','azul clara']),L('los pantalones cortos beige',['pantalones cortos','shorts'],['beige','caqui']),L('las sandalias marrones','sandalias',['marrones','marron','marrón'])],
-clothes_woman_5:[L('el cárdigan crema',['cardigan','cárdigan'],['crema','beige']),L('el top blanco','top',['blanco','crema']),L('el bolso marrón','bolso',['marron','marrón','negro']),L('los pantalones verde oliva','pantalones',['verde oliva','verdes','verde']),L('las zapatillas blancas','zapatillas',['blancas','blanco'])]
+  clothes_man:[
+    L('el polo blanco','белое поло','polo','blanco'),
+    L('los pantalones deportivos grises','серые спортивные брюки',['pantalones deportivos','pantalones de chándal','pantalones de chandal'],['grises','gris']),
+    L('la chaqueta deportiva azul marino','тёмно-синяя спортивная куртка',['chaqueta deportiva','chaqueta'],['azul marino','azul oscuro']),
+    L('la mochila negra','чёрный рюкзак','mochila',['negra','negro']),
+    L('las zapatillas beige','бежевые кроссовки','zapatillas','beige')
+  ],
+  clothes_man_2:[
+    L('el gorro negro','чёрная шапка','gorro','negro'),
+    L('el jersey crema','кремовый свитер','jersey',['crema','beige']),
+    L('el abrigo negro','чёрное пальто','abrigo','negro'),
+    L('la bufanda gris','серый шарф','bufanda','gris'),
+    L('las botas negras','чёрные ботинки',['botas','botines'],['negras','negros'])
+  ],
+  clothes_man_3:[
+    L('la gorra beige','бежевая кепка','gorra','beige'),
+    L('la camisa verde a cuadros','зелёная рубашка в клетку',['camisa','sobrecamisa'],['verde a cuadros','verde']),
+    L('los vaqueros azul claro','светло-синие джинсы',['vaqueros','jeans'],['azul claro','azules claros']),
+    L('las zapatillas blancas','белые кроссовки','zapatillas',['blancas','blancos'])
+  ],
+  clothes_man_4:[
+    L('el chaleco beige','бежевый жилет','chaleco','beige'),
+    L('la sudadera verde','зелёная толстовка',['sudadera','sudadera con capucha'],'verde'),
+    L('los pantalones cargo marrones','коричневые брюки карго',['pantalones cargo','pantalones'],['marrones','marrón']),
+    L('las zapatillas blancas y verdes','бело-зелёные кроссовки','zapatillas',['blancas y verdes','blanco y verde'])
+  ],
+  clothes_man_5:[
+    L('la sudadera azul marino','тёмно-синяя толстовка',['sudadera','sudadera con capucha'],['azul marino','azul oscuro']),
+    L('el bolsillo azul marino','тёмно-синий карман','bolsillo',['azul marino','azul oscuro']),
+    L('la mochila negra','чёрный рюкзак','mochila',['negra','negro']),
+    L('los vaqueros azul claro','светло-синие джинсы',['vaqueros','jeans'],['azul claro','azules claros']),
+    L('las zapatillas blancas y grises','бело-серые кроссовки','zapatillas',['blancas y grises','blanco y gris'])
+  ],
+  clothes_woman:[
+    L('el sujetador blanco','белый бюстгальтер','sujetador','blanco'),
+    L('el pijama rosa a cuadros','розовая пижама в клетку','pijama',['rosa a cuadros','rosa']),
+    L('las zapatillas de casa blancas','белые домашние тапочки',['zapatillas de casa','pantuflas'],['blancas','blancos'])
+  ],
+  clothes_woman_2:[
+    L('la blusa blanca','белая блузка','blusa',['blanca','blanco']),
+    L('la americana marrón a cuadros','коричневый пиджак в клетку',['americana','blazer','chaqueta'],['marrón a cuadros','marron a cuadros']),
+    L('la falda marrón oscuro','тёмно-коричневая юбка','falda',['marrón oscuro','marron oscuro']),
+    L('los tacones marrones','коричневые туфли на каблуке',['tacones','zapatos de tacón','zapatos de tacon'],['marrones','marrón']),
+    L('el sombrero marrón','коричневая шляпа','sombrero',['marrón','marron'])
+  ],
+  clothes_woman_3:[
+    L('la chaqueta marrón','коричневая куртка',['chaqueta','cazadora'],['marrón','marron']),
+    L('el jersey crema','кремовый свитер',['jersey','jersey de cuello alto'],['crema','beige']),
+    L('el vestido marrón oscuro','тёмно-коричневое платье','vestido',['marrón oscuro','marron oscuro']),
+    L('el bolso negro','чёрная сумка','bolso','negro'),
+    L('las botas marrones','коричневые сапоги','botas',['marrones','marrón'])
+  ],
+  clothes_woman_4:[
+    L('las gafas de sol marrones','коричневые солнцезащитные очки','gafas de sol',['marrones','marrón']),
+    L('la camiseta blanca','белая футболка','camiseta',['blanca','blanco']),
+    L('la camisa azul claro','светло-голубая рубашка','camisa',['azul claro','azul clara']),
+    L('los pantalones cortos beige','бежевые шорты',['pantalones cortos','shorts'],'beige'),
+    L('las sandalias marrones','коричневые сандалии','sandalias',['marrones','marrón'])
+  ],
+  clothes_woman_5:[
+    L('el cárdigan crema','кремовый кардиган',['cárdigan','cardigan'],['crema','beige']),
+    L('el top blanco','белый топ','top','blanco'),
+    L('el bolso marrón','коричневая сумка','bolso',['marrón','marron']),
+    L('los pantalones verde oliva','оливково-зелёные брюки','pantalones',['verde oliva','verdes oliva']),
+    L('las zapatillas blancas','белые кроссовки','zapatillas',['blancas','blancos'])
+  ]
 };
-function task(s){let a=D[s];return{id:'approved_'+s,topic:'clothes',type:'picture-label',skill:'Одежда: предмет + цвет',q:'Подпиши каждый номер: предмет одежды и его цвет по-испански.',pictureHint:'Напиши предмет и цвет/цвета. Регистр, знаки препинания, акценты и лишние пробелы не мешают проверке.',pictureScene:s,pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp?v=20260918-repair8" alt="Задание на одежду">',pictureLabels:a,a:[a.map(x=>x.reveal).join(' | ')],displayAnswer:a.map((x,j)=>(j+1)+'. '+x.reveal).join(' · '),e:'Назови предмет и его цвет по-испански.'}}
-try{if(typeof pictureLabelExercises==='function'){const base=pictureLabelExercises;pictureLabelExercises=function(){return base().filter(x=>!(x&&x.topic==='clothes'&&S.has(String(x.pictureScene||'')))).concat(scenes.map(task))}}}catch(e){}
-const st=document.createElement('style');st.textContent='.approved-outfit-image{display:block;width:min(100%,600px);height:auto;max-height:72vh;object-fit:contain;margin:auto}.picture-visual:has(.approved-outfit-image){aspect-ratio:auto!important;height:auto!important}.picture-visual:has(.approved-outfit-image) .picture-marker,.picture-visual:has(.approved-outfit-image) .outfit-callout-svg{display:none!important}@media(max-width:520px){.approved-outfit-image{width:100%;max-height:54vh}}';document.head.appendChild(st);
+
+function bilingualAnswer(labels){
+  return labels.map((x,i)=>(i+1)+'. '+x.reveal+'\n   '+x.translation).join('\n\n');
+}
+function task(s){
+  const a=D[s];
+  return {
+    id:'approved_'+s,
+    topic:'clothes',
+    type:'picture-label',
+    skill:'Одежда: предмет + цвет',
+    q:'Подпиши каждый номер: предмет одежды и его цвет по-испански.',
+    pictureHint:'Напиши предмет и цвет/цвета. Артикль можно не писать; регистр, акценты и лишние пробелы не мешают проверке.',
+    pictureScene:s,
+    pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp?v=20260918-repair8" alt="Задание на одежду">',
+    pictureLabels:a,
+    a:[a.map(x=>x.reveal).join(' | ')],
+    displayAnswer:bilingualAnswer(a),
+    e:''
+  };
+}
+try{
+  if(typeof pictureLabelExercises==='function'){
+    const base=pictureLabelExercises;
+    pictureLabelExercises=function(){
+      return base().filter(x=>!(x&&x.topic==='clothes'&&S.has(String(x.pictureScene||'')))).concat(scenes.map(task));
+    };
+  }
+}catch(e){}
+
+const st=document.createElement('style');
+st.textContent=
+  '.approved-outfit-image{display:block;width:min(100%,600px);height:auto;max-height:72vh;object-fit:contain;margin:auto}'+
+  '.picture-visual:has(.approved-outfit-image){aspect-ratio:auto!important;height:auto!important}'+
+  '.picture-visual:has(.approved-outfit-image) .picture-marker,.picture-visual:has(.approved-outfit-image) .outfit-callout-svg{display:none!important}'+
+  '.answer-box #answerText{white-space:pre-line}'+
+  '@media(max-width:520px){.approved-outfit-image{width:100%;max-height:54vh}}';
+document.head.appendChild(st);
+
 window.normalizeOutfitAnswer=n;
 window.normalizePictureAnswer=n;
 })();
