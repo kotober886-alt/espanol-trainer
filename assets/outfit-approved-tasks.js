@@ -101,7 +101,8 @@ function task(s){
     q:'Подпиши каждый номер: предмет одежды и его цвет по-испански.',
     pictureHint:'Напиши предмет и один базовый цвет. Артикль можно не писать; регистр, акценты и лишние пробелы не мешают проверке.',
     pictureScene:s,
-    pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp?v=20260918-repair8" alt="Задание на одежду">',
+    // ИСПРАВЛЕНО: Убран жесткий кэш-параметр ?v=..., теперь картинки будут обновляться корректно
+    pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp" alt="Задание на одежду">',
     pictureLabels:a,
     a:[a.map(x=>x.reveal).join(' | ')],
     displayAnswer:bilingualAnswer(a),
