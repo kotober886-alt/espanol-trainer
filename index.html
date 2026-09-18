@@ -637,7 +637,7 @@
       .food-word { font-size:27px; }
     }
   </style>
-  <link rel="stylesheet" href="assets/generated-art.css?v=13">
+  <link rel="stylesheet" href="assets/generated-art.css?v=20260918-runtime1">
 </head>
 <body>
   <main class="app">
@@ -714,7 +714,6 @@
             <div class="progress-label" id="progressLabel">1 / 1</div>
           </div>
         </div>
-
 
         <div id="studyView" hidden>
           <div class="study-shell">
@@ -964,8 +963,6 @@
       {title:"Повседневная жизнь",ids:["routine","calendar","practical","city","foods","clothes","activities"]},
       {title:"Следующий уровень",ids:["past","prepositions","custom"]}
     ];
-
-
 
     const PRONOUN_CATEGORIES = [
       {id:"all",title:"Все"},
@@ -1911,7 +1908,6 @@
         [["Guardo las llaves en la riñonera.","Я храню ключи в поясной сумке."],["La riñonera es práctica para caminar.","Поясная сумка удобна для прогулок."]],"Guardo las llaves en la ___.",["riñonera"])
     ];
 
-
     const ACTIVITY_CATEGORIES = [
       {id:"all",title:"Все занятия"},
       {id:"sport",title:"Спорт"},
@@ -2029,7 +2025,6 @@
       activityPhrase("garden","outdoors","hacer jardinería","hacer + существительное","заниматься садоводством",["заниматься садоводством","заниматься садом"],["hacer jardinería","hacer jardineria"],"garden",
         [["Hago jardinería los fines de semana.","По выходным я занимаюсь садоводством."],["La jardinería me ayuda a relajarme.","Садоводство помогает мне расслабиться."]],"Los fines de semana me gusta ___.",["hacer jardinería","hacer jardineria"])
     ];
-
 
     function foundationItem(id,cat,word,label,tr,ru,answers,ex1,ex1ru,ex2,ex2ru,cloze,clozeAnswers){
       return {id:id,cat:cat,word:word,base:word,gender:label,tr:tr,ru:ru,answers:answers,art:null,examples:[[ex1,ex1ru],[ex2,ex2ru]],cloze:cloze,clozeAnswers:clozeAnswers};
@@ -2224,7 +2219,6 @@
       }
     ];
 
-
     const PREPOSITION_CATEGORIES=[{id:"all",title:"Все предлоги"},{id:"basic",title:"Основные"},{id:"place",title:"Место"},{id:"compound",title:"Составные"}];
     const PREPOSITION_WORDS=[
       foundationItem("a","basic","a","простой предлог","в, к; направление",["в","к"],["a"],"Voy a Madrid.","Я еду в Мадрид.","Escribo a Ana.","Я пишу Ане.","Voy ___ Madrid.",["a"]),
@@ -2273,7 +2267,6 @@
       foundationItem("autumn","seasons","el otoño","время года","осень",["осень"],["otoño","otono","el otoño","el otono"],"En otoño las hojas se vuelven amarillas.","Осенью листья становятся жёлтыми.","El otoño empieza en septiembre.","Осень начинается в сентябре.","En ___ las hojas se vuelven amarillas.",["otoño","otono"])
     ];
 
-
     const CITY_CATEGORIES=[{id:"all",title:"Весь город"},{id:"places",title:"Места"},{id:"opposites",title:"Противоположности"}];
     const CITY_WORDS=[
       foundationItem("trash","places","el contenedor de basura","мужской род","мусорный контейнер",["мусорный контейнер"],["contenedor de basura","el contenedor de basura"],"El contenedor de basura está en la esquina.","Мусорный контейнер находится на углу.","Tiro la bolsa al contenedor de basura.","Я выбрасываю пакет в мусорный контейнер.","El ___ está en la esquina.",["contenedor de basura"]),
@@ -2295,7 +2288,6 @@
       foundationItem("pleasant","opposites","agradable / desagradable","антонимы","приятный / неприятный",["приятный неприятный","приятный / неприятный"],["agradable / desagradable","agradable desagradable","agradable y desagradable"],"La plaza es agradable.","Площадь приятная.","El olor es desagradable.","Запах неприятный.","La plaza es ___.",["agradable"]),
       foundationItem("safe","opposites","seguro / peligroso","антонимы","безопасный / опасный",["безопасный опасный","безопасный / опасный"],["seguro / peligroso","seguro peligroso","seguro y peligroso"],"Este barrio es seguro.","Этот район безопасный.","Cruzar aquí es peligroso.","Переходить здесь опасно.","Este barrio es ___.",["seguro"])
     ];
-
 
     const BUILTIN = [
       {id:"v1",topic:"verbs",skill:"Значение глагола",q:"Как по-испански «быть» в значении постоянного признака?",a:["ser"],e:"Ser используют для происхождения, профессии, характера и других устойчивых признаков."},
@@ -2374,9 +2366,6 @@
       {id:"ct13",topic:"city",skill:"Противоположности",q:"Напиши антоним слова tranquilo.",a:["ruidoso","ruidosa"]},
       {id:"ct14",topic:"city",skill:"Противоположности",q:"Напиши антоним слова agradable.",a:["desagradable"]}
     ];
-
-
-
 
     function exerciseGroups(){
       return [
@@ -3209,7 +3198,6 @@
       return items;
     }
 
-
     function clothingExercises(){
       const items=[];
       CLOTHING_WORDS.forEach(function(word){
@@ -3231,7 +3219,6 @@
       });
       return items;
     }
-
 
     function activityExercises(){
       const items=[];
@@ -3304,7 +3291,6 @@
       return '<svg '+common+'>'+art[kind]+'</svg>';
     }
 
-
     function clothingArt(kind){
       const newClothes={
         hoodie:"assets/generated/clothes-new/hoodie.svg?v=20260918-svg1",
@@ -3368,7 +3354,6 @@
       };
       return '<svg '+common+'><g stroke="#463B75" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">'+(art[kind]||art.tshirt)+'</g></svg>';
     }
-
 
     function activityArt(kind){
       const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
@@ -4763,18 +4748,15 @@
     renderTopics();
     showHome();
   </script>
-  <script src="assets/generated-art.js?v=20260918-newclothes1"></script>
-  <script src="assets/hq-clothes-row1.js?v=13"></script>
-  <script src="assets/img-clothes.js?v=13"></script>
-  <script src="assets/img-foods.js?v=13"></script>
-  <script src="assets/img-activities.js?v=13"></script>
-  <script src="assets/visual-coverage.js?v=20260918-displaynumbers1"></script>
-  <script src="assets/exercise-quality-fixes.js?v=20260917-smallaccessory1"></script>
-  <script src="assets/trainer-v13-fixes.js?v=20260918-nohood1"></script>
+  <script src="assets/generated-art.js?v=20260918-runtime1"></script>
+  <script src="assets/hq-clothes-row1.js?v=20260918-runtime1"></script>
+  <script src="assets/img-clothes.js?v=20260918-runtime1"></script>
+  <script src="assets/img-foods.js?v=20260918-runtime1"></script>
+  <script src="assets/img-activities.js?v=20260918-runtime1"></script>
+  <script src="assets/visual-coverage.js?v=20260918-runtime1"></script>
+  <script src="assets/exercise-quality-fixes.js?v=20260918-runtime1"></script>
+  <script src="assets/trainer-v13-fixes.js?v=20260918-runtime1"></script>
+
   <script src="assets/outfit-approved-tasks.js?v=20260918-nohood1"></script>
-<script src="assets/generated-art.js?v=13"></script>
-<script src="assets/visual-coverage.js?v=13"></script>
-<script src="assets/exercise-quality-fixes.js?v=13"></script>
-<script src="assets/trainer-v13-fixes.js?v=13"></script>
 </body>
 </html>
