@@ -29,12 +29,22 @@
     const src=SPRITE_IMAGES[imageKey];
     if(!pos||!src) return "";
 
-    const x=cols===1?0:(pos[0]/(cols-1))*100;
-    const y=rows===1?0:(pos[1]/(rows-1))*100;
+    // clothesExtra is a 6x3 sprite (1774x887). A tiny zoom prevents
+    // subpixel interpolation from leaking pixels from neighbouring cells.
+    const zoom=mapKey==="clothesExtra"?1.04:1;
+    const bgCols=cols*zoom;
+    const bgRows=rows*zoom;
+
+    const x=cols===1
+      ? 0
+      : (((pos[0]+0.5)*zoom-0.5)/(bgCols-1))*100;
+    const y=rows===1
+      ? 0
+      : (((pos[1]+0.5)*zoom-0.5)/(bgRows-1))*100;
 
     return '<div class="generated-sprite generated-sprite-'+mapKey+'" aria-hidden="true" '+
       'style="width:min(260px,92%);aspect-ratio:1/1;background-image:url(\''+src+'\');'+
-      'background-repeat:no-repeat;background-size:'+(cols*100)+'% '+(rows*100)+'%;'+
+      'background-repeat:no-repeat;background-size:'+(bgCols*100)+'% '+(bgRows*100)+'%;'+
       'background-position:'+x+'% '+y+'%;"></div>';
   }
 
