@@ -1,0 +1,77 @@
+name: Split new clothing raster cards
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/split_new_clothes_raster.py"
+      - ".github/workflows/split-new-clothes-raster.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
+      - name: Split generated raster
+        run: python scripts/split_new_clothes_raster.py
+      - name: Switch runtime to individual raster files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("assets/generated-art.js")
+          s=p.read_text(encoding="utf-8")
+          start=s.index("  window.clothingArt=function(kind){")
+          end=s.index("  window.activityArt=function(kind){",start)
+          block='''  window.clothingArt=function(kind){
+            const directRaster={
+              hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-raster1",
+              vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-raster1",
+              polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-raster1",
+              cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-raster1"
+            };
+            if(directRaster[kind]){
+              return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';
+            }
+            return firstSprite([
+              ["clothes","clothes",kind,6,5],
+              ["clothesExtra","clothesExtra",kind,6,3]
+            ]);
+          };
+'''
+          s=s[:start]+block+s[end:]
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Verify raster outputs
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageStat
+          from pathlib import Path
+          for p in sorted(Path("assets/generated/clothes-new-raster").glob("*.webp")):
+              im=Image.open(p).convert("RGB")
+              stat=ImageStat.Stat(im)
+              assert im.width>=300 and im.height>=300, (p,im.size)
+              assert max(stat.var)>100, (p,stat.var)
+              print(p, im.size, stat.var)
+          PY
+      - name: Commit individual raster clothing art
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/generated/clothes-new-raster assets/generated-art.js
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "Use individual generated raster clothing card art"
+          git push origin HEAD:main
