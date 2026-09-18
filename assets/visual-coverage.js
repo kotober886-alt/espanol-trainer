@@ -171,10 +171,12 @@
       els.pictureHelp.textContent=item.pictureHint || 'Посмотри на картинку и подпиши её по-испански.';
       const labels=item.pictureLabels || [];
       const fields=labels.map(function(label,i){
-        return '<label class="picture-field"><span>'+(i+1)+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+(i+1)+'" placeholder="По-испански"></label>';
+        const number=label&&label.displayNumber ? label.displayNumber : (i+1);
+        return '<label class="picture-field"><span>'+number+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+number+'" placeholder="По-испански"></label>';
       }).join('');
       const pictureMarkers=labels.map(function(label,i){
-        return '<span class="picture-marker" style="left:'+Number(label.markerX)+'%;top:'+Number(label.markerY)+'%" aria-hidden="true">'+(i+1)+'</span>';
+        const number=label&&label.displayNumber ? label.displayNumber : (i+1);
+        return '<span class="picture-marker" style="left:'+Number(label.markerX)+'%;top:'+Number(label.markerY)+'%" aria-hidden="true">'+number+'</span>';
       }).join('');
       const finalPicture = item.pictureHtml
         ? item.pictureHtml
