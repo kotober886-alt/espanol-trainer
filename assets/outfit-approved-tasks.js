@@ -44,14 +44,14 @@ const D={
     L('el chaleco beige','бежевый жилет','chaleco','beige'),
     L('la sudadera con capucha verde','зелёное худи',['sudadera con capucha','sudadera'],'verde'),
     L('los pantalones marrones','коричневые брюки','pantalones','marrones'),
-    L('las zapatillas deportivas blancas y verdes','бело-зелёные кроссовки',['zapatillas deportivas','tenis'],['blancas y verdes','blanco y verde'])
+    L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ],
   clothes_man_5:[
     L('la sudadera con capucha azul','синее худи',['sudadera con capucha','sudadera'],'azul'),
     L('la capucha azul','синий капюшон','capucha','azul'),
     L('la mochila negra','чёрный рюкзак','mochila','negra'),
     L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
-    L('las zapatillas deportivas blancas y grises','бело-серые кроссовки',['zapatillas deportivas','tenis'],['blancas y grises','blanco y gris'])
+    L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ],
   clothes_woman:[
     L('la ropa interior blanca','белое нижнее бельё','ropa interior','blanca'),
@@ -99,7 +99,7 @@ function task(s){
     type:'picture-label',
     skill:'Одежда: предмет + цвет',
     q:'Подпиши каждый номер: предмет одежды и его цвет по-испански.',
-    pictureHint:'Напиши предмет и цвет/цвета. Артикль можно не писать; регистр, акценты и лишние пробелы не мешают проверке.',
+    pictureHint:'Напиши предмет и один базовый цвет. Артикль можно не писать; регистр, акценты и лишние пробелы не мешают проверке.',
     pictureScene:s,
     pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp?v=20260918-repair8" alt="Задание на одежду">',
     pictureLabels:a,
