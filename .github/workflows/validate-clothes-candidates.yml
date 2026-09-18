@@ -1,0 +1,35 @@
+name: Validate fresh clothing raster candidates
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/validate-clothes-candidates.yml
+      - assets/generated/candidate-new-clothes-a.webp
+      - assets/generated/candidate-new-clothes-b.webp
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Validate candidates
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageStat
+          for name in ['a','b']:
+              p=f'assets/generated/candidate-new-clothes-{name}.webp'
+              try:
+                  im=Image.open(p)
+                  im.load()
+                  rgb=im.convert('RGB')
+                  st=ImageStat.Stat(rgb)
+                  print('VALID',name,im.size,'var',st.var)
+              except Exception as e:
+                  print('INVALID',name,repr(e))
+          PY
