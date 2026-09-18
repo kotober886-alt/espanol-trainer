@@ -3334,11 +3334,12 @@
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="pictures"){
         items=items.filter(function(x){ return x.type==="picture-label"; });
-      } else {
-        items=items.filter(function(x){ return x.type!=="picture-label"; });
-        if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-        if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
-        if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
+      } else if(selectedMode==="mistakes"){
+        items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
+      } else if(selectedMode==="tests"){
+        items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
+      } else if(selectedMode==="audio"){
+        items=items.filter(function(x){ return x.type==="audio"; });
       }
       return items;
     }
@@ -4208,9 +4209,12 @@
         } else if(selectedMode==="tests"){
           els.emptyTitle.textContent="Тестов в этой теме пока нет";
           els.emptyText.textContent="Выбери другую тему или режим «Все».";
+        } else if(selectedMode==="pictures"){
+          els.emptyTitle.textContent="Картинок в этой теме пока нет";
+          els.emptyText.textContent="Выбери другую тему или режим «Всё».";
         } else if(selectedMode==="audio"){
           els.emptyTitle.textContent="Аудиозаданий в этой теме пока нет";
-          els.emptyText.textContent="Выбери другую тему или режим «Все».";
+          els.emptyText.textContent="Выбери другую тему или режим «Всё».";
         } else {
           els.emptyTitle.textContent="В этой теме пока нет заданий";
           els.emptyText.textContent="Добавь собственное задание или выбери другую тему.";
