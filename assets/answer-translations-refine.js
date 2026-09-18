@@ -96,7 +96,15 @@
       }
     }
     if(item&&item.type==='picture-label'&&item.topic==='clothes'){
-      pair={es:clean(item.displayAnswer||item.a&&item.a[0]||pair.es),ru:clothingPictureRu(item)||pair.ru};
+      const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
+      if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
+        pair={
+          es:labels.map(function(label,i){return (i+1)+'. '+clean(label.reveal);}).join(' · '),
+          ru:labels.map(function(label,i){return (i+1)+'. '+clean(label.translation);}).join(' · ')
+        };
+      } else {
+        pair={es:clean(item.displayAnswer||item.a&&item.a[0]||pair.es),ru:clothingPictureRu(item)||pair.ru};
+      }
     }
     return pair;
   }
@@ -106,6 +114,21 @@
     try{item=queue&&queue[index];}catch(e){}
     const box=document.getElementById('answerText');
     if(!box||!item)return;
+    if(item&&item.type==='picture-label'&&item.topic==='clothes'){
+      const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
+      if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
+        box.innerHTML='<div class="outfit-answer-list">'+labels.map(function(label,i){
+          return '<div class="outfit-answer-row">'+
+            '<div class="outfit-answer-number">'+(i+1)+'.</div>'+
+            '<div class="outfit-answer-copy">'+
+              '<strong class="outfit-answer-es">'+escapeHtml(clean(label.reveal))+'</strong>'+
+              '<span class="outfit-answer-ru">'+escapeHtml(clean(label.translation))+'</span>'+
+            '</div>'+
+          '</div>';
+        }).join('')+'</div>';
+        return;
+      }
+    }
     const p=refinedPair(item);
     box.innerHTML='<div class="answer-es-line"><span>Español</span><strong>'+escapeHtml(p.es||'—')+'</strong></div>'+
       '<div class="answer-ru-line"><span>Перевод</span><strong>'+escapeHtml(p.ru||'—')+'</strong></div>';
@@ -120,6 +143,19 @@
       render=patched;
     }
   }catch(e){}
+
+  const outfitStyle=document.createElement('style');
+  outfitStyle.textContent=
+    '.outfit-answer-list{display:grid;gap:0;margin-top:2px}'+
+    '.outfit-answer-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;padding:10px 0;border-bottom:1px solid rgba(98,83,217,.12)}'+
+    '.outfit-answer-row:last-child{border-bottom:0;padding-bottom:2px}'+
+    '.outfit-answer-number{font-weight:900;color:#6253d9;line-height:1.45}'+
+    '.outfit-answer-copy{display:grid;gap:2px;min-width:0}'+
+    '.outfit-answer-es{font-size:16px;line-height:1.4;color:#241c72}'+
+    '.outfit-answer-ru{font-size:14px;line-height:1.4;color:#6d6a86;font-weight:700}'+
+    '@media(max-width:520px){.outfit-answer-row{gap:7px;padding:9px 0}.outfit-answer-es{font-size:15px}.outfit-answer-ru{font-size:13px}}';
+  document.head.appendChild(outfitStyle);
+
   window.answerPairForExercise=refinedPair;
   try{paint();}catch(e){}
 })();
