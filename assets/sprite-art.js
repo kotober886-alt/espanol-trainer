@@ -29,22 +29,29 @@
     const src=SPRITE_IMAGES[imageKey];
     if(!pos||!src) return "";
 
-    // clothesExtra is a 6x3 sprite (1774x887). A tiny zoom prevents
-    // subpixel interpolation from leaking pixels from neighbouring cells.
-    const zoom=mapKey==="clothesExtra"?1.04:1;
-    const bgCols=cols*zoom;
-    const bgRows=rows*zoom;
+    // clothesExtra is intentionally rendered with a clipped <img>, not
+    // background-position. This avoids percentage/subpixel sprite drift.
+    if(mapKey==="clothesExtra"){
+      const cellScale=101; // trim only 0.5% from each cell edge
+      const left=-(pos[0]*cellScale+(cellScale-100)/2);
+      const top=-(pos[1]*cellScale+(cellScale-100)/2);
 
-    const x=cols===1
-      ? 0
-      : (((pos[0]+0.5)*zoom-0.5)/(bgCols-1))*100;
-    const y=rows===1
-      ? 0
-      : (((pos[1]+0.5)*zoom-0.5)/(bgRows-1))*100;
+      return '<div class="generated-sprite generated-sprite-clothesExtra" aria-hidden="true" '+
+        'style="width:min(260px,92%);aspect-ratio:1/1;display:grid;place-items:center;">'+
+        '<div class="clothes-extra-crop" style="position:relative;width:86%;height:86%;overflow:hidden;">'+
+        '<img src="'+src+'" alt="" draggable="false" '+
+        'style="position:absolute;display:block;max-width:none!important;max-height:none!important;'+
+        'width:'+(cols*cellScale)+'%;height:'+(rows*cellScale)+'%;'+
+        'left:'+left+'%;top:'+top+'%;object-fit:fill;">'+
+        '</div></div>';
+    }
+
+    const x=cols===1?0:(pos[0]/(cols-1))*100;
+    const y=rows===1?0:(pos[1]/(rows-1))*100;
 
     return '<div class="generated-sprite generated-sprite-'+mapKey+'" aria-hidden="true" '+
       'style="width:min(260px,92%);aspect-ratio:1/1;background-image:url(\''+src+'\');'+
-      'background-repeat:no-repeat;background-size:'+(bgCols*100)+'% '+(bgRows*100)+'%;'+
+      'background-repeat:no-repeat;background-size:'+(cols*100)+'% '+(rows*100)+'%;'+
       'background-position:'+x+'% '+y+'%;"></div>';
   }
 
