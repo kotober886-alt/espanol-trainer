@@ -5,13 +5,13 @@
   const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
 
   const SPRITE_IMAGES = {
-    clothes: withVersion("assets/generated/study-clothes-v3.webp"),
-    foods: withVersion("assets/generated/study-foods-v3.webp"),
-    activities: withVersion("assets/generated/study-activities-v3.webp"),
-    clothesExtra: withVersion("assets/generated/study-clothes-extra-v1.webp"),
-    clothesNew: withVersion("assets/generated/study-clothes-new-v1.webp"),
-    foodsExtra: withVersion("assets/generated/study-foods-extra-v1.webp"),
-    activitiesExtra: withVersion("assets/generated/study-activities-extra-v1.webp")
+    clothes: withVersion("assets/picture-labels/study-clothes-v3.webp"),
+    foods: withVersion("assets/picture-labels/study-foods-v3.webp"),
+    activities: withVersion("assets/picture-labels/study-activities-v3.webp"),
+    clothesExtra: withVersion("assets/picture-labels/study-clothes-extra-v1.webp"),
+    clothesNew: withVersion("assets/picture-labels/study-clothes-new-v1.webp"),
+    foodsExtra: withVersion("assets/picture-labels/study-foods-extra-v1.webp"),
+    activitiesExtra: withVersion("assets/picture-labels/study-activities-extra-v1.webp")
   };
 
   const SPRITE_MAP={
