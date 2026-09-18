@@ -982,10 +982,12 @@
       { id:"custom", title:"Свои задания", icon:"＋" }
     ];
 
+    const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","colors","foods","clothes","activities"];
+
     const TOPIC_GROUPS = [
       {title:"Основа",ids:["verbs","present","pronouns","agreement"]},
       {title:"Общение",ids:["questions","constructions","connectors","gustar"]},
-      {title:"Повседневная жизнь",ids:["routine","calendar","practical","city","colors","foods","clothes","activities"]},
+      {title:"Повседневная жизнь",ids:DAILY_LIFE_TOPIC_IDS},
       {title:"Следующий уровень",ids:["past","prepositions","custom"]}
     ];
 
@@ -3498,20 +3500,6 @@
           )+'</span></button>';
         }).join("")+'</div></section>';
       }).join("");
-
-      // "Цвета" должны быть видимой плиткой каталога даже если список тем
-      // был собран из устаревшего набора/кэша до добавления colors.
-      if(!els.topicList.querySelector('[data-topic="colors"]') && (!query || normalize("Цвета").indexOf(query)>=0)){
-        const colorsGroup=els.topicList.querySelector('[data-topic-group="Повседневная жизнь"] .topic-list');
-        if(colorsGroup){
-          const colorsButton='<button type="button" class="topic '+(selectedTopic==="colors"?'active':'')+'" data-topic="colors">'+
-            '<span class="topic-icon" aria-hidden="true">◩</span><span class="topic-text">Цвета</span>'+
-            '<span class="topic-count">'+COLOR_WORDS.length+' цветов</span></button>';
-          const foodsButton=colorsGroup.querySelector('[data-topic="foods"]');
-          if(foodsButton) foodsButton.insertAdjacentHTML("beforebegin",colorsButton);
-          else colorsGroup.insertAdjacentHTML("beforeend",colorsButton);
-        }
-      }
 
       if(catalogIntent==="practice" && (!query || normalize("Все темы").indexOf(query)>=0)){
         els.topicList.insertAdjacentHTML("afterbegin",'<section class="topic-group"><h3 class="topic-group-title">Смешанная практика</h3><div class="topic-list"><button type="button" class="topic '+(selectedTopic==="all"?'active':'')+'" data-topic="all"><span class="topic-icon">✦</span><span class="topic-text">Все темы</span><span class="topic-count">'+counts.all+'</span></button></div></section>');
