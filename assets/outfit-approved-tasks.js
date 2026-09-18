@@ -18,6 +18,7 @@ function V(reveal,names,colors){
   return [...new Set(out.map(n))];
 }
 const L=(reveal,ru,names,colors)=>({reveal:reveal,translation:ru,answers:V(reveal,names,colors)});
+const N=(number,label)=>Object.assign(label,{displayNumber:number});
 
 const D={
   clothes_man:[
@@ -47,11 +48,10 @@ const D={
     L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ],
   clothes_man_5:[
-    L('la sudadera con capucha azul','синее худи',['sudadera con capucha','sudadera'],'azul'),
-    L('la capucha azul','синий капюшон','capucha','azul'),
-    L('la mochila negra','чёрный рюкзак','mochila','negra'),
-    L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
-    L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
+    N(2,L('la sudadera con capucha negra','чёрное худи',['sudadera con capucha','sudadera'],'negra')),
+    N(3,L('la mochila negra','чёрный рюкзак','mochila','negra')),
+    N(4,L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules')),
+    N(5,L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas'))
   ],
   clothes_woman:[
     L('la ropa interior blanca','белое нижнее бельё','ropa interior','blanca'),
@@ -89,7 +89,7 @@ const D={
 };
 
 function bilingualAnswer(labels){
-  return labels.map((x,i)=>(i+1)+'. '+x.reveal+'\n   '+x.translation).join('\n\n');
+  return labels.map((x,i)=>(x.displayNumber||i+1)+'. '+x.reveal+'\n   '+x.translation).join('\n\n');
 }
 function task(s){
   const a=D[s];
