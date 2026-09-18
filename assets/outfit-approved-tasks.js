@@ -21,7 +21,7 @@ const L=(reveal,ru,names,colors)=>({reveal:reveal,translation:ru,answers:V(revea
 
 const D={
   clothes_man:[
-    L('la camiseta blanca','белая футболка','camiseta','blanca'),
+    L('el polo blanco','белое поло','polo','blanco'),
     L('los pantalones grises','серые брюки','pantalones','grises'),
     L('la chaqueta azul','синяя куртка','chaqueta','azul'),
     L('la mochila negra','чёрный рюкзак','mochila','negra'),
@@ -41,13 +41,13 @@ const D={
     L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ],
   clothes_man_4:[
-    L('la chaqueta beige','бежевая куртка','chaqueta','beige'),
-    L('el jersey verde','зелёный свитер','jersey','verde'),
+    L('el chaleco beige','бежевый жилет','chaleco','beige'),
+    L('la sudadera con capucha verde','зелёное худи','sudadera con capucha','verde'),
     L('los pantalones marrones','коричневые брюки','pantalones','marrones'),
     L('las zapatillas deportivas blancas y verdes','бело-зелёные кроссовки',['zapatillas deportivas','tenis'],['blancas y verdes','blanco y verde'])
   ],
   clothes_man_5:[
-    L('el jersey azul','синий свитер','jersey','azul'),
+    L('la sudadera con capucha azul','синее худи','sudadera con capucha','azul'),
     L('la capucha azul','синий капюшон','capucha','azul'),
     L('la mochila negra','чёрный рюкзак','mochila','negra'),
     L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
