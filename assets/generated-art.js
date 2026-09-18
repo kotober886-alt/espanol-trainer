@@ -41,18 +41,10 @@
     ]);
   };
   window.clothingArt=function(kind){
-    const directRaster={
-      hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-valid-raster2",
-      vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-valid-raster2",
-      polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-valid-raster2",
-      cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-valid-raster2"
-    };
-    if(directRaster[kind]){
-      return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';
-    }
     return firstSprite([
       ["clothes","clothes",kind,6,5],
-      ["clothesExtra","clothesExtra",kind,6,3]
+      ["clothesExtra","clothesExtra",kind,6,3],
+      ["clothesNew","clothesNew",kind,2,2]
     ]);
   };
   window.activityArt=function(kind){
