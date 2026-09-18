@@ -874,7 +874,7 @@
         <div class="field"><label>Что смешивать?</label><div class="focus-options">
           <button class="focus-option active" data-session-mode="all" type="button">Всё</button>
           <button class="focus-option" data-session-mode="tests" type="button">Тесты</button>
-          <button class="focus-option" data-session-mode="outfits" type="button">Образы · 10</button>
+          <button class="focus-option" data-session-mode="pictures" type="button">Картинки</button>
           <button class="focus-option" data-session-mode="audio" type="button">Аудио</button>
         </div></div>
         <button class="btn btn-primary" id="startSessionBtn" type="button">Начать занятие →</button>
@@ -3335,10 +3335,14 @@
     function filteredExercises(){
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
-      if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-      if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","picture-label","ser-estar-hay"].indexOf(x.type)>=0; });
-      if(selectedMode==="outfits") items=items.filter(function(x){ return x.type==="picture-label" && /^clothes_(?:woman|man)(?:_[2-5])?$/.test(x.pictureScene || ""); });
-      if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
+      if(selectedMode==="pictures"){
+        items=items.filter(function(x){ return x.type==="picture-label"; });
+      } else {
+        items=items.filter(function(x){ return x.type!=="picture-label"; });
+        if(selectedMode==="mistakes") items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
+        if(selectedMode==="tests") items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
+        if(selectedMode==="audio") items=items.filter(function(x){ return x.type==="audio"; });
+      }
       return items;
     }
     function buildQueue(keepIndex){
@@ -3453,10 +3457,7 @@
     }
     function openSessionDialog(topic){
       pendingSessionTopic=topic || selectedTopic;
-      const outfitMode=document.querySelector('[data-session-mode="outfits"]');
-      const outfitsAvailable=pendingSessionTopic==="clothes" || pendingSessionTopic==="all";
-      if(outfitMode) outfitMode.hidden=!outfitsAvailable;
-      if(["all","tests","outfits","audio"].indexOf(selectedMode)<0 || (!outfitsAvailable && selectedMode==="outfits")) selectedMode="all";
+      if(["all","tests","pictures","audio"].indexOf(selectedMode)<0) selectedMode="all";
       els.sessionTopicLabel.textContent=topicById(pendingSessionTopic).title;
       document.querySelectorAll("[data-session-size]").forEach(function(btn){btn.classList.toggle("active",Number(btn.dataset.sessionSize)===sessionSize);});
       document.querySelectorAll("[data-session-mode]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.sessionMode===selectedMode);});
