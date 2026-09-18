@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - scripts/split_new_clothes_raster.py
+      - assets/generated/new-clothes-valid.b64.txt
       - .github/workflows/split-new-clothes-raster.yml
 
 permissions:
@@ -30,7 +31,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/generated/clothes-new-raster assets/generated-art.js
+          git add assets/generated/study-clothes-new-v1.webp assets/generated/clothes-new-raster assets/generated-art.js
+          git rm -f assets/generated/new-clothes-valid.b64.txt
           if git diff --cached --quiet; then
             echo "Nothing to commit"
             exit 0
