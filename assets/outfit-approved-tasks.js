@@ -42,12 +42,12 @@ const D={
   ],
   clothes_man_4:[
     L('el chaleco beige','бежевый жилет','chaleco','beige'),
-    L('la sudadera con capucha verde','зелёное худи','sudadera con capucha','verde'),
+    L('la sudadera con capucha verde','зелёное худи',['sudadera con capucha','sudadera'],'verde'),
     L('los pantalones marrones','коричневые брюки','pantalones','marrones'),
     L('las zapatillas deportivas blancas y verdes','бело-зелёные кроссовки',['zapatillas deportivas','tenis'],['blancas y verdes','blanco y verde'])
   ],
   clothes_man_5:[
-    L('la sudadera con capucha azul','синее худи','sudadera con capucha','azul'),
+    L('la sudadera con capucha azul','синее худи',['sudadera con capucha','sudadera'],'azul'),
     L('la capucha azul','синий капюшон','capucha','azul'),
     L('la mochila negra','чёрный рюкзак','mochila','negra'),
     L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
