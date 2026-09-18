@@ -907,8 +907,20 @@
         <details class="audio-settings" id="audioSettings">
           <summary>🔊 Голос и скорость</summary>
           <div class="audio-settings-body">
-            <label class="audio-control-label" for="voiceSelect">Испанский голос
-              <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus"><option value="">Автоматически: лучший доступный</option></select>
+            <label class="audio-control-label" for="voiceLocaleSelect">Регион испанского
+              <select class="voice-select" id="voiceLocaleSelect" aria-describedby="voiceStatus">
+                <option value="auto">Автоматически</option>
+                <option value="es-ES">Испания · es-ES</option>
+                <option value="es-MX">Мексика · es-MX</option>
+                <option value="es-US">США · es-US</option>
+                <option value="es-AR">Аргентина · es-AR</option>
+                <option value="es-CO">Колумбия · es-CO</option>
+                <option value="es-CL">Чили · es-CL</option>
+                <option value="es-PE">Перу · es-PE</option>
+              </select>
+            </label>
+            <label class="audio-control-label" for="voiceSelect">Голос
+              <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus"><option value="">Автоматически: лучший для региона</option></select>
             </label>
             <div class="audio-control-label">Скорость по умолчанию<div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
               <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
@@ -3213,10 +3225,11 @@
     let stats = read(STORAGE.stats,{});
     let custom = read(STORAGE.custom,[]);
     let streak = read(STORAGE.streak,0);
-    let audioSettings = read(STORAGE.audio,{voiceURI:"",rate:.86});
+    let audioSettings = read(STORAGE.audio,{voiceURI:"",voiceLocale:"auto",rate:.86});
     let uiSettings = read(STORAGE.ui,{lastTopic:"verbs",sessionSize:10});
-    if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",rate:.86};
+    if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:.86};
     if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
+    if(!audioSettings.voiceLocale) audioSettings.voiceLocale="auto";
     if(Math.abs(audioSettings.rate-.74)<.01) audioSettings.rate=.68;
     let spanishVoices = [];
     let selectedTopic = uiSettings.lastTopic || "verbs";
@@ -3252,7 +3265,7 @@
       topicList:$("topicList"), topicName:$("topicName"), progressBar:$("progressBar"), progressLabel:$("progressLabel"),
       questionText:$("questionText"), skillLabel:$("skillLabel"), questionNumber:$("questionNumber"), answerInput:$("answerInput"),
       answerLabel:$("answerLabel"), audioActions:$("audioActions"), audioPrompt:$("audioPrompt"), slowAudioPrompt:$("slowAudioPrompt"),
-      audioSettings:$("audioSettings"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
+      audioSettings:$("audioSettings"), voiceLocaleSelect:$("voiceLocaleSelect"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
       studyListen:$("studyListen"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
       orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"),
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
@@ -3976,51 +3989,114 @@
       return els.answerInput.value;
     }
 
-    function voiceScore(voice){
+    const SPANISH_LOCALES = [
+      {id:"es-ES",label:"Испания"},
+      {id:"es-MX",label:"Мексика"},
+      {id:"es-US",label:"США"},
+      {id:"es-AR",label:"Аргентина"},
+      {id:"es-CO",label:"Колумбия"},
+      {id:"es-CL",label:"Чили"},
+      {id:"es-PE",label:"Перу"}
+    ];
+
+    function normalizedVoiceLang(voice){
+      return String((voice && voice.lang) || "").replace("_","-");
+    }
+
+    function voiceScore(voice,preferredLocale){
       const label=(voice.name+" "+voice.voiceURI).toLowerCase();
+      const lang=normalizedVoiceLang(voice).toLowerCase();
+      const preferred=String(preferredLocale || "").toLowerCase();
       let score=0;
-      if(/natural|neural|premium|enhanced/.test(label)) score+=120;
+      if(/natural|neural|premium|enhanced|online/.test(label)) score+=140;
       if(/google|microsoft|apple|siri/.test(label)) score+=45;
-      if(/españ|spanish/.test(label)) score+=12;
-      if((voice.lang || "").toLowerCase()==="es-es") score+=30;
+      if(/españ|spanish|español/.test(label)) score+=12;
+      if(preferred && lang===preferred) score+=90;
+      else if(preferred && lang.slice(0,2)===preferred.slice(0,2)) score+=20;
+      if(lang==="es-es") score+=12;
       if(voice.default) score+=6;
       return score;
     }
 
+    function voiceLocaleLabel(lang){
+      const normalized=String(lang || "").replace("_","-");
+      const found=SPANISH_LOCALES.find(function(item){return item.id.toLowerCase()===normalized.toLowerCase();});
+      return found ? found.label+" · "+normalized : "Другие варианты · "+(normalized || "es");
+    }
+
+    function preferredVoiceLocale(){
+      return audioSettings.voiceLocale && audioSettings.voiceLocale!=="auto" ? audioSettings.voiceLocale : "";
+    }
+
     function refreshVoices(){
       if(!("speechSynthesis" in window)){
+        els.voiceLocaleSelect.disabled=true;
         els.voiceSelect.disabled=true;
         els.voicePreview.disabled=true;
         els.voiceStatus.textContent="В этом браузере озвучивание недоступно.";
         return;
       }
+      const preferred=preferredVoiceLocale();
       spanishVoices=window.speechSynthesis.getVoices().filter(function(voice){
         return /^es([-_]|$)/i.test(voice.lang || "");
-      }).sort(function(a,b){return voiceScore(b)-voiceScore(a) || a.name.localeCompare(b.name);});
+      }).sort(function(a,b){
+        return voiceScore(b,preferred)-voiceScore(a,preferred) || normalizedVoiceLang(a).localeCompare(normalizedVoiceLang(b)) || a.name.localeCompare(b.name);
+      });
+
+      els.voiceLocaleSelect.value=audioSettings.voiceLocale || "auto";
+      if(!els.voiceLocaleSelect.value) els.voiceLocaleSelect.value="auto";
+
       const previous=audioSettings.voiceURI || "";
       els.voiceSelect.innerHTML="";
-      els.voiceSelect.appendChild(new Option("Автоматически: лучший доступный",""));
+      els.voiceSelect.appendChild(new Option(preferred ? "Автоматически: лучший для "+voiceLocaleLabel(preferred).split(" · ")[0] : "Автоматически: лучший доступный",""));
+
+      const groups={};
       spanishVoices.forEach(function(voice){
-        els.voiceSelect.appendChild(new Option(voice.name+" · "+voice.lang,voice.voiceURI));
+        const lang=normalizedVoiceLang(voice) || "es";
+        const key=lang.toLowerCase();
+        if(!groups[key]){
+          const group=document.createElement("optgroup");
+          group.label=voiceLocaleLabel(lang);
+          groups[key]=group;
+          els.voiceSelect.appendChild(group);
+        }
+        const quality=/natural|neural|premium|enhanced|online/i.test(voice.name+" "+voice.voiceURI) ? " · HQ" : "";
+        groups[key].appendChild(new Option(voice.name+" · "+lang+quality,voice.voiceURI));
       });
+
       if(previous && spanishVoices.some(function(voice){return voice.voiceURI===previous;})) els.voiceSelect.value=previous;
-      else els.voiceSelect.value="";
+      else {
+        els.voiceSelect.value="";
+        if(previous) audioSettings.voiceURI="";
+      }
+
+      els.voiceLocaleSelect.disabled=false;
       els.voiceSelect.disabled=!spanishVoices.length;
-      els.voicePreview.disabled=!spanishVoices.length;
-      if(spanishVoices.length){
-        const chosen=selectedSpanishVoice();
+      els.voicePreview.disabled=!spanishVoices.length && !preferred;
+
+      const chosen=selectedSpanishVoice();
+      const locale=chosen ? normalizedVoiceLang(chosen) : (preferred || "es-ES");
+      if(chosen){
         els.voiceStatus.textContent=audioSettings.voiceURI
-          ? "Выбран: "+chosen.name+". Настройка сохранена."
-          : "Автовыбор: "+chosen.name+". Можно сменить голос вручную.";
+          ? "Выбран: "+chosen.name+" · "+locale+". Настройка сохранена."
+          : "Автовыбор: "+chosen.name+" · "+locale+". Найдено испанских голосов: "+spanishVoices.length+".";
+      } else if(preferred){
+        els.voiceStatus.textContent="Для "+voiceLocaleLabel(preferred)+" отдельного голоса нет. Браузер попробует системный голос этой локали.";
       } else {
         els.voiceStatus.textContent="Список голосов появится после первого запуска аудио.";
       }
+      write(STORAGE.audio,audioSettings);
     }
 
     function selectedSpanishVoice(){
       if(audioSettings.voiceURI){
         const saved=spanishVoices.find(function(voice){return voice.voiceURI===audioSettings.voiceURI;});
         if(saved) return saved;
+      }
+      const preferred=preferredVoiceLocale().toLowerCase();
+      if(preferred){
+        const exact=spanishVoices.filter(function(voice){return normalizedVoiceLang(voice).toLowerCase()===preferred;});
+        if(exact.length) return exact.sort(function(a,b){return voiceScore(b,preferred)-voiceScore(a,preferred);})[0];
       }
       return spanishVoices[0] || null;
     }
@@ -4057,11 +4133,12 @@
       window.speechSynthesis.cancel();
       const utterance=new SpeechSynthesisUtterance(text);
       const voice=selectedSpanishVoice();
+      const preferred=preferredVoiceLocale();
       if(voice){
         utterance.voice=voice;
-        utterance.lang=voice.lang || "es-ES";
+        utterance.lang=normalizedVoiceLang(voice) || preferred || "es-ES";
       } else {
-        utterance.lang="es-ES";
+        utterance.lang=preferred || "es-ES";
       }
       utterance.rate=rate || audioSettings.rate || .86;
       utterance.pitch=1;
@@ -4478,8 +4555,17 @@
     els.voicePreview.addEventListener("click",function(){
       speakText("Hola. Hoy practicamos español con calma y claridad.",audioSettings.rate,els.voicePreview);
     });
+    els.voiceLocaleSelect.addEventListener("change",function(){
+      audioSettings.voiceLocale=els.voiceLocaleSelect.value || "auto";
+      audioSettings.voiceURI="";
+      write(STORAGE.audio,audioSettings);
+      refreshVoices();
+      speakText("Hola. Esta es una prueba del español seleccionado.",audioSettings.rate,els.voicePreview);
+    });
     els.voiceSelect.addEventListener("change",function(){
       audioSettings.voiceURI=els.voiceSelect.value;
+      const chosen=selectedSpanishVoice();
+      if(chosen && normalizedVoiceLang(chosen)) audioSettings.voiceLocale=normalizedVoiceLang(chosen);
       write(STORAGE.audio,audioSettings);
       refreshVoices();
     });
