@@ -1,1 +1,0 @@
-(function(){'use strict';var script=document.createElement('script');script.src='assets/outfit-approved-tasks.js?v=20260917-final10';script.dataset.approvedOutfitTasks='1';document.body.appendChild(script);})();
