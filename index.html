@@ -3999,6 +3999,21 @@
       {id:"es-PE",label:"Перу"}
     ];
 
+    const IOS_FEATURED_VOICES = [
+      {keys:["jorge","хорхе"],label:"Хорхе"},
+      {keys:["marisol","марисоль"],label:"Марисоль"},
+      {keys:["isabela","isabella","изабелла"],label:"Изабелла"},
+      {keys:["paulina","паулина"],label:"Паулина"}
+    ];
+
+    function featuredIOSVoice(voice){
+      const haystack=(String(voice.name||"")+" "+String(voice.voiceURI||"")).toLowerCase();
+      return IOS_FEATURED_VOICES.find(function(item){
+        return item.keys.some(function(key){return haystack.indexOf(key)>=0;});
+      }) || null;
+    }
+
+
     function normalizedVoiceLang(voice){
       return String((voice && voice.lang) || "").replace("_","-");
     }
@@ -4051,7 +4066,25 @@
       els.voiceSelect.appendChild(new Option(preferred ? "Автоматически: лучший для "+voiceLocaleLabel(preferred).split(" · ")[0] : "Автоматически: лучший доступный",""));
 
       const groups={};
+      const featuredGroup=document.createElement("optgroup");
+      featuredGroup.label="Установленные голоса iOS";
+      const featuredUris=new Set();
+      IOS_FEATURED_VOICES.forEach(function(featured){
+        const matches=spanishVoices.filter(function(voice){
+          const match=featuredIOSVoice(voice);
+          return match && match.label===featured.label;
+        });
+        matches.forEach(function(voice){
+          const lang=normalizedVoiceLang(voice) || "es";
+          const quality=/premium|enhanced|higher quality|high quality|improved|mejorad|alta calidad|natural/i.test(voice.name+" "+voice.voiceURI) ? " · улучшенный" : "";
+          featuredGroup.appendChild(new Option(featured.label+" · "+lang+quality,voice.voiceURI));
+          featuredUris.add(voice.voiceURI);
+        });
+      });
+      if(featuredGroup.children.length) els.voiceSelect.appendChild(featuredGroup);
+
       spanishVoices.forEach(function(voice){
+        if(featuredUris.has(voice.voiceURI)) return;
         const lang=normalizedVoiceLang(voice) || "es";
         const key=lang.toLowerCase();
         if(!groups[key]){
@@ -4076,10 +4109,12 @@
 
       const chosen=selectedSpanishVoice();
       const locale=chosen ? normalizedVoiceLang(chosen) : (preferred || "es-ES");
+      const installedFeatured=spanishVoices.filter(function(voice){return !!featuredIOSVoice(voice);});
       if(chosen){
+        const chosenFeatured=featuredIOSVoice(chosen);
         els.voiceStatus.textContent=audioSettings.voiceURI
-          ? "Выбран: "+chosen.name+" · "+locale+". Настройка сохранена."
-          : "Автовыбор: "+chosen.name+" · "+locale+". Найдено испанских голосов: "+spanishVoices.length+".";
+          ? "Выбран: "+(chosenFeatured ? chosenFeatured.label : chosen.name)+" · "+locale+". Настройка сохранена."
+          : "Автовыбор: "+(chosenFeatured ? chosenFeatured.label : chosen.name)+" · "+locale+". Доступно системных iOS-голосов из списка: "+installedFeatured.length+" из 4.";
       } else if(preferred){
         els.voiceStatus.textContent="Для "+voiceLocaleLabel(preferred)+" отдельного голоса нет. Браузер попробует системный голос этой локали.";
       } else {
@@ -4568,6 +4603,7 @@
       if(chosen && normalizedVoiceLang(chosen)) audioSettings.voiceLocale=normalizedVoiceLang(chosen);
       write(STORAGE.audio,audioSettings);
       refreshVoices();
+      if(chosen) speakText("Hola. Este es el sonido de la voz seleccionada.",audioSettings.rate,els.voicePreview);
     });
     document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
       btn.addEventListener("click",function(){
@@ -4661,9 +4697,13 @@
       els.customTopic.value="custom";
       updateSpeedButtons();
       refreshVoices();
-      if("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged=refreshVoices;
+      if("speechSynthesis" in window){
+        window.speechSynthesis.onvoiceschanged=refreshVoices;
+        if(window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener("voiceschanged",refreshVoices);
+      }
       setTimeout(refreshVoices,300);
       setTimeout(refreshVoices,1200);
+      setTimeout(refreshVoices,2500);
       renderStats();
       renderTopics();
       showHome();
