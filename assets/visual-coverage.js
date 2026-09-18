@@ -141,15 +141,26 @@
     return item;
   }
 
+  const CLOTHING_FIGURE_SCENES={
+    clothes_man:1,clothes_man_2:1,clothes_man_3:1,clothes_man_4:1,clothes_man_5:1,
+    clothes_woman:1,clothes_woman_2:1,clothes_woman_3:1,clothes_woman_4:1,clothes_woman_5:1
+  };
+  function isClothingFigureTask(item){
+    return !!(item &&
+      item.topic==='clothes' &&
+      item.type==='picture-label' &&
+      CLOTHING_FIGURE_SCENES[String(item.pictureScene || '')]
+    );
+  }
+
   var basePictureLabelExercises=null;
   try { if(typeof pictureLabelExercises==='function') basePictureLabelExercises=pictureLabelExercises; } catch(e){}
   if(basePictureLabelExercises){
     pictureLabelExercises=function(){
       const existing=basePictureLabelExercises()
         .filter(function(item){ return !isAmbiguousPictureTask(item); })
-        .filter(function(item){ return !(item && item.topic==='clothes' && item.type==='picture-label'); })
+        .map(function(item){ return isClothingFigureTask(item) ? item : keepLargeClothingLabels(item); })
         .map(polishDishTask)
-        .map(keepLargeClothingLabels)
         .filter(Boolean);
       const ids={};
       existing.forEach(function(item){ ids[item.id]=true; });
@@ -174,7 +185,7 @@
         const number=label&&label.displayNumber ? label.displayNumber : (i+1);
         return '<label class="picture-field"><span>'+number+'</span><input data-picture-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Подпись '+number+'" placeholder="По-испански"></label>';
       }).join('');
-      const pictureMarkers=labels.map(function(label,i){
+      const pictureMarkers=item.pictureNumbersEmbedded ? '' : labels.map(function(label,i){
         const number=label&&label.displayNumber ? label.displayNumber : (i+1);
         return '<span class="picture-marker" style="left:'+Number(label.markerX)+'%;top:'+Number(label.markerY)+'%" aria-hidden="true">'+number+'</span>';
       }).join('');
@@ -189,11 +200,15 @@
       els.pictureStage.innerHTML =
         '<div class="picture-visual">' +
         finalPicture +
+        '<div class="picture-image-error" hidden></div>' +
         pictureMarkers +
         '</div>' +
         '<div class="picture-fields">' +
         fields +
         '</div>';
+      if(!item.pictureHtml && item.pictureScene && typeof bindPictureImageFallback==='function'){
+        bindPictureImageFallback(els.pictureStage.querySelector('.picture-raster'),item.pictureScene);
+      }
       els.pictureStage.querySelectorAll('[data-picture-input]').forEach(function(input){
         input.addEventListener('keydown',function(event){ if(event.key==='Enter'){ event.preventDefault(); checkAnswer(); } });
       });
