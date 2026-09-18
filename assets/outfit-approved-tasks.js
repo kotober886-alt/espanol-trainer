@@ -29,7 +29,7 @@ const D={
   ],
   clothes_man_2:[
     L('el gorro negro','чёрная шапка','gorro','negro'),
-    L('el cárdigan beige','бежевый кардиган / кофта',['cárdigan','cardigan'],'beige'),
+    L('el jersey beige','бежевый свитер','jersey','beige'),
     L('el abrigo negro','чёрное пальто','abrigo','negro'),
     L('la bufanda gris','серый шарф','bufanda','gris'),
     L('las botas negras','чёрные ботинки','botas','negras')
@@ -80,7 +80,7 @@ const D={
     L('las sandalias marrones','коричневые сандалии','sandalias','marrones')
   ],
   clothes_woman_5:[
-    L('el jersey beige','бежевый свитер','jersey','beige'),
+    L('el cárdigan beige','бежевый кардиган / кофта',['cárdigan','cardigan'],'beige'),
     L('la camiseta blanca','белая футболка','camiseta','blanca'),
     L('el bolso marrón','коричневая сумка','bolso','marrón'),
     L('los pantalones verdes','зелёные брюки','pantalones','verdes'),
