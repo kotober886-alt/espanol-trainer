@@ -1,0 +1,51 @@
+name: Clothes Extra Audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/clothes-extra-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build audit contact sheet
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageOps, ImageDraw
+          from pathlib import Path
+          p=Path('assets/picture-labels/clothes-extra')
+          files=sorted(p.glob('*.webp'))
+          thumbs=[]
+          for f in files:
+              im=Image.open(f).convert('RGBA')
+              bg=Image.new('RGBA',(600,600),'white')
+              fit=ImageOps.contain(im,(500,500))
+              bg.alpha_composite(fit,((600-fit.width)//2,(600-fit.height)//2))
+              d=ImageDraw.Draw(bg)
+              d.rectangle((0,0,599,599),outline='gray',width=2)
+              d.text((12,570),f.name,fill='black')
+              thumbs.append(bg.convert('RGB'))
+          cols=4; rows=(len(thumbs)+cols-1)//cols
+          sheet=Image.new('RGB',(cols*600,rows*600),(235,235,235))
+          for i,im in enumerate(thumbs):
+              sheet.paste(im,((i%cols)*600,(i//cols)*600))
+          sheet.save('clothes-extra-audit.jpg',quality=95)
+
+          for sprite_name in ['assets/picture-labels/study-clothes-extra-v2.webp','assets/picture-labels/study-clothes-extra-v1.webp']:
+              sp=Path(sprite_name)
+              if sp.exists():
+                  Image.open(sp).convert('RGB').save(sp.stem+'-audit.jpg',quality=95)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clothes-extra-audit
+          path: |
+            clothes-extra-audit.jpg
+            study-clothes-extra-v2-audit.jpg
+            study-clothes-extra-v1-audit.jpg
+          if-no-files-found: ignore
