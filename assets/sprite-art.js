@@ -1,14 +1,17 @@
 (function(){
   "use strict";
 
-  const SPRITE_IMAGES={
-    clothes:"assets/generated/study-clothes-v3.webp",
-    foods:"assets/generated/study-foods-v3.webp",
-    activities:"assets/generated/study-activities-v3.webp",
-    clothesExtra:"assets/generated/study-clothes-extra-v1.webp",
-    clothesNew:"assets/generated/study-clothes-new-v1.webp",
-    foodsExtra:"assets/generated/study-foods-extra-v1.webp",
-    activitiesExtra:"assets/generated/study-activities-extra-v1.webp"
+  const ASSET_VERSION = "20260918-2";
+  const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
+
+  const SPRITE_IMAGES = {
+    clothes: withVersion("assets/generated/study-clothes-v3.webp"),
+    foods: withVersion("assets/generated/study-foods-v3.webp"),
+    activities: withVersion("assets/generated/study-activities-v3.webp"),
+    clothesExtra: withVersion("assets/generated/study-clothes-extra-v1.webp"),
+    clothesNew: withVersion("assets/generated/study-clothes-new-v1.webp"),
+    foodsExtra: withVersion("assets/generated/study-foods-extra-v1.webp"),
+    activitiesExtra: withVersion("assets/generated/study-activities-extra-v1.webp")
   };
 
   const SPRITE_MAP={

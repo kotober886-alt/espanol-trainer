@@ -91,6 +91,8 @@ const D={
 function bilingualAnswer(labels){
   return labels.map((x,i)=>(x.displayNumber||i+1)+'. '+x.reveal+'\n   '+x.translation).join('\n\n');
 }
+const OUTFIT_ASSET_VERSION = "20260918-2";
+
 function task(s){
   const a=D[s];
   return {
@@ -101,8 +103,10 @@ function task(s){
     q:'Подпиши каждый номер: предмет одежды и его цвет по-испански.',
     pictureHint:'Напиши предмет и один базовый цвет. Артикль можно не писать; регистр, акценты и лишние пробелы не мешают проверке.',
     pictureScene:s,
-    // ИСПРАВЛЕНО: Убран жесткий кэш-параметр ?v=..., теперь картинки будут обновляться корректно
-    pictureHtml:'<img class="approved-outfit-image" src="assets/picture-labels/'+s+'.webp" alt="Задание на одежду">',
+    pictureHtml:
+      '<img class="approved-outfit-image" ' +
+      'src="assets/picture-labels/' + s + '.webp?v=' + OUTFIT_ASSET_VERSION + '" ' +
+      'alt="Задание на одежду">',
     pictureLabels:a,
     a:[a.map(x=>x.reveal).join(' | ')],
     displayAnswer:bilingualAnswer(a),
