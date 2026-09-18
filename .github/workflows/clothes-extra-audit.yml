@@ -1,4 +1,4 @@
-name: Clothes Extra Audit
+name: Rebuild Clothes Extra
 
 on:
   push:
@@ -6,48 +6,112 @@ on:
       - '.github/workflows/clothes-extra-audit.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  audit:
+  rebuild:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Pillow
         run: python -m pip install pillow
-      - name: Build audit contact sheet
+      - name: Rebuild 18 individual assets from clean v1 sprite
         run: |
           python - <<'PY'
-          from PIL import Image, ImageOps, ImageDraw
+          from PIL import Image, ImageOps, ImageDraw, ImageChops
           from pathlib import Path
-          p=Path('assets/picture-labels/clothes-extra')
-          files=sorted(p.glob('*.webp'))
-          thumbs=[]
-          for f in files:
-              im=Image.open(f).convert('RGBA')
-              bg=Image.new('RGBA',(600,600),'white')
-              fit=ImageOps.contain(im,(500,500))
-              bg.alpha_composite(fit,((600-fit.width)//2,(600-fit.height)//2))
-              d=ImageDraw.Draw(bg)
-              d.rectangle((0,0,599,599),outline='gray',width=2)
-              d.text((12,570),f.name,fill='black')
-              thumbs.append(bg.convert('RGB'))
-          cols=4; rows=(len(thumbs)+cols-1)//cols
-          sheet=Image.new('RGB',(cols*600,rows*600),(235,235,235))
-          for i,im in enumerate(thumbs):
-              sheet.paste(im,((i%cols)*600,(i//cols)*600))
-          sheet.save('clothes-extra-audit.jpg',quality=95)
 
-          for sprite_name in ['assets/picture-labels/study-clothes-extra-v2.webp','assets/picture-labels/study-clothes-extra-v1.webp']:
-              sp=Path(sprite_name)
-              if sp.exists():
-                  Image.open(sp).convert('RGB').save(sp.stem+'-audit.jpg',quality=95)
+          src_path=Path('assets/picture-labels/study-clothes-extra-v1.webp')
+          out_dir=Path('assets/picture-labels/clothes-extra')
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          names=[
+            'ankleboots','heels','slippers','umbrella','handkerchief','necklace',
+            'bracelet','ring','earrings','watch','brooch','chain',
+            'beret','handbag','wallet','coinpurse','suitcase','waistbag'
+          ]
+
+          src=Image.open(src_path).convert('RGB')
+          cols,rows=6,3
+          cw,ch=src.width//cols,src.height//rows
+          target_max=370
+
+          def object_bbox(cell):
+              # Ignore almost-white sprite background but retain pale object details.
+              px=cell.load()
+              mask=Image.new('L',cell.size,0)
+              mp=mask.load()
+              for y in range(cell.height):
+                  for x in range(cell.width):
+                      r,g,b=px[x,y]
+                      if min(r,g,b) < 248:
+                          mp[x,y]=255
+              bbox=mask.getbbox()
+              if not bbox:
+                  raise RuntimeError('No object pixels detected')
+              l,t,r,b=bbox
+              pad=4
+              return (max(0,l-pad),max(0,t-pad),min(cell.width,r+pad),min(cell.height,b+pad))
+
+          report=[]
+          thumbs=[]
+          for i,name in enumerate(names):
+              col=i%cols; row=i//cols
+              cell=src.crop((col*cw,row*ch,(col+1)*cw,(row+1)*ch))
+              bbox=object_bbox(cell)
+              obj=cell.crop(bbox)
+
+              scale=min(target_max/obj.width,target_max/obj.height)
+              nw=max(1,round(obj.width*scale))
+              nh=max(1,round(obj.height*scale))
+              obj=obj.resize((nw,nh),Image.Resampling.LANCZOS)
+
+              canvas=Image.new('RGB',(512,512),'white')
+              x=(512-nw)//2
+              y=(512-nh)//2
+              canvas.paste(obj,(x,y))
+              out=out_dir/f'{name}.webp'
+              canvas.save(out,'WEBP',quality=96,method=6)
+
+              # QA: detect final non-white bbox and enforce safe air on every side.
+              q=Image.open(out).convert('RGB')
+              bg=Image.new('RGB',q.size,'white')
+              diff=ImageChops.difference(q,bg).convert('L')
+              qb=diff.point(lambda p: 255 if p>7 else 0).getbbox()
+              if not qb:
+                  raise RuntimeError(f'{name}: empty output')
+              l,t,r,b=qb
+              min_air=min(l,t,512-r,512-b)
+              if min_air < 55:
+                  raise RuntimeError(f'{name}: insufficient air {min_air}px bbox={qb}')
+              report.append((name,qb,min_air))
+
+              preview=Image.new('RGB',(540,570),'white')
+              preview.paste(q.resize((512,512),Image.Resampling.LANCZOS),(14,14))
+              d=ImageDraw.Draw(preview)
+              d.rectangle((13,13,526,526),outline='gray',width=1)
+              d.text((14,540),f'{name}.webp  bbox={qb}  air={min_air}px',fill='black')
+              thumbs.append(preview)
+
+          cols_preview=4
+          rows_preview=(len(thumbs)+cols_preview-1)//cols_preview
+          sheet=Image.new('RGB',(cols_preview*540,rows_preview*570),(235,235,235))
+          for i,im in enumerate(thumbs):
+              sheet.paste(im,((i%cols_preview)*540,(i//cols_preview)*570))
+          sheet.save('clothes-extra-rebuilt-contact-sheet.jpg',quality=95)
+
+          print('REBUILT',len(report),'FILES')
+          for item in report:
+              print(item)
           PY
+      - name: Commit rebuilt assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/picture-labels/clothes-extra/*.webp
+          git commit -m "Rebuild clothes extra assets from clean sprite v1"
+          git push
       - uses: actions/upload-artifact@v4
         with:
-          name: clothes-extra-audit
-          path: |
-            clothes-extra-audit.jpg
-            study-clothes-extra-v2-audit.jpg
-            study-clothes-extra-v1-audit.jpg
-          if-no-files-found: ignore
+          name: clothes-extra-rebuilt-contact-sheet
+          path: clothes-extra-rebuilt-contact-sheet.jpg
