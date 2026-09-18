@@ -336,6 +336,23 @@
     try{item=queue&&queue[index];}catch(e){}
     const box=document.getElementById('answerText');
     if(!box||!item)return;
+
+    if(item.type==='picture-label'&&item.topic==='clothes'){
+      const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
+      if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
+        box.innerHTML='<div class="outfit-answer-list">'+labels.map(function(label,i){
+          return '<div class="outfit-answer-row">'+
+            '<div class="outfit-answer-number">'+(i+1)+'.</div>'+
+            '<div class="outfit-answer-copy">'+
+              '<strong class="outfit-answer-es">'+escapeHtml(clean(label.reveal))+'</strong>'+
+              '<span class="outfit-answer-ru">'+escapeHtml(clean(label.translation))+'</span>'+
+            '</div>'+
+          '</div>';
+        }).join('')+'</div>';
+        return;
+      }
+    }
+
     const pair=answerPair(item);
     box.innerHTML='<div class="answer-es-line"><span>Español</span><strong>'+escapeHtml(pair.es)+'</strong></div>'+
       '<div class="answer-ru-line"><span>Перевод</span><strong>'+escapeHtml(pair.ru)+'</strong></div>';
@@ -354,7 +371,7 @@
   }
 
   const style=document.createElement('style');
-  style.textContent='.answer-es-line,.answer-ru-line{display:grid;gap:3px}.answer-es-line+ .answer-ru-line{margin-top:10px;padding-top:10px;border-top:1px solid rgba(98,83,217,.14)}.answer-es-line span,.answer-ru-line span{color:#6d6a86;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.07em}.answer-es-line strong,.answer-ru-line strong{font-size:16px;line-height:1.45}.answer-ru-line strong{color:#433a86}@media(max-width:520px){.answer-es-line strong,.answer-ru-line strong{font-size:15px}}';
+  style.textContent='.answer-es-line,.answer-ru-line{display:grid;gap:3px}.answer-es-line+ .answer-ru-line{margin-top:10px;padding-top:10px;border-top:1px solid rgba(98,83,217,.14)}.answer-es-line span,.answer-ru-line span{color:#6d6a86;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.07em}.answer-es-line strong,.answer-ru-line strong{font-size:16px;line-height:1.45}.answer-ru-line strong{color:#433a86}.outfit-answer-list{display:grid;gap:0;margin-top:2px}.outfit-answer-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;padding:10px 0;border-bottom:1px solid rgba(98,83,217,.12)}.outfit-answer-row:last-child{border-bottom:0;padding-bottom:2px}.outfit-answer-number{font-weight:900;color:#6253d9;line-height:1.45}.outfit-answer-copy{display:grid;gap:2px;min-width:0}.outfit-answer-es{font-size:16px;line-height:1.4;color:#241c72}.outfit-answer-ru{font-size:14px;line-height:1.4;color:#6d6a86;font-weight:700}@media(max-width:520px){.answer-es-line strong,.answer-ru-line strong{font-size:15px}.outfit-answer-row{gap:7px;padding:9px 0}.outfit-answer-es{font-size:15px}.outfit-answer-ru{font-size:13px}}';
   document.head.appendChild(style);
 
   let tries=0;
