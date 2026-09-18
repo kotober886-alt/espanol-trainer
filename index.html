@@ -3473,7 +3473,7 @@
       els.topicList.innerHTML=TOPIC_GROUPS.map(function(group){
         const topics=group.ids.map(function(id){return allowed.find(function(t){return t.id===id;});}).filter(Boolean);
         if(!topics.length) return "";
-        return '<section class="topic-group"><h3 class="topic-group-title">'+group.title+'</h3><div class="topic-list">'+topics.map(function(t){
+        return '<section class="topic-group" data-topic-group="'+escapeHtml(group.title)+'"><h3 class="topic-group-title">'+group.title+'</h3><div class="topic-list">'+topics.map(function(t){
           return '<button type="button" class="topic '+(selectedTopic===t.id?'active':'')+'" data-topic="'+t.id+'">'+
           '<span class="topic-icon" aria-hidden="true">'+t.icon+'</span><span class="topic-text">'+t.title+
           '</span><span class="topic-count">'+(
@@ -3498,6 +3498,21 @@
           )+'</span></button>';
         }).join("")+'</div></section>';
       }).join("");
+
+      // "Цвета" должны быть видимой плиткой каталога даже если список тем
+      // был собран из устаревшего набора/кэша до добавления colors.
+      if(!els.topicList.querySelector('[data-topic="colors"]') && (!query || normalize("Цвета").indexOf(query)>=0)){
+        const colorsGroup=els.topicList.querySelector('[data-topic-group="Повседневная жизнь"] .topic-list');
+        if(colorsGroup){
+          const colorsButton='<button type="button" class="topic '+(selectedTopic==="colors"?'active':'')+'" data-topic="colors">'+
+            '<span class="topic-icon" aria-hidden="true">◩</span><span class="topic-text">Цвета</span>'+
+            '<span class="topic-count">'+COLOR_WORDS.length+' цветов</span></button>';
+          const foodsButton=colorsGroup.querySelector('[data-topic="foods"]');
+          if(foodsButton) foodsButton.insertAdjacentHTML("beforebegin",colorsButton);
+          else colorsGroup.insertAdjacentHTML("beforeend",colorsButton);
+        }
+      }
+
       if(catalogIntent==="practice" && (!query || normalize("Все темы").indexOf(query)>=0)){
         els.topicList.insertAdjacentHTML("afterbegin",'<section class="topic-group"><h3 class="topic-group-title">Смешанная практика</h3><div class="topic-list"><button type="button" class="topic '+(selectedTopic==="all"?'active':'')+'" data-topic="all"><span class="topic-icon">✦</span><span class="topic-text">Все темы</span><span class="topic-count">'+counts.all+'</span></button></div></section>');
       }
