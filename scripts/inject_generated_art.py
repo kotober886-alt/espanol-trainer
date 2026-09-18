@@ -3,7 +3,7 @@ import re
 
 p = Path('index.html')
 s = p.read_text(encoding='utf-8')
-version = '20260918-runtime1'
+version = '20260918-raster-final2'
 
 css = f'<link rel="stylesheet" href="assets/generated-art.css?v={version}">'
 s = re.sub(
