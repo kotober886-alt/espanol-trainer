@@ -150,6 +150,12 @@
       background:var(--ink); color:white; font-size:13px; font-weight:800;
     }
     .voice-status { margin:0; color:var(--muted); font-size:11px; line-height:1.35; }
+    .voice-debug { border:1px dashed #d8d3e8; border-radius:11px; background:#fff; overflow:hidden; }
+    .voice-debug summary { padding:9px 10px; font-size:11px; color:var(--muted); font-weight:800; }
+    .voice-debug-body { display:grid; gap:7px; padding:0 10px 10px; }
+    .voice-debug-counts { font-size:11px; line-height:1.4; color:var(--ink); }
+    .voice-debug-log { margin:0; max-height:190px; overflow:auto; white-space:pre-wrap; word-break:break-word; font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; color:#4d4862; background:#f7f6fb; border-radius:8px; padding:8px; }
+    .voice-refresh { min-height:34px; padding:6px 9px; border:1px solid #d8d3e8; border-radius:9px; background:white; color:var(--ink); font-size:11px; font-weight:800; }
     .study-listen {
       display:inline-flex; align-items:center; gap:9px; margin:0 0 18px; padding:10px 13px; border:1px solid #d8d3ee;
       border-radius:13px; background:#f4f1ff; color:#4a4088; font-size:13px; font-weight:800;
@@ -928,6 +934,14 @@
             </div></div>
             <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
             <p class="voice-status" id="voiceStatus">Подбираем самый естественный голос на этом устройстве…</p>
+            <details class="voice-debug" id="voiceDebug">
+              <summary>Диагностика голосов Safari</summary>
+              <div class="voice-debug-body">
+                <div class="voice-debug-counts" id="voiceDebugCounts">Ожидаем список getVoices()…</div>
+                <button class="voice-refresh" id="voiceRefresh" type="button">↻ Обновить список голосов</button>
+                <pre class="voice-debug-log" id="voiceDebugLog">Пока нет данных.</pre>
+              </div>
+            </details>
           </div>
         </details>
         <button class="more-action" id="moreAddBtn" type="button"><span>＋ Добавить своё задание</span><b>→</b></button>
@@ -3266,6 +3280,7 @@
       questionText:$("questionText"), skillLabel:$("skillLabel"), questionNumber:$("questionNumber"), answerInput:$("answerInput"),
       answerLabel:$("answerLabel"), audioActions:$("audioActions"), audioPrompt:$("audioPrompt"), slowAudioPrompt:$("slowAudioPrompt"),
       audioSettings:$("audioSettings"), voiceLocaleSelect:$("voiceLocaleSelect"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
+      voiceDebug:$("voiceDebug"), voiceDebugCounts:$("voiceDebugCounts"), voiceDebugLog:$("voiceDebugLog"), voiceRefresh:$("voiceRefresh"),
       studyListen:$("studyListen"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
       orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"),
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
@@ -4007,12 +4022,49 @@
     ];
 
     function featuredIOSVoice(voice){
-      const haystack=(String(voice.name||"")+" "+String(voice.voiceURI||"")).toLowerCase();
+      const haystack=(String(voice.name||"")+" "+String(voice.voiceURI||"")+" "+String(voice.lang||"")).toLowerCase();
       return IOS_FEATURED_VOICES.find(function(item){
         return item.keys.some(function(key){return haystack.indexOf(key)>=0;});
       }) || null;
     }
 
+    function isSpanishVoice(voice){
+      const lang=normalizedVoiceLang(voice);
+      return /^es(?:-|$)/i.test(lang) || !!featuredIOSVoice(voice);
+    }
+
+    function voiceDebugLine(voice,index){
+      return (index+1)+". "+(voice.name||"(без имени)")+
+        " | lang="+(normalizedVoiceLang(voice)||"—")+
+        " | uri="+(voice.voiceURI||"—")+
+        " | local="+String(voice.localService)+
+        " | default="+String(voice.default);
+    }
+
+    function renderVoiceDebug(allVoices){
+      if(!els.voiceDebugLog || !els.voiceDebugCounts) return;
+      const all=Array.from(allVoices || []);
+      const spanish=all.filter(isSpanishVoice);
+      const featured=spanish.filter(function(voice){return !!featuredIOSVoice(voice);});
+      const foundLabels=IOS_FEATURED_VOICES.map(function(item){
+        const matches=featured.filter(function(voice){
+          const match=featuredIOSVoice(voice);
+          return match && match.label===item.label;
+        });
+        return item.label+": "+(matches.length ? "виден Safari ("+matches.map(function(v){return normalizedVoiceLang(v)||"?";}).join(", ")+")" : "НЕ виден Safari");
+      });
+      els.voiceDebugCounts.innerHTML=
+        "<b>getVoices(): "+all.length+"</b> · испанских: "+spanish.length+" · нужных iOS: "+featured.length+"/4<br>"+
+        foundLabels.join(" · ");
+      els.voiceDebugLog.textContent=all.length ? all.map(voiceDebugLine).join("\n") : "getVoices() вернул пустой массив.";
+      try{
+        console.groupCollapsed("[TTS] speechSynthesis.getVoices() · "+all.length);
+        console.table(all.map(function(v){return {name:v.name,lang:v.lang,voiceURI:v.voiceURI,localService:v.localService,default:v.default};}));
+        console.log("[TTS] Spanish voices",spanish);
+        console.log("[TTS] Featured iOS voices",featured);
+        console.groupEnd();
+      }catch(err){}
+    }
 
     function normalizedVoiceLang(voice){
       return String((voice && voice.lang) || "").replace("_","-");
@@ -4052,9 +4104,9 @@
         return;
       }
       const preferred=preferredVoiceLocale();
-      spanishVoices=window.speechSynthesis.getVoices().filter(function(voice){
-        return /^es([-_]|$)/i.test(voice.lang || "");
-      }).sort(function(a,b){
+      const allVoices=window.speechSynthesis.getVoices();
+      renderVoiceDebug(allVoices);
+      spanishVoices=allVoices.filter(isSpanishVoice).sort(function(a,b){
         return voiceScore(b,preferred)-voiceScore(a,preferred) || normalizedVoiceLang(a).localeCompare(normalizedVoiceLang(b)) || a.name.localeCompare(b.name);
       });
 
@@ -4104,6 +4156,13 @@
       }
 
       els.voiceLocaleSelect.disabled=false;
+      if(!spanishVoices.length){
+        els.voiceSelect.innerHTML="";
+        const unavailable=new Option("Safari не передал испанские голоса","");
+        unavailable.disabled=true;
+        unavailable.selected=true;
+        els.voiceSelect.appendChild(unavailable);
+      }
       els.voiceSelect.disabled=!spanishVoices.length;
       els.voicePreview.disabled=!spanishVoices.length && !preferred;
 
@@ -4116,9 +4175,11 @@
           ? "Выбран: "+(chosenFeatured ? chosenFeatured.label : chosen.name)+" · "+locale+". Настройка сохранена."
           : "Автовыбор: "+(chosenFeatured ? chosenFeatured.label : chosen.name)+" · "+locale+". Доступно системных iOS-голосов из списка: "+installedFeatured.length+" из 4.";
       } else if(preferred){
-        els.voiceStatus.textContent="Для "+voiceLocaleLabel(preferred)+" отдельного голоса нет. Браузер попробует системный голос этой локали.";
+        els.voiceStatus.textContent="Safari не передал доступный испанский голос для "+voiceLocaleLabel(preferred)+". Озвучка попробует системный fallback по локали "+preferred+". Открой «Диагностика голосов Safari», чтобы увидеть фактический getVoices().";
+      } else if(!spanishVoices.length){
+        els.voiceStatus.textContent="Safari сейчас не отдаёт ни одного испанского голоса через Web Speech API. Скачанные в iOS улучшенные голоса нельзя выбрать на сайте, пока браузер не показывает их в getVoices().";
       } else {
-        els.voiceStatus.textContent="Список голосов появится после первого запуска аудио.";
+        els.voiceStatus.textContent="Safari передал "+spanishVoices.length+" испанских голосов. Выбери нужный в списке.";
       }
       write(STORAGE.audio,audioSettings);
     }
@@ -4590,6 +4651,12 @@
     els.voicePreview.addEventListener("click",function(){
       speakText("Hola. Hoy practicamos español con calma y claridad.",audioSettings.rate,els.voicePreview);
     });
+    els.voiceRefresh.addEventListener("click",function(){
+      refreshVoices();
+    });
+    els.voiceDebug.addEventListener("toggle",function(){
+      if(els.voiceDebug.open) refreshVoices();
+    });
     els.voiceLocaleSelect.addEventListener("change",function(){
       audioSettings.voiceLocale=els.voiceLocaleSelect.value || "auto";
       audioSettings.voiceURI="";
@@ -4704,6 +4771,7 @@
       setTimeout(refreshVoices,300);
       setTimeout(refreshVoices,1200);
       setTimeout(refreshVoices,2500);
+      setTimeout(refreshVoices,5000);
       renderStats();
       renderTopics();
       showHome();
