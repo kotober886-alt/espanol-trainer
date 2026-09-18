@@ -41,16 +41,8 @@
     ]);
   };
   window.clothingArt=function(kind){
-    const direct={
-      hoodie:"assets/generated/clothes-new/hoodie.svg?v=20260918-direct2",
-      vest:"assets/generated/clothes-new/vest.svg?v=20260918-direct2",
-      polo:"assets/generated/clothes-new/polo.svg?v=20260918-direct2",
-      cardigan:"assets/generated/clothes-new/cardigan.svg?v=20260918-direct2"
-    };
-    if(direct[kind]){
-      return '<img class="food-svg new-clothes-direct-img" src="'+direct[kind]+'" alt="" aria-hidden="true" style="display:block;width:min(100%,380px);height:auto;margin:auto;object-fit:contain">';
-    }
     return firstSprite([
+      ["clothesNew","clothesNew",kind,2,2],
       ["clothes","clothes",kind,6,5],
       ["clothesExtra","clothesExtra",kind,6,3]
     ]);
