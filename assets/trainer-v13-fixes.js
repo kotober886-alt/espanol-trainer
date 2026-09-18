@@ -195,7 +195,7 @@
       const oldRefine=document.querySelector('script[data-answer-translations-refine]');
       if(oldRefine) oldRefine.remove();
       const refine=document.createElement('script');
-      refine.src='assets/answer-translations-refine.js?v=20260917-answertranslations3';
+      refine.src='assets/answer-translations-refine.js?v=20260918-outfitpairs1';
       refine.dataset.answerTranslationsRefine='1';
       document.body.appendChild(refine);
     };
