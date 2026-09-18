@@ -212,4 +212,113 @@
     document.body.appendChild(script);
   }
   loadOutfitPictureCallouts();
+
+  try{
+    if(!window.__trainerRefreshStateInstalled){
+      window.__trainerRefreshStateInstalled=true;
+      const REFRESH_STATE_KEY='espanol_refresh_state_v1';
+
+      function trainerViewName(){
+        if(!els.homeView.hidden) return 'home';
+        if(els.trainerLayout.classList.contains('catalog-view')) return 'catalog';
+        if(!els.sessionResult.hidden) return 'result';
+        return 'workspace';
+      }
+
+      function saveTrainerRefreshState(){
+        try{
+          const state={
+            v:1,
+            view:trainerViewName(),
+            selectedTopic:selectedTopic,
+            selectedMode:selectedMode,
+            index:index,
+            wordIndex:wordIndex,
+            foodPhase:foodPhase,
+            foodCategory:foodCategory,
+            catalogIntent:catalogIntent,
+            sessionSize:sessionSize,
+            sessionActive:sessionActive,
+            sessionResults:sessionResults,
+            sessionSeen:sessionSeen,
+            queueIds:(Array.isArray(queue)?queue:[]).map(function(item){return item&&item.id;}).filter(Boolean),
+            scrollY:window.scrollY || 0
+          };
+          localStorage.setItem(REFRESH_STATE_KEY,JSON.stringify(state));
+        }catch(e){}
+      }
+
+      function rebuildSavedQueue(ids){
+        try{
+          const all=allExercises();
+          const byId={};
+          all.forEach(function(item){if(item&&item.id) byId[item.id]=item;});
+          return (Array.isArray(ids)?ids:[]).map(function(id){
+            if(byId[id]) return byId[id];
+            if(/__review$/.test(id)){
+              const baseId=id.replace(/__review$/,'');
+              const base=byId[baseId];
+              if(base) return Object.assign({},base,{
+                id:id,
+                originalId:base.originalId || base.id,
+                reviewOf:base.id,
+                sessionReview:true,
+                skill:'Повторение · '+(base.skill || 'Практика')
+              });
+            }
+            return null;
+          }).filter(Boolean);
+        }catch(e){return [];}
+      }
+
+      function restoreTrainerRefreshState(){
+        let saved=null;
+        try{saved=JSON.parse(localStorage.getItem(REFRESH_STATE_KEY)||'null');}catch(e){}
+        if(!saved || saved.v!==1) return false;
+        try{
+          selectedTopic=saved.selectedTopic || selectedTopic;
+          selectedMode=saved.selectedMode || 'all';
+          foodPhase=saved.foodPhase || 'study';
+          foodCategory=saved.foodCategory || 'all';
+          catalogIntent=saved.catalogIntent || 'learn';
+          sessionSize=Number(saved.sessionSize)||sessionSize;
+          sessionActive=!!saved.sessionActive;
+          sessionResults=saved.sessionResults && typeof saved.sessionResults==='object' ? saved.sessionResults : {answered:0,correct:0,wrong:0,wrongIds:[]};
+          sessionSeen=saved.sessionSeen && typeof saved.sessionSeen==='object' ? saved.sessionSeen : {};
+
+          if(saved.view==='home'){
+            showHome();
+          }else if(saved.view==='catalog'){
+            showCatalog(catalogIntent);
+          }else if(saved.view==='result'){
+            showWorkspace();
+            finishSession();
+          }else{
+            if(foodPhase==='study' && isVocabularyTopic()){
+              wordIndex=Math.max(0,Number(saved.wordIndex)||0);
+              showWorkspace();
+              render();
+            }else{
+              queue=rebuildSavedQueue(saved.queueIds);
+              index=Math.max(0,Math.min(Math.max(0,queue.length-1),Number(saved.index)||0));
+              showWorkspace();
+              if(queue.length) render(); else buildQueue(false);
+            }
+          }
+
+          const y=Math.max(0,Number(saved.scrollY)||0);
+          requestAnimationFrame(function(){requestAnimationFrame(function(){window.scrollTo(0,y);});});
+          return true;
+        }catch(e){return false;}
+      }
+
+      document.addEventListener('click',function(){setTimeout(saveTrainerRefreshState,0);});
+      document.addEventListener('change',function(){setTimeout(saveTrainerRefreshState,0);});
+      document.addEventListener('keydown',function(){setTimeout(saveTrainerRefreshState,0);});
+      window.addEventListener('pagehide',saveTrainerRefreshState);
+      window.addEventListener('beforeunload',saveTrainerRefreshState);
+      document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden') saveTrainerRefreshState();});
+      setTimeout(restoreTrainerRefreshState,0);
+    }
+  }catch(e){}
 })();
