@@ -3314,12 +3314,15 @@
       };
       if(newClothes[kind]){
         const p=newClothes[kind];
+        const left=p[0]===0?'0':'-100%';
+        const top=p[1]===0?'0':'-100%';
         return '<div class="new-clothes-inline-art" aria-hidden="true" style="'+
-          'width:min(100%,380px);aspect-ratio:1/1;margin:auto;background-repeat:no-repeat;'+
-          'background-image:url(assets/generated/study-clothes-new-v1.webp?v=20260918-inline1);'+
-          'background-size:200% 200%;'+
-          'background-position:'+(p[0]===0?'0%':'100%')+' '+(p[1]===0?'0%':'100%')+';'+
-          '"></div>';
+          'position:relative;width:min(100%,380px);aspect-ratio:1/1;margin:auto;overflow:hidden;background:#fff;'+
+          '">'+
+          '<img src="assets/generated/study-clothes-new-v1.webp?v=20260918-imgcrop1" alt="" style="'+
+            'position:absolute;display:block;width:200%;max-width:none;height:200%;max-height:none;left:'+left+';top:'+top+';object-fit:fill;'+
+          '">'+
+        '</div>';
       }
       const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
       const art={
