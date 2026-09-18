@@ -1,9 +1,12 @@
 from pathlib import Path
+from io import BytesIO
+import subprocess
 from PIL import Image, ImageChops
 
 SRC=Path("assets/generated/study-clothes-new-v1.webp")
 OUT=Path("assets/generated/clothes-new-raster")
 RUNTIME=Path("assets/generated-art.js")
+FALLBACK_COMMIT="0d9b5370147b84722f672709709403aedee4bd6c"
 OUT.mkdir(parents=True, exist_ok=True)
 
 items=[
@@ -13,7 +16,27 @@ items=[
     ("cardigan",1,1),
 ]
 
-im=Image.open(SRC).convert("RGB")
+def load_source():
+    try:
+        im=Image.open(SRC)
+        im.load()
+        print("current raster OK",im.size)
+        return im.convert("RGB")
+    except Exception as exc:
+        print("current raster is broken:",repr(exc))
+        spec=f"{FALLBACK_COMMIT}:{SRC.as_posix()}"
+        data=subprocess.run(
+            ["git","show",spec],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout
+        im=Image.open(BytesIO(data))
+        im.load()
+        print("restored previous raster",im.size)
+        SRC.write_bytes(data)
+        return im.convert("RGB")
+
+im=load_source()
 w,h=im.size
 assert w%2==0 and h%2==0, im.size
 cw,ch=w//2,h//2
@@ -45,10 +68,10 @@ start=s.index("  window.clothingArt=function(kind){")
 end=s.index("  window.activityArt=function(kind){",start)
 block="""  window.clothingArt=function(kind){
     const directRaster={
-      hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-raster1",
-      vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-raster1",
-      polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-raster1",
-      cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-raster1"
+      hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-raster2",
+      vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-raster2",
+      polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-raster2",
+      cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-raster2"
     };
     if(directRaster[kind]){
       return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';
