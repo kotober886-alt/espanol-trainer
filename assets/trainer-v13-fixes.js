@@ -312,13 +312,21 @@
         }catch(e){return false;}
       }
 
-      document.addEventListener('click',function(){setTimeout(saveTrainerRefreshState,0);});
-      document.addEventListener('change',function(){setTimeout(saveTrainerRefreshState,0);});
-      document.addEventListener('keydown',function(){setTimeout(saveTrainerRefreshState,0);});
+      let refreshStateReady=false;
+      function restoreRefreshPosition(){
+        const restored=restoreTrainerRefreshState();
+        refreshStateReady=true;
+        if(!restored) saveTrainerRefreshState();
+      }
+      document.addEventListener('click',function(){setTimeout(function(){if(refreshStateReady) saveTrainerRefreshState();},0);});
+      document.addEventListener('change',function(){setTimeout(function(){if(refreshStateReady) saveTrainerRefreshState();},0);});
+      document.addEventListener('keydown',function(){setTimeout(function(){if(refreshStateReady) saveTrainerRefreshState();},0);});
       window.addEventListener('pagehide',saveTrainerRefreshState);
       window.addEventListener('beforeunload',saveTrainerRefreshState);
       document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden') saveTrainerRefreshState();});
-      setTimeout(restoreTrainerRefreshState,0);
+      window.addEventListener('pageshow',function(){setTimeout(restoreRefreshPosition,50);},{once:true});
+      window.addEventListener('load',function(){setTimeout(restoreRefreshPosition,50);},{once:true});
+      setInterval(function(){if(refreshStateReady && document.visibilityState==='visible') saveTrainerRefreshState();},500);
     }
   }catch(e){}
 })();
