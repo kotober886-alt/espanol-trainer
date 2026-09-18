@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - .github/workflows/inspect-new-clothes-raster.yml
+      - assets/generated/clothes-new-raster/*.webp
+      - assets/generated-art.js
 
 jobs:
   inspect:
