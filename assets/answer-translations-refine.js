@@ -118,8 +118,9 @@
       const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
       if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
         box.innerHTML='<div class="outfit-answer-list">'+labels.map(function(label,i){
+          const number=label&&label.displayNumber ? label.displayNumber : (i+1);
           return '<div class="outfit-answer-row">'+
-            '<div class="outfit-answer-number">'+(i+1)+'.</div>'+
+            '<div class="outfit-answer-number">'+number+'.</div>'+
             '<div class="outfit-answer-copy">'+
               '<strong class="outfit-answer-es">'+escapeHtml(clean(label.reveal))+'</strong>'+
               '<span class="outfit-answer-ru">'+escapeHtml(clean(label.translation))+'</span>'+
