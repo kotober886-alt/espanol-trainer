@@ -8,6 +8,7 @@
     clothes: withVersion("assets/picture-labels/study-clothes-v3.webp"),
     foods: withVersion("assets/picture-labels/study-foods-v3.webp"),
     activities: withVersion("assets/picture-labels/study-activities-v3.webp"),
+    clothesExtra: withVersion("assets/picture-labels/study-clothes-extra-v2.webp"),
     clothesNew: withVersion("assets/picture-labels/study-clothes-new-v1.webp"),
     foodsExtra: withVersion("assets/picture-labels/study-foods-extra-v1.webp"),
     activitiesExtra: withVersion("assets/picture-labels/study-activities-extra-v1.webp")
@@ -15,6 +16,7 @@
 
   const SPRITE_MAP={
     clothes:{tshirt:[0,0],shirt:[1,0],blouse:[2,0],sweater:[3,0],hood:[4,0],jacket:[5,0],coat:[0,1],dress:[1,1],skirt:[2,1],trousers:[3,1],jeans:[4,1],shorts:[5,1],suit:[0,2],pajamas:[1,2],underwear:[2,2],socks:[3,2],shoes:[4,2],sneakers:[5,2],boots:[0,3],sandals:[1,3],scarf:[2,3],gloves:[3,3],sunglasses:[4,3],belt:[5,3],tie:[0,4],bowtie:[1,4],hat:[2,4],cap:[3,4],backpack:[5,4]},
+    clothesExtra:{ankleboots:[0,0],heels:[1,0],slippers:[2,0],umbrella:[3,0],handkerchief:[4,0],necklace:[5,0],bracelet:[0,1],ring:[1,1],earrings:[2,1],watch:[3,1],brooch:[4,1],chain:[5,1],beret:[0,2],handbag:[1,2],wallet:[2,2],coinpurse:[3,2],suitcase:[4,2],waistbag:[5,2]},
     clothesNew:{hoodie:[0,0],vest:[1,0],polo:[0,1],cardigan:[1,1]},
     foods:{bread:[0,0],cheese:[1,0],egg:[2,0],milk:[3,0],rice:[4,0],pasta:[5,0],chicken:[6,0],fish:[0,1],meat:[1,1],potato:[2,1],tomato:[3,1],apple:[4,1],banana:[5,1],orange:[6,1],water:[0,2],coffee:[1,2],tea:[2,2],salt:[3,2],sugar:[4,2],bag:[5,2],bottle:[6,2],butter:[0,3],jar:[1,3],honey:[2,3],beans:[3,3],lentils:[4,3],soup:[5,3],salad:[6,3],sandwich:[0,4],pizza:[1,4],cookie:[2,4],cake:[3,4],icecream:[4,4],sausage:[5,4],shellfish:[6,4]},
     foodsExtra:{chocolate:[0,0],candy:[1,0],muffin:[2,0],flan:[0,1],juice:[1,1],soda:[2,1],wine:[0,2],beer:[1,2],puree:[2,2]},
@@ -22,34 +24,6 @@
     activitiesExtra:{train:[0,0],online:[1,0],level:[2,0],learn:[3,0],shopping:[0,1],fishing:[1,1],garden:[2,1]}
   };
 
-  const CLOTHES_EXTRA_IMAGES={
-    ankleboots:"ankleboots.webp",
-    heels:"heels.webp",
-    slippers:"slippers.webp",
-    umbrella:"umbrella.webp",
-    handkerchief:"handkerchief.webp",
-    necklace:"necklace.webp",
-    bracelet:"bracelet.webp",
-    ring:"ring.webp",
-    earrings:"earrings.webp",
-    watch:"watch.webp",
-    brooch:"brooch.webp",
-    chain:"chain.webp",
-    beret:"beret.webp",
-    handbag:"handbag.webp",
-    wallet:"wallet.webp",
-    coinpurse:"coinpurse.webp",
-    suitcase:"suitcase.webp",
-    waistbag:"waistbag.webp"
-  };
-
-  function clothesExtraArt(id){
-    const file=CLOTHES_EXTRA_IMAGES[id];
-    if(!file) return "";
-    return '<img class="clothes-extra-image" '+
-      'src="assets/picture-labels/clothes-extra/'+file+'?v='+ASSET_VERSION+'" '+
-      'alt="" aria-hidden="true" draggable="false">';
-  }
 
   function spriteFrom(imageKey,mapKey,id,cols,rows){
     const pos=(SPRITE_MAP[mapKey]||{})[id];
@@ -81,11 +55,9 @@
   };
 
   window.clothingArt=function(id){
-    const extra=clothesExtraArt(id);
-    if(extra) return extra;
-
     return firstSprite([
       ["clothes","clothes",id,6,5],
+      ["clothesExtra","clothesExtra",id,6,3],
       ["clothesNew","clothesNew",id,2,2]
     ]);
   };
