@@ -22,48 +22,10 @@ jobs:
           python-version: "3.12"
       - name: Install Pillow
         run: python -m pip install --quiet pillow
-      - name: Split generated raster
+      - name: Build individual raster clothing images
         run: python scripts/split_new_clothes_raster.py
-      - name: Switch runtime to individual raster files
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("assets/generated-art.js")
-          s=p.read_text(encoding="utf-8")
-          start=s.index("  window.clothingArt=function(kind){")
-          end=s.index("  window.activityArt=function(kind){",start)
-          block='''  window.clothingArt=function(kind){
-            const directRaster={
-              hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-raster1",
-              vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-raster1",
-              polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-raster1",
-              cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-raster1"
-            };
-            if(directRaster[kind]){
-              return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';
-            }
-            return firstSprite([
-              ["clothes","clothes",kind,6,5],
-              ["clothesExtra","clothesExtra",kind,6,3]
-            ]);
-          };
-'''
-          s=s[:start]+block+s[end:]
-          p.write_text(s,encoding="utf-8")
-          PY
       - name: Verify raster outputs
-        run: |
-          python - <<'PY'
-          from PIL import Image, ImageStat
-          from pathlib import Path
-          for p in sorted(Path("assets/generated/clothes-new-raster").glob("*.webp")):
-              im=Image.open(p).convert("RGB")
-              stat=ImageStat.Stat(im)
-              assert im.width>=300 and im.height>=300, (p,im.size)
-              assert max(stat.var)>100, (p,stat.var)
-              print(p, im.size, stat.var)
-          PY
+        run: python -c "from pathlib import Path; from PIL import Image,ImageStat; ps=sorted(Path('assets/generated/clothes-new-raster').glob('*.webp')); assert len(ps)==4, ps; [(lambda im,p: (print(p,im.size), (_ for _ in ()).throw(AssertionError((p,im.size))) if min(im.size)<300 else None, (_ for _ in ()).throw(AssertionError((p,ImageStat.Stat(im).var))) if max(ImageStat.Stat(im).var)<=100 else None))(Image.open(p).convert('RGB'),p) for p in ps]"
       - name: Commit individual raster clothing art
         run: |
           git config user.name "github-actions[bot]"
