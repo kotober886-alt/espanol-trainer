@@ -337,6 +337,13 @@
       background:rgba(255,255,255,.7); overflow:hidden;
     }
     .food-svg { width:min(260px,92%); height:auto; filter:drop-shadow(0 18px 18px rgba(56,43,99,.11)); }
+    .color-swatch {
+      width:min(230px,78%); aspect-ratio:1; border-radius:22px; border:1px solid rgba(23,21,59,.14);
+    }
+    .color-prompt-grid { display:block; margin-bottom:22px; }
+    .color-prompt-grid .color-swatch {
+      width:min(320px,78vw); margin:0 auto; border-radius:24px;
+    }
     .word-count { color:var(--violet); font-size:13px; font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
     .food-word { margin:6px 0 0; font-size:clamp(38px,6vw,62px); line-height:1; letter-spacing:-.055em; }
     .food-gender { display:inline-block; margin-top:12px; padding:5px 10px; border-radius:999px; background:white; color:var(--muted); font-size:13px; font-weight:800; }
@@ -968,6 +975,7 @@
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
       { id:"practical", title:"Время, числа и цены", icon:"#" },
       { id:"city", title:"Город и район", icon:"⌂" },
+      { id:"colors", title:"Цвета", icon:"◩" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
       { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
       { id:"activities", title:"Занятия и увлечения", icon:"★" },
@@ -977,7 +985,7 @@
     const TOPIC_GROUPS = [
       {title:"Основа",ids:["verbs","present","pronouns","agreement"]},
       {title:"Общение",ids:["questions","constructions","connectors","gustar"]},
-      {title:"Повседневная жизнь",ids:["routine","calendar","practical","city","foods","clothes","activities"]},
+      {title:"Повседневная жизнь",ids:["routine","calendar","practical","city","colors","foods","clothes","activities"]},
       {title:"Следующий уровень",ids:["past","prepositions","custom"]}
     ];
 
@@ -1926,6 +1934,46 @@
         [["Guardo las llaves en la riñonera.","Я храню ключи в поясной сумке."],["La riñonera es práctica para caminar.","Поясная сумка удобна для прогулок."]],"Guardo las llaves en la ___.",["riñonera"])
     ];
 
+
+    const COLOR_CATEGORIES = [
+      {id:"all",title:"Все цвета"},
+      {id:"basic",title:"Основные"},
+      {id:"extra",title:"Дополнительные"}
+    ];
+
+    function colorWord(id,cat,word,gender,tr,ru,answers,hex,examples){
+      return {id:id,cat:cat,word:word,base:word,gender:gender,tr:tr,ru:ru,answers:answers,hex:hex,examples:examples};
+    }
+
+    const COLOR_WORDS = [
+      colorWord("white","basic","blanco","прилагательное · blanco / blanca","белый",["белый","белая","белое"],["blanco","blanca"],"#FFFFFF",
+        [["La pared es blanca.","Стена белая."],["Llevo una camiseta blanca.","На мне белая футболка."]]),
+      colorWord("black","basic","negro","прилагательное · negro / negra","чёрный",["чёрный","черный","чёрная","черная"],["negro","negra"],"#111111",
+        [["El bolso es negro.","Сумка чёрная."],["Tengo unos zapatos negros.","У меня чёрные туфли."]]),
+      colorWord("red","basic","rojo","прилагательное · rojo / roja","красный",["красный","красная"],["rojo","roja"],"#E53935",
+        [["El coche es rojo.","Машина красная."],["Me gusta esta falda roja.","Мне нравится эта красная юбка."]]),
+      colorWord("blue","basic","azul","прилагательное · одинаково для м. и ж. рода","синий",["синий","синяя","голубой"],["azul"],"#1E66F5",
+        [["El cielo está azul.","Небо синее."],["Tengo una camisa azul.","У меня синяя рубашка."]]),
+      colorWord("green","basic","verde","прилагательное · одинаково для м. и ж. рода","зелёный",["зелёный","зеленый","зелёная","зеленая"],["verde"],"#2E9B50",
+        [["La puerta es verde.","Дверь зелёная."],["Compré un jersey verde.","Я купила зелёный свитер."]]),
+      colorWord("yellow","basic","amarillo","прилагательное · amarillo / amarilla","жёлтый",["жёлтый","желтый","жёлтая","желтая"],["amarillo","amarilla"],"#F4D03F",
+        [["El limón es amarillo.","Лимон жёлтый."],["Las flores son amarillas.","Цветы жёлтые."]]),
+      colorWord("orange","basic","naranja","цвет · обычно без изменения по роду","оранжевый",["оранжевый","оранжевая"],["naranja"],"#F28C28",
+        [["La mochila es naranja.","Рюкзак оранжевый."],["Quiero una taza naranja.","Я хочу оранжевую чашку."]]),
+      colorWord("pink","basic","rosa","цвет · обычно без изменения по роду","розовый",["розовый","розовая"],["rosa"],"#F58BB5",
+        [["El pijama es rosa.","Пижама розовая."],["Tiene una funda rosa.","У неё розовый чехол."]]),
+      colorWord("purple","extra","morado","прилагательное · morado / morada","фиолетовый",["фиолетовый","фиолетовая","пурпурный"],["morado","morada","violeta"],"#7E57C2",
+        [["El cuaderno es morado.","Тетрадь фиолетовая."],["La camiseta morada está limpia.","Фиолетовая футболка чистая."]]),
+      colorWord("brown","extra","marrón","прилагательное · одинаково по роду","коричневый",["коричневый","коричневая"],["marrón","marron"],"#795548",
+        [["El abrigo es marrón.","Пальто коричневое."],["Las botas marrones son nuevas.","Коричневые сапоги новые."]]),
+      colorWord("gray","extra","gris","прилагательное · одинаково по роду","серый",["серый","серая"],["gris"],"#8A8A8A",
+        [["El sofá es gris.","Диван серый."],["Tengo unos pantalones grises.","У меня серые брюки."]]),
+      colorWord("beige","extra","beige","цвет · одинаково по роду","бежевый",["бежевый","бежевая"],["beige"],"#D8C7A3",
+        [["El jersey es beige.","Свитер бежевый."],["La pared beige combina con todo.","Бежевая стена сочетается со всем."]]),
+      colorWord("turquoise","extra","turquesa","цвет · одинаково по роду","бирюзовый",["бирюзовый","бирюзовая"],["turquesa"],"#37B7B5",
+        [["El agua es turquesa.","Вода бирюзовая."],["Tengo una pulsera turquesa.","У меня бирюзовый браслет."]])
+    ];
+
     const ACTIVITY_CATEGORIES = [
       {id:"all",title:"Все занятия"},
       {id:"sport",title:"Спорт"},
@@ -2391,7 +2439,7 @@
         {topic:"questions",words:QUESTION_WORDS},{topic:"constructions",words:CONSTRUCTION_WORDS},{topic:"gustar",words:GUSTAR_WORDS},
         {topic:"agreement",words:AGREEMENT_WORDS},{topic:"prepositions",words:PREPOSITION_WORDS},{topic:"connectors",words:CONNECTOR_WORDS},
         {topic:"past",words:PAST_WORDS},{topic:"routine",words:ROUTINE_WORDS},{topic:"calendar",words:CALENDAR_WORDS},
-        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"foods",words:FOOD_WORDS},
+        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"colors",words:COLOR_WORDS},{topic:"foods",words:FOOD_WORDS},
         {topic:"clothes",words:CLOTHING_WORDS},{topic:"activities",words:ACTIVITY_WORDS}
       ];
     }
@@ -3109,6 +3157,28 @@
       return items;
     }
 
+    function colorExercises(){
+      const items=[];
+      COLOR_WORDS.forEach(function(word){
+        items.push({
+          id:"color_"+word.id+"_visual",topic:"colors",foodCat:word.cat,type:"color-prompt",skill:"Узнай цвет",
+          q:"Как называется этот цвет по-испански?",colorHex:word.hex,a:word.answers,
+          e:word.word+" — "+word.tr+"."
+        });
+        items.push({
+          id:"color_"+word.id+"_es",topic:"colors",foodCat:word.cat,skill:"Перевод цвета",
+          q:"Переведи на испанский: "+word.tr+".",a:word.answers,
+          e:"Базовая форма: "+word.word+"."
+        });
+        items.push({
+          id:"color_"+word.id+"_ru",topic:"colors",foodCat:word.cat,skill:"Узнай цвет",
+          q:"Переведи на русский: "+word.word+".",a:word.ru,
+          e:word.word+" — "+word.tr+"."
+        });
+      });
+      return items;
+    }
+
     function activityExercises(){
       const items=[];
       ACTIVITY_WORDS.forEach(function(item){
@@ -3210,7 +3280,7 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(pictureLabelExercises()).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(colorExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(pictureLabelExercises()).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
@@ -3227,6 +3297,7 @@
       if(selectedTopic==="connectors") return CONNECTOR_WORDS;
       if(selectedTopic==="calendar") return CALENDAR_WORDS;
       if(selectedTopic==="city") return CITY_WORDS;
+      if(selectedTopic==="colors") return COLOR_WORDS;
       if(selectedTopic==="clothes") return CLOTHING_WORDS;
       if(selectedTopic==="activities") return ACTIVITY_WORDS;
       return FOOD_WORDS;
@@ -3256,6 +3327,7 @@
       if(topic==="connectors") return CONNECTOR_CATEGORIES;
       if(topic==="calendar") return CALENDAR_CATEGORIES;
       if(topic==="city") return CITY_CATEGORIES;
+      if(topic==="colors") return COLOR_CATEGORIES;
       if(topic==="clothes") return CLOTHING_CATEGORIES;
       if(topic==="activities") return ACTIVITY_CATEGORIES;
       if(topic==="foods") return FOOD_CATEGORIES;
@@ -3326,7 +3398,7 @@
     function exerciseConcept(item){
       let id=String(item.originalId || item.reviewOf || item.id || "").replace(/__review$/,"");
       id=id.replace(/^(choice|audio)_/,"").replace(/^study_/,"");
-      const aliases={foods:"food",clothes:"clothes",activities:"activity",pronouns:"pronoun"};
+      const aliases={foods:"food",clothes:"clothes",colors:"color",activities:"activity",pronouns:"pronoun"};
       const prefix=(aliases[item.topic] || item.topic)+"_";
       if(id.indexOf(item.topic+"_")===0) id=id.slice(item.topic.length+1);
       if(id.indexOf(prefix)===0) id=id.slice(prefix.length);
@@ -3373,7 +3445,7 @@
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="pictures"){
-        items=items.filter(function(x){ return x.type==="picture-label"; });
+        items=items.filter(function(x){ return x.type==="picture-label" || x.type==="color-prompt"; });
       } else if(selectedMode==="mistakes"){
         items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
       } else if(selectedMode==="tests"){
@@ -3419,6 +3491,7 @@
             t.id==="connectors" ? CONNECTOR_WORDS.length+" конструкций" :
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
             t.id==="city" ? CITY_WORDS.length+" карточек" :
+            t.id==="colors" ? COLOR_WORDS.length+" цветов" :
             t.id==="foods" ? FOOD_WORDS.length+" слов" :
             t.id==="clothes" ? CLOTHING_WORDS.length+" слов" :
             t.id==="activities" ? ACTIVITY_WORDS.length+" фраз" : counts[t.id]
@@ -3546,6 +3619,7 @@
       els.answerLabel.textContent="Твой ответ";
       els.audioActions.hidden=true;
       els.choiceGrid.hidden=true;
+      els.choiceGrid.className="choice-grid";
       els.choiceGrid.innerHTML="";
       els.orderWidget.hidden=true;
       els.orderBuilt.innerHTML="";
@@ -3766,7 +3840,14 @@
     function setupExercise(item){
       resetCard();
       const type=item.type || "text";
-      if(type==="choice" || type==="context-choice"){
+      if(type==="color-prompt"){
+        els.choiceGrid.hidden=false;
+        els.choiceGrid.className="choice-grid color-prompt-grid";
+        els.choiceGrid.innerHTML=colorArt(item.colorHex);
+        els.answerLabel.textContent="Название цвета";
+        els.answerInput.placeholder="Напиши цвет по-испански…";
+        els.answerInput.focus();
+      } else if(type==="choice" || type==="context-choice"){
         els.answerInput.hidden=true;
         els.answerLabel.hidden=true;
         els.choiceGrid.hidden=false;
@@ -4078,6 +4159,7 @@
         connectors:"Сначала разберём связки и конструкции",
         calendar:"Сначала выучим календарную лексику",
         city:"Сначала познакомимся со словами о городе",
+        colors:"Сначала познакомимся с цветами",
         foods:"Сначала познакомимся с продуктами",
         clothes:"Сначала познакомимся с одеждой и аксессуарами",
         activities:"Сначала познакомимся с занятиями и увлечениями"
@@ -4098,6 +4180,7 @@
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
+      if(selectedTopic==="colors") return "Смотри на чистую цветную плашку, запоминай испанское название и форму прилагательного, затем узнавай цвет без подписи.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
     function studyUnitLabel(){
@@ -4117,9 +4200,13 @@
       return "Слово";
     }
     function studyAriaLabel(){ return "Категории: "+topicById(selectedTopic).title; }
+    function colorArt(hex){
+      return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
+    }
     function studyArt(word){
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art);
+      if(selectedTopic==="colors") return colorArt(word.hex);
       if(selectedTopic==="activities") return activityArt(word.art);
       return "";
     }
@@ -4156,7 +4243,7 @@
           renderStudy();
         });
       });
-      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="activities";
+      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities";
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
