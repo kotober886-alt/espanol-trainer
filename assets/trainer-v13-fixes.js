@@ -138,6 +138,10 @@
   style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}}\n';
   document.head.appendChild(style);
 
+  const pictureLabelStyle=document.createElement('style');
+  pictureLabelStyle.textContent='.picture-widget .picture-visual{aspect-ratio:auto!important;height:auto!important}.picture-widget .picture-raster{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;object-fit:contain!important}';
+  document.head.appendChild(pictureLabelStyle);
+
   function installAnimalsCardArt(){
     try{
       if(typeof renderStudy==='function' && !renderStudy.__animalsArtFinal){
