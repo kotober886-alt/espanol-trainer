@@ -44,6 +44,56 @@
     return src.examples[0]&&clean(src.examples[0][1])||clean(src.tr||'');
   }
 
+  const CLOTHING_FIGURE_SCENES={
+    clothes_man:1,clothes_man_2:1,clothes_man_3:1,clothes_man_4:1,clothes_man_5:1,
+    clothes_woman:1,clothes_woman_2:1,clothes_woman_3:1,clothes_woman_4:1,clothes_woman_5:1
+  };
+  const CLOTHING_FIGURE_RU={
+    "el polo blanco":"белое поло",
+    "los pantalones grises":"серые брюки",
+    "la chaqueta azul":"синяя куртка",
+    "la mochila negra":"чёрный рюкзак",
+    "las zapatillas deportivas beige":"бежевые кроссовки",
+    "el gorro negro":"чёрная шапка",
+    "el jersey beige":"бежевый свитер",
+    "el abrigo negro":"чёрное пальто",
+    "la bufanda gris":"серый шарф",
+    "las botas negras":"чёрные ботинки",
+    "la gorra beige":"бежевая кепка",
+    "la camisa verde":"зелёная рубашка",
+    "los vaqueros azules":"синие джинсы",
+    "las zapatillas deportivas blancas":"белые кроссовки",
+    "el chaleco beige":"бежевый жилет",
+    "la sudadera con capucha verde":"зелёное худи",
+    "los pantalones marrones":"коричневые брюки",
+    "la sudadera con capucha negra":"чёрное худи",
+    "la ropa interior blanca":"белое нижнее бельё",
+    "el pijama rosa":"розовая пижама",
+    "las zapatillas de casa blancas":"белые домашние тапочки",
+    "la blusa blanca":"белая блузка",
+    "la chaqueta marrón":"коричневая куртка",
+    "la falda marrón":"коричневая юбка",
+    "los zapatos de tacón marrones":"коричневые туфли на каблуке",
+    "el sombrero marrón":"коричневая шляпа",
+    "el vestido marrón":"коричневое платье",
+    "el bolso negro":"чёрная сумка",
+    "las botas marrones":"коричневые сапоги",
+    "las gafas de sol marrones":"коричневые солнцезащитные очки",
+    "la camiseta blanca":"белая футболка",
+    "la camisa azul":"синяя рубашка",
+    "los pantalones cortos beige":"бежевые шорты",
+    "las sandalias marrones":"коричневые сандалии",
+    "el cárdigan beige":"бежевый кардиган",
+    "el bolso marrón":"коричневая сумка",
+    "los pantalones verdes":"зелёные брюки"
+  };
+  function isClothingFigure(item){
+    return !!(item && item.type==='picture-label' && item.topic==='clothes' && CLOTHING_FIGURE_SCENES[String(item.pictureScene||'')]);
+  }
+  function clothingFigureTranslation(label){
+    return CLOTHING_FIGURE_RU[clean(label&&label.reveal)] || clean(label&&label.translation);
+  }
+
   const COLOR_GEN={
     negro:'чёрного',negra:'чёрного',negros:'чёрного',negras:'чёрного',
     amarillo:'жёлтого',amarilla:'жёлтого',amarillos:'жёлтого',amarillas:'жёлтого',
@@ -97,7 +147,12 @@
     }
     if(item&&item.type==='picture-label'&&item.topic==='clothes'){
       const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
-      if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
+      if(isClothingFigure(item) && labels.length){
+        pair={
+          es:labels.map(function(label,i){const n=label&&label.displayNumber?label.displayNumber:(i+1);return n+'. '+clean(label.reveal);}).join(' · '),
+          ru:labels.map(function(label,i){const n=label&&label.displayNumber?label.displayNumber:(i+1);return n+'. '+clothingFigureTranslation(label);}).join(' · ')
+        };
+      } else if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
         pair={
           es:labels.map(function(label,i){return (i+1)+'. '+clean(label.reveal);}).join(' · '),
           ru:labels.map(function(label,i){return (i+1)+'. '+clean(label.translation);}).join(' · ')
@@ -114,6 +169,22 @@
     try{item=queue&&queue[index];}catch(e){}
     const box=document.getElementById('answerText');
     if(!box||!item)return;
+    if(isClothingFigure(item)){
+      const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
+      const explanation=document.getElementById('explanation');
+      if(explanation){ explanation.textContent=''; explanation.hidden=true; }
+      box.innerHTML='<div class="outfit-answer-list">'+labels.map(function(label,i){
+        const number=label&&label.displayNumber ? label.displayNumber : (i+1);
+        return '<div class="outfit-answer-row">'+
+          '<div class="outfit-answer-number">'+number+'.</div>'+
+          '<div class="outfit-answer-copy">'+
+            '<strong class="outfit-answer-es">'+escapeHtml(clean(label.reveal))+'</strong>'+
+            '<span class="outfit-answer-ru">'+escapeHtml(clothingFigureTranslation(label))+'</span>'+
+          '</div>'+
+        '</div>';
+      }).join('')+'</div>';
+      return;
+    }
     if(item&&item.type==='picture-label'&&item.topic==='clothes'){
       const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
       if(labels.length&&labels.every(function(label){return clean(label.translation);})) {
