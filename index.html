@@ -3292,15 +3292,6 @@
     }
 
     function clothingArt(kind){
-      const newClothes={
-        hoodie:"assets/generated/clothes-new/hoodie.svg?v=20260918-svg1",
-        vest:"assets/generated/clothes-new/vest.svg?v=20260918-svg1",
-        polo:"assets/generated/clothes-new/polo.svg?v=20260918-svg1",
-        cardigan:"assets/generated/clothes-new/cardigan.svg?v=20260918-svg1"
-      };
-      if(newClothes[kind]){
-        return '<img class="food-svg new-clothes-direct-img" src="'+newClothes[kind]+'" alt="" aria-hidden="true" style="display:block;width:min(100%,380px);height:auto;margin:auto;object-fit:contain">';
-      }
       const common='viewBox="0 0 180 180" class="food-svg" xmlns="http://www.w3.org/2000/svg"';
       const art={
         tshirt:'<path d="M62 44 39 55 25 84l25 13 10-18v65h60V79l10 18 25-13-14-29-23-11c-5 10-15 15-28 15S67 54 62 44Z" fill="#FFD447"/>',
