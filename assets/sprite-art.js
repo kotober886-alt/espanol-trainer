@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  const ASSET_VERSION = "20260918-2";
+  const ASSET_VERSION = "20260918-3";
   const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
 
   const SPRITE_IMAGES = {

@@ -10,7 +10,8 @@ ROWS = 3
 OUTPUT_SIZE = 512
 CONTENT_RATIO = 0.76
 BACKGROUND_THRESHOLD = 14
-CELL_INSET = 2
+CELL_INSET = 3
+BBOX_MARGIN = 4
 
 ITEMS = [
     ("ankleboots", 0, 0),
@@ -32,6 +33,29 @@ ITEMS = [
     ("suitcase", 4, 2),
     ("waistbag", 5, 2),
 ]
+
+
+def cell_box(width: int, height: int, col: int, row: int):
+    """Return exact pixel boundaries for one grid cell."""
+    if not (0 <= col < COLS and 0 <= row < ROWS):
+        raise ValueError(f"Invalid grid position: col={col}, row={row}")
+
+    x0 = round(col * width / COLS)
+    x1 = round((col + 1) * width / COLS)
+    y0 = round(row * height / ROWS)
+    y1 = round((row + 1) * height / ROWS)
+
+    # Pull a few pixels inward so compression/grid seams never leak
+    # into the neighboring item's crop.
+    x0 += CELL_INSET
+    y0 += CELL_INSET
+    x1 -= CELL_INSET
+    y1 -= CELL_INSET
+
+    if x1 <= x0 or y1 <= y0:
+        raise RuntimeError((col, row, x0, y0, x1, y1))
+
+    return (x0, y0, x1, y1)
 
 
 def estimate_background(tile: Image.Image):
@@ -58,6 +82,7 @@ def find_foreground_bbox(tile: Image.Image):
     background_color = estimate_background(rgb)
     background = Image.new("RGB", rgb.size, background_color)
     diff = ImageChops.difference(rgb, background)
+
     mask = ImageOps.grayscale(diff)
     mask = mask.point(
         lambda value: 255 if value > BACKGROUND_THRESHOLD else 0
@@ -66,7 +91,7 @@ def find_foreground_bbox(tile: Image.Image):
 
     bbox = mask.getbbox()
     if bbox is None:
-        raise RuntimeError("Не удалось найти предмет внутри ячейки")
+        raise RuntimeError("No foreground found in cell")
 
     return bbox
 
@@ -107,35 +132,55 @@ def main():
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Remove stale generated files before rebuilding.
+    for old_file in OUTPUT_DIR.glob("*.webp"):
+        old_file.unlink()
+
     sprite = Image.open(SOURCE).convert("RGB")
     width, height = sprite.size
 
     print(f"Source: {SOURCE}")
-    print(f"Size: {width}x{height}")
+    print(f"Sprite size: {width}x{height}")
     print(f"Grid: {COLS}x{ROWS}")
 
+    expected_names = {name for name, _, _ in ITEMS}
+    if len(expected_names) != COLS * ROWS:
+        raise RuntimeError(
+            f"ITEMS must contain exactly {COLS * ROWS} unique cells"
+        )
+
+    seen_cells = set()
+
     for name, col, row in ITEMS:
-        x0 = round(col * width / COLS)
-        x1 = round((col + 1) * width / COLS)
-        y0 = round(row * height / ROWS)
-        y1 = round((row + 1) * height / ROWS)
+        if (col, row) in seen_cells:
+            raise RuntimeError(f"Duplicate cell {(col, row)}")
+        seen_cells.add((col, row))
 
-        x0 += CELL_INSET
-        y0 += CELL_INSET
-        x1 -= CELL_INSET
-        y1 -= CELL_INSET
+        crop_box = cell_box(width, height, col, row)
+        tile = sprite.crop(crop_box)
 
-        tile = sprite.crop((x0, y0, x1, y1))
+        # Hard guard: a cell must be a small fraction of the full sprite,
+        # never the whole source image.
+        if tile.width >= width // 2 or tile.height >= height // 2:
+            raise RuntimeError(
+                f"{name}: crop unexpectedly large: {tile.size}, box={crop_box}"
+            )
+
         bbox = find_foreground_bbox(tile)
-
         bx0, by0, bx1, by1 = bbox
-        margin = 4
-        bx0 = max(0, bx0 - margin)
-        by0 = max(0, by0 - margin)
-        bx1 = min(tile.width, bx1 + margin)
-        by1 = min(tile.height, by1 + margin)
+
+        bx0 = max(0, bx0 - BBOX_MARGIN)
+        by0 = max(0, by0 - BBOX_MARGIN)
+        bx1 = min(tile.width, bx1 + BBOX_MARGIN)
+        by1 = min(tile.height, by1 + BBOX_MARGIN)
 
         item = tile.crop((bx0, by0, bx1, by1))
+
+        # Another guard: foreground extraction must never expand outside
+        # the already isolated single cell.
+        if item.width > tile.width or item.height > tile.height:
+            raise RuntimeError(f"{name}: item escaped cell bounds")
+
         result = normalize_item(item)
 
         output = OUTPUT_DIR / f"{name}.webp"
@@ -143,27 +188,35 @@ def main():
 
         print(
             f"{name:14} "
+            f"grid=({col},{row}) "
+            f"crop={crop_box} "
             f"cell={tile.size} "
             f"bbox={bbox} "
             f"item={item.size} "
             f"-> {output}"
         )
 
-    expected = {f"{name}.webp" for name, _, _ in ITEMS}
-    actual = {path.name for path in OUTPUT_DIR.glob("*.webp")}
+    expected_files = {f"{name}.webp" for name, _, _ in ITEMS}
+    actual_files = {path.name for path in OUTPUT_DIR.glob("*.webp")}
 
-    if actual != expected:
+    if actual_files != expected_files:
         raise RuntimeError(
-            f"Unexpected output set. Missing={expected-actual}, extra={actual-expected}"
+            f"Unexpected output set. "
+            f"Missing={expected_files-actual_files}, "
+            f"extra={actual_files-expected_files}"
         )
 
     for path in sorted(OUTPUT_DIR.glob("*.webp")):
         image = Image.open(path)
         image.load()
+
         if image.size != (OUTPUT_SIZE, OUTPUT_SIZE):
             raise RuntimeError(f"{path}: wrong size {image.size}")
 
-    print(f"Done: {len(ITEMS)} normalized images written to {OUTPUT_DIR}")
+    print(
+        f"Done: {len(ITEMS)} single-item images "
+        f"written to {OUTPUT_DIR}"
+    )
 
 
 if __name__ == "__main__":
