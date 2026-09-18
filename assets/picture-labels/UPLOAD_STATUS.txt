@@ -1,1 +1,0 @@
-The binary upload will be performed via git blobs.
