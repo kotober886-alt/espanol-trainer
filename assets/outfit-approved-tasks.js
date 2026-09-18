@@ -21,70 +21,70 @@ const L=(reveal,ru,names,colors)=>({reveal:reveal,translation:ru,answers:V(revea
 
 const D={
   clothes_man:[
-    L('el polo blanco','белое поло','polo','blanco'),
-    L('los pantalones deportivos grises','серые спортивные брюки',['pantalones deportivos','pantalones de chándal','pantalones de chandal'],['grises','gris']),
-    L('la chaqueta deportiva azul marino','тёмно-синяя спортивная куртка',['chaqueta deportiva','chaqueta'],['azul marino','azul oscuro']),
-    L('la mochila negra','чёрный рюкзак','mochila',['negra','negro']),
-    L('las zapatillas beige','бежевые кроссовки','zapatillas','beige')
+    L('la camiseta blanca','белая футболка','camiseta','blanca'),
+    L('los pantalones grises','серые брюки','pantalones','grises'),
+    L('la chaqueta azul','синяя куртка','chaqueta','azul'),
+    L('la mochila negra','чёрный рюкзак','mochila','negra'),
+    L('las zapatillas deportivas beige','бежевые кроссовки',['zapatillas deportivas','tenis'],'beige')
   ],
   clothes_man_2:[
     L('el gorro negro','чёрная шапка','gorro','negro'),
-    L('el jersey crema','кремовый свитер','jersey',['crema','beige']),
+    L('el jersey beige','бежевый свитер','jersey','beige'),
     L('el abrigo negro','чёрное пальто','abrigo','negro'),
     L('la bufanda gris','серый шарф','bufanda','gris'),
-    L('las botas negras','чёрные ботинки',['botas','botines'],['negras','negros'])
+    L('las botas negras','чёрные ботинки','botas','negras')
   ],
   clothes_man_3:[
     L('la gorra beige','бежевая кепка','gorra','beige'),
-    L('la camisa verde a cuadros','зелёная рубашка в клетку',['camisa','sobrecamisa'],['verde a cuadros','verde']),
-    L('los vaqueros azul claro','светло-синие джинсы',['vaqueros','jeans'],['azul claro','azules claros']),
-    L('las zapatillas blancas','белые кроссовки','zapatillas',['blancas','blancos'])
+    L('la camisa verde','зелёная рубашка','camisa','verde'),
+    L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
+    L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ],
   clothes_man_4:[
-    L('el chaleco beige','бежевый жилет','chaleco','beige'),
-    L('la sudadera verde','зелёная толстовка',['sudadera','sudadera con capucha'],'verde'),
-    L('los pantalones cargo marrones','коричневые брюки карго',['pantalones cargo','pantalones'],['marrones','marrón']),
-    L('las zapatillas blancas y verdes','бело-зелёные кроссовки','zapatillas',['blancas y verdes','blanco y verde'])
+    L('la chaqueta beige','бежевая куртка','chaqueta','beige'),
+    L('el jersey verde','зелёный свитер','jersey','verde'),
+    L('los pantalones marrones','коричневые брюки','pantalones','marrones'),
+    L('las zapatillas deportivas blancas y verdes','бело-зелёные кроссовки',['zapatillas deportivas','tenis'],['blancas y verdes','blanco y verde'])
   ],
   clothes_man_5:[
-    L('la sudadera azul marino','тёмно-синяя толстовка',['sudadera','sudadera con capucha'],['azul marino','azul oscuro']),
-    L('el bolsillo azul marino','тёмно-синий карман','bolsillo',['azul marino','azul oscuro']),
-    L('la mochila negra','чёрный рюкзак','mochila',['negra','negro']),
-    L('los vaqueros azul claro','светло-синие джинсы',['vaqueros','jeans'],['azul claro','azules claros']),
-    L('las zapatillas blancas y grises','бело-серые кроссовки','zapatillas',['blancas y grises','blanco y gris'])
+    L('el jersey azul','синий свитер','jersey','azul'),
+    L('la capucha azul','синий капюшон','capucha','azul'),
+    L('la mochila negra','чёрный рюкзак','mochila','negra'),
+    L('los vaqueros azules','синие джинсы',['vaqueros','jeans'],'azules'),
+    L('las zapatillas deportivas blancas y grises','бело-серые кроссовки',['zapatillas deportivas','tenis'],['blancas y grises','blanco y gris'])
   ],
   clothes_woman:[
-    L('el sujetador blanco','белый бюстгальтер','sujetador','blanco'),
-    L('el pijama rosa a cuadros','розовая пижама в клетку','pijama',['rosa a cuadros','rosa']),
-    L('las zapatillas de casa blancas','белые домашние тапочки',['zapatillas de casa','pantuflas'],['blancas','blancos'])
+    L('la ropa interior blanca','белое нижнее бельё','ropa interior','blanca'),
+    L('el pijama rosa','розовая пижама','pijama','rosa'),
+    L('las zapatillas de casa blancas','белые домашние тапочки','zapatillas de casa','blancas')
   ],
   clothes_woman_2:[
-    L('la blusa blanca','белая блузка','blusa',['blanca','blanco']),
-    L('la americana marrón a cuadros','коричневый пиджак в клетку',['americana','blazer','chaqueta'],['marrón a cuadros','marron a cuadros']),
-    L('la falda marrón oscuro','тёмно-коричневая юбка','falda',['marrón oscuro','marron oscuro']),
-    L('los tacones marrones','коричневые туфли на каблуке',['tacones','zapatos de tacón','zapatos de tacon'],['marrones','marrón']),
-    L('el sombrero marrón','коричневая шляпа','sombrero',['marrón','marron'])
+    L('la blusa blanca','белая блузка','blusa','blanca'),
+    L('la chaqueta marrón','коричневая куртка','chaqueta','marrón'),
+    L('la falda marrón','коричневая юбка','falda','marrón'),
+    L('los zapatos de tacón marrones','коричневые туфли на каблуке',['zapatos de tacón','tacones'],'marrones'),
+    L('el sombrero marrón','коричневая шляпа','sombrero','marrón')
   ],
   clothes_woman_3:[
-    L('la chaqueta marrón','коричневая куртка',['chaqueta','cazadora'],['marrón','marron']),
-    L('el jersey crema','кремовый свитер',['jersey','jersey de cuello alto'],['crema','beige']),
-    L('el vestido marrón oscuro','тёмно-коричневое платье','vestido',['marrón oscuro','marron oscuro']),
+    L('la chaqueta marrón','коричневая куртка','chaqueta','marrón'),
+    L('el jersey beige','бежевый свитер','jersey','beige'),
+    L('el vestido marrón','коричневое платье','vestido','marrón'),
     L('el bolso negro','чёрная сумка','bolso','negro'),
-    L('las botas marrones','коричневые сапоги','botas',['marrones','marrón'])
+    L('las botas marrones','коричневые сапоги','botas','marrones')
   ],
   clothes_woman_4:[
-    L('las gafas de sol marrones','коричневые солнцезащитные очки','gafas de sol',['marrones','marrón']),
-    L('la camiseta blanca','белая футболка','camiseta',['blanca','blanco']),
-    L('la camisa azul claro','светло-голубая рубашка','camisa',['azul claro','azul clara']),
+    L('las gafas de sol marrones','коричневые солнцезащитные очки','gafas de sol','marrones'),
+    L('la camiseta blanca','белая футболка','camiseta','blanca'),
+    L('la camisa azul','синяя рубашка','camisa','azul'),
     L('los pantalones cortos beige','бежевые шорты',['pantalones cortos','shorts'],'beige'),
-    L('las sandalias marrones','коричневые сандалии','sandalias',['marrones','marrón'])
+    L('las sandalias marrones','коричневые сандалии','sandalias','marrones')
   ],
   clothes_woman_5:[
-    L('el cárdigan crema','кремовый кардиган',['cárdigan','cardigan'],['crema','beige']),
-    L('el top blanco','белый топ','top','blanco'),
-    L('el bolso marrón','коричневая сумка','bolso',['marrón','marron']),
-    L('los pantalones verde oliva','оливково-зелёные брюки','pantalones',['verde oliva','verdes oliva']),
-    L('las zapatillas blancas','белые кроссовки','zapatillas',['blancas','blancos'])
+    L('el jersey beige','бежевый свитер','jersey','beige'),
+    L('la camiseta blanca','белая футболка','camiseta','blanca'),
+    L('el bolso marrón','коричневая сумка','bolso','marrón'),
+    L('los pantalones verdes','зелёные брюки','pantalones','verdes'),
+    L('las zapatillas deportivas blancas','белые кроссовки',['zapatillas deportivas','tenis'],'blancas')
   ]
 };
 
