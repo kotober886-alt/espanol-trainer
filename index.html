@@ -1309,6 +1309,7 @@
       {id:"all",title:"Все"},
       {id:"time",title:"Время"},
       {id:"dates",title:"Даты"},
+      
       {id:"prices",title:"Цены"},
       {id:"quantity",title:"Количество"}
     ];
@@ -1324,7 +1325,8 @@
       {id:"que_fecha",cat:"dates",word:"¿Qué fecha es hoy?",gender:"вопрос о дате",tr:"Какое сегодня число?",ru:["какое сегодня число","какая сегодня дата"],answers:["qué fecha es hoy","que fecha es hoy"],
         examples:[["¿Qué fecha es hoy? — Es 15 de septiembre.","Какое сегодня число? — 15 сентября."],["No recuerdo qué fecha es hoy.","Я не помню, какое сегодня число."]],cloze:"¿Qué ___ es hoy?",clozeAnswers:["fecha"]},
       {id:"date_pattern",cat:"dates",word:"el 15 de septiembre",gender:"день + de + месяц",tr:"15 сентября",ru:["15 сентября","пятнадцатое сентября"],answers:["el 15 de septiembre","15 de septiembre"],
-        examples:[["Mi cita es el 15 de septiembre.","Моя встреча — 15 сентября."],["Viajo el 3 de mayo.","Я уезжаю 3 мая."]],cloze:"Mi cita es el 15 ___ septiembre.",clozeAnswers:["de"]},
+        examples:[["Mi cita es el 15 de septiembre.","Моя встре
+                   ча — 15 сентября."],["Viajo el 3 de mayo.","Я уезжаю 3 мая."]],cloze:"Mi cita es el 15 ___ septiembre.",clozeAnswers:["de"]},
       {id:"year",cat:"dates",word:"en 2026",gender:"год с предлогом en",tr:"в 2026 году",ru:["в 2026 году","в 2026"],answers:["en 2026"],
         examples:[["Vivimos en 2026.","Мы живём в 2026 году."],["Empecé el curso en 2026.","Я начала курс в 2026 году."]],cloze:"Empecé el curso ___ 2026.",clozeAnswers:["en"]},
       {id:"cuanto_cuesta",cat:"prices",word:"¿Cuánto cuesta?",gender:"один предмет",tr:"Сколько это стоит?",ru:["сколько это стоит","сколько стоит"],answers:["cuánto cuesta","cuanto cuesta"],
@@ -2508,218 +2510,9 @@
       return items;
     }
 
-    function outfitVariantScene(kind,start){
-      const configs={
-        clothes_woman_2:{person:"woman",head:"hat",headColor:"#e7c98f",top:"blouse",topColor:"#b7a7df",bottom:"skirt",bottomColor:"#c95d68",accessory:"handbag",accessoryColor:"#4d9b91",shoes:"boots",shoeColor:"#8b5d45"},
-        clothes_woman_3:{person:"woman",head:"glasses",headColor:"#343247",top:"coat",topColor:"#e2b64f",bottom:"trousers",bottomColor:"#4c5b86",accessory:"scarf",accessoryColor:"#c94f55",shoes:"ankleboots",shoeColor:"#76503d"},
-        clothes_woman_4:{person:"woman",head:"necklace",headColor:"#d1a83c",top:"sweater",topColor:"#5ca77f",bottom:"jeans",bottomColor:"#527da5",accessory:"backpack",accessoryColor:"#e17b6e",shoes:"sneakers",shoeColor:"#f7f5ee"},
-        clothes_woman_5:{person:"woman",head:"sunhat",headColor:"#e89aaa",top:"jacket",topColor:"#8c74c9",bottom:"shorts",bottomColor:"#dfc79d",accessory:"shoulderbag",accessoryColor:"#e5b84f",shoes:"sandals",shoeColor:"#4c9a7d"},
-        clothes_man_2:{person:"man",head:"cap",headColor:"#4f8e69",top:"shirt",topColor:"#8dbbd2",bottom:"jeans",bottomColor:"#3f6289",accessory:"belt",accessoryColor:"#815239",shoes:"boots",shoeColor:"#76503d"},
-        clothes_man_3:{person:"man",head:"hat",headColor:"#8e684b",top:"coat",topColor:"#727687",bottom:"trousers",bottomColor:"#393b4c",accessory:"scarf",accessoryColor:"#bd5147",shoes:"shoes",shoeColor:"#292936"},
-        clothes_man_4:{person:"man",head:"glasses",headColor:"#343247",top:"sweater",topColor:"#e0b74b",bottom:"shorts",bottomColor:"#6d9d72",accessory:"shoulderbag",accessoryColor:"#405f87",shoes:"sandals",shoeColor:"#8a5a42"},
-        clothes_man_5:{person:"man",head:"bowtie",headColor:"#292936",top:"suit",topColor:"#46557e",bottom:"trousers",bottomColor:"#46557e",accessory:"belt",accessoryColor:"#815239",shoes:"shoes",shoeColor:"#292936"}
-      };
-      const c=configs[kind];
-      if(!c) return "";
-      const headY=(c.head==="necklace" || c.head==="bowtie") ? 210 : (c.head==="glasses" ? 132 : 88);
-      const accessoryTarget=c.accessory==="scarf" ? [326,205] : (c.accessory==="belt" ? [342,420] : [402,370]);
-      const lines='<path d="M177 102C222 102 255 103 300 '+headY+'"/><path d="M423 230C382 230 350 245 325 274"/><path d="M177 463C221 463 252 466 279 478"/><path d="M423 376C414 376 408 373 '+accessoryTarget[0]+' '+accessoryTarget[1]+'"/><path d="M177 615C219 615 246 621 276 628"/>';
-      const female=c.person==="woman";
-      const hair=female
-        ? '<path d="M255 127c-4-70 95-82 99-4l-9 58h-87Z" fill="#3d3548"/><path d="M260 136c-25 22-30 69-17 101" fill="none"/><path d="M345 136c24 22 29 67 16 101" fill="none"/>'
-        : '<path d="M257 118c5-57 87-65 92-4-34-9-62-3-92 4Z" fill="#4c3b37"/>';
-      let headItem="";
-      if(c.head==="hat" || c.head==="sunhat") headItem='<path d="M245 92h113" fill="none" stroke="'+c.headColor+'" stroke-width="15"/><path d="M267 91c2-41 66-41 70 0Z" fill="'+c.headColor+'"/>';
-      if(c.head==="cap") headItem='<path d="M260 104c0-38 69-41 78-5-25-9-51-6-78 5Z" fill="'+c.headColor+'"/><path d="M330 99h31" fill="none" stroke="'+c.headColor+'" stroke-width="11"/>';
-      if(c.head==="glasses") headItem='<rect x="266" y="122" width="27" height="22" rx="9" fill="#d9eff2"/><rect x="309" y="122" width="27" height="22" rx="9" fill="#d9eff2"/><path d="M293 132h16" fill="none"/>';
-      if(c.head==="necklace") headItem='<path d="M282 185c5 32 34 41 42 0" fill="none" stroke="'+c.headColor+'" stroke-width="5"/><circle cx="304" cy="214" r="8" fill="'+c.headColor+'"/>';
-      if(c.head==="bowtie") headItem='<path d="m283 196 20 13-20 14-9-14 9-13Zm40 0-20 13 20 14 9-14-9-13Z" fill="'+c.headColor+'"/>';
-      let back="";
-      if(c.accessory==="backpack") back='<path d="M350 245c48 3 68 34 61 92l-8 112h-72Z" fill="'+c.accessoryColor+'"/><path d="M366 261c21 25 23 59 18 92" fill="none"/>';
-      let top="";
-      if(c.top==="coat") top='<path d="M269 198c-55 13-70 47-62 116l8 190h65l21-225 22 225h66l8-190c7-69-8-103-64-116l-32 35Z" fill="'+c.topColor+'"/><path d="m270 202 31 31-24 69m56-100-32 31 25 69" fill="none"/>';
-      else if(c.top==="jacket" || c.top==="suit") top='<path d="M270 201c-50 10-67 42-61 109l11 128h65l16-190 16 190h65l11-128c6-67-11-99-60-109l-32 31Z" fill="'+c.topColor+'"/><path d="m270 205 31 27-22 62m54-89-32 27 22 62M301 232v204" fill="none"/>';
-      else {
-        const collar=c.top==="shirt" || c.top==="blouse" ? '<path d="m279 205 22 28 23-28" fill="#fffdf8"/>' : '<path d="M280 205c7 24 35 24 43 0" fill="none"/>';
-        top='<path d="M269 201c-48 12-62 45-55 111l11 117h151l11-117c7-66-7-99-54-111l-32 31Z" fill="'+c.topColor+'"/>'+collar+(c.top==="shirt"?'<path d="M301 232v195" fill="none"/>':'');
-      }
-      let bottom="";
-      if(c.bottom==="skirt") bottom='<path d="m251 424-33 171h167l-34-171Z" fill="'+c.bottomColor+'"/><path d="M251 424h100" fill="none"/>';
-      else if(c.bottom==="shorts") bottom='<path d="M240 424h122l15 104h-67l-9-58-10 58h-67Z" fill="'+c.bottomColor+'"/><path d="M301 426v44" fill="none"/><path d="M261 528v75m81-75v75" fill="none" stroke="#d89d78" stroke-width="24"/>';
-      else bottom='<path d="M239 424h124l18 189h-66l-14-134-14 134h-66Z" fill="'+c.bottomColor+'"/><path d="M301 425v54" fill="none"/>';
-      let accessory="";
-      if(c.accessory==="handbag") accessory='<rect x="373" y="330" width="72" height="94" rx="12" fill="'+c.accessoryColor+'"/><path d="M387 333c2-34 42-34 44 0" fill="none"/>';
-      if(c.accessory==="shoulderbag") accessory='<path d="M377 341h68v94h-68Z" fill="'+c.accessoryColor+'"/><path d="M330 215 411 344" fill="none" stroke="'+c.accessoryColor+'" stroke-width="10"/>';
-      if(c.accessory==="scarf") accessory='<path d="M276 190c16 26 37 28 54 0l8 72-31-18-28 18Z" fill="'+c.accessoryColor+'"/>';
-      if(c.accessory==="belt") accessory='<path d="M242 420h119" fill="none" stroke="'+c.accessoryColor+'" stroke-width="15"/><rect x="294" y="410" width="24" height="21" rx="3" fill="#e4bd55"/>';
-      let shoes="";
-      if(c.shoes==="boots") shoes='<path d="M235 564h63v78h-79c0-18 6-29 18-38Z" fill="'+c.shoeColor+'"/><path d="M310 564h61l16 40c11 9 15 21 15 38h-90Z" fill="'+c.shoeColor+'"/>';
-      else if(c.shoes==="ankleboots") shoes='<path d="M228 588h68v54h-82c0-18 5-29 14-36Z" fill="'+c.shoeColor+'"/><path d="M312 588h67l13 18c9 8 13 20 13 36h-92Z" fill="'+c.shoeColor+'"/>';
-      else if(c.shoes==="sandals") shoes='<path d="M226 620h72v23h-82c0-12 4-20 10-23Zm87 0h72c9 5 14 13 14 23h-86Z" fill="'+c.shoeColor+'"/><path d="m235 615 40 27m98-27-39 27" fill="none"/>';
-      else shoes='<path d="M227 607h70v36h-82c0-16 5-26 12-36Zm86 0h70c10 8 15 20 15 36h-85Z" fill="'+c.shoeColor+'"/>';
-      return start+lines+'</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+back+hair+'<circle cx="301" cy="137" r="43" fill="'+(female?'#f0b88f':'#d9976f')+'"/>'+headItem+'<circle cx="285" cy="137" r="3" fill="#433a6f" stroke="none"/><circle cx="317" cy="137" r="3" fill="#433a6f" stroke="none"/><path d="M289 157c9 7 17 7 25 0" fill="none" stroke-width="3"/>'+top+bottom+accessory+shoes+'</g></svg>';
-    }
-
-    function dishIngredientIcon(name,x,y){
-      const icons={
-        chicken:'<path d="M-34 5c0-25 28-41 49-27 19 13 16 43-5 54-20 10-44-4-44-27Z" fill="#d99b62"/><path d="M12-9 30-24" fill="none" stroke="#fff3d7" stroke-width="10"/><circle cx="35" cy="-29" r="7" fill="#fff3d7"/><circle cx="28" cy="-35" r="7" fill="#fff3d7"/>',
-        potato:'<ellipse cx="0" cy="2" rx="34" ry="27" fill="#d6a45f"/><circle cx="-12" cy="-6" r="3" fill="#8e643e" stroke="none"/><circle cx="13" cy="8" r="3" fill="#8e643e" stroke="none"/>',
-        salt:'<path d="M-21-8h42l-5 43h-32Z" fill="#f8f8f3"/><path d="M-17-20h34l4 12h-42Z" fill="#b8c9d1"/><circle cx="-8" cy="-14" r="2"/><circle cx="0" cy="-14" r="2"/><circle cx="8" cy="-14" r="2"/>',
-        oil:'<path d="M-18-25h36v11l8 13v36h-52V-1l8-13Z" fill="#f1c84b"/><path d="M-10-34h20v9h-20Z" fill="#6c925d"/><path d="M-20 6h40" fill="none" stroke="#fff3bd" stroke-width="9"/>',
-        water:'<path d="M0-35C-22-6-30 5-30 19c0 18 13 30 30 30s30-12 30-30C30 5 22-6 0-35Z" fill="#71bce2"/><path d="M-12 20c4 9 11 13 21 12" fill="none" stroke="#dff5ff"/>',
-        milk:'<path d="M-27-27h54l9 71h-72Z" fill="#f8f2df"/><path d="m-27-27 14-20h27l13 20" fill="#f8f2df"/><path d="M-31-2h62" stroke="#73a7d7" stroke-width="16"/>',
-        lentils:'<path d="M-35 19c8-31 61-31 70 0l-7 23h-56Z" fill="#e8d3af"/><g fill="#a96f42" stroke="none"><circle cx="-21" cy="11" r="7"/><circle cx="-4" cy="3" r="7"/><circle cx="14" cy="9" r="7"/><circle cx="27" cy="17" r="7"/><circle cx="-7" cy="21" r="7"/><circle cx="11" cy="25" r="7"/></g>',
-        pork:'<path d="M-34-2c10-28 55-35 70-7 12 23-8 50-36 49-26-1-43-22-34-42Z" fill="#ef9d9e"/><path d="M-19 3c13-13 29-14 42-2" fill="none" stroke="#fff0df" stroke-width="7"/>',
-        fish:'<path d="M-37 4c17-27 50-28 69-3L48-12l-4 18 4 19-17-12c-20 23-52 20-68-9Z" fill="#70b8cc"/><circle cx="17" cy="0" r="3" fill="#433a6f" stroke="none"/>',
-        shrimp:'<path d="M-30 6c8-35 51-43 67-14 13 24-6 49-33 47-19-1-31-12-34-25 15 8 31 5 36-6 5-12-6-22-18-18-9 3-13 9-18 16Z" fill="#ef7f73"/><path d="m32-13 21-10-6 22 13 14-24 1" fill="#ef7f73"/>',
-        squid:'<path d="M0-34c25 15 30 47 4 61-25 13-48-11-35-34 6-11 17-20 31-27Z" fill="#c88dc3"/><path d="M-20 22c-11 13-9 26 3 35m10-30c-5 13-1 24 11 31m3-31c2 13 9 21 21 25" fill="none"/>',
-        tomato:'<circle cx="0" cy="5" r="34" fill="#e85b50"/><path d="m0-31 7 14 16-7-9 15 14 8-18 1-1 17-9-14-11 13 3-18-17-3 17-8Z" fill="#5c9d59" stroke="none"/>',
-        rice:'<path d="M-38 20c8-36 67-36 76 0l-7 25h-62Z" fill="#e4c48e"/><g fill="#fff9e9" stroke="#c8ae81" stroke-width="1"><ellipse cx="-21" cy="11" rx="8" ry="3"/><ellipse cx="-4" cy="0" rx="8" ry="3" transform="rotate(25 -4 0)"/><ellipse cx="14" cy="8" rx="8" ry="3"/><ellipse cx="26" cy="19" rx="8" ry="3" transform="rotate(-20 26 19)"/><ellipse cx="0" cy="20" rx="8" ry="3"/></g>',
-        tuna:'<ellipse cx="0" cy="19" rx="38" ry="17" fill="#9aa2a8"/><path d="M-38-4h76v23h-76Z" fill="#c3ccd0"/><ellipse cx="0" cy="-4" rx="38" ry="17" fill="#d4dadd"/><path d="M-17-9c9-9 25-7 31 4-10 11-25 13-35 4Z" fill="#8d7f78"/>',
-        egg:'<path d="M-34 14c-7-25 16-47 40-39 29 9 37 46 10 62-21 12-44-2-50-23Z" fill="#fff8df"/><circle cx="3" cy="7" r="15" fill="#f2bd44"/>',
-        vinegar:'<path d="M-16-31h32v13l9 11v47h-50V-7l9-11Z" fill="#7c4f72"/><path d="M-9-40h18v9H-9Z" fill="#d6b586"/><path d="M-20 3h40" stroke="#f2d5b4" stroke-width="9"/>',
-        cheese:'<path d="m-38 29 42-67 39 67Z" fill="#f1c84a"/><circle cx="-2" cy="0" r="7" fill="#d1a33b" stroke="none"/><circle cx="18" cy="17" r="5" fill="#d1a33b" stroke="none"/>',
-        apple:'<path d="M-31 4c-2-28 28-42 34-20 9-22 38-9 34 19-5 34-30 48-36 48-8 0-29-14-32-47Z" fill="#e75b52"/><path d="M1-17c-3-17 6-28 22-32M5-35c13-7 25-6 35 4" fill="none" stroke="#5c9d59"/>',
-        mussels:'<path d="M-30-20c27-14 55 3 54 33-1 29-29 45-53 30-21-13-23-50-1-63Z" fill="#3c3548"/><path d="M-20-9c17 6 29 22 30 41" fill="none" stroke="#817895"/>',
-        flour:'<path d="M-31-33h62l8 76h-78Z" fill="#f3ead8"/><path d="M-26-8h52" stroke="#caa574" stroke-width="13"/><path d="M-13 22c9-10 18-10 27 0" fill="none"/>',
-        sugar:'<g fill="#fffdf6"><rect x="-31" y="-10" width="27" height="27" rx="4"/><rect x="3" y="-17" width="27" height="27" rx="4"/><rect x="-14" y="14" width="27" height="27" rx="4"/></g>',
-        butter:'<path d="M-38 8 18-25l25 16-57 36Z" fill="#f1cf58"/><path d="m-14 27 57-36v21l-57 35Z" fill="#dcae3d"/>',
-        chocolate:'<path d="M-34-31h68v76h-68Z" fill="#6d3e32"/><path d="M-11-31v76M12-31v76M-34-5h68M-34 20h68" fill="none" stroke="#a86b50"/>',
-        caramel:'<path d="M-23-19h46v40h-46Z" fill="#d79842"/><path d="m-23-13-24-16v42l24-10m46-16 24-16v42L23 3" fill="#efb95e"/>',
-        beans:'<g fill="#9b6651"><path d="M-34-8c19-18 39 1 26 18-10 13-32 7-26-18Z"/><path d="M2-20c20-17 39 4 25 20C16 12-5 5 2-20Z"/><path d="M-3 17c21-15 38 7 22 22C7 50-13 40-3 17Z"/></g>',
-        beef:'<path d="M-36-15 5-36l35 24-11 50h-55Z" fill="#bb5b55"/><path d="M-19-9C-2-22 15-20 29-5" fill="none" stroke="#efaaa0" stroke-width="7"/>',
-        ham:'<path d="M-38-9c19-25 60-23 75 4 13 24-11 47-39 47-27 0-52-24-36-51Z" fill="#ee9a9d"/><path d="M-23 2c15-12 32-12 47 0" fill="none" stroke="#fff0df" stroke-width="7"/>'
-      };
-      return '<g transform="translate('+x+' '+y+')" stroke="#433a6f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">'+(icons[name] || icons.tomato)+'</g>';
-    }
-
-    function dishIngredientScene(kind,start){
-      const dishes={
-        dish_soup_chicken:{style:"soup",accent:"#e3a84f",ingredients:["chicken","potato","salt","oil","water"]},
-        dish_soup_lentil:{style:"soup",accent:"#aa7048",ingredients:["lentils","pork","potato","salt","oil"]},
-        dish_soup_seafood:{style:"soup",accent:"#d9865f",ingredients:["fish","shrimp","squid","tomato","rice"]},
-        dish_salad_tuna:{style:"salad",accent:"#6aa379",ingredients:["tomato","tuna","egg","oil","vinegar"]},
-        dish_salad_chicken:{style:"salad",accent:"#78a96e",ingredients:["chicken","cheese","apple","oil","egg"]},
-        dish_salad_seafood:{style:"salad",accent:"#5f9f82",ingredients:["rice","shrimp","mussels","tomato","oil"]},
-        dish_cake_chocolate:{style:"cake",accent:"#704237",ingredients:["chocolate","flour","sugar","egg","butter"]},
-        dish_flan:{style:"flan",accent:"#d79a42",ingredients:["milk","egg","sugar","caramel"]},
-        dish_cookies:{style:"cookies",accent:"#c78a4e",ingredients:["flour","butter","sugar","chocolate","egg"]},
-        dish_tortilla:{style:"tortilla",accent:"#e3b841",ingredients:["potato","egg","oil","salt"]},
-        dish_pizza:{style:"pizza",accent:"#d85d50",ingredients:["flour","tomato","cheese","ham","oil"]},
-        dish_stew:{style:"stew",accent:"#9d6047",ingredients:["beef","potato","tomato","beans","oil"]}
-      };
-      const dish=dishes[kind];
-      if(!dish) return "";
-      const positions=[[215,245],[385,245],[205,400],[395,400],[300,525]].slice(0,dish.ingredients.length);
-      const lineDefs=[
-        '<path d="M177 130C190 171 201 210 215 245"/>',
-        '<path d="M423 130C410 171 399 210 385 245"/>',
-        '<path d="M177 350C187 366 196 386 205 400"/>',
-        '<path d="M423 350C413 366 404 386 395 400"/>',
-        '<path d="M177 555C226 550 267 537 300 525"/>'
-      ].slice(0,dish.ingredients.length).join("");
-      let center="";
-      if(dish.style==="soup" || dish.style==="stew") center='<ellipse cx="300" cy="365" rx="126" ry="72" fill="#f7f1df"/><path d="M184 365c11 100 221 100 232 0" fill="'+dish.accent+'"/><ellipse cx="300" cy="358" rx="101" ry="48" fill="#f2bd62"/><path d="M265 281c-24-30 20-43 2-72m66 72c25-30-18-43 1-72" fill="none" stroke="#c8bad8" stroke-width="7"/>';
-      if(dish.style==="salad") center='<ellipse cx="300" cy="376" rx="128" ry="76" fill="#f7f1df"/><path d="M183 375c14 104 220 104 234 0" fill="'+dish.accent+'"/><path d="M222 356c28-65 65-16 78-48 12 30 46-18 76 47-42 27-111 30-154 1Z" fill="#73b66c"/>';
-      if(dish.style==="cake") center='<path d="m236 427 74-155 101 155Z" fill="'+dish.accent+'"/><path d="m253 390 57-118 77 118Z" fill="#6d3e32"/><path d="M310 272h91l-10 31h-96Z" fill="#f1b6c4"/><circle cx="348" cy="268" r="11" fill="#d95568"/>';
-      if(dish.style==="flan") center='<ellipse cx="300" cy="424" rx="103" ry="35" fill="#f2e6cf"/><path d="m236 395 25-119h78l25 119c-25 31-102 31-128 0Z" fill="#efc15e"/><ellipse cx="300" cy="276" rx="39" ry="15" fill="#a96734"/><path d="M249 348h102" stroke="#d79842" stroke-width="16"/>';
-      if(dish.style==="cookies") center='<ellipse cx="300" cy="405" rx="120" ry="50" fill="#f1e4cd"/><circle cx="255" cy="374" r="43" fill="#c98b4d"/><circle cx="322" cy="394" r="43" fill="#c98b4d"/><circle cx="367" cy="364" r="40" fill="#c98b4d"/><g fill="#6d3e32" stroke="none"><circle cx="242" cy="361" r="6"/><circle cx="269" cy="388" r="6"/><circle cx="310" cy="379" r="6"/><circle cx="337" cy="408" r="6"/><circle cx="356" cy="351" r="6"/><circle cx="382" cy="377" r="6"/></g>';
-      if(dish.style==="tortilla") center='<ellipse cx="300" cy="408" rx="126" ry="48" fill="#f2e5cd"/><ellipse cx="300" cy="382" rx="102" ry="69" fill="#e4b842"/><path d="M229 367c43-22 98-20 143 3m-132 24c40-17 81-14 119 5" fill="none" stroke="#f5d46e" stroke-width="10"/>';
-      if(dish.style==="pizza") center='<circle cx="300" cy="372" r="111" fill="#d89a53"/><circle cx="300" cy="372" r="91" fill="#f0c84c"/><g fill="#d85d50"><circle cx="267" cy="337" r="18"/><circle cx="337" cy="351" r="18"/><circle cx="289" cy="409" r="18"/><circle cx="354" cy="405" r="18"/></g><path d="M221 372h158M300 292v160" fill="none" stroke="#fff0bb" stroke-width="7"/>';
-      return start+lineDefs+'</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+center+'</g>'+dish.ingredients.map(function(name,index){return dishIngredientIcon(name,positions[index][0],positions[index][1]);}).join("")+'</svg>';
-    }
-
-    function pictureScene(kind){
-      const start='<svg class="picture-scene" viewBox="0 0 600 720" role="img" aria-label="Схематичная иллюстрация для подписей" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pictureArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#6758d7"/></marker></defs><rect width="600" height="720" rx="28" fill="#fffdf8"/><circle cx="300" cy="340" r="226" fill="#f2efff"/><g fill="none" stroke="#6758d7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#pictureArrow)">';
-      const end='</g></svg>';
-      const variant=outfitVariantScene(kind,start);
-      if(variant) return variant;
-      const dish=dishIngredientScene(kind,start);
-      if(dish) return dish;
-      if(kind==="clothes_woman") return start+
-        '<path d="M177 101C220 101 238 106 271 113"/><path d="M423 179C383 179 354 183 326 194"/><path d="M177 317C225 317 247 330 276 351"/><path d="M423 407C402 407 393 400 385 387"/><path d="M177 612C218 612 244 619 273 627"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<path d="M258 118c0-49 84-56 91-4l-8 59h-78Z" fill="#2f3147"/><circle cx="302" cy="135" r="42" fill="#f3b98f"/><path d="M271 123c18-8 42-20 70-5" fill="none"/>'+
-        '<path d="M286 132h-25m78 0h-24m-24 0h18" fill="none"/><rect x="267" y="120" width="25" height="22" rx="10" fill="#d9eff2"/><rect x="309" y="120" width="25" height="22" rx="10" fill="#d9eff2"/>'+
-        '<path d="M290 173 275 205l28 20 27-20-18-32" fill="#ffd447"/><path d="M255 205 221 555h164l-36-350-46 20Z" fill="#62b7a5"/>'+
-        '<path d="M254 235c28 24 55 26 96 2M242 300c41 30 77 30 120 0M231 372c50 34 91 34 139 0M221 446c55 34 105 34 159 0" fill="none" stroke="#ffe59a" stroke-width="10"/>'+
-        '<path d="M254 217c-42 28-57 89-62 153m157-153c37 34 47 89 51 151" fill="none"/><path d="M267 555v69m69-69v69" fill="none"/>'+
-        '<path d="M244 634c14-17 32-20 49-5l-6 20h-47Z" fill="#ffd447"/><path d="M313 629c18-14 34-12 46 5l3 15h-48Z" fill="#ffd447"/>'+
-        '<path d="M397 330c23 0 38 16 38 39v89h-74v-89c0-23 14-39 36-39Z" fill="#9a5b46"/><path d="M375 345c3-35 40-35 45 0" fill="none"/>'+
-        '<circle cx="302" cy="151" r="3" fill="#433a6f" stroke="none"/><path d="M292 158c8 6 15 6 23 0" fill="none" stroke-width="3"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="clothes_man") return start+
-        '<path d="M177 219C218 219 240 229 267 250"/><path d="M423 167C386 167 354 180 322 215"/><path d="M423 330C407 330 394 326 382 315"/><path d="M177 457C222 457 250 462 278 476"/><path d="M423 615C382 615 356 622 329 633"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<path d="M366 226c45 7 67 43 55 108l-12 104h-70Z" fill="#4b78a8"/><path d="M377 240c20 24 24 57 17 98" fill="none"/>'+
-        '<circle cx="301" cy="124" r="44" fill="#d99569"/><path d="M257 117c5-55 86-63 92-3-36-8-62-2-92 3Z" fill="#503b35"/><path d="M278 151c15 11 31 11 46 0" fill="none" stroke-width="3"/>'+
-        '<path d="M269 181h64l18 194h-101Z" fill="#fff9e8"/><path d="M269 216h66M265 250h73M260 286h81" fill="none" stroke="#5f8fab" stroke-width="11"/>'+
-        '<path d="M269 181c-55 7-69 39-63 109l10 125h56l8-169-11-65Zm64 0c51 8 68 41 62 107l-13 127h-55l-7-170 13-64Z" fill="#bd5147"/>'+
-        '<path d="M272 375 255 604h60l-4-176 23 176h59l-13-229Z" fill="#d9c39f"/><path d="M248 604h69v39h-82c0-18 5-29 13-39Zm83 0h68c10 9 15 22 15 39h-82Z" fill="#f7f5ee"/>'+
-        '<path d="M250 185 280 245m53-60-13 60" fill="none"/><circle cx="285" cy="130" r="3" fill="#433a6f" stroke="none"/><circle cx="319" cy="130" r="3" fill="#433a6f" stroke="none"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="food_basket") return start+
-        '<path d="M177 135C184 168 187 210 188 250"/><path d="M423 132C412 166 401 199 390 230"/><path d="M177 320C220 316 262 312 300 310"/><path d="M423 323C387 295 351 255 330 220"/><path d="M177 510C204 445 221 331 235 235"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<path d="M170 357h266l-31 221H201Z" fill="#d59a55"/><path d="M190 410h225M184 473h223M235 363l10 210m65-210v212m64-212-18 210" fill="none" stroke="#f5ca79" stroke-width="12"/>'+
-        '<path d="M213 355c8-116 60-170 90-170s83 54 91 170" fill="none" stroke="#8d633e" stroke-width="16"/>'+
-        '<path d="M216 286c-39-34-35-91 17-96 41-4 62 45 31 79-13 14-28 20-48 17Z" fill="#e85b50"/><path d="M232 193c-2-18 6-30 23-37" fill="none" stroke="#5d9a55"/>'+
-        '<path d="M290 207c8-49 57-59 78-20 18 34-8 73-46 82-30-12-39-35-32-62Z" fill="#e9584f"/><path d="M328 176c11-14 25-17 40-9" fill="none" stroke="#5d9a55"/>'+
-        '<path d="M258 321c-51-25-54-66-12-77 35-9 64 20 59 63Z" fill="#ffd447"/><path d="M273 315c-17-42 9-77 45-62 31 13 29 48 9 72Z" fill="#ffd447"/><path d="M285 319c5-44 39-63 67-40 21 18 9 50-13 65Z" fill="#ffd447"/>'+
-        '<path d="M355 184h58l15 146h-89Z" fill="#f7f1df"/><path d="M355 214h64" stroke="#72a7d8" stroke-width="22"/><path d="M354 183l17-24h28l15 24" fill="#f7f1df"/>'+
-        '<path d="M188 322 155 220l30-9 47 111Z" fill="#c9854d"/><path d="M157 222c10-24 29-33 53-26" fill="none"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="food_shelf") return start+
-        '<path d="M177 130C210 152 229 184 245 220"/><path d="M423 130C398 157 376 193 355 240"/><path d="M177 330C206 349 227 366 245 380"/><path d="M423 330C397 348 376 365 355 380"/><path d="M177 530C223 530 265 525 300 520"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<rect x="185" y="104" width="230" height="492" rx="18" fill="#f6e4c9"/><path d="M198 286h204M198 444h204" fill="none" stroke="#b98556" stroke-width="15"/>'+
-        '<path d="M214 154h67l13 116h-92Z" fill="#f8f2df"/><path d="M216 184h72" stroke="#73a7d7" stroke-width="22"/><path d="m214 154 20-28h31l16 28" fill="#f8f2df"/>'+
-        '<path d="m326 247 38-89 42 82Z" fill="#f2c94c"/><circle cx="366" cy="211" r="7" fill="#d7a93b" stroke="none"/><circle cx="383" cy="229" r="5" fill="#d7a93b" stroke="none"/>'+
-        '<path d="M206 322h78l-7 108h-64Z" fill="#d88a4b"/><path d="M218 344c18 13 36 13 53 0m-48 30c14 10 28 10 43 0m-39 30c11 8 23 8 34 0" fill="none" stroke="#f5d59b"/>'+
-        '<path d="M319 319h78l-8 111h-63Z" fill="#efe5c9"/><path d="M330 345h55M330 370h55M330 395h55" fill="none" stroke="#d0b889"/>'+
-        '<path d="M245 473h111l-11 103h-89Z" fill="#d9eff2"/><path d="M258 498c22-20 62-20 84 0" fill="none" stroke="#c67a52"/><circle cx="277" cy="529" r="15" fill="#c9854d"/><circle cx="309" cy="540" r="15" fill="#c9854d"/><circle cx="335" cy="516" r="15" fill="#c9854d"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="food_bag") return start+
-        '<path d="M177 135C191 170 204 211 218 255"/><path d="M423 135C402 170 386 216 371 264"/><path d="M177 330C220 325 252 318 278 307"/><path d="M423 333C389 329 358 326 329 324"/><path d="M177 526C220 470 250 400 270 348"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<path d="M171 318 143 174l39-8 51 152Z" fill="#c9854d"/><path d="M149 178c15-25 37-31 63-19" fill="none"/>'+
-        '<path d="M342 169h55l16 176h-85Z" fill="#83c7df"/><path d="M352 169v-42h35v42m-39 61h57" fill="none"/><path d="M348 243h58" stroke="#f5fbff" stroke-width="27"/>'+
-        '<circle cx="286" cy="276" r="46" fill="#f0a24c"/><path d="M286 229c-4-23 8-38 31-44" fill="none" stroke="#5b9c58"/>'+
-        '<path d="M294 292h77l18 77h-112Z" fill="#6e4b3d"/><path d="M307 310h49M303 331h58" fill="none" stroke="#f0c06b"/>'+
-        '<path d="M217 323h106l-9 59H226Z" fill="#e4c79b"/><path d="M235 321c5-37 64-37 70 0" fill="none"/><ellipse cx="251" cy="348" rx="15" ry="12" fill="#fff7d6"/><ellipse cx="285" cy="348" rx="15" ry="12" fill="#fff7d6"/>'+
-        '<path d="M181 357h246l-27 246H207Z" fill="#d9a45f"/><path d="M219 357c3-64 44-94 85-94s83 30 87 94" fill="none" stroke="#a36e43" stroke-width="14"/><path d="M199 410h210M242 382l7 190m111-190-9 190" fill="none" stroke="#efc981" stroke-width="7"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="food_fridge") return start+
-        '<path d="M177 139C212 151 237 171 258 196"/><path d="M423 139C389 155 365 177 344 205"/><path d="M177 338C215 338 246 340 271 344"/><path d="M423 338C388 338 360 342 337 350"/><path d="M177 536C223 536 262 522 293 499"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<rect x="169" y="76" width="262" height="568" rx="28" fill="#dfe9ed"/><rect x="194" y="105" width="212" height="505" rx="15" fill="#f9fcfd"/><path d="M198 273h205M198 437h205" fill="none" stroke="#9bb3bd" stroke-width="10"/>'+
-        '<rect x="219" y="145" width="79" height="84" rx="10" fill="#f2c94c"/><path d="M230 174h57M230 197h57" fill="none" stroke="#d1a63e"/>'+
-        '<path d="m330 231 35-88 38 83Z" fill="#f0c849"/><circle cx="366" cy="196" r="7" fill="#d29d36" stroke="none"/>'+
-        '<path d="M210 318c39-35 88-27 111 13-20 50-72 70-116 40Z" fill="#ef8b78"/><path d="M222 342c27 10 56 8 84-5" fill="none" stroke="#f6c4ad"/>'+
-        '<path d="M335 305h57l10 103h-76Z" fill="#f6e6ad"/><path d="M337 328h62" stroke="#e99b47" stroke-width="22"/><path d="m337 305 15-22h26l14 22" fill="#f6e6ad"/>'+
-        '<path d="M238 477h126l-19 96H253Z" fill="#f1b7c8"/><path d="M238 477h126l-17 34h-102Z" fill="#fff0d1"/><circle cx="284" cy="492" r="9" fill="#df5668"/><circle cx="322" cy="492" r="9" fill="#df5668"/>'+
-        '</g>'+end.slice(4);
-      if(kind==="food_table") return start+
-        '<path d="M177 140C191 211 199 290 207 365"/><path d="M423 140C387 205 318 314 239 385"/><path d="M177 340C220 345 267 352 309 365"/><path d="M423 340C394 355 366 374 340 397"/><path d="M177 548C253 512 343 448 425 386"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<path d="M91 458h418v44H91Z" fill="#c78b5b"/><path d="M132 500v138m336-138v138" fill="none" stroke="#8e613f" stroke-width="18"/>'+
-        '<ellipse cx="215" cy="397" rx="92" ry="56" fill="#f7f1df"/><path d="M139 397c8 64 145 64 153 0" fill="#d28e55"/><ellipse cx="215" cy="390" rx="72" ry="37" fill="#f2bd5f"/>'+
-        '<rect x="179" y="349" width="45" height="36" rx="10" fill="#f6e5bc" transform="rotate(-9 201 367)"/><rect x="225" y="375" width="46" height="35" rx="10" fill="#fff1d2" transform="rotate(12 248 392)"/><path d="M186 361l26 15m22 5 27 17" fill="none" stroke="#d49958" stroke-width="4"/>'+
-        '<ellipse cx="324" cy="397" rx="81" ry="54" fill="#f7f1df"/><path d="M255 397c8 58 130 58 138 0" fill="#6aa379"/><path d="M278 373c16-30 54-26 65 1-18 1-34 10-45 29-17-4-25-14-20-30Z" fill="#e85b50"/><path d="M327 389c22-25 48-14 49 10-20 0-34 8-45 24-12-7-14-20-4-34Z" fill="#8a8b91"/>'+
-        '<path d="m393 424 56-105 74 105Z" fill="#6d3d32"/><path d="m404 404 45-85 60 85Z" fill="#6d3d32"/><path d="M449 319h60l-7 24h-65Z" fill="#f1b6c4"/><circle cx="471" cy="318" r="9" fill="#d95568"/>'+
-        '</g>'+end.slice(4);
-      return start+
-        '<path d="M177 178C231 202 270 251 300 300"/><path d="M423 177C411 239 397 312 380 370"/><path d="M177 491C207 470 230 447 250 425"/><path d="M423 488C398 470 379 455 360 445"/>'+
-        '</g><g stroke="#433a6f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+
-        '<ellipse cx="303" cy="386" rx="178" ry="116" fill="#d9c2a1"/><ellipse cx="303" cy="366" rx="151" ry="90" fill="#f4c94f"/>'+
-        '<path d="M168 386c-19 68 1 133 135 133s158-65 136-133" fill="#4c7995"/><path d="M159 382h289" fill="none"/>'+
-        '<g fill="#ef7f73"><path d="M340 350c19-27 57-26 71 1 12 23-4 50-31 53-19 2-35-8-40-23 16 7 33 2 38-10 5-13-7-23-19-17-8 3-13 9-19 16Z"/><path d="m405 345 24-13-6 27 16 17-29 1"/></g><path d="M359 360c8 5 13 12 13 21m17-25c7 6 10 13 9 21" fill="none" stroke="#bd5147" stroke-width="4"/>'+
-        '<g fill="#393344"><path d="M215 398c24-14 54 2 55 30 1 27-25 44-49 33-22-10-28-48-6-63Z"/><path d="M296 293c22-13 49 1 51 27 1 25-23 41-46 31-21-9-26-44-5-58Z"/></g><path d="M226 407c16 6 27 21 29 40m51-145c15 6 25 19 27 36" fill="none" stroke="#77708f" stroke-width="4"/>'+
-        '<g fill="#fff1cf"><rect x="330" y="419" width="57" height="48" rx="14" transform="rotate(-12 358 443)"/><rect x="271" y="339" width="56" height="47" rx="14" transform="rotate(10 299 362)"/></g><path d="M341 432l30 20m-87-99 28 19" fill="none" stroke="#d59a55" stroke-width="4"/>'+
-        '<path d="M105 418h77m242 0h78" fill="none" stroke="#4c7995" stroke-width="18"/>'+
-        '</g>'+end.slice(4);
-    }
-
+   function pictureScene(kind) {
+  return '<img class="picture-raster" src="' + pictureAsset(kind) + '" alt="Иллюстрация">';
+}
     const PICTURE_MARKERS={
       clothes_woman:[[50,16],[50,27],[50,53],[40,49],[50,87]],
       clothes_woman_2:[[50,12],[50,33],[50,57],[40,42],[50,85]],
@@ -2750,13 +2543,12 @@
       dish_stew:[[18,21],[57,21],[20,44],[58,44],[88,38]]
     };
 
-    const ASSET_VERSION="20260918-index-refactor1";
-    function pictureAsset(scene,forceReload){
-      const safeScene=String(scene || "").trim().replace(/[^a-z0-9_-]/gi,"");
-      if(!safeScene) return "";
-      const version=forceReload ? ASSET_VERSION+"-"+Date.now() : ASSET_VERSION;
-      return "assets/picture-labels/"+safeScene+".webp?v="+encodeURIComponent(version);
-    }
+   function pictureAsset(scene, forceReload) {
+  const safeScene = String(scene || "").trim().replace(/[^a-z0-9_-]/gi, "");
+  if (!safeScene) return "";
+  // Грузим чистый файл. Кэш сбрасываем только если картинка не загрузилась с первого раза.
+  return "assets/picture-labels/" + safeScene + ".webp" + (forceReload ? "?v=" + Date.now() : "");
+}
 
     function bindPictureImageFallback(img,scene){
       if(!img) return;
