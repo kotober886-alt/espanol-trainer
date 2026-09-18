@@ -2599,6 +2599,45 @@
           a:[labels.map(function(label){return label.reveal;}).join(" | ")],displayAnswer:labels.map(function(label,index){return (index+1)+". "+label.reveal;}).join(" · "),e:explanation};
       }
       function label(side,top,reveal,answers){return {side:side,top:top,reveal:reveal,answers:answers};}
+      const CLOTHING_FIGURE_TRANSLATIONS={
+        "el polo blanco":"белое поло",
+        "los pantalones grises":"серые брюки",
+        "la chaqueta azul":"синяя куртка",
+        "la mochila negra":"чёрный рюкзак",
+        "las zapatillas deportivas beige":"бежевые кроссовки",
+        "el gorro negro":"чёрная шапка",
+        "el jersey beige":"бежевый свитер",
+        "el abrigo negro":"чёрное пальто",
+        "la bufanda gris":"серый шарф",
+        "las botas negras":"чёрные ботинки",
+        "la gorra beige":"бежевая кепка",
+        "la camisa verde":"зелёная рубашка",
+        "los vaqueros azules":"синие джинсы",
+        "las zapatillas deportivas blancas":"белые кроссовки",
+        "el chaleco beige":"бежевый жилет",
+        "la sudadera con capucha verde":"зелёное худи",
+        "los pantalones marrones":"коричневые брюки",
+        "la sudadera con capucha negra":"чёрное худи",
+        "la ropa interior blanca":"белое нижнее бельё",
+        "el pijama rosa":"розовая пижама",
+        "las zapatillas de casa blancas":"белые домашние тапочки",
+        "la blusa blanca":"белая блузка",
+        "la chaqueta marrón":"коричневая куртка",
+        "la falda marrón":"коричневая юбка",
+        "los zapatos de tacón marrones":"коричневые туфли на каблуке",
+        "el sombrero marrón":"коричневая шляпа",
+        "el vestido marrón":"коричневое платье",
+        "el bolso negro":"чёрная сумка",
+        "las botas marrones":"коричневые сапоги",
+        "las gafas de sol marrones":"коричневые солнцезащитные очки",
+        "la camiseta blanca":"белая футболка",
+        "la camisa azul":"синяя рубашка",
+        "los pantalones cortos beige":"бежевые шорты",
+        "las sandalias marrones":"коричневые сандалии",
+        "el cárdigan beige":"бежевый кардиган",
+        "el bolso marrón":"коричневая сумка",
+        "los pantalones verdes":"зелёные брюки"
+      };
       function clothingLabel(side,top,reveal,cardId,color,displayNumber){
         const card=CLOTHING_WORDS.find(function(word){return word.id===cardId;});
         if(!card) throw new Error("Unknown clothing card for picture task: "+cardId);
@@ -2609,6 +2648,7 @@
           return parts.join(" ").trim();
         }).filter(Boolean)));
         const result=label(side,top,reveal,nouns.map(function(noun){return noun+" "+color;}));
+        result.translation=CLOTHING_FIGURE_TRANSLATIONS[reveal] || "";
         if(displayNumber) result.displayNumber=displayNumber;
         return result;
       }
@@ -2623,65 +2663,65 @@
           clothingLabel("right",28,"la chaqueta azul","jacket","azul"),
           clothingLabel("right",48,"la mochila negra","backpack","negra"),
           clothingLabel("left",84,"las zapatillas deportivas beige","sneakers","beige")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("man_clothes_2","clothes","Подпиши одежду мужчины: название вещи + цвет.","clothes_man_2","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",12,"el gorro negro","beanie","negro"),
           clothingLabel("right",31,"el jersey beige","sweater","beige"),
           clothingLabel("left",43,"el abrigo negro","coat","negro"),
           clothingLabel("right",52,"la bufanda gris","scarf","gris"),
           clothingLabel("left",86,"las botas negras","boots","negras")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("man_clothes_3","clothes","Подпиши одежду мужчины: название вещи + цвет.","clothes_man_3","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",13,"la gorra beige","cap","beige"),
           clothingLabel("right",34,"la camisa verde","shirt","verde"),
           clothingLabel("left",64,"los vaqueros azules","jeans","azules"),
           clothingLabel("right",86,"las zapatillas deportivas blancas","sneakers","blancas")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("man_clothes_4","clothes","Подпиши одежду мужчины: название вещи + цвет.","clothes_man_4","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",20,"el chaleco beige","vest","beige"),
           clothingLabel("right",36,"la sudadera con capucha verde","hoodie","verde"),
           clothingLabel("left",64,"los pantalones marrones","trousers","marrones"),
           clothingLabel("right",86,"las zapatillas deportivas blancas","sneakers","blancas")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("man_clothes_5","clothes","Подпиши одежду мужчины: название вещи + цвет.","clothes_man_5","На изображении используются номера 2–5; введи ответы напротив тех же номеров.",[
           clothingLabel("left",28,"la sudadera con capucha negra","hoodie","negra",2),
           clothingLabel("right",44,"la mochila negra","backpack","negra",3),
           clothingLabel("left",66,"los vaqueros azules","jeans","azules",4),
           clothingLabel("right",86,"las zapatillas deportivas blancas","sneakers","blancas",5)
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("woman_clothes","clothes","Подпиши одежду девушки: название вещи + цвет.","clothes_woman","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",26,"la ropa interior blanca","underwear","blanca"),
           clothingLabel("right",50,"el pijama rosa","pajamas","rosa"),
           clothingLabel("left",84,"las zapatillas de casa blancas","slippers","blancas")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("woman_clothes_2","clothes","Подпиши одежду девушки: название вещи + цвет.","clothes_woman_2","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",26,"la blusa blanca","blouse","blanca"),
           clothingLabel("right",38,"la chaqueta marrón","jacket","marrón"),
           clothingLabel("left",62,"la falda marrón","skirt","marrón"),
           clothingLabel("right",86,"los zapatos de tacón marrones","heels","marrones"),
           clothingLabel("left",12,"el sombrero marrón","hat","marrón")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("woman_clothes_3","clothes","Подпиши одежду девушки: название вещи + цвет.","clothes_woman_3","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",30,"la chaqueta marrón","jacket","marrón"),
           clothingLabel("right",40,"el jersey beige","sweater","beige"),
           clothingLabel("left",62,"el vestido marrón","dress","marrón"),
           clothingLabel("right",54,"el bolso negro","handbag","negro"),
           clothingLabel("left",86,"las botas marrones","boots","marrones")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("woman_clothes_4","clothes","Подпиши одежду девушки: название вещи + цвет.","clothes_woman_4","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",14,"las gafas de sol marrones","sunglasses","marrones"),
           clothingLabel("right",34,"la camiseta blanca","tshirt","blanca"),
           clothingLabel("left",44,"la camisa azul","shirt","azul"),
           clothingLabel("right",66,"los pantalones cortos beige","shorts","beige"),
           clothingLabel("left",86,"las sandalias marrones","sandals","marrones")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("woman_clothes_5","clothes","Подпиши одежду девушки: название вещи + цвет.","clothes_woman_5","Используй только слова из изученных карточек. Артикль необязателен.",[
           clothingLabel("left",28,"el cárdigan beige","cardigan","beige"),
           clothingLabel("right",38,"la camiseta blanca","tshirt","blanca"),
           clothingLabel("right",52,"el bolso marrón","handbag","marrón"),
           clothingLabel("left",66,"los pantalones verdes","trousers","verdes"),
           clothingLabel("right",86,"las zapatillas deportivas blancas","sneakers","blancas")
-        ],"Название вещи проверяется по словарю карточек CLOTHING_WORDS; регистр не учитывается."),
+        ],""),
         item("food_basket","foods","Подпиши продукты в корзине.","food_basket","Напиши название каждого продукта по-испански. Артикль необязателен.",[
           label("left",19,"el pan",["pan"]),
           label("right",18,"la leche",["leche"]),
