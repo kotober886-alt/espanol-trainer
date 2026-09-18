@@ -189,13 +189,13 @@
     const old=document.querySelector('script[data-answer-translations]');
     if(old) old.remove();
     const script=document.createElement('script');
-    script.src='assets/answer-translations.js?v=20260918-outfitpairs2';
+    script.src='assets/answer-translations.js?v=20260918-nohood1';
     script.dataset.answerTranslations='1';
     script.onload=function(){
       const oldRefine=document.querySelector('script[data-answer-translations-refine]');
       if(oldRefine) oldRefine.remove();
       const refine=document.createElement('script');
-      refine.src='assets/answer-translations-refine.js?v=20260918-outfitpairs1';
+      refine.src='assets/answer-translations-refine.js?v=20260918-nohood1';
       refine.dataset.answerTranslationsRefine='1';
       document.body.appendChild(refine);
     };
