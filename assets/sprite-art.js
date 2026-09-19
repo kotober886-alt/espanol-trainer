@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  const ASSET_VERSION = "20260919-level-fix1";
+  const ASSET_VERSION = "20260919-learn-fix1";
   const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
 
   const SPRITE_IMAGES = {
@@ -18,7 +18,7 @@
     clothesNew:{hoodie:[0,0],vest:[1,0],polo:[0,1],cardigan:[1,1]},
     foods:{bread:[0,0],cheese:[1,0],egg:[2,0],milk:[3,0],rice:[4,0],pasta:[5,0],chicken:[6,0],fish:[0,1],meat:[1,1],potato:[2,1],tomato:[3,1],apple:[4,1],banana:[5,1],orange:[6,1],water:[0,2],coffee:[1,2],tea:[2,2],salt:[3,2],sugar:[4,2],bag:[5,2],bottle:[6,2],butter:[0,3],jar:[1,3],honey:[2,3],beans:[3,3],lentils:[4,3],soup:[5,3],salad:[6,3],sandwich:[0,4],pizza:[1,4],cookie:[2,4],cake:[3,4],icecream:[4,4],sausage:[5,4],shellfish:[6,4]},
     foodsExtra:{chocolate:[0,0],candy:[1,0],muffin:[2,0],flan:[0,1],juice:[1,1],soda:[2,1],wine:[0,2],beer:[1,2],puree:[2,2]},
-    activities:{do_sport:[0,0],gym:[1,0],yoga:[2,0],run:[3,0],swim:[4,0],cycle:[5,0],football:[6,0],tennis:[0,1],dance:[1,1],videogames:[2,1],level:[2,1],boardgames:[3,1],cards:[4,1],chess:[5,1],puzzles:[6,1],books:[0,2],news:[1,2],notes:[2,2],languages:[3,2],spanish:[4,2],homework:[5,2],podcast:[6,2],draw:[0,3],paint:[1,3],photos:[2,3],videos:[3,3],stories:[4,3],crafts:[5,3],guitar:[6,3],cook:[0,4],movies:[1,4],series:[2,4],music:[3,4],walk:[4,4],travel:[5,4],rest:[0,5],friends:[1,5],hike:[2,5],camp:[3,5],plants:[4,5],dog:[5,5],picnic:[6,5]},
+    activities:{do_sport:[0,0],gym:[1,0],yoga:[2,0],run:[3,0],swim:[4,0],cycle:[5,0],football:[6,0],tennis:[0,1],dance:[1,1],videogames:[2,1],level:[2,1],boardgames:[3,1],cards:[4,1],chess:[5,1],puzzles:[6,1],books:[0,2],news:[1,2],notes:[2,2],languages:[3,2],learn:[3,2],spanish:[4,2],homework:[5,2],podcast:[6,2],draw:[0,3],paint:[1,3],photos:[2,3],videos:[3,3],stories:[4,3],crafts:[5,3],guitar:[6,3],cook:[0,4],movies:[1,4],series:[2,4],music:[3,4],walk:[4,4],travel:[5,4],rest:[0,5],friends:[1,5],hike:[2,5],camp:[3,5],plants:[4,5],dog:[5,5],picnic:[6,5]},
     activitiesExtra:{train:[0,0],online:[1,0],level:[2,0],learn:[3,0],shopping:[0,1],fishing:[1,1],garden:[2,1]}
   };
 
