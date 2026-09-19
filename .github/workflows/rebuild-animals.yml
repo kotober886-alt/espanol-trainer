@@ -1,0 +1,307 @@
+name: Rebuild animal assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "rebuild-animals"
+    paths:
+      - ".github/workflows/rebuild-animals.yml"
+      - "assets/picture-labels/animals/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-animals-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            curl \
+            unzip \
+            jq \
+            libvulkan1 \
+            mesa-vulkan-drivers \
+            vulkan-tools
+
+      - name: Install Pillow
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pillow
+
+      - name: Download waifu2x-ncnn-vulkan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RELEASE_JSON="$(curl -fsSL https://api.github.com/repos/nihui/waifu2x-ncnn-vulkan/releases/latest)"
+          URL="$(echo "$RELEASE_JSON" | jq -r '.assets[] | select(.name | test("linux.*\\.zip$")) | .browser_download_url' | head -n 1)"
+
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "Could not find Linux build of waifu2x-ncnn-vulkan"
+            exit 1
+          fi
+
+          mkdir -p /tmp/waifu2x
+          curl -fL "$URL" -o /tmp/waifu2x/waifu2x.zip
+          unzip -q /tmp/waifu2x/waifu2x.zip -d /tmp/waifu2x
+
+          BIN_PATH="$(find /tmp/waifu2x -type f -name 'waifu2x-ncnn-vulkan' | head -n 1)"
+          if [ -z "$BIN_PATH" ]; then
+            echo "waifu2x binary not found after extraction"
+            find /tmp/waifu2x -maxdepth 4 -type f | sort
+            exit 1
+          fi
+
+          chmod +x "$BIN_PATH"
+          echo "WAIFU2X_BIN=$BIN_PATH" >> "$GITHUB_ENV"
+          echo "Using waifu2x binary: $BIN_PATH"
+
+      - name: Select Vulkan software driver
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          LVP_ICD="$(find /usr/share/vulkan/icd.d -type f -name '*lvp*.json' | head -n 1 || true)"
+          if [ -n "$LVP_ICD" ]; then
+            echo "VK_ICD_FILENAMES=$LVP_ICD" >> "$GITHUB_ENV"
+            echo "Using Lavapipe Vulkan ICD: $LVP_ICD"
+          else
+            echo "Lavapipe ICD was not found; using runner default Vulkan configuration"
+          fi
+
+          vulkaninfo --summary || true
+
+      - name: Prepare source and output directories
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -d assets/picture-labels/animals
+          COUNT="$(find assets/picture-labels/animals -maxdepth 1 -type f -name '*.webp' | wc -l)"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No animal WebP assets found"
+            exit 1
+          fi
+
+          rm -rf /tmp/animals_upscaled_raw
+          mkdir -p /tmp/animals_upscaled_raw
+
+          echo "Found $COUNT source animal assets"
+
+      - name: Sharp upscale with waifu2x
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          "$WAIFU2X_BIN" \
+            -i assets/picture-labels/animals \
+            -o /tmp/animals_upscaled_raw \
+            -n 0 \
+            -s 4 \
+            -f webp
+
+          INPUT_COUNT="$(find assets/picture-labels/animals -maxdepth 1 -type f -name '*.webp' | wc -l)"
+          OUTPUT_COUNT="$(find /tmp/animals_upscaled_raw -maxdepth 1 -type f -name '*.webp' | wc -l)"
+
+          echo "Input files:  $INPUT_COUNT"
+          echo "Output files: $OUTPUT_COUNT"
+
+          if [ "$INPUT_COUNT" -ne "$OUTPUT_COUNT" ]; then
+            echo "waifu2x did not produce every expected file"
+            exit 1
+          fi
+
+      - name: Finalize to 1024x1024
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps, ImageFilter
+
+          SRC = Path("/tmp/animals_upscaled_raw")
+          DST = Path("assets/picture-labels/animals")
+
+          source_files = sorted(DST.glob("*.webp"))
+          upscaled_files = sorted(SRC.glob("*.webp"))
+
+          if not source_files:
+              raise SystemExit("No source animal images found")
+          if len(upscaled_files) != len(source_files):
+              raise SystemExit(
+                  f"Expected {len(source_files)} upscaled files, got {len(upscaled_files)}"
+              )
+
+          for path in upscaled_files:
+              out = DST / path.name
+
+              if not out.exists():
+                  raise SystemExit(f"Unexpected output filename from waifu2x: {path.name}")
+
+              with Image.open(path) as source:
+                  source.load()
+                  rgba = source.convert("RGBA")
+
+                  white = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+                  white.alpha_composite(rgba)
+                  image = white.convert("RGB")
+
+                  # Keep the original composition and aspect ratio.
+                  fitted = ImageOps.contain(
+                      image,
+                      (1024, 1024),
+                      Image.Resampling.LANCZOS,
+                  )
+
+                  canvas = Image.new("RGB", (1024, 1024), (255, 255, 255))
+                  x = (1024 - fitted.width) // 2
+                  y = (1024 - fitted.height) // 2
+                  canvas.paste(fitted, (x, y))
+
+                  # Only a restrained final sharpening pass.
+                  # No pre-blur and no aggressive denoise.
+                  canvas = canvas.filter(
+                      ImageFilter.UnsharpMask(
+                          radius=0.55,
+                          percent=55,
+                          threshold=2,
+                      )
+                  )
+
+                  # Preserve a clean white background without touching
+                  # intentional light details inside the illustration.
+                  pixels = canvas.load()
+                  width, height = canvas.size
+
+                  for y in range(height):
+                      for x in range(width):
+                          r, g, b = pixels[x, y]
+                          if r >= 253 and g >= 253 and b >= 253:
+                              pixels[x, y] = (255, 255, 255)
+
+                  canvas.save(
+                      out,
+                      "WEBP",
+                      lossless=True,
+                      method=6,
+                  )
+
+                  print(f"finalized {out.name}: {canvas.size}")
+          PY
+
+      - name: Verify rebuilt assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageStat, ImageFilter
+
+          root = Path("assets/picture-labels/animals")
+          files = sorted(root.glob("*.webp"))
+
+          if not files:
+              raise SystemExit("No rebuilt animal assets found")
+
+          failures = []
+
+          for path in files:
+              try:
+                  with Image.open(path) as image:
+                      image.load()
+
+                      if image.format != "WEBP":
+                          raise AssertionError(f"wrong format: {image.format}")
+                      if image.size != (1024, 1024):
+                          raise AssertionError(f"wrong size: {image.size}")
+
+                      rgb = image.convert("RGB")
+                      stat = ImageStat.Stat(rgb)
+
+                      if max(stat.var) < 10:
+                          raise AssertionError("image appears blank or nearly flat")
+
+                      corners = [
+                          rgb.getpixel((0, 0)),
+                          rgb.getpixel((1023, 0)),
+                          rgb.getpixel((0, 1023)),
+                          rgb.getpixel((1023, 1023)),
+                      ]
+                      if any(min(pixel) < 248 for pixel in corners):
+                          raise AssertionError(f"background corner is not white: {corners}")
+
+                      # Edge-energy sanity check: catches catastrophically blurred/blank output.
+                      edges = rgb.convert("L").filter(ImageFilter.FIND_EDGES)
+                      edge_stat = ImageStat.Stat(edges)
+                      if edge_stat.mean[0] < 0.5:
+                          raise AssertionError(
+                              f"edge detail suspiciously low: {edge_stat.mean[0]:.3f}"
+                          )
+
+                      print(
+                          "OK",
+                          path.name,
+                          image.size,
+                          f"edge={edge_stat.mean[0]:.3f}",
+                      )
+              except Exception as exc:
+                  failures.append(f"{path.name}: {exc}")
+
+          if failures:
+              raise SystemExit(
+                  "Validation failed:\n" + "\n".join(failures)
+              )
+
+          print(f"VALIDATED {len(files)} animal assets")
+          PY
+
+      - name: Show changed animal assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short -- assets/picture-labels/animals/
+          git diff --stat -- assets/picture-labels/animals/
+
+      - name: Commit and push rebuilt assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add assets/picture-labels/animals/*.webp
+
+          if git diff --cached --quiet; then
+            echo "No asset changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Automated asset rebuild with sharp upscale"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
