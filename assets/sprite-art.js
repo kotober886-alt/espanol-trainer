@@ -36,6 +36,18 @@
   };
 
 
+  const CLOTHING_CARD_IMAGES={
+    size:"la-talla.webp"
+  };
+
+  function clothingCardArt(id){
+    const file=CLOTHING_CARD_IMAGES[id];
+    if(!file) return "";
+    return '<img class="clothes-extra-image" '+
+      'src="'+withVersion('assets/picture-labels/'+file)+'" '+
+      'alt="" aria-hidden="true" draggable="false">';
+  }
+
   const CLOTHES_EXTRA_IMAGES={
     ankleboots:"ankleboots.webp",
     heels:"heels.webp",
@@ -103,6 +115,9 @@
   };
 
   window.clothingArt=function(id){
+    const card=clothingCardArt(id);
+    if(card) return card;
+
     const extra=clothesExtraArt(id);
     if(extra) return extra;
 
