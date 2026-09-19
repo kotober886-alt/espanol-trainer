@@ -336,15 +336,36 @@
       background:linear-gradient(145deg,#f3f0ff,#fff9e8); border:1px solid #e7e1ff;
     }
     .study-card.no-art { grid-template-columns:minmax(0,1fr); }
-    .study-card.no-art .food-art { display:none; }
-    .study-card.no-art > div:last-child { width:min(800px,100%); margin:auto; }
-    .study-card.direct-card-art { grid-template-columns:minmax(118px,.34fr) minmax(0,1fr); gap:clamp(18px,4vw,34px); }
-    .study-card.direct-card-art > .food-art {
-      display:grid; min-height:118px; align-self:start; background:rgba(255,255,255,.72);
+    .study-card.no-art .food-art,.study-card.no-art .clothing-art-container { display:none; }
+    .study-card.no-art > .study-card-copy { width:min(800px,100%); margin:auto; }
+    .study-card.direct-card-art {
+      grid-template-columns:minmax(150px,.42fr) minmax(0,1fr);
+      gap:clamp(20px,4vw,38px);
+      align-items:start;
     }
-    .study-card.direct-card-art > div:last-child { width:100%; margin:0; min-width:0; }
+    .study-card.direct-card-art > .food-art { display:none; }
+    .study-card.direct-card-art > .study-card-copy { width:100%; min-width:0; margin:0; }
+    .clothing-art-container {
+      display:none;
+      width:100%;
+      min-height:180px;
+      place-items:center;
+      align-self:start;
+      border-radius:22px;
+      background:rgba(255,255,255,.72);
+      overflow:hidden;
+    }
+    .study-card.direct-card-art > .clothing-art-container { display:grid; }
+    .clothing-art-container .clothes-extra-image {
+      display:block;
+      width:min(260px,92%);
+      max-width:100%;
+      height:auto;
+      max-height:260px;
+      object-fit:contain;
+      margin:auto;
+    }
     .study-card-heading { display:block; }
-    .study-card-head-art { display:none; }
     .food-art {
       min-height:280px; display:grid; place-items:center; border-radius:22px;
       background:rgba(255,255,255,.7); overflow:hidden;
@@ -537,7 +558,7 @@
       .study-shell { width:100%; padding:24px 18px; }
       .food-filters,.pronoun-tabs { width:100%; max-width:calc(100vw - 58px); overscroll-behavior-x:contain; }
       .study-card { width:100%; min-width:0; grid-template-columns:minmax(0,1fr); }
-      .study-card > div:last-child,.study-card.no-art > div:last-child { width:100%; min-width:0; }
+      .study-card > .study-card-copy,.study-card.no-art > .study-card-copy { width:100%; min-width:0; }
       .food-art { width:100%; min-height:220px; }
       .food-word { max-width:100%; font-size:clamp(32px,7vw,46px); line-height:1.08; letter-spacing:-.04em; }
       .study-intro { align-items:flex-start; }
@@ -628,9 +649,9 @@
       .food-filter { padding:8px 11px; font-size:13px; }
       .pronoun-tab { min-width:100px; padding:9px 11px; }
       .study-card { padding:16px; gap:16px; border-radius:19px; }
-      .study-card.direct-card-art { grid-template-columns:86px minmax(0,1fr); gap:12px; align-items:start; }
-      .study-card.direct-card-art > .food-art { min-height:86px; border-radius:16px; }
-      .study-card.direct-card-art > .food-art .clothes-extra-image { width:100%; height:100%; object-fit:contain; padding:5px; }
+      .study-card.direct-card-art { grid-template-columns:92px minmax(0,1fr); gap:13px; align-items:start; }
+      .study-card.direct-card-art > .clothing-art-container { min-height:92px; border-radius:16px; }
+      .clothing-art-container .clothes-extra-image { width:100%; max-height:92px; object-fit:contain; padding:5px; }
       .food-art { min-height:180px; border-radius:17px; }
       .food-word { font-size:clamp(27px,8.5vw,38px); line-height:1.1; letter-spacing:-.035em; }
       .food-translation { margin:14px 0 18px; font-size:clamp(19px,5.8vw,24px); line-height:1.2; }
@@ -767,8 +788,9 @@
             <div class="food-filters" id="foodFilters" aria-label="Категории слов"></div>
             <div class="pronoun-tabs" id="pronounTabs" role="tablist" aria-label="Переключение между местоимениями" hidden></div>
             <article class="study-card" id="studyCard">
+              <div class="clothing-art-container" id="clothingArtContainer" aria-hidden="true"></div>
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
-              <div>
+              <div class="study-card-copy">
                 <div class="study-card-heading">
                   <div>
                     <div class="word-count" id="wordCount">Слово 1</div>
@@ -778,7 +800,6 @@
                       <span class="food-category-label" id="foodCategoryLabel"></span>
                     </div>
                   </div>
-                  <div class="study-card-head-art" id="studyCardHeadArt" aria-hidden="true"></div>
                 </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="pronoun-details" id="pronounDetails" hidden></div>
@@ -3384,7 +3405,7 @@
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
-      studyView:$("studyView"), studyCard:$("studyCard"), foodArt:$("foodArt"), studyCardHeadArt:$("studyCardHeadArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
+      studyView:$("studyView"), studyCard:$("studyCard"), clothingArtContainer:$("clothingArtContainer"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
       foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn"),
@@ -4522,8 +4543,8 @@
         : "";
       els.studyCard.classList.toggle("no-art",!hasArt);
       els.studyCard.classList.toggle("direct-card-art",!!headerArt);
-      els.studyCardHeadArt.innerHTML="";
-      els.foodArt.innerHTML=headerArt || studyArt(word);
+      els.clothingArtContainer.innerHTML=headerArt;
+      els.foodArt.innerHTML=headerArt ? "" : studyArt(word);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
