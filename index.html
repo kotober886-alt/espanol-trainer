@@ -338,7 +338,6 @@
     .study-card.no-art { grid-template-columns:minmax(0,1fr); }
     .study-card.no-art .food-art { display:none; }
     .study-card.no-art > div:last-child { width:min(800px,100%); margin:auto; }
-    .study-card-heading { display:block; }
     .food-art {
       min-height:280px; display:grid; place-items:center; border-radius:22px;
       background:rgba(255,255,255,.7); overflow:hidden;
@@ -531,18 +530,6 @@
       .study-shell { width:100%; padding:24px 18px; }
       .food-filters,.pronoun-tabs { width:100%; max-width:calc(100vw - 58px); overscroll-behavior-x:contain; }
       .study-card { width:100%; min-width:0; grid-template-columns:minmax(0,1fr); }
-      .study-card.clothing-layout {
-        grid-template-columns:minmax(120px,.42fr) minmax(0,1fr);
-        align-items:start;
-        gap:18px;
-      }
-      .study-card.clothing-layout > .food-art {
-        width:100%;
-        min-width:0;
-        min-height:160px;
-        align-self:start;
-      }
-      .study-card.clothing-layout > div:last-child { min-width:0; }
       .study-card > div:last-child,.study-card.no-art > div:last-child { width:100%; min-width:0; }
       .food-art { width:100%; min-height:220px; }
       .food-word { max-width:100%; font-size:clamp(32px,7vw,46px); line-height:1.08; letter-spacing:-.04em; }
@@ -634,23 +621,6 @@
       .food-filter { padding:8px 11px; font-size:13px; }
       .pronoun-tab { min-width:100px; padding:9px 11px; }
       .study-card { padding:16px; gap:16px; border-radius:19px; }
-      .study-card.clothing-layout {
-        grid-template-columns:96px minmax(0,1fr);
-        gap:12px;
-        align-items:start;
-      }
-      .study-card.clothing-layout > .food-art {
-        min-height:96px;
-        height:96px;
-        border-radius:16px;
-      }
-      .study-card.clothing-layout > .food-art .clothes-extra-image,
-      .study-card.clothing-layout > .food-art .generated-sprite {
-        width:100% !important;
-        max-width:96px;
-        max-height:96px;
-        margin:auto;
-      }
       .food-art { min-height:180px; border-radius:17px; }
       .food-word { font-size:clamp(27px,8.5vw,38px); line-height:1.1; letter-spacing:-.035em; }
       .food-translation { margin:14px 0 18px; font-size:clamp(19px,5.8vw,24px); line-height:1.2; }
@@ -789,15 +759,11 @@
             <article class="study-card" id="studyCard">
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
               <div>
-                <div class="study-card-heading">
-                  <div>
-                    <div class="word-count" id="wordCount">Слово 1</div>
-                    <h2 class="food-word" id="foodWord"></h2>
-                    <div class="food-tags">
-                      <span class="food-gender" id="foodGender"></span>
-                      <span class="food-category-label" id="foodCategoryLabel"></span>
-                    </div>
-                  </div>
+                <div class="word-count" id="wordCount">Слово 1</div>
+                <h2 class="food-word" id="foodWord"></h2>
+                <div class="food-tags">
+                  <span class="food-gender" id="foodGender"></span>
+                  <span class="food-category-label" id="foodCategoryLabel"></span>
                 </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="pronoun-details" id="pronounDetails" hidden></div>
@@ -4536,7 +4502,6 @@
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
       els.studyCard.classList.toggle("no-art",!hasArt);
-      els.studyCard.classList.toggle("clothing-layout",selectedTopic==="clothes" && hasArt);
       els.foodArt.innerHTML=studyArt(word);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
