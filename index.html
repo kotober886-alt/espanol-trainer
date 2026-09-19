@@ -338,18 +338,13 @@
     .study-card.no-art { grid-template-columns:minmax(0,1fr); }
     .study-card.no-art .food-art { display:none; }
     .study-card.no-art > div:last-child { width:min(800px,100%); margin:auto; }
-    .study-card.direct-card-art { grid-template-columns:minmax(0,1fr); }
-    .study-card.direct-card-art > .food-art { display:none; }
-    .study-card.direct-card-art > div:last-child { width:min(800px,100%); margin:auto; }
-    .study-card-heading { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:start; }
-    .study-card-head-art {
-      width:118px; height:118px; display:grid; place-items:center; border-radius:20px;
-      background:rgba(255,255,255,.72); overflow:hidden; flex:0 0 auto;
+    .study-card.direct-card-art { grid-template-columns:minmax(118px,.34fr) minmax(0,1fr); gap:clamp(18px,4vw,34px); }
+    .study-card.direct-card-art > .food-art {
+      display:grid; min-height:118px; align-self:start; background:rgba(255,255,255,.72);
     }
-    .study-card-head-art:empty { display:none; }
-    .study-card-head-art .clothes-extra-image {
-      width:100%; height:100%; object-fit:contain; display:block; padding:8px;
-    }
+    .study-card.direct-card-art > div:last-child { width:100%; margin:0; min-width:0; }
+    .study-card-heading { display:block; }
+    .study-card-head-art { display:none; }
     .food-art {
       min-height:280px; display:grid; place-items:center; border-radius:22px;
       background:rgba(255,255,255,.7); overflow:hidden;
@@ -633,9 +628,9 @@
       .food-filter { padding:8px 11px; font-size:13px; }
       .pronoun-tab { min-width:100px; padding:9px 11px; }
       .study-card { padding:16px; gap:16px; border-radius:19px; }
-      .study-card-heading { grid-template-columns:minmax(0,1fr) 86px; gap:12px; align-items:start; }
-      .study-card-head-art { width:86px; height:86px; border-radius:16px; }
-      .study-card-head-art .clothes-extra-image { padding:5px; }
+      .study-card.direct-card-art { grid-template-columns:86px minmax(0,1fr); gap:12px; align-items:start; }
+      .study-card.direct-card-art > .food-art { min-height:86px; border-radius:16px; }
+      .study-card.direct-card-art > .food-art .clothes-extra-image { width:100%; height:100%; object-fit:contain; padding:5px; }
       .food-art { min-height:180px; border-radius:17px; }
       .food-word { font-size:clamp(27px,8.5vw,38px); line-height:1.1; letter-spacing:-.035em; }
       .food-translation { margin:14px 0 18px; font-size:clamp(19px,5.8vw,24px); line-height:1.2; }
@@ -4527,8 +4522,8 @@
         : "";
       els.studyCard.classList.toggle("no-art",!hasArt);
       els.studyCard.classList.toggle("direct-card-art",!!headerArt);
-      els.studyCardHeadArt.innerHTML=headerArt;
-      els.foodArt.innerHTML=headerArt ? "" : studyArt(word);
+      els.studyCardHeadArt.innerHTML="";
+      els.foodArt.innerHTML=headerArt || studyArt(word);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
