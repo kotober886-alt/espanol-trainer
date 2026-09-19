@@ -1,8 +1,21 @@
 (function(){
   "use strict";
 
-  const ASSET_VERSION = "20260919-activities-fix2";
-  const withVersion = (url) => `${url}?v=${ASSET_VERSION}`;
+  const ASSET_VERSION = window.__ASSET_CACHE_VERSION__ || (window.__ASSET_CACHE_VERSION__ = String(Date.now()));
+
+  function withVersion(url){
+    const value=String(url || "");
+    if(!value || value.indexOf("assets/")===-1) return value;
+    const hashIndex=value.indexOf("#");
+    const hash=hashIndex>=0 ? value.slice(hashIndex) : "";
+    const withoutHash=hashIndex>=0 ? value.slice(0,hashIndex) : value;
+    const queryIndex=withoutHash.indexOf("?");
+    const base=queryIndex>=0 ? withoutHash.slice(0,queryIndex) : withoutHash;
+    const query=queryIndex>=0 ? withoutHash.slice(queryIndex+1) : "";
+    const params=new URLSearchParams(query);
+    params.set("v",ASSET_VERSION);
+    return base+"?"+params.toString()+hash;
+  }
 
   const SPRITE_IMAGES = {
     clothes: withVersion("assets/picture-labels/study-clothes-v3.webp"),
@@ -48,7 +61,7 @@
     const file=CLOTHES_EXTRA_IMAGES[id];
     if(!file) return "";
     return '<img class="clothes-extra-image" '+
-      'src="assets/picture-labels/clothes-extra/'+file+'?v='+ASSET_VERSION+'" '+
+      'src="'+withVersion('assets/picture-labels/clothes-extra/'+file)+'" '+
       'alt="" aria-hidden="true" draggable="false">';
   }
 
@@ -77,7 +90,7 @@
   function directFoodArt(id){
     const value=String(id || "");
     if(!/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.png$/i.test(value)) return "";
-    return '<img class="food-direct-image" src="'+value+'?v='+ASSET_VERSION+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async" style="width:min(260px,92%);max-height:260px;aspect-ratio:1/1;object-fit:contain;display:block;margin:auto">';
+    return '<img class="food-direct-image" src="'+withVersion(value)+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async" style="width:min(260px,92%);max-height:260px;aspect-ratio:1/1;object-fit:contain;display:block;margin:auto">';
   }
 
   window.foodArt=function(id){
