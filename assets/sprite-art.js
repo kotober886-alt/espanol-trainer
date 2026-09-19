@@ -37,7 +37,8 @@
 
 
   const CLOTHING_CARD_IMAGES={
-    size:"la-talla.webp"
+    size:"la-talla.webp",
+    fittingroom:"el-probador.webp"
   };
 
   function clothingCardArt(id){
