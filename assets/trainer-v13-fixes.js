@@ -168,7 +168,7 @@
     const old=document.querySelector('script[data-animals-card-art-fix]');
     if(old) old.remove();
     const fix=document.createElement('script');
-    fix.src='assets/animals-card-art-fix.js?v=20260917-individual2';
+    fix.src='assets/animals-card-art-fix.js?v=5-individual2';
     fix.dataset.animalsCardArtFix='1';
     fix.onload=function(){
       installAnimalsCardArt();
@@ -180,7 +180,7 @@
   const oldAnimals=document.querySelector('script[data-animals-topic]');
   if(oldAnimals) oldAnimals.remove();
   const animalsScript=document.createElement('script');
-  animalsScript.src='assets/animals-topic.js?v=20260917-final1';
+  animalsScript.src='assets/animals-topic.js?v=8-final1';
   animalsScript.dataset.animalsTopic='1';
   animalsScript.onload=loadAnimalRasterFix;
   document.body.appendChild(animalsScript);
