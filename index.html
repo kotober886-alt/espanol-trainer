@@ -343,6 +343,10 @@
       background:rgba(255,255,255,.7); overflow:hidden;
     }
     .food-svg { width:min(260px,92%); height:auto; filter:drop-shadow(0 18px 18px rgba(56,43,99,.11)); }
+    .food-direct-image {
+      display:block; width:min(260px,92%); max-width:100%; max-height:260px; aspect-ratio:1/1;
+      object-fit:contain; object-position:center; margin:auto;
+    }
     .color-swatch {
       width:min(230px,78%); aspect-ratio:1; border-radius:22px; border:1px solid rgba(23,21,59,.14);
     }
@@ -571,6 +575,7 @@
       .answer-input { min-height:54px; padding:12px 13px; font-size:16px; }
       .choice-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
       .choice-option { width:100%; min-width:0; min-height:52px; padding:11px 12px; font-size:15px; }
+      .food-art .food-direct-image { width:min(100%,132px); max-height:140px; }
       .audio-actions { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:7px; }
       .audio-prompt,.audio-slow { width:100%; min-width:0; justify-content:center; padding:11px 8px; font-size:13px; }
       .audio-settings { margin-top:9px; }
@@ -4458,6 +4463,9 @@
       return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
     }
     function studyArt(word){
+      if(selectedTopic==="foods" && word && word.id==="fish"){
+        return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp")+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
+      }
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
       if(selectedTopic==="colors") return colorArt(word.hex);
