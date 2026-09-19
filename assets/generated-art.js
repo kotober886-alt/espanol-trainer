@@ -1,12 +1,12 @@
 (function(){
   const IMG={
-    clothes:"assets/generated/study-clothes-v3.webp",
-    foods:"assets/generated/study-foods-v3.webp",
-    activities:"assets/generated/study-activities-v3.webp",
-    clothesExtra:"assets/generated/study-clothes-extra-v1.webp",
-    clothesNew:"assets/generated/study-clothes-new-v1.webp",
-    foodsExtra:"assets/generated/study-foods-extra-v1.webp",
-    activitiesExtra:"assets/generated/study-activities-extra-v1.webp"
+    clothes:"assets/picture-labels/study-clothes-v3.webp",
+    foods:"assets/picture-labels/study-foods-v3.webp",
+    activities:"assets/picture-labels/study-activities-v3.webp",
+    clothesExtra:"assets/picture-labels/study-clothes-extra-v1.webp",
+    clothesNew:"assets/picture-labels/study-clothes-new-v1.webp",
+    foodsExtra:"assets/picture-labels/study-foods-extra-v1.webp",
+    activitiesExtra:"assets/picture-labels/study-activities-extra-v1.webp"
   };
   const MAP={
     clothes:{tshirt:[0,0],shirt:[1,0],blouse:[2,0],sweater:[3,0],hood:[4,0],jacket:[5,0],coat:[0,1],dress:[1,1],skirt:[2,1],trousers:[3,1],jeans:[4,1],shorts:[5,1],suit:[0,2],pajamas:[1,2],underwear:[2,2],socks:[3,2],shoes:[4,2],sneakers:[5,2],boots:[0,3],sandals:[1,3],scarf:[2,3],gloves:[3,3],sunglasses:[4,3],belt:[5,3],tie:[0,4],bowtie:[1,4],hat:[2,4],cap:[3,4],backpack:[5,4]},
@@ -42,10 +42,10 @@
   };
   window.clothingArt=function(kind){
     const directRaster={
-      hoodie:"assets/generated/clothes-new-raster/hoodie.webp?v=20260918-valid-raster2",
-      vest:"assets/generated/clothes-new-raster/vest.webp?v=20260918-valid-raster2",
-      polo:"assets/generated/clothes-new-raster/polo.webp?v=20260918-valid-raster2",
-      cardigan:"assets/generated/clothes-new-raster/cardigan.webp?v=20260918-valid-raster2"
+      hoodie:"assets/picture-labels/clothes-new-raster/hoodie.webp?v=20260918-valid-raster2",
+      vest:"assets/picture-labels/clothes-new-raster/vest.webp?v=20260918-valid-raster2",
+      polo:"assets/picture-labels/clothes-new-raster/polo.webp?v=20260918-valid-raster2",
+      cardigan:"assets/picture-labels/clothes-new-raster/cardigan.webp?v=20260918-valid-raster2"
     };
     if(directRaster[kind]){
       return '<img class="precise-art new-clothes-raster" src="'+directRaster[kind]+'" alt="" aria-hidden="true" loading="eager" decoding="async">';

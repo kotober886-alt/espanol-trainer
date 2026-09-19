@@ -32,13 +32,13 @@ jobs:
 
           p = Path('assets/animals-topic.js')
           s = p.read_text(encoding='utf-8')
-          s = re.sub(r"assets/generated/study-animals-v\d+\.webp", "assets/generated/study-animals-v5.webp", s)
+          s = re.sub(r"assets/picture-labels/study-animals-v\d+\.webp", "assets/picture-labels/study-animals-v5.webp", s)
           p.write_text(s, encoding='utf-8')
 
           p = Path('assets/animals-card-art-fix.js')
           s = p.read_text(encoding='utf-8')
-          s = re.sub(r"const SRC='[^']+';", "const SRC='./assets/generated/study-animals-v5.webp?v=1';", s, count=1)
-          s = re.sub(r"const FALLBACK='[^']+';", "const FALLBACK='./assets/generated/study-animals-v5.webp?v=1';", s, count=1)
+          s = re.sub(r"const SRC='[^']+';", "const SRC='./assets/picture-labels/study-animals-v5.webp?v=1';", s, count=1)
+          s = re.sub(r"const FALLBACK='[^']+';", "const FALLBACK='./assets/picture-labels/study-animals-v5.webp?v=1';", s, count=1)
           p.write_text(s, encoding='utf-8')
 
           p = Path('assets/trainer-v13-fixes.js')
@@ -57,7 +57,7 @@ jobs:
         run: |
           python - <<'PY'
           from PIL import Image, ImageStat
-          p='assets/generated/study-animals-v5.webp'
+          p='assets/picture-labels/study-animals-v5.webp'
           im=Image.open(p)
           im.load()
           assert im.size == (1350,600), im.size
@@ -71,7 +71,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/generated/study-animals-v5.webp assets/animals-topic.js assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
+          git add assets/picture-labels/study-animals-v5.webp assets/animals-topic.js assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
           if git diff --cached --quiet; then
             echo "Изменений нет"
             exit 0

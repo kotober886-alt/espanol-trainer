@@ -30,7 +30,7 @@ jobs:
           print('decoded embedded atlas bytes:', len(data))
           assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', 'embedded atlas is not WebP'
           assert len(data) > 10000, 'embedded atlas unexpectedly small'
-          out=Path('assets/generated/animals-approved-v2.webp')
+          out=Path('assets/picture-labels/animals-approved-v2.webp')
           out.write_bytes(data)
           print('wrote', out, len(data), 'bytes')
           PY
@@ -41,7 +41,7 @@ jobs:
           cat > assets/animals-card-art-fix.js <<'EOF'
           (function(){
             'use strict';
-            const SRC='assets/generated/animals-approved-v2.webp?v=20260917-approved3';
+            const SRC='assets/picture-labels/animals-approved-v2.webp?v=20260917-approved3';
             const POS={dog:[0,0],cat:[1,0],rabbit:[2,0],hamster:[3,0],mouse:[4,0],turtle:[5,0],horse:[0,1],cow:[1,1],pig:[2,1],sheep:[3,1],goat:[4,1],chicken:[5,1],lion:[0,2],tiger:[1,2],bear:[2,2],elephant:[3,2],giraffe:[4,2],monkey:[5,2],eagle:[0,3],owl:[1,3],parrot:[2,3],duck:[3,3],penguin:[4,3],flamingo:[5,3],fish:[0,4],shark:[1,4],dolphin:[2,4],whale:[3,4],octopus:[4,4],crab:[5,4],snake:[0,5],crocodile:[1,5],lizard:[2,5],frog:[3,5],salamander:[4,5],tortoise:[5,5]};
             function art(key){const p=POS[key];if(!p)return'';return '<div class="approved-animal-crop" aria-hidden="true"><img src="'+SRC+'" alt="" loading="eager" decoding="async" style="left:-'+(p[0]*100)+'%;top:-'+(p[1]*100)+'%;"></div>';}
             window.animalArt=art;
@@ -64,7 +64,7 @@ jobs:
       - name: Publish
         shell: bash
         run: |
-          rm -f assets/generated/.animal-approved.part* .publish-approved-animal-art
+          rm -f assets/picture-labels/.animal-approved.part* .publish-approved-animal-art
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A

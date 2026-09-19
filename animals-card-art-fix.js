@@ -8,7 +8,7 @@
   const KEYS=new Set(['dog','cat','rabbit','hamster','mouse','turtle','horse','cow','pig','sheep','goat','chicken','lion','tiger','bear','elephant','giraffe','monkey','eagle','owl','parrot','duck','penguin','flamingo','fish','shark','dolphin','whale','octopus','crab','snake','crocodile','lizard','frog','salamander','tortoise']);
 
   function animalSrc(key){
-    return 'assets/generated/animals/'+key+'.webp?v='+ASSET_VERSION;
+    return 'assets/picture-labels/animals/'+key+'.webp?v='+ASSET_VERSION;
   }
 
   function art(key){

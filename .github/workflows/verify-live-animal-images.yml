@@ -58,7 +58,7 @@ jobs:
                   const img=new Image();
                   img.onload=()=>resolve({key,ok:img.naturalWidth>0&&img.naturalHeight>0,w:img.naturalWidth,h:img.naturalHeight,src:img.src});
                   img.onerror=()=>resolve({key,ok:false,w:0,h:0,src:img.src});
-                  img.src='assets/generated/animals/'+key+'.webp?v=browsercheck-'+Date.now();
+                  img.src='assets/picture-labels/animals/'+key+'.webp?v=browsercheck-'+Date.now();
                 });
                 out.push(row);
               }
@@ -81,7 +81,7 @@ jobs:
             }, null, {timeout:15000});
             const study = await page.$eval('#foodArt img.approved-animal-single', img=>({src:img.src,w:img.naturalWidth,h:img.naturalHeight}));
             console.log('STUDY_IMAGE', JSON.stringify(study));
-            if(!study.src.includes('/assets/generated/animals/dog.webp')) throw new Error('Study card did not use dog.webp: '+study.src);
+            if(!study.src.includes('/assets/picture-labels/animals/dog.webp')) throw new Error('Study card did not use dog.webp: '+study.src);
 
             const diag = await page.evaluate(()=>{
               selectedTopic='animals';
@@ -104,7 +104,7 @@ jobs:
             }, null, {timeout:15000});
             const picture = await page.$eval('#pictureStage img.approved-animal-single', img=>({src:img.src,w:img.naturalWidth,h:img.naturalHeight}));
             console.log('PICTURE_EXERCISE_IMAGE', JSON.stringify(picture));
-            if(!picture.src.includes('/assets/generated/animals/dog.webp')) throw new Error('Picture exercise did not use dog.webp: '+picture.src);
+            if(!picture.src.includes('/assets/picture-labels/animals/dog.webp')) throw new Error('Picture exercise did not use dog.webp: '+picture.src);
 
             console.log('LIVE_ANIMAL_RENDER_VERIFY_OK');
             await browser.close();

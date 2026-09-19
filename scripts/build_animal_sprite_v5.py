@@ -147,5 +147,5 @@ def draw(i,key):
 
 keys=['dog','cat','rabbit','hamster','mouse','turtle','horse','cow','pig','sheep','goat','chicken','lion','tiger','bear','elephant','giraffe','monkey','eagle','owl','parrot','duck','penguin','flamingo','fish','shark','dolphin','whale','octopus','crab','snake','crocodile','lizard','frog','salamander','tortoise']
 for i,k in enumerate(keys): draw(i,k)
-img.save('assets/generated/study-animals-v5.webp','WEBP',quality=91,method=6)
+img.save('assets/picture-labels/study-animals-v5.webp','WEBP',quality=91,method=6)
 print('saved',img.size)

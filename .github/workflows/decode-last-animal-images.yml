@@ -16,7 +16,7 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          files=(assets/generated/animals/*.webp.b64tmp)
+          files=(assets/picture-labels/animals/*.webp.b64tmp)
           if [ ${#files[@]} -eq 0 ]; then
             echo "No staged animal images"
             exit 0
@@ -30,7 +30,7 @@ jobs:
           from pathlib import Path
           expected={'lizard':4302,'frog':4690,'salamander':4198,'tortoise':4260}
           for name,size in expected.items():
-              p=Path('assets/generated/animals')/(name+'.webp')
+              p=Path('assets/picture-labels/animals')/(name+'.webp')
               b=p.read_bytes()
               assert len(b)==size, (name,len(b),size)
               assert b[:4]==b'RIFF' and b[8:12]==b'WEBP', name
@@ -38,6 +38,6 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/generated/animals
+          git add assets/picture-labels/animals
           git commit -m "Add final approved animal images"
           git push

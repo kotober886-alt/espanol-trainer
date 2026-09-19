@@ -31,7 +31,7 @@ jobs:
           if marker not in new:
               needle="    try{if(selectedTopic==='animals'&&foodPhase==='study'&&typeof renderStudy==='function')renderStudy()}catch(e){}\n"
               patch=(
-                  "    try{if(typeof render==='function'&&!render.__approvedAnimalsPictureV5){const b=render;render=function(){b();try{const item=(typeof queue!=='undefined'&&queue)?queue[index]:null;if(item&&item.topic==='animals'&&item.type==='picture-label'){const id=String(item.id||'').replace(/^visual_animals_/,'');if(KEYS.has(id)&&els&&els.pictureStage){const img=els.pictureStage.querySelector('.picture-raster');if(img){img.src='assets/generated/animals/'+id+'.webp?v=20260917-individual2';img.classList.add('approved-animal-single');img.alt='';img.loading='eager';}}}}catch(e){}};render.__approvedAnimalsPictureV5=true}}catch(e){}\n"
+                  "    try{if(typeof render==='function'&&!render.__approvedAnimalsPictureV5){const b=render;render=function(){b();try{const item=(typeof queue!=='undefined'&&queue)?queue[index]:null;if(item&&item.topic==='animals'&&item.type==='picture-label'){const id=String(item.id||'').replace(/^visual_animals_/,'');if(KEYS.has(id)&&els&&els.pictureStage){const img=els.pictureStage.querySelector('.picture-raster');if(img){img.src='assets/picture-labels/animals/'+id+'.webp?v=20260917-individual2';img.classList.add('approved-animal-single');img.alt='';img.loading='eager';}}}}catch(e){}};render.__approvedAnimalsPictureV5=true}}catch(e){}\n"
               )
               if needle not in new:
                   raise SystemExit('Could not find animal install insertion point')
