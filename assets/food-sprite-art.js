@@ -48,7 +48,7 @@
   function directFoodArt(id){
     const value=String(id || "");
     if(!/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.(?:png|webp)$/i.test(value)) return "";
-    return '<img class="food-direct-image" src="'+withVersion(value)+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async" style="width:min(260px,92%);max-height:260px;aspect-ratio:1/1;object-fit:contain;display:block;margin:auto">';
+    return '<img class="food-direct-image" src="'+withVersion(value)+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
   }
 
   window.foodArt=function(id){
