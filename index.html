@@ -2630,11 +2630,26 @@
       dish_stew:[[18,21],[57,21],[20,44],[58,44],[88,38]]
     };
 
+   function runtimeAssetUrl(url, fresh) {
+  const value=String(url || "");
+  if(!value || value.indexOf("assets/")===-1) return value;
+  const version=fresh ? String(Date.now()) : (window.__ASSET_CACHE_VERSION__ || (window.__ASSET_CACHE_VERSION__=String(Date.now())));
+  const hashIndex=value.indexOf("#");
+  const hash=hashIndex>=0 ? value.slice(hashIndex) : "";
+  const withoutHash=hashIndex>=0 ? value.slice(0,hashIndex) : value;
+  const queryIndex=withoutHash.indexOf("?");
+  const base=queryIndex>=0 ? withoutHash.slice(0,queryIndex) : withoutHash;
+  const query=queryIndex>=0 ? withoutHash.slice(queryIndex+1) : "";
+  const params=new URLSearchParams(query);
+  params.set("v",version);
+  return base+"?"+params.toString()+hash;
+}
+
    function pictureAsset(scene, forceReload) {
   const safeScene = String(scene || "").trim().replace(/[^a-z0-9_-]/gi, "");
   if (!safeScene) return "";
-  // Грузим чистый файл. Кэш сбрасываем только если картинка не загрузилась с первого раза.
-  return "assets/picture-labels/" + safeScene + ".webp" + (forceReload ? "?v=" + Date.now() : "");
+  // Версия добавляется прямо в момент построения карточки.
+  return runtimeAssetUrl("assets/picture-labels/" + safeScene + ".webp", !!forceReload);
 }
 
     function bindPictureImageFallback(img,scene){
