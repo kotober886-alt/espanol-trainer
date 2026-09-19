@@ -37,9 +37,28 @@
 
 
   const CLOTHING_CARD_IMAGES={
-    size:"la-talla.webp",
-    fittingroom:"el-probador.webp",
-    bra:"el-sujetador.webp"
+    size:"size.webp",
+    fittingroom:"fittingroom.webp",
+    bra:"bra.webp",
+    zipper:"zipper.webp",
+    button:"button.webp",
+    try_on:"try_on.webp",
+    put_on:"put_on.webp",
+    take_off:"take_off.webp",
+    change_clothes:"change_clothes.webp",
+    fasten:"fasten.webp",
+    unfasten:"unfasten.webp",
+    fits_well:"fits_well.webp",
+    too_big:"too_big.webp",
+    too_small:"too_small.webp",
+    too_tight:"too_tight.webp",
+    length_fit:"length_fit.webp",
+    match_with:"match_with.webp",
+    on_sale:"on_sale.webp",
+    another_size:"another_size.webp",
+    can_try_it:"can_try_it.webp",
+    where_fittingrooms:"where_fittingrooms.webp",
+    take_it:"take_it.webp"
   };
 
   function clothingCardArt(id){
