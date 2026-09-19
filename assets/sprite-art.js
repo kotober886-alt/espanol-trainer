@@ -40,6 +40,7 @@
     size:"size.webp",
     fittingroom:"fittingroom.webp",
     bra:"bra.webp",
+    beanie:"beanie.webp",
     zipper:"zipper.webp",
     button:"button.webp",
     try_on:"try_on.webp",
@@ -68,6 +69,8 @@
       'src="'+withVersion('assets/picture-labels/'+file)+'" '+
       'alt="" aria-hidden="true" draggable="false">';
   }
+
+  window.clothingCardHeaderArt=clothingCardArt;
 
   const CLOTHES_EXTRA_IMAGES={
     ankleboots:"ankleboots.webp",

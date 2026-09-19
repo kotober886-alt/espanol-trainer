@@ -338,6 +338,18 @@
     .study-card.no-art { grid-template-columns:minmax(0,1fr); }
     .study-card.no-art .food-art { display:none; }
     .study-card.no-art > div:last-child { width:min(800px,100%); margin:auto; }
+    .study-card.direct-card-art { grid-template-columns:minmax(0,1fr); }
+    .study-card.direct-card-art > .food-art { display:none; }
+    .study-card.direct-card-art > div:last-child { width:min(800px,100%); margin:auto; }
+    .study-card-heading { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:start; }
+    .study-card-head-art {
+      width:118px; height:118px; display:grid; place-items:center; border-radius:20px;
+      background:rgba(255,255,255,.72); overflow:hidden; flex:0 0 auto;
+    }
+    .study-card-head-art:empty { display:none; }
+    .study-card-head-art .clothes-extra-image {
+      width:100%; height:100%; object-fit:contain; display:block; padding:8px;
+    }
     .food-art {
       min-height:280px; display:grid; place-items:center; border-radius:22px;
       background:rgba(255,255,255,.7); overflow:hidden;
@@ -621,6 +633,9 @@
       .food-filter { padding:8px 11px; font-size:13px; }
       .pronoun-tab { min-width:100px; padding:9px 11px; }
       .study-card { padding:16px; gap:16px; border-radius:19px; }
+      .study-card-heading { grid-template-columns:minmax(0,1fr) 86px; gap:12px; align-items:start; }
+      .study-card-head-art { width:86px; height:86px; border-radius:16px; }
+      .study-card-head-art .clothes-extra-image { padding:5px; }
       .food-art { min-height:180px; border-radius:17px; }
       .food-word { font-size:clamp(27px,8.5vw,38px); line-height:1.1; letter-spacing:-.035em; }
       .food-translation { margin:14px 0 18px; font-size:clamp(19px,5.8vw,24px); line-height:1.2; }
@@ -759,11 +774,16 @@
             <article class="study-card" id="studyCard">
               <div class="food-art" id="foodArt" aria-hidden="true"></div>
               <div>
-                <div class="word-count" id="wordCount">Слово 1</div>
-                <h2 class="food-word" id="foodWord"></h2>
-                <div class="food-tags">
-                  <span class="food-gender" id="foodGender"></span>
-                  <span class="food-category-label" id="foodCategoryLabel"></span>
+                <div class="study-card-heading">
+                  <div>
+                    <div class="word-count" id="wordCount">Слово 1</div>
+                    <h2 class="food-word" id="foodWord"></h2>
+                    <div class="food-tags">
+                      <span class="food-gender" id="foodGender"></span>
+                      <span class="food-category-label" id="foodCategoryLabel"></span>
+                    </div>
+                  </div>
+                  <div class="study-card-head-art" id="studyCardHeadArt" aria-hidden="true"></div>
                 </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="pronoun-details" id="pronounDetails" hidden></div>
@@ -3369,7 +3389,7 @@
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
       customTopic:$("customTopic"), customList:$("customList"), customListWrap:$("customListWrap"), toast:$("toast"),
-      studyView:$("studyView"), studyCard:$("studyCard"), foodArt:$("foodArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
+      studyView:$("studyView"), studyCard:$("studyCard"), foodArt:$("foodArt"), studyCardHeadArt:$("studyCardHeadArt"), foodWord:$("foodWord"), foodGender:$("foodGender"),
       foodTranslation:$("foodTranslation"), foodExamples:$("foodExamples"), wordCount:$("wordCount"),
       foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn"),
@@ -4501,8 +4521,14 @@
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
+      const clothingKey=word.art || word.id;
+      const headerArt=(selectedTopic==="clothes" && typeof window.clothingCardHeaderArt==="function")
+        ? window.clothingCardHeaderArt(clothingKey)
+        : "";
       els.studyCard.classList.toggle("no-art",!hasArt);
-      els.foodArt.innerHTML=studyArt(word);
+      els.studyCard.classList.toggle("direct-card-art",!!headerArt);
+      els.studyCardHeadArt.innerHTML=headerArt;
+      els.foodArt.innerHTML=headerArt ? "" : studyArt(word);
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
