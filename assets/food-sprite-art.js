@@ -35,12 +35,12 @@
     wine:[0,2],beer:[1,2],puree:[2,2]
   };
 
-  function sprite(src,pos,cols,rows,mapKey){
+  function sprite(src,pos,cols,rows,mapKey,cellAspect){
     if(!pos||!src) return "";
     const x=cols===1?0:(pos[0]/(cols-1))*100;
     const y=rows===1?0:(pos[1]/(rows-1))*100;
     return '<div class="generated-sprite generated-sprite-'+mapKey+'" aria-hidden="true" '+
-      'style="width:min(260px,92%);aspect-ratio:1/1;background-image:url(\''+src+'\');'+
+      'style="width:min(260px,92%);aspect-ratio:'+(cellAspect||1)+'/1;background-image:url(\''+src+'\');'+
       'background-repeat:no-repeat;background-size:'+(cols*100)+'% '+(rows*100)+'%;'+
       'background-position:'+x+'% '+y+'%;"></div>';
   }
@@ -54,7 +54,7 @@
   window.foodArt=function(id){
     const direct=directFoodArt(id);
     if(direct) return direct;
-    if(FOOD_SPRITE_MAP[id]) return sprite(FOOD_SPRITE_IMAGE,FOOD_SPRITE_MAP[id],7,5,"foods");
+    if(FOOD_SPRITE_MAP[id]) return sprite(FOOD_SPRITE_IMAGE,FOOD_SPRITE_MAP[id],7,5,"foods",0.9525);
     if(FOOD_EXTRA_MAP[id]) return sprite(FOOD_EXTRA_SPRITE_IMAGE,FOOD_EXTRA_MAP[id],3,3,"foodsExtra");
     return "";
   };
