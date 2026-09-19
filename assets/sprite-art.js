@@ -70,7 +70,6 @@
       'alt="" aria-hidden="true" draggable="false">';
   }
 
-  window.clothingCardHeaderArt=clothingCardArt;
 
   const CLOTHES_EXTRA_IMAGES={
     ankleboots:"ankleboots.webp",
