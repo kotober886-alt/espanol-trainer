@@ -4787,6 +4787,95 @@
   <script src="assets/trainer-v13-fixes.js?v=20260917animals5"></script>
 
 <script>
+    // Client-side cache busting for raster assets and inline background sprites.
+    // One version per page load avoids stale browser caches without forcing
+    // repeated downloads of the same asset during the current session.
+    (function () {
+      const assetCacheVersion = String(Date.now());
+
+      function versionAssetUrl(value) {
+        if (!value || value.indexOf("assets/") === -1 || value.indexOf("data:") === 0) return value;
+
+        const hashIndex = value.indexOf("#");
+        const hash = hashIndex >= 0 ? value.slice(hashIndex) : "";
+        const withoutHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+        const queryIndex = withoutHash.indexOf("?");
+        const base = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash;
+        const query = queryIndex >= 0 ? withoutHash.slice(queryIndex + 1) : "";
+        const params = new URLSearchParams(query);
+
+        params.set("v", assetCacheVersion);
+        return base + "?" + params.toString() + hash;
+      }
+
+      function versionImg(img) {
+        if (!(img instanceof HTMLImageElement)) return;
+
+        const src = img.getAttribute("src");
+        if (src && src.indexOf("assets/") !== -1) {
+          const updatedSrc = versionAssetUrl(src);
+          if (updatedSrc !== src) img.setAttribute("src", updatedSrc);
+        }
+
+        const srcset = img.getAttribute("srcset");
+        if (srcset && srcset.indexOf("assets/") !== -1) {
+          const updatedSrcset = srcset.split(",").map(function (candidate) {
+            const parts = candidate.trim().split(/\s+/);
+            if (!parts[0]) return candidate;
+            parts[0] = versionAssetUrl(parts[0]);
+            return parts.join(" ");
+          }).join(", ");
+          if (updatedSrcset !== srcset) img.setAttribute("srcset", updatedSrcset);
+        }
+      }
+
+      function versionInlineBackground(el) {
+        if (!(el instanceof HTMLElement)) return;
+        const style = el.getAttribute("style");
+        if (!style || style.indexOf("background-image") === -1 || style.indexOf("assets/") === -1) return;
+
+        const updatedStyle = style.replace(/url\((['"]?)([^'")]+)\1\)/g, function (match, quote, url) {
+          if (url.indexOf("assets/") === -1) return match;
+          return "url(" + quote + versionAssetUrl(url) + quote + ")";
+        });
+
+        if (updatedStyle !== style) el.setAttribute("style", updatedStyle);
+      }
+
+      function versionNode(node) {
+        if (!(node instanceof Element)) return;
+        versionImg(node);
+        versionInlineBackground(node);
+        node.querySelectorAll('img[src*="assets/"], img[srcset*="assets/"], [style*="background-image"][style*="assets/"]').forEach(function (el) {
+          versionImg(el);
+          versionInlineBackground(el);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        versionNode(document.documentElement);
+
+        const observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (mutation.type === "childList") {
+              mutation.addedNodes.forEach(versionNode);
+            } else if (mutation.type === "attributes") {
+              versionNode(mutation.target);
+            }
+          });
+        });
+
+        observer.observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ["src", "srcset", "style"]
+        });
+      });
+    })();
+  </script>
+
+<script>
     initializeApp();  </script>
 </body>
 </html>
