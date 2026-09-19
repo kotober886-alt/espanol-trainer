@@ -339,23 +339,38 @@
     .study-card.no-art .food-art,.study-card.no-art .clothing-art-container { display:none; }
     .study-card.no-art > .study-card-copy { width:min(800px,100%); margin:auto; }
     .study-card.direct-card-art {
-      grid-template-columns:minmax(150px,.42fr) minmax(0,1fr);
-      gap:clamp(20px,4vw,38px);
-      align-items:start;
+      display:flex !important;
+      flex-direction:row !important;
+      align-items:flex-start !important;
+      justify-content:flex-start !important;
+      gap:clamp(20px,4vw,38px) !important;
+      grid-template-columns:none !important;
     }
-    .study-card.direct-card-art > .food-art { display:none; }
-    .study-card.direct-card-art > .study-card-copy { width:100%; min-width:0; margin:0; }
-    .clothing-art-container {
-      display:none;
-      width:100%;
-      min-height:180px;
-      place-items:center;
-      align-self:start;
+    .study-card.direct-card-art > .clothing-art-container {
+      display:grid !important;
+      order:1 !important;
+      flex:0 0 clamp(150px,30%,260px) !important;
+      width:clamp(150px,30%,260px) !important;
+      min-width:150px !important;
+      min-height:180px !important;
+      place-items:center !important;
+      align-self:flex-start !important;
       border-radius:22px;
       background:rgba(255,255,255,.72);
       overflow:hidden;
     }
-    .study-card.direct-card-art > .clothing-art-container { display:grid; }
+    .study-card.direct-card-art > .food-art {
+      display:none !important;
+      order:3 !important;
+    }
+    .study-card.direct-card-art > .study-card-copy {
+      order:2 !important;
+      flex:1 1 auto !important;
+      width:auto !important;
+      min-width:0 !important;
+      margin:0 !important;
+    }
+    .clothing-art-container { display:none; }
     .clothing-art-container .clothes-extra-image {
       display:block;
       width:min(260px,92%);
@@ -649,8 +664,25 @@
       .food-filter { padding:8px 11px; font-size:13px; }
       .pronoun-tab { min-width:100px; padding:9px 11px; }
       .study-card { padding:16px; gap:16px; border-radius:19px; }
-      .study-card.direct-card-art { grid-template-columns:92px minmax(0,1fr); gap:13px; align-items:start; }
-      .study-card.direct-card-art > .clothing-art-container { min-height:92px; border-radius:16px; }
+      .study-card.direct-card-art {
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:flex-start !important;
+        gap:13px !important;
+      }
+      .study-card.direct-card-art > .clothing-art-container {
+        order:1 !important;
+        flex:0 0 92px !important;
+        width:92px !important;
+        min-width:92px !important;
+        min-height:92px !important;
+        border-radius:16px;
+      }
+      .study-card.direct-card-art > .study-card-copy {
+        order:2 !important;
+        flex:1 1 0 !important;
+        min-width:0 !important;
+      }
       .clothing-art-container .clothes-extra-image { width:100%; max-height:92px; object-fit:contain; padding:5px; }
       .food-art { min-height:180px; border-radius:17px; }
       .food-word { font-size:clamp(27px,8.5vw,38px); line-height:1.1; letter-spacing:-.035em; }
@@ -4543,6 +4575,7 @@
         : "";
       els.studyCard.classList.toggle("no-art",!hasArt);
       els.studyCard.classList.toggle("direct-card-art",!!headerArt);
+      els.studyCard.dataset.artLayout=headerArt ? "left-clothing" : "default";
       els.clothingArtContainer.innerHTML=headerArt;
       els.foodArt.innerHTML=headerArt ? "" : studyArt(word);
       els.foodWord.textContent=word.word;
