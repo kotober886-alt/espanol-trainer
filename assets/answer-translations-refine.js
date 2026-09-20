@@ -145,6 +145,12 @@
         pair={es:clean(src.word||item.displayAnswer||item.a&&item.a[0]||pair.es),ru:clean(src.tr||src.ru&&src.ru[0]||pair.ru)};
       }
     }
+    if(item&&item.type==='cloze-passage'&&clean(item.ruTranslation)){
+      pair={
+        es:clean(item.displayAnswer||pair.es),
+        ru:clean(item.ruTranslation)
+      };
+    }
     if(item&&item.type==='picture-label'&&item.topic==='clothes'){
       const labels=Array.isArray(item.pictureLabels)?item.pictureLabels:[];
       if(isClothingFigure(item) && labels.length){
