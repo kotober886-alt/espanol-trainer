@@ -76,7 +76,24 @@
   function acceptedAnswers(word){
     return unique(safeArray(word.answers).concat([word.word,stripArticles(word.word)]));
   }
+
+  /*
+   * Methodical rule: a picture may support learning an action, but it must not
+   * be used as a direct "picture -> word" guessing task. Actions/verbs are
+   * practised through translation, matching and contextual cloze exercises.
+   */
+  const ACTION_VISUAL_TOPICS={
+    activities:true,chores:true,verbs:true,present:true,routine:true,
+    constructions:true,gustar:true,past:true
+  };
+  function isActionLexeme(topic,word){
+    if(ACTION_VISUAL_TOPICS[String(topic || '').toLowerCase()]) return true;
+    const grammar=String(word && word.gender || '').toLowerCase();
+    if(/глагол|действи|выражени|сочетани|конструкци/.test(grammar)) return true;
+    return false;
+  }
   function makeVisualTask(topic,word){
+    if(isActionLexeme(topic,word)) return null;
     if(topic==='clothes' && !clothingVisualAllowed(word)) return null;
     const html=artFor(topic,word);
     if(!html) return null;
@@ -227,8 +244,10 @@
     const report={};
     topics.forEach(function(topic){
       const all=safeArray(source[topic]);
-      const eligible=topic==='clothes' ? all.filter(clothingVisualAllowed) : all;
-      const writtenOnly=topic==='clothes' ? all.length-eligible.length : 0;
+      const eligible=all.filter(function(word){
+        return !isActionLexeme(topic,word) && (topic!=='clothes' || clothingVisualAllowed(word));
+      });
+      const writtenOnly=all.length-eligible.length;
       const covered=tasks.filter(function(task){return task.topic===topic;}).length;
       report[topic]={total:eligible.length,covered:covered,writtenOnly:writtenOnly,percent:eligible.length ? Math.round(covered/eligible.length*100) : 0};
     });
