@@ -4665,31 +4665,31 @@
       }
       return '<img class="food-direct-image home-card-image" src="'+withVersion(path,true)+'" alt="'+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" draggable="false" loading="eager" decoding="async">';
     }
-    const CHORE_ASSET_KEYS={
-      limpiar:"limpiar",
-      ordenar:"ordenar",
-      hacer_limpieza:"hacer_limpieza",
-      barrer:"barrer",
-      fregar_suelo:"fregar_suelo",
-      pasar_aspiradora:"pasar_aspiradora",
-      quitar_polvo:"quitar_polvo",
-      lavar_platos:"lavar_platos",
-      poner_lavavajillas:"poner_lavavajillas",
-      hacer_cama:"hacer_cama",
-      lavar_ropa:"lavar_ropa",
-      tender_ropa:"tender_ropa",
-      planchar:"planchar",
-      tirar_basura:"tirar_basura",
-      cocinar:"cocinar",
-      preparar_comida:"preparar_comida",
-      poner_mesa:"poner_mesa",
-      quitar_mesa:"quitar_mesa"
+    const CHORE_ASSET_MAP={
+      limpiar:"assets/picture-labels/limpiar.webp",
+      ordenar:"assets/picture-labels/ordenar.webp",
+      hacer_limpieza:"assets/picture-labels/hacer_limpieza.webp",
+      barrer:"assets/picture-labels/barrer.webp",
+      fregar_suelo:"assets/picture-labels/fregar_suelo.webp",
+      pasar_aspiradora:"assets/picture-labels/pasar_aspiradora.webp",
+      quitar_polvo:"assets/picture-labels/quitar_polvo.webp",
+      lavar_platos:"assets/picture-labels/lavar_platos.webp",
+      poner_lavavajillas:"assets/picture-labels/poner_lavavajillas.webp",
+      hacer_cama:"assets/picture-labels/hacer_cama.webp",
+      lavar_ropa:"assets/picture-labels/lavar_ropa.webp",
+      tender_ropa:"assets/picture-labels/tender_ropa.webp",
+      planchar:"assets/picture-labels/planchar.webp",
+      tirar_basura:"assets/picture-labels/tirar_basura.webp",
+      cocinar:"assets/picture-labels/cocinar.webp",
+      preparar_comida:"assets/picture-labels/preparar_comida.webp",
+      poner_mesa:"assets/picture-labels/poner_mesa.webp",
+      quitar_mesa:"assets/picture-labels/quitar_mesa.webp"
     };
     function choreArt(word){
       const key=word && word.id ? String(word.id) : "";
-      const reservedKey=CHORE_ASSET_KEYS[key] || key;
-      const reservedPath="assets/picture-labels/"+reservedKey+".webp";
-      return '<div class="home-art-reserved chore-art-reserved" role="img" aria-label="Место для будущей иллюстрации: '+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(reservedKey)+'" data-asset-path="'+escapeHtml(reservedPath)+'"></div>';
+      const path=CHORE_ASSET_MAP[key] || "";
+      if(!path) return "";
+      return '<img class="food-direct-image home-card-image chore-card-image" src="'+withVersion(path,true)+'" alt="'+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" draggable="false" loading="eager" decoding="async">';
     }
 
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
