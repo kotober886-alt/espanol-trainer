@@ -74,7 +74,11 @@
       allExercises=function(){
         const maps=sourceMaps();
         return baseAll().filter(function(item){ return !BLOCKED_VISUAL_IDS[String(item&&item.id||'')]; })
-          .map(function(item){ return sanitizeContext(item,maps); });
+          .map(function(item){ return sanitizeContext(item,maps); })
+          .map(function(item){
+            if(item && item.id==='visual_activities_do_sport') item.q='Какое занятие изображено?';
+            return item;
+          });
       };
     }
   }catch(e){}
