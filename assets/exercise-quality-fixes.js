@@ -37,7 +37,11 @@
   function safeContextQuestion(source,label){
     const phrase=source && source.cloze ? clean(source.cloze) : '';
     if(!phrase) return 'Вставь '+label+' в предложение.';
-    return 'Вставь '+label+' в предложение: '+phrase;
+    const completed=completedCloze(source);
+    const translation=matchingTranslation(source,completed) ||
+      (source && Array.isArray(source.examples) && source.examples[0] && clean(source.examples[0][1])) ||
+      clean(source && source.tr);
+    return 'Вставь '+label+(translation ? ' по переводу «'+translation+'»' : '')+': '+phrase;
   }
 
   function safeContextExplanation(source){
