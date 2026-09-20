@@ -347,6 +347,11 @@
       display:block; width:min(260px,92%); max-width:100%; max-height:260px; aspect-ratio:1/1;
       object-fit:contain; object-position:center; margin:auto;
     }
+    .home-art-placeholder {
+      width:min(260px,92%); aspect-ratio:1/1; display:grid; place-items:center; margin:auto;
+      border:1px dashed #d8d3e8; border-radius:22px; background:rgba(255,255,255,.74);
+      color:#6253d9; font-size:56px;
+    }
     .color-swatch {
       width:min(230px,78%); aspect-ratio:1; border-radius:22px; border:1px solid rgba(23,21,59,.14);
     }
@@ -1006,6 +1011,7 @@
       { id:"calendar", title:"Дни и времена года", icon:"☀" },
       { id:"practical", title:"Время, числа и цены", icon:"#" },
       { id:"city", title:"Город и район", icon:"⌂" },
+      { id:"home", title:"Мой дом — комнаты и части дома", icon:"🏠" },
       { id:"colors", title:"Цвета", icon:"◩" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
       { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
@@ -1013,7 +1019,7 @@
       { id:"custom", title:"Свои задания", icon:"＋" }
     ];
 
-    const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","colors","foods","clothes","activities"];
+    const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","home","colors","foods","clothes","activities"];
 
     const TOPIC_GROUPS = [
       {title:"Основа",ids:["verbs","present","pronouns","agreement"]},
@@ -2429,6 +2435,44 @@
       foundationItem("autumn","seasons","el otoño","время года","осень",["осень"],["otoño","otono","el otoño","el otono"],"En otoño las hojas se vuelven amarillas.","Осенью листья становятся жёлтыми.","El otoño empieza en septiembre.","Осень начинается в сентябре.","En ___ las hojas se vuelven amarillas.",["otoño","otono"])
     ];
 
+
+    const HOME_CATEGORIES=[
+      {id:"all",title:"Весь дом"},
+      {id:"rooms",title:"Комнаты"},
+      {id:"parts",title:"Части дома"},
+      {id:"housing",title:"Типы жилья"}
+    ];
+    const HOME_WORDS=[
+      foundationItem("cocina","rooms","la cocina","женский род","кухня",["кухня"],["cocina","la cocina"],"La cocina es luminosa.","Кухня светлая.","Cocinamos juntos en la cocina.","Мы готовим вместе на кухне.","La ___ es luminosa.",["cocina"]),
+      foundationItem("salón","rooms","el salón","мужской род","гостиная",["гостиная"],["salón","salon","el salón","el salon","sala de estar","la sala de estar"],"El salón tiene un sofá grande.","В гостиной стоит большой диван.","Descansamos en el salón por la noche.","Вечером мы отдыхаем в гостиной.","El ___ tiene un sofá grande.",["salón","salon"]),
+      foundationItem("sala_estar","rooms","la sala de estar","женский род","гостиная",["гостиная"],["sala de estar","la sala de estar","salón","salon","el salón","el salon"],"La sala de estar está junto a la cocina.","Гостиная находится рядом с кухней.","Vemos películas en la sala de estar.","Мы смотрим фильмы в гостиной.","La ___ está junto a la cocina.",["sala de estar"]),
+      foundationItem("dormitorio","rooms","el dormitorio","мужской род","спальня",["спальня"],["dormitorio","el dormitorio","habitación","habitacion","la habitación","la habitacion"],"El dormitorio está en la segunda planta.","Спальня находится на втором этаже.","Hay una cama grande en el dormitorio.","В спальне стоит большая кровать.","El ___ está en la segunda planta.",["dormitorio"]),
+      foundationItem("habitación","rooms","la habitación","женский род","спальня",["спальня","комната"],["habitación","habitacion","la habitación","la habitacion","dormitorio","el dormitorio"],"La habitación tiene una ventana grande.","В спальне большое окно.","Mi habitación está al final del pasillo.","Моя комната находится в конце коридора.","La ___ tiene una ventana grande.",["habitación","habitacion"]),
+      foundationItem("baño","rooms","el baño","мужской род","ванная",["ванная","ванная комната"],["baño","bano","el baño","el bano"],"El baño está al lado del dormitorio.","Ванная находится рядом со спальней.","Hay una ducha en el baño.","В ванной есть душ.","El ___ está al lado del dormitorio.",["baño","bano"]),
+      foundationItem("pasillo","rooms","el pasillo","мужской род","коридор",["коридор"],["pasillo","el pasillo"],"El pasillo es largo y estrecho.","Коридор длинный и узкий.","La habitación está al final del pasillo.","Спальня находится в конце коридора.","El ___ es largo y estrecho.",["pasillo"]),
+      foundationItem("comedor","rooms","el comedor","мужской род","столовая",["столовая"],["comedor","el comedor"],"Comemos juntos en el comedor.","Мы едим вместе в столовой.","La mesa grande está en el comedor.","Большой стол стоит в столовой.","Comemos juntos en el ___.",["comedor"]),
+      foundationItem("despacho","rooms","el despacho","мужской род","кабинет",["кабинет","рабочий кабинет"],["despacho","el despacho"],"Trabajo desde casa en el despacho.","Я работаю из дома в кабинете.","El despacho tiene un escritorio pequeño.","В кабинете стоит небольшой письменный стол.","Trabajo en el ___.",["despacho"]),
+      foundationItem("balcón","rooms","el balcón","мужской род","балкон",["балкон"],["balcón","balcon","el balcón","el balcon"],"El balcón da al patio.","Балкон выходит во двор.","Hay muchas plantas en el balcón.","На балконе много растений.","El ___ da al patio.",["balcón","balcon"]),
+      foundationItem("terrazas","rooms","la terraza","женский род","терраса",["терраса"],["terraza","la terraza"],"Desayunamos en la terraza.","Мы завтракаем на террасе.","La terraza tiene una mesa y cuatro sillas.","На террасе есть стол и четыре стула.","Desayunamos en la ___.",["terraza"]),
+      foundationItem("garaje","rooms","el garaje","мужской род","гараж",["гараж"],["garaje","el garaje"],"El coche está en el garaje.","Машина стоит в гараже.","El garaje está debajo de la casa.","Гараж находится под домом.","El coche está en el ___.",["garaje"]),
+
+      foundationItem("puerta","parts","la puerta","женский род","дверь",["дверь"],["puerta","la puerta"],"Cierra la puerta, por favor.","Закрой дверь, пожалуйста.","La puerta de entrada es blanca.","Входная дверь белая.","Cierra la ___.",["puerta"]),
+      foundationItem("ventana","parts","la ventana","женский род","окно",["окно"],["ventana","la ventana"],"Abro la ventana por la mañana.","Утром я открываю окно.","La ventana da a la calle.","Окно выходит на улицу.","Abro la ___ por la mañana.",["ventana"]),
+      foundationItem("suelo","parts","el suelo","мужской род","пол",["пол"],["suelo","el suelo"],"El suelo es de madera.","Пол деревянный.","La mochila está en el suelo.","Рюкзак лежит на полу.","El ___ es de madera.",["suelo"]),
+      foundationItem("techo","parts","el techo","мужской род","потолок",["потолок"],["techo","el techo"],"El techo es muy alto.","Потолок очень высокий.","Hay una lámpara en el techo.","На потолке есть лампа.","El ___ es muy alto.",["techo"]),
+      foundationItem("pared","parts","la pared","женский род","стена",["стена"],["pared","la pared"],"La pared es blanca.","Стена белая.","Hay un cuadro en la pared.","На стене висит картина.","La ___ es blanca.",["pared"]),
+      foundationItem("escaleras","parts","las escaleras","множественное число","лестница",["лестница","лестницы"],["escaleras","las escaleras"],"Subimos por las escaleras.","Мы поднимаемся по лестнице.","Las escaleras están junto al ascensor.","Лестница находится рядом с лифтом.","Subimos por las ___.",["escaleras"]),
+      foundationItem("ascensor","parts","el ascensor","мужской род","лифт",["лифт"],["ascensor","el ascensor"],"El ascensor está al final del pasillo.","Лифт находится в конце коридора.","Subimos al quinto piso en ascensor.","Мы поднимаемся на пятый этаж на лифте.","El ___ está al final del pasillo.",["ascensor"]),
+      foundationItem("entrada","parts","la entrada","женский род","вход",["вход"],["entrada","la entrada"],"La entrada está a la derecha.","Вход находится справа.","Nos vemos en la entrada del edificio.","Встретимся у входа в здание.","La ___ está a la derecha.",["entrada"]),
+
+      foundationItem("casa","housing","la casa","женский род","дом",["дом"],["casa","la casa"],"Nuestra casa tiene dos plantas.","В нашем доме два этажа.","La casa está cerca del parque.","Дом находится рядом с парком.","Nuestra ___ tiene dos plantas.",["casa"]),
+      foundationItem("piso","housing","el piso","мужской род","квартира",["квартира"],["piso","el piso"],"Vivo en un piso pequeño.","Я живу в небольшой квартире.","El piso tiene dos dormitorios.","В квартире две спальни.","Vivo en un ___.",["piso"]),
+      foundationItem("apartamento","housing","el apartamento","мужской род","апартаменты",["апартаменты","квартира"],["apartamento","el apartamento"],"Alquilamos un apartamento cerca del mar.","Мы снимаем апартаменты рядом с морем.","El apartamento tiene una terraza.","В апартаментах есть терраса.","Alquilamos un ___.",["apartamento"]),
+      foundationItem("edificio","housing","el edificio","мужской род","здание",["здание"],["edificio","el edificio"],"El edificio tiene ocho plantas.","В здании восемь этажей.","La entrada del edificio está cerrada.","Вход в здание закрыт.","El ___ tiene ocho plantas.",["edificio"])
+    ].map(function(item){
+      return Object.assign({},item,{art:"assets/picture-labels/"+item.id+".webp"});
+    });
+
     const CITY_CATEGORIES=[{id:"all",title:"Весь город"},{id:"places",title:"Места"},{id:"opposites",title:"Противоположности"}];
     const CITY_WORDS=[
       foundationItem("trash","places","el contenedor de basura","мужской род","мусорный контейнер",["мусорный контейнер"],["contenedor de basura","el contenedor de basura"],"El contenedor de basura está en la esquina.","Мусорный контейнер находится на углу.","Tiro la bolsa al contenedor de basura.","Я выбрасываю пакет в мусорный контейнер.","El ___ está en la esquina.",["contenedor de basura"]),
@@ -2535,7 +2579,7 @@
         {topic:"questions",words:QUESTION_WORDS},{topic:"constructions",words:CONSTRUCTION_WORDS},{topic:"gustar",words:GUSTAR_WORDS},
         {topic:"agreement",words:AGREEMENT_WORDS},{topic:"prepositions",words:PREPOSITION_WORDS},{topic:"connectors",words:CONNECTOR_WORDS},
         {topic:"past",words:PAST_WORDS},{topic:"routine",words:ROUTINE_WORDS},{topic:"calendar",words:CALENDAR_WORDS},
-        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"colors",words:COLOR_WORDS},{topic:"foods",words:FOOD_WORDS},
+        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"home",words:HOME_WORDS},{topic:"colors",words:COLOR_WORDS},{topic:"foods",words:FOOD_WORDS},
         {topic:"clothes",words:CLOTHING_WORDS},{topic:"activities",words:ACTIVITY_WORDS}
       ];
     }
@@ -3166,7 +3210,8 @@
         {topic:"routine",words:ROUTINE_WORDS},
         {topic:"calendar",words:CALENDAR_WORDS},
         {topic:"practical",words:PRACTICAL_WORDS},
-        {topic:"city",words:CITY_WORDS}
+        {topic:"city",words:CITY_WORDS},
+        {topic:"home",words:HOME_WORDS}
       ];
       const items=[];
       groups.forEach(function(group){
@@ -3410,6 +3455,7 @@
       if(selectedTopic==="connectors") return CONNECTOR_WORDS;
       if(selectedTopic==="calendar") return CALENDAR_WORDS;
       if(selectedTopic==="city") return CITY_WORDS;
+      if(selectedTopic==="home") return HOME_WORDS;
       if(selectedTopic==="colors") return COLOR_WORDS;
       if(selectedTopic==="clothes") return CLOTHING_WORDS;
       if(selectedTopic==="activities") return ACTIVITY_WORDS;
@@ -3440,6 +3486,7 @@
       if(topic==="connectors") return CONNECTOR_CATEGORIES;
       if(topic==="calendar") return CALENDAR_CATEGORIES;
       if(topic==="city") return CITY_CATEGORIES;
+      if(topic==="home") return HOME_CATEGORIES;
       if(topic==="colors") return COLOR_CATEGORIES;
       if(topic==="clothes") return CLOTHING_CATEGORIES;
       if(topic==="activities") return ACTIVITY_CATEGORIES;
@@ -3604,6 +3651,7 @@
             t.id==="connectors" ? CONNECTOR_WORDS.length+" конструкций" :
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
             t.id==="city" ? CITY_WORDS.length+" карточек" :
+            t.id==="home" ? HOME_WORDS.length+" карточек" :
             t.id==="colors" ? COLOR_WORDS.length+" цветов" :
             t.id==="foods" ? FOOD_WORDS.length+" слов" :
             t.id==="clothes" ? CLOTHING_WORDS.length+" слов" :
@@ -4418,6 +4466,7 @@
         connectors:"Сначала разберём связки и конструкции",
         calendar:"Сначала выучим календарную лексику",
         city:"Сначала познакомимся со словами о городе",
+        home:"Сначала познакомимся с комнатами и частями дома",
         colors:"Сначала познакомимся с цветами",
         foods:"Сначала познакомимся с продуктами",
         clothes:"Сначала познакомимся с одеждой и аксессуарами",
@@ -4439,6 +4488,7 @@
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
+      if(selectedTopic==="home") return "Переключайся между комнатами, частями дома и типами жилья. Для каждой карточки уже зарезервирован отдельный графический блок под будущий .webp-ассет.";
       if(selectedTopic==="colors") return "Смотри на чистую цветную плашку, запоминай испанское название и форму прилагательного, затем узнавай цвет без подписи.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
@@ -4456,11 +4506,17 @@
       if(selectedTopic==="connectors") return "Конструкция";
       if(selectedTopic==="activities") return "Фраза";
       if(selectedTopic==="city" && foodCategory==="opposites") return "Пара";
+      if(selectedTopic==="home") return "Карточка";
       return "Слово";
     }
     function studyAriaLabel(){ return "Категории: "+topicById(selectedTopic).title; }
     function colorArt(hex){
       return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
+    }
+    function homeArt(word){
+      const key=word && word.id ? String(word.id) : "";
+      const path=word && word.art ? String(word.art) : "assets/picture-labels/"+key+".webp";
+      return '<div class="home-art-placeholder" role="img" aria-label="Место для иллюстрации: '+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" data-asset-path="'+escapeHtml(path)+'"><span aria-hidden="true">🏠</span></div>';
     }
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";
@@ -4492,6 +4548,7 @@
       if(selectedTopic==="colors") return colorArt(word.hex);
       if(selectedTopic==="activities") return activityArt(word.art);
       if(selectedTopic==="city") return cityArt(word.id);
+      if(selectedTopic==="home") return homeArt(word);
       return "";
     }
     function renderStudy(){
@@ -4527,7 +4584,7 @@
           renderStudy();
         });
       });
-      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities" || selectedTopic==="city";
+      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities" || selectedTopic==="city" || selectedTopic==="home";
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
