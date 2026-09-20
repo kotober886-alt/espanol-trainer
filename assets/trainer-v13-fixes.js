@@ -152,6 +152,36 @@
   pictureLabelStyle.textContent='.picture-widget .picture-visual{aspect-ratio:auto!important;height:auto!important}.picture-widget .picture-raster{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;object-fit:contain!important}';
   document.head.appendChild(pictureLabelStyle);
 
+  function installMariscoCardArt(){
+    try{
+      if(typeof renderStudy==='function' && !renderStudy.__mariscoArtFinal){
+        const baseRenderStudy=renderStudy;
+        const patched=function(){
+          baseRenderStudy();
+          try{
+            if(selectedTopic==='foods'){
+              const words=currentFoodWords();
+              const word=words[wordIndex];
+              const isMarisco=word && (word.id==='seafood' || word.base==='marisco' || word.word==='el marisco');
+              if(isMarisco){
+                els.studyCard.classList.remove('no-art');
+                els.foodArt.hidden=false;
+                els.foodArt.style.display='grid';
+                const src=(typeof runtimeAssetUrl==='function')
+                  ? runtimeAssetUrl('assets/picture-labels/marisco.webp',true)
+                  : 'assets/picture-labels/marisco.webp?v=marisco-direct1';
+                els.foodArt.innerHTML='<img class="food-direct-image marisco-card-image" src="'+src+'" alt="Морепродукты" draggable="false" loading="eager" decoding="async">';
+              }
+            }
+          }catch(e){}
+        };
+        patched.__mariscoArtFinal=true;
+        renderStudy=patched;
+      }
+    }catch(e){}
+  }
+  installMariscoCardArt();
+
   function installAnimalsCardArt(){
     try{
       if(typeof renderStudy==='function' && !renderStudy.__animalsArtFinal){
