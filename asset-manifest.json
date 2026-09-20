@@ -101,6 +101,10 @@
       "art": "assets/picture-labels/foods/tuna.webp"
     },
     {
+      "id": "shrimp",
+      "art": "assets/picture-labels/foods/shrimp.webp"
+    },
+    {
       "id": "mussels",
       "art": "shellfish"
     },

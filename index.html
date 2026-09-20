@@ -1729,9 +1729,9 @@
       {id:"tuna",cat:"seafood",word:"el atún",base:"atún",gender:"мужской род",tr:"тунец",ru:["тунец"],answers:["atún","el atún"],art:"assets/picture-labels/foods/tuna.webp",
         examples:[["La ensalada lleva atún.","В салате есть тунец."],["Compro una lata de atún.","Я покупаю банку тунца."]],
         cloze:"Compro una lata de ___.",clozeAnswers:["atún"]},
-      {id:"shrimp",cat:"seafood",word:"las gambas",base:"gambas",gender:"женский род, множественное число",tr:"креветки",ru:["креветки"],answers:["gambas","las gambas","camarones","los camarones"],art:"",
-        examples:[["Las gambas están muy frescas.","Креветки очень свежие."],["Pedimos arroz con gambas.","Мы заказываем рис с креветками."]],
-        cloze:"Pedimos arroz con ___.",clozeAnswers:["gambas","camarones"]},
+      {id:"shrimp",cat:"seafood",word:"el camarón",base:"camarón",gender:"мужской род",tr:"креветка",ru:["креветка","креветки"],answers:["camarón","el camarón","camaron","el camaron","camarones","los camarones","gambas","las gambas"],art:"assets/picture-labels/foods/shrimp.webp",
+        examples:[["El camarón está muy fresco.","Креветка очень свежая."],["Pedimos arroz con camarones.","Мы заказываем рис с креветками."]],
+        cloze:"Pedimos arroz con ___.",clozeAnswers:["camarones","gambas"]},
       {id:"mussels",cat:"seafood",word:"los mejillones",base:"mejillones",gender:"мужской род, множественное число",tr:"мидии",ru:["мидии"],answers:["mejillones","los mejillones"],art:"assets/picture-labels/foods/mussels.png",
         examples:[["Los mejillones están listos.","Мидии готовы."],["Nunca como mejillones.","Я никогда не ем мидии."]],
         cloze:"Nunca como ___.",clozeAnswers:["mejillones"]},
@@ -4463,12 +4463,14 @@
       return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
     }
     function studyArt(word){
-      if(selectedTopic==="foods" && word && word.id==="shrimp") return "";
       if(selectedTopic==="foods" && word && word.id==="fish"){
         return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp", true)+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods" && word && word.id==="tuna"){
         return '<img class="food-direct-image tuna-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/tuna.webp", true)+'" alt="Банка тунца" draggable="false" loading="eager" decoding="async">';
+      }
+      if(selectedTopic==="foods" && word && word.id==="shrimp"){
+        return '<img class="food-direct-image shrimp-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/shrimp.webp", true)+'" alt="Креветка" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
@@ -4868,7 +4870,7 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-shrimp-purge1"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-shrimp-direct1"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
