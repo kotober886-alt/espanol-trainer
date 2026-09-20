@@ -1729,9 +1729,9 @@
       {id:"tuna",cat:"seafood",word:"el atún",base:"atún",gender:"мужской род",tr:"тунец",ru:["тунец"],answers:["atún","el atún"],art:"assets/picture-labels/foods/tuna.webp",
         examples:[["La ensalada lleva atún.","В салате есть тунец."],["Compro una lata de atún.","Я покупаю банку тунца."]],
         cloze:"Compro una lata de ___.",clozeAnswers:["atún"]},
-      {id:"shrimp",cat:"seafood",word:"el camarón",base:"camarón",gender:"мужской род",tr:"креветка",ru:["креветка","креветки"],answers:["camarón","el camarón","camaron","el camaron","camarones","los camarones","gambas","las gambas"],art:"assets/picture-labels/foods/shrimp.webp",
-        examples:[["El camarón está muy fresco.","Креветка очень свежая."],["Pedimos arroz con camarones.","Мы заказываем рис с креветками."]],
-        cloze:"Pedimos arroz con ___.",clozeAnswers:["camarones","gambas"]},
+      {id:"shrimp",cat:"seafood",word:"la gamba / el camarón",base:"gamba / camarón",gender:"женский род (gamba) / мужской род (camarón)",tr:"креветка",ru:["креветка","креветки"],answers:["gamba","la gamba","gambas","las gambas","camarón","el camarón","camaron","el camaron","camarones","los camarones"],art:"assets/picture-labels/foods/shrimp.webp",
+        examples:[["En España se usa «gamba».","В Испании употребляется «gamba»."],["En América Latina se usa «camarón».","В Латинской Америке употребляется «camarón»."]],
+        cloze:"Compramos ___ para la cena.",clozeAnswers:["gamba","gambas","camarón","camaron","camarones"]},
       {id:"mussels",cat:"seafood",word:"los mejillones",base:"mejillones",gender:"мужской род, множественное число",tr:"мидии",ru:["мидии"],answers:["mejillones","los mejillones"],art:"assets/picture-labels/foods/mussels.png",
         examples:[["Los mejillones están listos.","Мидии готовы."],["Nunca como mejillones.","Я никогда не ем мидии."]],
         cloze:"Nunca como ___.",clozeAnswers:["mejillones"]},
@@ -2923,7 +2923,7 @@
           ["las lentejas",["lentejas"]],["la carne de cerdo",["carne de cerdo","cerdo"]],["la patata",["patata","papa"]],["la sal",["sal"]],["el aceite",["aceite"]]
         ]),"В этом варианте чечевичного супа используются чечевица, свинина, картофель, соль и масло."),
         item("soup_seafood","foods","Суп с морепродуктами: подпиши ингредиенты.","dish_soup_seafood","Назови пять отчётливо показанных продуктов.",dishLabels([
-          ["el pescado",["pescado"]],["las gambas",["gambas","camarones"]],["el calamar",["calamar"]],["el tomate",["tomate"]],["el arroz",["arroz"]]
+          ["el pescado",["pescado"]],["la gamba / el camarón",["gamba","gambas","camarón","camaron","camarones"]],["el calamar",["calamar"]],["el tomate",["tomate"]],["el arroz",["arroz"]]
         ]),"Суп включает рыбу, креветки, кальмара, помидор и рис."),
         item("salad_tuna","foods","Салат с тунцом: подпиши ингредиенты.","dish_salad_tuna","Номера стоят прямо у отдельных продуктов вокруг салата.",dishLabels([
           ["el tomate",["tomate"]],["el atún",["atún"]],["el huevo",["huevo"]],["el aceite",["aceite"]],["el vinagre",["vinagre"]]
@@ -2932,7 +2932,7 @@
           ["el pollo",["pollo"]],["el queso",["queso"]],["la manzana",["manzana"]],["el aceite",["aceite"]],["el huevo",["huevo"]]
         ]),"В салате показаны курица, сыр, яблоко, масло и яйцо."),
         item("salad_seafood","foods","Рисовый салат с морепродуктами: подпиши ингредиенты.","dish_salad_seafood","Каждому номеру соответствует только один продукт.",dishLabels([
-          ["el arroz",["arroz"]],["las gambas",["gambas","camarones"]],["los mejillones",["mejillones"]],["el tomate",["tomate"]],["el aceite",["aceite"]]
+          ["el arroz",["arroz"]],["la gamba / el camarón",["gamba","gambas","camarón","camaron","camarones"]],["los mejillones",["mejillones"]],["el tomate",["tomate"]],["el aceite",["aceite"]]
         ]),"В этом салате сочетаются arroz, gambas, mejillones, tomate и aceite."),
         item("cake_chocolate","foods","Шоколадный торт: подпиши ингредиенты.","dish_cake_chocolate","Назови продукты, из которых приготовлен торт.",dishLabels([
           ["el chocolate",["chocolate"]],["la harina",["harina"]],["el azúcar",["azúcar"]],["el huevo",["huevo"]],["la mantequilla",["mantequilla"]]
@@ -4871,7 +4871,7 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-shrimp-inline2"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-shrimp-dual1"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>

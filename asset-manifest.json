@@ -102,7 +102,8 @@
     },
     {
       "id": "shrimp",
-      "art": "assets/picture-labels/foods/shrimp.webp"
+      "art": "assets/picture-labels/foods/shrimp.webp",
+      "lexemes": ["la gamba", "el camarón"]
     },
     {
       "id": "mussels",
