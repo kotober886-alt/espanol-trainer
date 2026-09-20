@@ -4881,14 +4881,14 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-octopus-clear2"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-octopus-hard-clear3"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-activities.js?v=20260918-valid-raster2"></script>
   <script src="assets/visual-coverage.js?v=20260918-clothing-figures1"></script>
   <script src="assets/exercise-quality-fixes.js?v=20260918-valid-raster2"></script>
-  <script src="assets/trainer-v13-fixes.js?v=20260920-octopus-clear2"></script>
+  <script src="assets/trainer-v13-fixes.js?v=20260920-octopus-hard-clear3"></script>
 
 <script>
     // Client-side cache busting for raster assets and inline background sprites.
@@ -4980,6 +4980,30 @@
   </script>
 
 <script>
+    // Final guard: the Foods card "el pulpo" must not render any legacy octopus artwork.
+    (function(){
+      try{
+        if(typeof renderStudy==="function" && !renderStudy.__octopusArtGuard){
+          const baseRenderStudy=renderStudy;
+          const guarded=function(){
+            baseRenderStudy();
+            try{
+              if(selectedTopic==="foods"){
+                const words=currentFoodWords();
+                const word=words && words[wordIndex];
+                if(word && word.id==="octopus"){
+                  els.foodArt.innerHTML="";
+                  els.foodArt.hidden=true;
+                  els.studyCard.classList.add("no-art");
+                }
+              }
+            }catch(e){}
+          };
+          guarded.__octopusArtGuard=true;
+          renderStudy=guarded;
+        }
+      }catch(e){}
+    })();
     initializeApp();  </script>
 </body>
 </html>
