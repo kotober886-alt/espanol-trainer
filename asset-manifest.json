@@ -113,6 +113,10 @@
       "art": "assets/picture-labels/foods/mejillones.webp"
     },
     {
+      "id": "squid",
+      "art": "assets/picture-labels/foods/squid.webp"
+    },
+    {
       "id": "octopus",
       "art": "shellfish"
     },

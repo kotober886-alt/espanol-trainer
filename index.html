@@ -1735,7 +1735,7 @@
       {id:"mejillones",cat:"seafood",word:"los mejillones",base:"mejillones",gender:"мужской род, множественное число",tr:"мидии",ru:["мидии"],answers:["mejillones","los mejillones"],art:"assets/picture-labels/foods/mejillones.webp",
         examples:[["Los mejillones están listos.","Мидии готовы."],["Nunca como mejillones.","Я никогда не ем мидии."]],
         cloze:"Nunca como ___.",clozeAnswers:["mejillones"]},
-      {id:"squid",cat:"seafood",word:"el calamar",base:"calamar",gender:"мужской род",tr:"кальмар",ru:["кальмар"],answers:["calamar","el calamar"],art:"",
+      {id:"squid",cat:"seafood",word:"el calamar",base:"calamar",gender:"мужской род",tr:"кальмар",ru:["кальмар"],answers:["calamar","el calamar"],art:"assets/picture-labels/foods/squid.webp",
         examples:[["El calamar está muy tierno.","Кальмар очень нежный."],["Quiero calamar a la plancha.","Я хочу кальмара на гриле."]],
         cloze:"Quiero ___ a la plancha.",clozeAnswers:["calamar"]},
       {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"assets/picture-labels/foods/octopus.png",
@@ -4465,8 +4465,9 @@
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";
     function studyArt(word){
-      // Squid deliberately has no legacy/fallback art. A future approved raster must be wired explicitly.
-      if(selectedTopic==="foods" && word && word.id==="squid") return "";
+      if(selectedTopic==="foods" && word && word.id==="squid"){
+        return '<img class="food-direct-image squid-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/squid.webp", true)+'" alt="Кальмар" draggable="false" loading="eager" decoding="async">';
+      }
       if(selectedTopic==="foods" && word && word.id==="fish"){
         return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp", true)+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
       }
@@ -4877,14 +4878,14 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-squid-clear1"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-squid-asset1"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-activities.js?v=20260918-valid-raster2"></script>
   <script src="assets/visual-coverage.js?v=20260918-clothing-figures1"></script>
   <script src="assets/exercise-quality-fixes.js?v=20260918-valid-raster2"></script>
-  <script src="assets/trainer-v13-fixes.js?v=20260920-squid-clear1"></script>
+  <script src="assets/trainer-v13-fixes.js?v=20260920-squid-asset1"></script>
 
 <script>
     // Client-side cache busting for raster assets and inline background sprites.
