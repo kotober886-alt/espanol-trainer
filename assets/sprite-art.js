@@ -171,6 +171,19 @@
     return "";
   }
 
+  const ACTIVITY_CARD_IMAGES={
+    fishing:"fishing.webp",
+    garden:"garden.webp"
+  };
+
+  function activityCardArt(id){
+    const file=ACTIVITY_CARD_IMAGES[id];
+    if(!file) return "";
+    return '<img class="clothes-extra-image activity-card-image" '+
+      'src="'+withVersion('assets/picture-labels/'+file)+'" '+
+      'alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
+  }
+
 
   window.clothingArt=function(id){
     const card=clothingCardArt(id);
@@ -193,6 +206,9 @@
   };
 
   window.activityArt=function(id){
+    const card=activityCardArt(id);
+    if(card) return card;
+
     return firstSprite([
       ["activities","activities",id,7,6],
       ["activitiesExtra","activitiesExtra",id,4,2]
