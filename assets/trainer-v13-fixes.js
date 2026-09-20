@@ -46,6 +46,20 @@
     return null;
   }
 
+  function hasCyrillic(value){
+    return /[А-Яа-яЁё]/.test(String(value || ''));
+  }
+
+  function invalidClozeLanguage(item){
+    if(!item) return false;
+    if(item.type==='cloze-passage') return hasCyrillic(item.template);
+    if(/_ctx$/.test(String(item.id || '')) && item.q) {
+      const body=String(item.q).split(':').slice(-1)[0];
+      return hasCyrillic(body) && body.indexOf('___')>=0;
+    }
+    return false;
+  }
+
   function sanitizeContext(item,maps){
     if(!item || !/_ctx$/.test(String(item.id||''))) return item;
     const src=resolveContextSource(item,maps);
@@ -101,7 +115,9 @@
       allExercises=function(){
         const maps=sourceMaps();
         return baseAll().filter(function(item){
-          return !BLOCKED_VISUAL_IDS[String(item&&item.id||'')] && !isForbiddenActionPicture(item);
+          return !BLOCKED_VISUAL_IDS[String(item&&item.id||'')] &&
+            !isForbiddenActionPicture(item) &&
+            !invalidClozeLanguage(item);
         }).map(function(item){ return sanitizeContext(item,maps); });
       };
     }
