@@ -1015,6 +1015,7 @@
       { id:"practical", title:"Время, числа и цены", icon:"#" },
       { id:"city", title:"Город и район", icon:"⌂" },
       { id:"home", title:"Мой дом — комнаты и части дома", icon:"🏠" },
+      { id:"chores", title:"Домашние дела", icon:"🧹" },
       { id:"colors", title:"Цвета", icon:"◩" },
       { id:"foods", title:"Продукты питания", icon:"◉" },
       { id:"clothes", title:"Одежда и аксессуары", icon:"◇" },
@@ -1022,7 +1023,7 @@
       { id:"custom", title:"Свои задания", icon:"＋" }
     ];
 
-    const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","home","colors","foods","clothes","activities"];
+    const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","home","chores","colors","foods","clothes","activities"];
 
     const TOPIC_GROUPS = [
       {title:"Основа",ids:["verbs","present","pronouns","agreement"]},
@@ -2439,6 +2440,31 @@
     ];
 
 
+    const CHORE_CATEGORIES=[
+      {id:"all",title:"Все домашние дела"},
+      {id:"chores",title:"Домашние дела"}
+    ];
+    const CHORE_WORDS=[
+      foundationItem("limpiar","chores","limpiar","глагол на -ar","убирать / чистить",["убирать","чистить"],["limpiar"],"Limpio la cocina después de cenar.","Я убираю кухню после ужина.","Hay que limpiar el baño hoy.","Сегодня нужно почистить ванную.","Yo ___ la cocina.",["limpio"]),
+      foundationItem("ordenar","chores","ordenar","глагол на -ar","наводить порядок",["наводить порядок"],["ordenar"],"Ordeno mi habitación cada mañana.","Я навожу порядок в комнате каждое утро.","Vamos a ordenar el armario.","Давай наведём порядок в шкафу.","Yo ___ mi habitación.",["ordeno"]),
+      foundationItem("hacer_limpieza","chores","hacer la limpieza","устойчивое выражение","делать уборку",["делать уборку","убираться"],["hacer la limpieza","hacer limpieza"],"Hacemos la limpieza los sábados.","Мы делаем уборку по субботам.","Hoy tengo que hacer la limpieza.","Сегодня мне нужно сделать уборку.","Hoy voy a ___.",["hacer la limpieza","hacer limpieza"]),
+      foundationItem("barrer","chores","barrer","глагол на -er","подметать",["подметать"],["barrer"],"Barro la cocina después de cocinar.","Я подметаю кухню после готовки.","Primero hay que barrer el suelo.","Сначала нужно подмести пол.","Yo ___ la cocina.",["barro"]),
+      foundationItem("fregar_suelo","chores","fregar el suelo","e → ie","мыть пол",["мыть пол"],["fregar el suelo","fregar suelo"],"Friego el suelo de la cocina.","Я мою пол на кухне.","Tenemos que fregar el suelo.","Нам нужно вымыть пол.","Yo ___ el suelo.",["friego"]),
+      foundationItem("pasar_aspiradora","chores","pasar la aspiradora","устойчивое выражение","пылесосить",["пылесосить"],["pasar la aspiradora","pasar aspiradora"],"Paso la aspiradora en el salón.","Я пылесошу в гостиной.","¿Puedes pasar la aspiradora?","Можешь пропылесосить?","Yo ___ en el salón.",["paso la aspiradora"]),
+      foundationItem("quitar_polvo","chores","quitar el polvo","устойчивое выражение","вытирать пыль",["вытирать пыль"],["quitar el polvo","quitar polvo"],"Quito el polvo de los muebles.","Я вытираю пыль с мебели.","Hay que quitar el polvo de la estantería.","Нужно вытереть пыль с полки.","Yo ___ de los muebles.",["quito el polvo"]),
+      foundationItem("lavar_platos","chores","lavar los platos","устойчивое выражение","мыть посуду",["мыть посуду"],["lavar los platos","lavar platos"],"Lavo los platos después de comer.","Я мою посуду после еды.","Hoy te toca lavar los platos.","Сегодня твоя очередь мыть посуду.","Yo ___ después de comer.",["lavo los platos"]),
+      foundationItem("poner_lavavajillas","chores","poner el lavavajillas","устойчивое выражение","включать / загружать посудомойку",["включать посудомойку","загружать посудомойку"],["poner el lavavajillas","poner lavavajillas"],"Pongo el lavavajillas por la noche.","Я включаю посудомойку вечером.","Primero ponemos los platos y luego el lavavajillas.","Сначала ставим посуду, потом включаем посудомойку.","Yo ___ por la noche.",["pongo el lavavajillas"]),
+      foundationItem("hacer_cama","chores","hacer la cama","устойчивое выражение","заправлять кровать",["заправлять кровать"],["hacer la cama","hacer cama"],"Hago la cama cada mañana.","Я заправляю кровать каждое утро.","Los niños hacen la cama solos.","Дети сами заправляют кровать.","Yo ___ cada mañana.",["hago la cama"]),
+      foundationItem("lavar_ropa","chores","lavar la ropa","устойчивое выражение","стирать",["стирать","стирать одежду"],["lavar la ropa","lavar ropa"],"Lavo la ropa los domingos.","Я стираю по воскресеньям.","Tenemos que lavar la ropa blanca.","Нам нужно постирать белое бельё.","Yo ___ los domingos.",["lavo la ropa"]),
+      foundationItem("tender_ropa","chores","tender la ropa","e → ie","развешивать бельё",["развешивать бельё"],["tender la ropa","tender ropa"],"Tiendo la ropa en el balcón.","Я развешиваю бельё на балконе.","Después de lavar, hay que tender la ropa.","После стирки нужно развесить бельё.","Yo ___ en el balcón.",["tiendo la ropa"]),
+      foundationItem("planchar","chores","planchar","глагол на -ar","гладить",["гладить"],["planchar"],"Plancho la camisa para mañana.","Я глажу рубашку на завтра.","No me gusta planchar.","Я не люблю гладить.","Yo ___ la camisa.",["plancho"]),
+      foundationItem("tirar_basura","chores","tirar la basura","устойчивое выражение","выбрасывать мусор",["выбрасывать мусор","выносить мусор"],["tirar la basura","tirar basura"],"Tiro la basura antes de salir.","Я выбрасываю мусор перед выходом.","¿Puedes tirar la basura?","Можешь выбросить мусор?","Yo ___ antes de salir.",["tiro la basura"]),
+      foundationItem("cocinar","chores","cocinar","глагол на -ar","готовить",["готовить"],["cocinar"],"Cocino la cena en casa.","Я готовлю ужин дома.","Nos gusta cocinar juntos.","Нам нравится готовить вместе.","Yo ___ la cena.",["cocino"]),
+      foundationItem("preparar_comida","chores","preparar la comida","устойчивое выражение","готовить еду",["готовить еду"],["preparar la comida","preparar comida"],"Preparo la comida para toda la familia.","Я готовлю еду для всей семьи.","Vamos a preparar la comida juntos.","Давай приготовим еду вместе.","Yo ___ para la familia.",["preparo la comida"]),
+      foundationItem("poner_mesa","chores","poner la mesa","устойчивое выражение","накрывать на стол",["накрывать на стол"],["poner la mesa","poner mesa"],"Pongo la mesa antes de cenar.","Я накрываю на стол перед ужином.","Los niños ayudan a poner la mesa.","Дети помогают накрывать на стол.","Yo ___ antes de cenar.",["pongo la mesa"]),
+      foundationItem("quitar_mesa","chores","quitar la mesa","устойчивое выражение","убирать со стола",["убирать со стола"],["quitar la mesa","quitar mesa"],"Quitamos la mesa después de comer.","Мы убираем со стола после еды.","Ayúdame a quitar la mesa, por favor.","Помоги мне убрать со стола, пожалуйста.","Nosotros ___ después de comer.",["quitamos la mesa"])
+    ];
+
     const HOME_CATEGORIES=[
       {id:"all",title:"Весь дом"},
       {id:"rooms",title:"Комнаты"},
@@ -3261,7 +3287,8 @@
         {topic:"calendar",words:CALENDAR_WORDS},
         {topic:"practical",words:PRACTICAL_WORDS},
         {topic:"city",words:CITY_WORDS},
-        {topic:"home",words:HOME_WORDS}
+        {topic:"home",words:HOME_WORDS},
+        {topic:"chores",words:CHORE_WORDS}
       ];
       const items=[];
       groups.forEach(function(group){
@@ -3506,6 +3533,7 @@
       if(selectedTopic==="calendar") return CALENDAR_WORDS;
       if(selectedTopic==="city") return CITY_WORDS;
       if(selectedTopic==="home") return HOME_WORDS;
+      if(selectedTopic==="chores") return CHORE_WORDS;
       if(selectedTopic==="colors") return COLOR_WORDS;
       if(selectedTopic==="clothes") return CLOTHING_WORDS;
       if(selectedTopic==="activities") return ACTIVITY_WORDS;
@@ -3537,6 +3565,7 @@
       if(topic==="calendar") return CALENDAR_CATEGORIES;
       if(topic==="city") return CITY_CATEGORIES;
       if(topic==="home") return HOME_CATEGORIES;
+      if(topic==="chores") return CHORE_CATEGORIES;
       if(topic==="colors") return COLOR_CATEGORIES;
       if(topic==="clothes") return CLOTHING_CATEGORIES;
       if(topic==="activities") return ACTIVITY_CATEGORIES;
@@ -4517,6 +4546,7 @@
         calendar:"Сначала выучим календарную лексику",
         city:"Сначала познакомимся со словами о городе",
         home:"Сначала познакомимся с комнатами и частями дома",
+        chores:"Сначала познакомимся с домашними делами",
         colors:"Сначала познакомимся с цветами",
         foods:"Сначала познакомимся с продуктами",
         clothes:"Сначала познакомимся с одеждой и аксессуарами",
@@ -4539,6 +4569,7 @@
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
       if(selectedTopic==="home") return "Переключайся между комнатами, частями дома, типами жилья и предметами по комнатам. Для новых карточек уже зарезервированы отдельные места под будущие растровые ассеты.";
+      if(selectedTopic==="chores") return "Смотри на действие, запоминай устойчивое выражение и закрепляй его в бытовом контексте.";
       if(selectedTopic==="colors") return "Смотри на чистую цветную плашку, запоминай испанское название и форму прилагательного, затем узнавай цвет без подписи.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
@@ -4557,6 +4588,7 @@
       if(selectedTopic==="activities") return "Фраза";
       if(selectedTopic==="city" && foodCategory==="opposites") return "Пара";
       if(selectedTopic==="home") return "Карточка";
+      if(selectedTopic==="chores") return "Действие";
       return "Слово";
     }
     function studyAriaLabel(){ return "Категории: "+topicById(selectedTopic).title; }
@@ -4633,6 +4665,33 @@
       }
       return '<img class="food-direct-image home-card-image" src="'+withVersion(path,true)+'" alt="'+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" draggable="false" loading="eager" decoding="async">';
     }
+    const CHORE_ASSET_KEYS={
+      limpiar:"limpiar",
+      ordenar:"ordenar",
+      hacer_limpieza:"hacer_limpieza",
+      barrer:"barrer",
+      fregar_suelo:"fregar_suelo",
+      pasar_aspiradora:"pasar_aspiradora",
+      quitar_polvo:"quitar_polvo",
+      lavar_platos:"lavar_platos",
+      poner_lavavajillas:"poner_lavavajillas",
+      hacer_cama:"hacer_cama",
+      lavar_ropa:"lavar_ropa",
+      tender_ropa:"tender_ropa",
+      planchar:"planchar",
+      tirar_basura:"tirar_basura",
+      cocinar:"cocinar",
+      preparar_comida:"preparar_comida",
+      poner_mesa:"poner_mesa",
+      quitar_mesa:"quitar_mesa"
+    };
+    function choreArt(word){
+      const key=word && word.id ? String(word.id) : "";
+      const reservedKey=CHORE_ASSET_KEYS[key] || key;
+      const reservedPath="assets/picture-labels/"+reservedKey+".webp";
+      return '<div class="home-art-reserved chore-art-reserved" role="img" aria-label="Место для будущей иллюстрации: '+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(reservedKey)+'" data-asset-path="'+escapeHtml(reservedPath)+'"></div>';
+    }
+
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";
     const MARISCO_ASSET_URL = "assets/picture-labels/marisco.webp";
@@ -4664,6 +4723,7 @@
       if(selectedTopic==="activities") return activityArt(word.art);
       if(selectedTopic==="city") return cityArt(word.id);
       if(selectedTopic==="home") return homeArt(word);
+      if(selectedTopic==="chores") return choreArt(word);
       return "";
     }
     function renderStudy(){
@@ -4699,7 +4759,7 @@
           renderStudy();
         });
       });
-      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities" || selectedTopic==="city" || selectedTopic==="home";
+      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities" || selectedTopic==="city" || selectedTopic==="home" || selectedTopic==="chores";
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
