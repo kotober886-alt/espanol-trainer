@@ -301,6 +301,7 @@
     }
 
     if(!es&&item.type==='cloze-passage') es=clean(item.displayAnswer||'');
+    if(!ru&&item.type==='cloze-passage'&&clean(item.ruTranslation)) ru=clean(item.ruTranslation);
     if(!es&&(item.type==='context-choice'||item.type==='ser-estar-hay'||/^compare_/.test(id))) es=completedQuestion(item)||clean(item.displayAnswer||item.a&&item.a[0]||'');
     if(!es&&/^correct_/.test(id)) es=clean(item.a&&item.a[0]||'');
     if(!es&&/^order_/.test(id)) es=clean(item.a&&item.a[0]||'');
