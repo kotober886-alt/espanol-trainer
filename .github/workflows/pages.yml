@@ -48,6 +48,11 @@ jobs:
                   'const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";',
                   "MEJILLONES_ASSET_URL",
               ),
+              (
+                  Path("assets/picture-labels/marisco.webp"),
+                  'const MARISCO_ASSET_URL = "assets/picture-labels/marisco.webp";',
+                  "MARISCO_ASSET_URL",
+              ),
           ]
 
           for asset, source, label in assets:
@@ -68,7 +73,7 @@ jobs:
               html = html.replace(source, target, 1)
 
           page.write_text(html, encoding="utf-8")
-          print("shrimp.webp and mejillones.webp validated and embedded into deployed index")
+          print("shrimp.webp, mejillones.webp and marisco.webp validated and embedded into deployed index")
           PY
       - name: Подготовить сайт
         uses: actions/upload-pages-artifact@v4
