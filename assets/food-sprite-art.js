@@ -50,7 +50,7 @@
 
   function directFoodArt(id){
     const value=String(id || "");
-    if(!/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.(?:png|webp)$/i.test(value)) return "";
+    if(!/^assets\/picture-labels\/(?:foods\/)?[a-z0-9_-]+\.(?:png|webp)$/i.test(value)) return "";
     return '<img class="food-direct-image" src="'+withVersion(value)+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
   }
 
