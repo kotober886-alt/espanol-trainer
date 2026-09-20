@@ -4464,7 +4464,10 @@
     }
     function studyArt(word){
       if(selectedTopic==="foods" && word && word.id==="fish"){
-        return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp")+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
+        return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp", true)+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
+      }
+      if(selectedTopic==="foods" && word && word.id==="tuna"){
+        return '<img class="food-direct-image tuna-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/tuna.webp", true)+'" alt="Банка тунца" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
@@ -4864,7 +4867,7 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-tuna-final-upload4"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-tuna-direct-card5"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
