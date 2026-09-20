@@ -2651,7 +2651,7 @@
         {topic:"questions",words:QUESTION_WORDS},{topic:"constructions",words:CONSTRUCTION_WORDS},{topic:"gustar",words:GUSTAR_WORDS},
         {topic:"agreement",words:AGREEMENT_WORDS},{topic:"prepositions",words:PREPOSITION_WORDS},{topic:"connectors",words:CONNECTOR_WORDS},
         {topic:"past",words:PAST_WORDS},{topic:"routine",words:ROUTINE_WORDS},{topic:"calendar",words:CALENDAR_WORDS},
-        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"home",words:HOME_WORDS},{topic:"colors",words:COLOR_WORDS},{topic:"foods",words:FOOD_WORDS},
+        {topic:"practical",words:PRACTICAL_WORDS},{topic:"city",words:CITY_WORDS},{topic:"home",words:HOME_WORDS},{topic:"chores",words:CHORE_WORDS},{topic:"colors",words:COLOR_WORDS},{topic:"foods",words:FOOD_WORDS},
         {topic:"clothes",words:CLOTHING_WORDS},{topic:"activities",words:ACTIVITY_WORDS}
       ];
     }
@@ -3180,6 +3180,30 @@
       return {id:"match_"+x[0],topic:x[1],foodCat:x[2],type:"match",skill:"Соедини соответствия",q:x[3],pairs:x[4],a:[answer],displayAnswer:x[4].map(function(pair){return pair[0]+" — "+pair[1];}).join(" · "),e:x[5]};
     });
 
+    // Curated review of the recently expanded vocabulary.
+    // Pairs are intentionally non-overlapping inside each task: one prompt -> one token.
+    const RECENT_VOCAB_MATCH_DATA = [
+      ["home_rooms","home","rooms","Соедини комнаты дома с переводом.",[["la cocina","кухня"],["el baño","ванная"],["el pasillo","коридор"],["el comedor","столовая"],["el despacho","кабинет"],["el garaje","гараж"]],"В этом наборе у каждого названия комнаты один отдельный перевод."],
+      ["home_parts","home","parts","Соедини части дома с переводом.",[["la puerta","дверь"],["la ventana","окно"],["el techo","потолок"],["la pared","стена"],["el ascensor","лифт"],["la entrada","вход"]],"Все элементы относятся к разным частям дома."],
+      ["home_living","home","living_room","Соедини предметы гостиной с переводом.",[["el sofá","диван"],["el sillón","кресло"],["la estantería","книжный шкаф / полка"],["la lámpara","лампа"],["la alfombra","ковёр"],["las cortinas","шторы"]],"Слова подобраны без синонимичных пар внутри задания."],
+      ["home_bedroom","home","bedroom_items","Соедини предметы спальни с переводом.",[["la cama","кровать"],["la almohada","подушка"],["la manta","одеяло / плед"],["el armario","шкаф"],["la cómoda","комод"],["la mesita de noche","прикроватная тумбочка"],["el espejo","зеркало"]],"Каждый перевод соответствует только одному предмету."],
+      ["home_kitchen","home","kitchen_items","Соедини кухонные предметы с переводом.",[["el horno","духовка"],["el microondas","микроволновка"],["el fregadero","кухонная раковина"],["el lavavajillas","посудомоечная машина"],["el hervidor","электрический чайник"],["la cafetera","кофеварка"]],"Основные значения внутри набора не пересекаются."],
+      ["home_bath_small","home","bathroom_items","Соедини предметы ванной с переводом.",[["la ducha","душ"],["la bañera","ванна"],["el lavabo","умывальник"],["el inodoro","унитаз"],["la toalla","полотенце"],["el secador","фен"]],"Каждый предмет имеет отдельное назначение."],
+      ["chores_clean","chores","chores","Соедини действия по уборке с переводом.",[["limpiar","убирать / чистить"],["ordenar","наводить порядок"],["barrer","подметать"],["fregar el suelo","мыть пол"],["pasar la aspiradora","пылесосить"],["quitar el polvo","вытирать пыль"]],"Внутри задания действия разведены по конкретному виду уборки."],
+      ["chores_home","chores","chores","Соедини домашние дела с переводом.",[["lavar los platos","мыть посуду"],["hacer la cama","заправлять кровать"],["lavar la ropa","стирать"],["tender la ropa","развешивать бельё"],["planchar","гладить"],["tirar la basura","выбрасывать мусор"]],"Каждое действие связано с отдельным бытовым результатом."],
+      ["chores_table","chores","chores","Соедини действия на кухне и за столом с переводом.",[["hacer la limpieza","делать уборку"],["cocinar","готовить"],["preparar la comida","готовить еду"],["poner la mesa","накрывать на стол"],["quitar la mesa","убирать со стола"],["poner el lavavajillas","включать / загружать посудомойку"]],"Формулировки специально различают общее «готовить» и устойчивое «готовить еду»."],
+      ["city_places","city","places","Соедини места в городе с переводом.",[["la farmacia","аптека"],["la parada de autobús","автобусная остановка"],["la oficina de correos","почтовое отделение"],["la comisaría","полицейский участок"],["el supermercado","супермаркет"],["el gimnasio","спортзал"]],"Каждое место выполняет отдельную функцию."],
+      ["city_opposites","city","opposites","Соедини пары характеристик города с переводом.",[["grande / pequeño","большой / маленький"],["bonito / feo","красивый / некрасивый"],["barato / caro","дешёвый / дорогой"],["limpio / sucio","чистый / грязный"],["tranquilo / ruidoso","тихий / шумный"],["moderno / antiguo","современный / старинный"]],"В каждой строке проверяется целая пара антонимов."],
+      ["clothes_recent","clothes","clothes","Соедини недавно добавленную одежду с переводом.",[["las medias","колготки / чулки"],["los leggings / las mallas","легинсы"],["el chándal","спортивный костюм"],["el bañador","купальник / плавки"],["el impermeable","дождевик"],["las chanclas","шлёпанцы"],["las botas de agua","резиновые сапоги"]],"Каждая карточка представлена своим основным термином."],
+      ["clothes_actions","clothes","tryon","Соедини действия при примерке с переводом.",[["probarse algo","примерять что-либо"],["ponerse algo","надевать что-либо"],["quitarse algo","снимать что-либо"],["cambiarse de ropa","переодеваться"],["abrocharse","застёгиваться"],["desabrocharse","расстёгиваться"],["me queda bien","мне хорошо сидит / подходит"],["me queda grande","мне велико"]],"Здесь нет двух действий с одинаковым значением."],
+      ["clothes_details","clothes","accessories","Соедини детали одежды с переводом.",[["la cremallera","молния"],["el botón","пуговица"],["el cinturón","ремень"],["la bufanda","шарф"],["los guantes","перчатки"],["el paraguas","зонт"]],"Каждый предмет имеет отдельное название."]
+    ];
+
+    const RECENT_VOCAB_MATCH_EXERCISES = RECENT_VOCAB_MATCH_DATA.map(function(x){
+      const answer=x[4].map(function(pair){return pair[1];}).join(" | ");
+      return {id:"match_recent_"+x[0],topic:x[1],foodCat:x[2],type:"match",skill:"Новая лексика · соответствия",q:x[3],pairs:x[4],a:[answer],displayAnswer:x[4].map(function(pair){return pair[0]+" — "+pair[1];}).join(" · "),e:x[5]};
+    });
+
     const CLOZE_PASSAGE_DATA = [
       ["weekday_routine","Обычный рабочий день","El {{0}} yo {{1}} a las siete. Después {{2}} y tomo café con leche; luego {{3}} al trabajo. Mi oficina {{4}} cerca del metro.",["lunes","me levanto","desayuno","voy","está"],"El lunes yo me levanto a las siete. Después desayuno y tomo café con leche; luego voy al trabajo. Mi oficina está cerca del metro."],
       ["neighborhood","В моём районе","En mi barrio {{0}} una farmacia. La farmacia {{1}} al lado del {{2}}. El banco {{3}} a las seis y yo {{4}} allí los viernes.",["hay","está","banco","cierra","voy"],"En mi barrio hay una farmacia. La farmacia está al lado del banco. El banco cierra a las seis y yo voy allí los viernes."],
@@ -3191,6 +3215,21 @@
 
     const CLOZE_PASSAGE_EXERCISES = CLOZE_PASSAGE_DATA.map(function(x){
       return {id:"passage_"+x[0],topic:"all",foodCat:"all",type:"cloze-passage",skill:"Текст с пропусками",q:x[1]+": расставь слова по однозначным пропускам.",template:x[2],blanks:x[3],a:[x[3].join(" | ")],displayAnswer:x[4],e:"Каждое слово из банка используется один раз."};
+    });
+
+    const RECENT_VOCAB_CLOZE_DATA = [
+      ["home_function","home","all","Дом: предмет по функции","Чтобы открыть входную дверь, я беру {{0}}. На пятый этаж без лестницы поднимаюсь на {{1}}. Еду быстро разогреваю в {{2}}. После душа вытираюсь {{3}}, а волосы сушу {{4}}.",["llave","ascensor","microondas","toalla","secador"],"Чтобы открыть входную дверь, я беру llave. На пятый этаж без лестницы поднимаюсь на ascensor. Еду быстро разогреваю в microondas. После душа вытираюсь toalla, а волосы сушу secador.","Контекст описывает уникальную функцию каждого предмета."],
+      ["home_furniture","home","all","Дом: где что хранится","Книги стоят на {{0}}. Одежду я храню в {{1}}. Будильник стоит на {{2}} рядом с кроватью. Для чтения я сажусь в {{3}} и вечером включаю {{4}}.",["estantería","armario","mesita de noche","sillón","lámpara"],"Книги стоят на estantería. Одежду я храню в armario. Будильник стоит на mesita de noche. Для чтения я сажусь в sillón и вечером включаю lámpara.","Подсказка в каждом предложении указывает на конкретный предмет."],
+      ["chores_cleaning","chores","chores","Уборка по шагам","Крошки с пола сначала нужно {{0}}. Потом пол можно {{1}} водой. Ковёр удобнее {{2}}, а с полок нужно {{3}}.",["barrer","fregar el suelo","pasar la aspiradora","quitar el polvo"],"Крошки с пола сначала нужно barrer. Потом пол можно fregar el suelo водой. Ковёр удобнее pasar la aspiradora, а с полок нужно quitar el polvo.","Объект действия делает каждый пропуск однозначным."],
+      ["chores_laundry","chores","chores","Стирка и одежда","Сначала нужно {{0}} в стиральной машине. После стирки бельё надо {{1}} на балконе. Когда рубашка высохнет, её можно {{2}}.",["lavar la ropa","tender la ropa","planchar"],"Сначала нужно lavar la ropa. После стирки бельё надо tender la ropa на балконе. Когда рубашка высохнет, её можно planchar.","Этапы идут в естественной последовательности: стирка → сушка → глажка."],
+      ["chores_table","chores","chores","Кухня и стол","Перед ужином нужно {{0}}. После еды мне нужно {{1}}; если использую машину, я могу {{2}}. Когда все закончили есть, мы помогаем {{3}}.",["poner la mesa","lavar los platos","poner el lavavajillas","quitar la mesa"],"Перед ужином нужно poner la mesa. После еды мне нужно lavar los platos; если использую машину, я могу poner el lavavajillas. Когда все закончили есть, мы помогаем quitar la mesa.","Маркеры «перед ужином», «после еды» и «машина» разводят близкие действия."],
+      ["city_errands","city","places","Город: куда идти","За лекарством я иду в {{0}}. Чтобы отправить посылку, иду в {{1}}. Если нужно обратиться в полицию, иду в {{2}}. Продукты на неделю покупаю в {{3}}.",["farmacia","oficina de correos","comisaría","supermercado"],"За лекарством я иду в farmacia. Чтобы отправить посылку, иду в oficina de correos. Если нужно обратиться в полицию, иду в comisaría. Продукты на неделю покупаю в supermercado.","Назначение каждого места уникально."],
+      ["clothes_weather","clothes","clothes","Одежда по ситуации","Когда идёт дождь, я надеваю {{0}} и {{1}}. На пляже хожу в {{2}}, а для плавания в бассейне беру {{3}}.",["impermeable","botas de agua","chanclas","bañador"],"Когда идёт дождь, я надеваю impermeable и botas de agua. На пляже хожу в chanclas, а для плавания в бассейне беру bañador.","Погода и ситуация однозначно определяют предмет одежды."],
+      ["clothes_details","clothes","accessories","Одежда: детали","Если на куртке сломалась {{0}}, её трудно застегнуть. Если на рубашке оторвался {{1}}, его нужно пришить. Чтобы брюки не спадали, надеваю {{2}}.",["cremallera","botón","cinturón"],"Если на куртке сломалась cremallera, её трудно застегнуть. Если на рубашке оторвался botón, его нужно пришить. Чтобы брюки не спадали, надеваю cinturón.","Функция детали исключает взаимозаменяемость вариантов."]
+    ];
+
+    const RECENT_VOCAB_CLOZE_EXERCISES = RECENT_VOCAB_CLOZE_DATA.map(function(x){
+      return {id:"passage_recent_"+x[0],topic:x[1],foodCat:x[2],type:"cloze-passage",skill:"Новая лексика · клоуз",q:x[3]+": расставь слова по однозначным пропускам.",template:x[4],blanks:x[5],a:[x[5].join(" | ")],displayAnswer:x[6],e:x[7]};
     });
 
     const CONTEXT_CHOICE_DATA = [
@@ -3244,7 +3283,9 @@
 
     const NEW_CHECK_EXERCISES = []
       .concat(MATCH_EXERCISES)
+      .concat(RECENT_VOCAB_MATCH_EXERCISES)
       .concat(CLOZE_PASSAGE_EXERCISES)
+      .concat(RECENT_VOCAB_CLOZE_EXERCISES)
       .concat(CONTEXT_CHOICE_EXERCISES)
       .concat(SER_ESTAR_HAY_EXERCISES);
 
@@ -3731,6 +3772,7 @@
             t.id==="calendar" ? CALENDAR_WORDS.length+" слов" :
             t.id==="city" ? CITY_WORDS.length+" карточек" :
             t.id==="home" ? HOME_WORDS.length+" карточек" :
+            t.id==="chores" ? CHORE_WORDS.length+" действий" :
             t.id==="colors" ? COLOR_WORDS.length+" цветов" :
             t.id==="foods" ? FOOD_WORDS.length+" слов" :
             t.id==="clothes" ? CLOTHING_WORDS.length+" слов" :
