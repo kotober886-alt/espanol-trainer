@@ -36,6 +36,8 @@
     size:"size.webp",
     fittingroom:"fittingroom.webp",
     bra:"bra.webp",
+    flipflops:"las-chanclas.webp",
+    rainboots:"las-botas-de-agua.webp",
     beanie:"beanie.webp",
     zipper:"zipper.webp",
     button:"button.webp",
