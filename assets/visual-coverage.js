@@ -22,9 +22,12 @@
    * clearly readable objects. Small accessories and jewellery stay in text/audio
    * practice so the learner is never asked to identify a tiny stretched sprite.
    */
-  const NO_VISUAL_CLOTHING_CATEGORIES={accessories:true,jewelry:true};
+  const NO_VISUAL_CLOTHING_CATEGORIES={accessories:true,jewelry:true,tryon:true};
   function clothingVisualAllowed(word){
-    return !word || !NO_VISUAL_CLOTHING_CATEGORIES[String(word.cat || '').toLowerCase()];
+    if(!word) return true;
+    if(NO_VISUAL_CLOTHING_CATEGORIES[String(word.cat || '').toLowerCase()]) return false;
+    const grammar=String(word.gender || '').toLowerCase();
+    return !/глагол|действи|фраза|выражени|сочетани|конструкци/.test(grammar);
   }
   function noVisualClothingBases(){
     const result=[];
@@ -124,7 +127,8 @@
     const groups=[];
     try { if(typeof FOOD_WORDS!=='undefined') groups.push(['foods',FOOD_WORDS]); } catch(e){}
     try { if(typeof CLOTHING_WORDS!=='undefined') groups.push(['clothes',CLOTHING_WORDS]); } catch(e){}
-    try { if(typeof ACTIVITY_WORDS!=='undefined') groups.push(['activities',ACTIVITY_WORDS]); } catch(e){}
+    // Activities are intentionally excluded: an illustration may accompany a
+    // study card, but actions must never become direct picture-to-word guesses.
     const result=[];
     groups.forEach(function(group){
       safeArray(group[1]).forEach(function(word){
@@ -236,7 +240,7 @@
 
   function coverageAudit(){
     const tasks=visualVocabularyExercises();
-    const topics=['foods','clothes','activities'];
+    const topics=['foods','clothes'];
     const source={};
     try { source.foods=typeof FOOD_WORDS!=='undefined' ? FOOD_WORDS : []; } catch(e){ source.foods=[]; }
     try { source.clothes=typeof CLOTHING_WORDS!=='undefined' ? CLOTHING_WORDS : []; } catch(e){ source.clothes=[]; }
