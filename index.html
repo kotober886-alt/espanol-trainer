@@ -4465,6 +4465,8 @@
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";
     function studyArt(word){
+      // Squid deliberately has no legacy/fallback art. A future approved raster must be wired explicitly.
+      if(selectedTopic==="foods" && word && word.id==="squid") return "";
       if(selectedTopic==="foods" && word && word.id==="fish"){
         return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp", true)+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
       }
@@ -4875,14 +4877,14 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-mejillones-embed1"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-squid-clear1"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-activities.js?v=20260918-valid-raster2"></script>
   <script src="assets/visual-coverage.js?v=20260918-clothing-figures1"></script>
   <script src="assets/exercise-quality-fixes.js?v=20260918-valid-raster2"></script>
-  <script src="assets/trainer-v13-fixes.js?v=20260920-mejillones-embed1"></script>
+  <script src="assets/trainer-v13-fixes.js?v=20260920-squid-clear1"></script>
 
 <script>
     // Client-side cache busting for raster assets and inline background sprites.
