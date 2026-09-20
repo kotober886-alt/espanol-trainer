@@ -65,7 +65,7 @@
     visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1,
     visual_activities_shopping:1,visual_activities_fish:1
   };
-  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,seafood:1,shopping:1};
+  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,seafood:1,shopping:1};
   // `fish` is a valid study-card id in Foods/Animals; never hide it globally.
 
   try{
