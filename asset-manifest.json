@@ -103,15 +103,14 @@
     {
       "id": "shrimp",
       "art": "assets/picture-labels/foods/shrimp.webp",
-      "lexemes": ["la gamba", "el camarón"]
+      "lexemes": [
+        "la gamba",
+        "el camarón"
+      ]
     },
     {
       "id": "mejillones",
       "art": "assets/picture-labels/foods/mejillones.webp"
-    },
-    {
-      "id": "squid",
-      "art": "shellfish"
     },
     {
       "id": "octopus",
