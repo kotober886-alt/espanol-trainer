@@ -89,7 +89,7 @@
       foodCat:word.cat || 'all',
       type:'picture-label',
       skill:'Картинка → слово',
-      q:'Что изображено? Напиши по-испански.',
+      q:(topic==='activities' && word.id==='do_sport') ? 'Какое занятие изображено?' : 'Что изображено? Напиши по-испански.',
       pictureHint:'Посмотри на картинку и напиши название по-испански. Артикль можно не писать.',
       pictureHtml:html,
       pictureLabels:[{
