@@ -51,7 +51,9 @@
     const src=resolveContextSource(item,maps);
     if(!src || !src.cloze) return item;
     const done=complete(src);
-    const tr=exactTranslation(src,done);
+    const tr=exactTranslation(src,done) ||
+      (src && Array.isArray(src.examples) && src.examples[0] && clean(src.examples[0][1])) ||
+      clean(src && src.tr);
     let label='пропущенную часть';
     if(/^food_/.test(item.id)||/^clothes_/.test(item.id)) label='пропущенное слово';
     if(/^activity_/.test(item.id)) label='пропущенное выражение';
