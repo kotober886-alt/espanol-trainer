@@ -64,9 +64,20 @@
 
   const BLOCKED_VISUAL_IDS={
     visual_foods_lentils:1,visual_foods_beans:1,visual_foods_wine:1,visual_foods_beer:1,
-    visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1,
-    visual_activities_shopping:1,visual_activities_fish:1
+    visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1
   };
+  const ACTION_PICTURE_TOPICS={
+    activities:1,chores:1,verbs:1,present:1,routine:1,
+    constructions:1,gustar:1,past:1
+  };
+  function isForbiddenActionPicture(item){
+    if(!item || item.type!=='picture-label') return false;
+    const topic=String(item.topic || '').toLowerCase();
+    const id=String(item.id || '').toLowerCase();
+    return !!ACTION_PICTURE_TOPICS[topic] ||
+      /^visual_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id) ||
+      /^picture_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id);
+  }
   const HIDE_STUDY_ART_IDS={seafood:1,shopping:1};
   // `fish` is a valid study-card id in Foods/Animals; never hide it globally.
 
@@ -75,12 +86,9 @@
       const baseAll=allExercises;
       allExercises=function(){
         const maps=sourceMaps();
-        return baseAll().filter(function(item){ return !BLOCKED_VISUAL_IDS[String(item&&item.id||'')]; })
-          .map(function(item){ return sanitizeContext(item,maps); })
-          .map(function(item){
-            if(item && item.id==='visual_activities_do_sport') item.q='Какое занятие изображено?';
-            return item;
-          });
+        return baseAll().filter(function(item){
+          return !BLOCKED_VISUAL_IDS[String(item&&item.id||'')] && !isForbiddenActionPicture(item);
+        }).map(function(item){ return sanitizeContext(item,maps); });
       };
     }
   }catch(e){}
