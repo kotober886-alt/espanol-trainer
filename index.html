@@ -347,10 +347,9 @@
       display:block; width:min(260px,92%); max-width:100%; max-height:260px; aspect-ratio:1/1;
       object-fit:contain; object-position:center; margin:auto;
     }
-    .home-art-placeholder {
-      width:min(260px,92%); aspect-ratio:1/1; display:grid; place-items:center; margin:auto;
-      border:1px dashed #d8d3e8; border-radius:22px; background:rgba(255,255,255,.74);
-      color:#6253d9; font-size:56px;
+    .home-card-image {
+      display:block; width:min(260px,92%); max-width:100%; max-height:260px; aspect-ratio:1/1;
+      object-fit:contain; object-position:center; margin:auto;
     }
     .color-swatch {
       width:min(230px,78%); aspect-ratio:1; border-radius:22px; border:1px solid rgba(23,21,59,.14);
@@ -2469,9 +2468,7 @@
       foundationItem("piso","housing","el piso","мужской род","квартира",["квартира"],["piso","el piso"],"Vivo en un piso pequeño.","Я живу в небольшой квартире.","El piso tiene dos dormitorios.","В квартире две спальни.","Vivo en un ___.",["piso"]),
       foundationItem("apartamento","housing","el apartamento","мужской род","апартаменты",["апартаменты","квартира"],["apartamento","el apartamento"],"Alquilamos un apartamento cerca del mar.","Мы снимаем апартаменты рядом с морем.","El apartamento tiene una terraza.","В апартаментах есть терраса.","Alquilamos un ___.",["apartamento"]),
       foundationItem("edificio","housing","el edificio","мужской род","здание",["здание"],["edificio","el edificio"],"El edificio tiene ocho plantas.","В здании восемь этажей.","La entrada del edificio está cerrada.","Вход в здание закрыт.","El ___ tiene ocho plantas.",["edificio"])
-    ].map(function(item){
-      return Object.assign({},item,{art:"assets/picture-labels/"+item.id+".webp"});
-    });
+    ];
 
     const CITY_CATEGORIES=[{id:"all",title:"Весь город"},{id:"places",title:"Места"},{id:"opposites",title:"Противоположности"}];
     const CITY_WORDS=[
@@ -2755,6 +2752,10 @@
   const params=new URLSearchParams(query);
   params.set("v",version);
   return base+"?"+params.toString()+hash;
+}
+
+   function withVersion(url, fresh) {
+  return runtimeAssetUrl(url, !!fresh);
 }
 
    function pictureAsset(scene, forceReload) {
@@ -4488,7 +4489,7 @@
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
-      if(selectedTopic==="home") return "Переключайся между комнатами, частями дома и типами жилья. Для каждой карточки уже зарезервирован отдельный графический блок под будущий .webp-ассет.";
+      if(selectedTopic==="home") return "Переключайся между комнатами, частями дома и типами жилья. На каждой карточке показана соответствующая иллюстрация.";
       if(selectedTopic==="colors") return "Смотри на чистую цветную плашку, запоминай испанское название и форму прилагательного, затем узнавай цвет без подписи.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
@@ -4513,10 +4514,37 @@
     function colorArt(hex){
       return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
     }
+    const HOME_ASSET_MAP={
+      cocina:"assets/picture-labels/cocina.webp",
+      "salón":"assets/picture-labels/salon.webp",
+      sala_estar:"assets/picture-labels/sala_estar.webp",
+      dormitorio:"assets/picture-labels/dormitorio.webp",
+      "habitación":"assets/picture-labels/habitacion.webp",
+      "baño":"assets/picture-labels/bano.webp",
+      pasillo:"assets/picture-labels/pasillo.webp",
+      comedor:"assets/picture-labels/comedor.webp",
+      despacho:"assets/picture-labels/despacho.webp",
+      "balcón":"assets/picture-labels/balcon.webp",
+      terrazas:"assets/picture-labels/terrazas.webp",
+      garaje:"assets/picture-labels/garaje.webp",
+      puerta:"assets/picture-labels/puerta.webp",
+      ventana:"assets/picture-labels/ventana.webp",
+      suelo:"assets/picture-labels/suelo.webp",
+      techo:"assets/picture-labels/techo.webp",
+      pared:"assets/picture-labels/pared.webp",
+      escaleras:"assets/picture-labels/escaleras.webp",
+      ascensor:"assets/picture-labels/ascensor.webp",
+      entrada:"assets/picture-labels/entrada.webp",
+      casa:"assets/picture-labels/casa.webp",
+      piso:"assets/picture-labels/piso.webp",
+      apartamento:"assets/picture-labels/apartamento.webp",
+      edificio:"assets/picture-labels/edificio.webp"
+    };
     function homeArt(word){
       const key=word && word.id ? String(word.id) : "";
-      const path=word && word.art ? String(word.art) : "assets/picture-labels/"+key+".webp";
-      return '<div class="home-art-placeholder" role="img" aria-label="Место для иллюстрации: '+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" data-asset-path="'+escapeHtml(path)+'"><span aria-hidden="true">🏠</span></div>';
+      const path=HOME_ASSET_MAP[key] || "";
+      if(!path) return "";
+      return '<img class="food-direct-image home-card-image" src="'+withVersion(path,true)+'" alt="'+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" draggable="false" loading="eager" decoding="async">';
     }
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";
