@@ -65,7 +65,7 @@
     visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1,
     visual_activities_shopping:1,visual_activities_fish:1
   };
-  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,squid:1,octopus:1,seafood:1,shopping:1};
+  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,octopus:1,seafood:1,shopping:1};
   // `fish` is a valid study-card id in Foods/Animals; never hide it globally.
 
   try{
@@ -83,6 +83,12 @@
     if(typeof studyArt==='function'){
       const baseStudyArt=studyArt;
       studyArt=function(word){
+        if(word && word.id==='squid'){
+          const squidSrc=(typeof runtimeAssetUrl==='function')
+            ? runtimeAssetUrl('assets/picture-labels/foods/squid.webp',true)
+            : 'assets/picture-labels/foods/squid.webp?v='+Date.now();
+          return '<img class="food-direct-image squid-card-image" src="'+squidSrc+'" alt="Кальмар" draggable="false" loading="eager" decoding="async">';
+        }
         const art=word && String(word.art || '');
         const isDirectFoodRaster=/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.(?:webp|png)(?:\?|$)/i.test(art);
         if(word && HIDE_STUDY_ART_IDS[word.id] && !isDirectFoodRaster) return '';
@@ -139,6 +145,7 @@
 
   const style=document.createElement('style');
   style.textContent='\n.visual-single-art{aspect-ratio:auto!important;width:min(360px,100%)!important;height:220px!important;min-height:0!important;margin:0 auto 12px!important;padding:8px!important;background:#fffdf8!important}.visual-single-art .generated-sprite{width:190px!important;max-width:72%!important;aspect-ratio:1/1!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:180px!important;max-height:190px!important}@media(max-width:520px){.visual-single-art{width:min(290px,100%)!important;height:165px!important;padding:4px!important;border-radius:16px!important}.visual-single-art .generated-sprite{width:140px!important;max-width:70%!important}.visual-single-art .food-svg,.visual-single-art .precise-art{width:135px!important;max-height:145px!important}}\n';
+  style.textContent += '\n.food-art .squid-card-image{display:block!important;width:min(260px,92%)!important;max-width:100%!important;max-height:260px!important;aspect-ratio:1/1!important;object-fit:contain!important;object-position:center!important;margin:auto!important}@media(max-width:520px){.food-art .squid-card-image{width:min(100%,132px)!important;max-height:140px!important}}\n';
   document.head.appendChild(style);
 
   const pictureLabelStyle=document.createElement('style');
