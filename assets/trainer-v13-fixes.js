@@ -55,7 +55,7 @@
     let label='пропущенную часть';
     if(/^food_/.test(item.id)||/^clothes_/.test(item.id)) label='пропущенное слово';
     if(/^activity_/.test(item.id)) label='пропущенное выражение';
-    item.q='Вставь '+label+' в предложение: '+clean(src.cloze);
+    item.q='Вставь '+label+(tr ? ' по переводу «'+tr+'»' : '')+': '+clean(src.cloze);
     item.e=done ? 'Правильное предложение: '+done+(tr?' — '+tr:'') : '';
     return item;
   }
