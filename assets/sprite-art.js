@@ -58,6 +58,35 @@
     take_it:"take_it.webp"
   };
 
+  const CITY_CARD_IMAGES={
+    trash:"trash.webp",
+    pharmacy:"pharmacy.webp",
+    bus_stop:"bus_stop.webp",
+    bank:"bank.webp",
+    post:"post.webp",
+    cinema:"cinema.webp",
+    city_gym:"city_gym.webp",
+    school:"school.webp",
+    police:"police.webp",
+    supermarket:"supermarket.webp",
+    big_small:"big_small.webp",
+    pretty_ugly:"pretty_ugly.webp",
+    cheap_expensive:"cheap_expensive.webp",
+    clean_dirty:"clean_dirty.webp",
+    quiet_noisy:"quiet_noisy.webp",
+    modern_old:"modern_old.webp",
+    pleasant:"pleasant.webp",
+    safe:"safe.webp"
+  };
+
+  function cityCardArt(id){
+    const file=CITY_CARD_IMAGES[id];
+    if(!file) return "";
+    return '<img class="clothes-extra-image city-card-image" '+
+      'src="'+withVersion('assets/picture-labels/'+file)+'" '+
+      'alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
+  }
+
   function clothingCardArt(id){
     const file=CLOTHING_CARD_IMAGES[id];
     if(!file) return "";
@@ -150,6 +179,10 @@
       ["clothes","clothes",id,6,5],
       ["clothesNew","clothesNew",id,2,2]
     ]);
+  };
+
+  window.cityArt=function(id){
+    return cityCardArt(id);
   };
 
   window.activityArt=function(id){

@@ -4491,6 +4491,7 @@
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
       if(selectedTopic==="colors") return colorArt(word.hex);
       if(selectedTopic==="activities") return activityArt(word.art);
+      if(selectedTopic==="city") return cityArt(word.id);
       return "";
     }
     function renderStudy(){
@@ -4526,7 +4527,7 @@
           renderStudy();
         });
       });
-      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities";
+      const hasArt=selectedTopic==="foods" || selectedTopic==="clothes" || selectedTopic==="colors" || selectedTopic==="activities" || selectedTopic==="city";
       const isPronouns=selectedTopic==="pronouns";
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
@@ -4885,7 +4886,7 @@
       showHome();
     }
   </script>
-  <script src="assets/sprite-art.js?v=20260920-clothes-raster-refresh1"></script>
+  <script src="assets/sprite-art.js?v=20260920-city-art1"></script>
   <script src="assets/food-sprite-art.js?v=20260920-marisco-direct1"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
