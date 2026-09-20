@@ -351,6 +351,10 @@
       display:block; width:min(260px,92%); max-width:100%; max-height:260px; aspect-ratio:1/1;
       object-fit:contain; object-position:center; margin:auto;
     }
+    .home-art-reserved {
+      width:min(260px,92%); max-width:100%; aspect-ratio:1/1; margin:auto;
+      border:1px dashed #d8d3e8; border-radius:22px; background:rgba(255,255,255,.74);
+    }
     .color-swatch {
       width:min(230px,78%); aspect-ratio:1; border-radius:22px; border:1px solid rgba(23,21,59,.14);
     }
@@ -2439,7 +2443,12 @@
       {id:"all",title:"Весь дом"},
       {id:"rooms",title:"Комнаты"},
       {id:"parts",title:"Части дома"},
-      {id:"housing",title:"Типы жилья"}
+      {id:"housing",title:"Типы жилья"},
+      {id:"living_room",title:"Гостиная"},
+      {id:"bedroom_items",title:"Спальня"},
+      {id:"kitchen_items",title:"Кухня"},
+      {id:"bathroom_items",title:"Ванная"},
+      {id:"small_home_items",title:"Мелкие вещи"}
     ];
     const HOME_WORDS=[
       foundationItem("cocina","rooms","la cocina","женский род","кухня",["кухня"],["cocina","la cocina"],"La cocina es luminosa.","Кухня светлая.","Cocinamos juntos en la cocina.","Мы готовим вместе на кухне.","La ___ es luminosa.",["cocina"]),
@@ -2467,7 +2476,47 @@
       foundationItem("casa","housing","la casa","женский род","дом",["дом"],["casa","la casa"],"Nuestra casa tiene dos plantas.","В нашем доме два этажа.","La casa está cerca del parque.","Дом находится рядом с парком.","Nuestra ___ tiene dos plantas.",["casa"]),
       foundationItem("piso","housing","el piso","мужской род","квартира",["квартира"],["piso","el piso"],"Vivo en un piso pequeño.","Я живу в небольшой квартире.","El piso tiene dos dormitorios.","В квартире две спальни.","Vivo en un ___.",["piso"]),
       foundationItem("apartamento","housing","el apartamento","мужской род","апартаменты",["апартаменты","квартира"],["apartamento","el apartamento"],"Alquilamos un apartamento cerca del mar.","Мы снимаем апартаменты рядом с морем.","El apartamento tiene una terraza.","В апартаментах есть терраса.","Alquilamos un ___.",["apartamento"]),
-      foundationItem("edificio","housing","el edificio","мужской род","здание",["здание"],["edificio","el edificio"],"El edificio tiene ocho plantas.","В здании восемь этажей.","La entrada del edificio está cerrada.","Вход в здание закрыт.","El ___ tiene ocho plantas.",["edificio"])
+      foundationItem("edificio","housing","el edificio","мужской род","здание",["здание"],["edificio","el edificio"],"El edificio tiene ocho plantas.","В здании восемь этажей.","La entrada del edificio está cerrada.","Вход в здание закрыт.","El ___ tiene ocho plantas.",["edificio"]),
+
+      foundationItem("sofa","living_room","el sofá","мужской род","диван",["диван"],["sofá","sofa","el sofá","el sofa"],"El sofá está junto a la ventana.","Диван стоит рядом с окном.","Nos sentamos en el sofá por la noche.","Вечером мы сидим на диване.","El ___ está junto a la ventana.",["sofá","sofa"]),
+      foundationItem("sillon","living_room","el sillón","мужской род","кресло",["кресло"],["sillón","sillon","el sillón","el sillon"],"El sillón es muy cómodo.","Кресло очень удобное.","Leo en el sillón.","Я читаю в кресле.","El ___ es muy cómodo.",["sillón","sillon"]),
+      foundationItem("mesa","living_room","la mesa","женский род","стол",["стол"],["mesa","la mesa"],"La mesa está delante del sofá.","Стол стоит перед диваном.","Dejo el libro sobre la mesa.","Я оставляю книгу на столе.","La ___ está delante del sofá.",["mesa"]),
+      foundationItem("silla","living_room","la silla","женский род","стул",["стул"],["silla","la silla"],"La silla está junto a la mesa.","Стул стоит рядом со столом.","Hay cuatro sillas en el comedor.","В столовой четыре стула.","La ___ está junto a la mesa.",["silla"]),
+      foundationItem("estanteria","living_room","la estantería","женский род","книжный шкаф / полка",["книжный шкаф","полка"],["estantería","estanteria","la estantería","la estanteria"],"Los libros están en la estantería.","Книги стоят на полке.","La estantería está contra la pared.","Книжный шкаф стоит у стены.","Los libros están en la ___.",["estantería","estanteria"]),
+      foundationItem("lampara","living_room","la lámpara","женский род","лампа",["лампа"],["lámpara","lampara","la lámpara","la lampara"],"Enciendo la lámpara por la noche.","Я включаю лампу вечером.","La lámpara está junto al sofá.","Лампа стоит рядом с диваном.","Enciendo la ___ por la noche.",["lámpara","lampara"]),
+      foundationItem("alfombra","living_room","la alfombra","женский род","ковер",["ковер","ковёр"],["alfombra","la alfombra"],"La alfombra está debajo de la mesa.","Ковер лежит под столом.","La alfombra es muy suave.","Ковер очень мягкий.","La ___ está debajo de la mesa.",["alfombra"]),
+      foundationItem("cortinas","living_room","las cortinas","множественное число","шторы",["шторы"],["cortinas","las cortinas"],"Las cortinas son de color beige.","Шторы бежевого цвета.","Abro las cortinas por la mañana.","Утром я открываю шторы.","Abro las ___ por la mañana.",["cortinas"]),
+
+      foundationItem("cama","bedroom_items","la cama","женский род","кровать",["кровать"],["cama","la cama"],"La cama está junto a la ventana.","Кровать стоит рядом с окном.","Hago la cama por la mañana.","Утром я заправляю кровать.","La ___ está junto a la ventana.",["cama"]),
+      foundationItem("almohada","bedroom_items","la almohada","женский род","подушка",["подушка"],["almohada","la almohada"],"La almohada está sobre la cama.","Подушка лежит на кровати.","Necesito otra almohada.","Мне нужна еще одна подушка.","La ___ está sobre la cama.",["almohada"]),
+      foundationItem("manta","bedroom_items","la manta","женский род","одеяло / плед",["одеяло","плед"],["manta","la manta"],"La manta está al pie de la cama.","Плед лежит в ногах кровати.","Esta manta es muy calentita.","Это одеяло очень теплое.","La ___ está al pie de la cama.",["manta"]),
+      foundationItem("armario","bedroom_items","el armario","мужской род","шкаф",["шкаф"],["armario","el armario"],"La ropa está en el armario.","Одежда лежит в шкафу.","El armario tiene dos puertas.","У шкафа две двери.","La ropa está en el ___.",["armario"]),
+      foundationItem("comoda","bedroom_items","la cómoda","женский род","комод",["комод"],["cómoda","comoda","la cómoda","la comoda"],"La cómoda tiene cuatro cajones.","У комода четыре ящика.","Guardo la ropa en la cómoda.","Я храню одежду в комоде.","La ___ tiene cuatro cajones.",["cómoda","comoda"]),
+      foundationItem("mesita_noche","bedroom_items","la mesita de noche","женский род","прикроватная тумбочка",["прикроватная тумбочка","тумбочка"],["mesita de noche","la mesita de noche"],"La mesita de noche está al lado de la cama.","Прикроватная тумбочка стоит рядом с кроватью.","El despertador está en la mesita de noche.","Будильник стоит на прикроватной тумбочке.","La ___ está al lado de la cama.",["mesita de noche"]),
+      foundationItem("espejo","bedroom_items","el espejo","мужской род","зеркало",["зеркало"],["espejo","el espejo"],"El espejo está frente al armario.","Зеркало находится напротив шкафа.","Me miro en el espejo.","Я смотрюсь в зеркало.","El ___ está frente al armario.",["espejo"]),
+
+      foundationItem("nevera_frigorifico","kitchen_items","la nevera / el frigorífico","женский / мужской род","холодильник",["холодильник"],["nevera","la nevera","frigorífico","frigorifico","el frigorífico","el frigorifico"],"La leche está en la nevera.","Молоко стоит в холодильнике.","El frigorífico está junto al fregadero.","Холодильник стоит рядом с кухонной раковиной.","La leche está en la ___.",["nevera"]),
+      foundationItem("horno","kitchen_items","el horno","мужской род","духовка",["духовка"],["horno","el horno"],"El pan está en el horno.","Хлеб в духовке.","Enciendo el horno para cocinar.","Я включаю духовку, чтобы готовить.","El pan está en el ___.",["horno"]),
+      foundationItem("microondas","kitchen_items","el microondas","мужской род","микроволновка",["микроволновка","микроволновая печь"],["microondas","el microondas"],"Caliento la comida en el microondas.","Я разогреваю еду в микроволновке.","El microondas está sobre la encimera.","Микроволновка стоит на столешнице.","Caliento la comida en el ___.",["microondas"]),
+      foundationItem("cocina_estufa","kitchen_items","la cocina","женский род","плита",["плита"],["cocina","la cocina"],"La olla está sobre la cocina.","Кастрюля стоит на плите.","Apago la cocina después de cocinar.","Я выключаю плиту после готовки.","La olla está sobre la ___.",["cocina"]),
+      foundationItem("fregadero","kitchen_items","el fregadero","мужской род","раковина (кухонная)",["раковина","кухонная раковина"],["fregadero","el fregadero"],"Lavo los platos en el fregadero.","Я мою посуду в кухонной раковине.","El fregadero está junto al lavavajillas.","Раковина находится рядом с посудомоечной машиной.","Lavo los platos en el ___.",["fregadero"]),
+      foundationItem("lavavajillas","kitchen_items","el lavavajillas","мужской род","посудомоечная машина",["посудомоечная машина","посудомойка"],["lavavajillas","el lavavajillas"],"Pongo los platos en el lavavajillas.","Я ставлю посуду в посудомоечную машину.","El lavavajillas está lleno.","Посудомоечная машина заполнена.","Pongo los platos en el ___.",["lavavajillas"]),
+      foundationItem("hervidor","kitchen_items","el hervidor","мужской род","чайник (электрический)",["чайник","электрический чайник"],["hervidor","el hervidor"],"Caliento agua en el hervidor.","Я нагреваю воду в электрическом чайнике.","El hervidor está junto a la cafetera.","Чайник стоит рядом с кофеваркой.","Caliento agua en el ___.",["hervidor"]),
+      foundationItem("cafetera","kitchen_items","la cafetera","женский род","кофеварка",["кофеварка"],["cafetera","la cafetera"],"Preparo café en la cafetera.","Я готовлю кофе в кофеварке.","La cafetera está en la cocina.","Кофеварка стоит на кухне.","Preparo café en la ___.",["cafetera"]),
+
+      foundationItem("ducha","bathroom_items","la ducha","женский род","душ",["душ"],["ducha","la ducha"],"La ducha está junto a la bañera.","Душ находится рядом с ванной.","Me ducho por la mañana.","Я принимаю душ утром.","La ___ está junto a la bañera.",["ducha"]),
+      foundationItem("banera","bathroom_items","la bañera","женский род","ванна",["ванна"],["bañera","banera","la bañera","la banera"],"La bañera es blanca.","Ванна белая.","Lleno la bañera con agua caliente.","Я наполняю ванну горячей водой.","La ___ es blanca.",["bañera","banera"]),
+      foundationItem("lavabo","bathroom_items","el lavabo","мужской род","раковина (умывальник)",["раковина","умывальник"],["lavabo","el lavabo"],"Me lavo las manos en el lavabo.","Я мою руки в раковине.","El lavabo está debajo del espejo.","Умывальник находится под зеркалом.","Me lavo las manos en el ___.",["lavabo"]),
+      foundationItem("inodoro","bathroom_items","el inodoro","мужской род","унитаз",["унитаз"],["inodoro","el inodoro"],"El inodoro está al lado del lavabo.","Унитаз находится рядом с раковиной.","El baño tiene un inodoro nuevo.","В ванной новый унитаз.","El ___ está al lado del lavabo.",["inodoro"]),
+      foundationItem("toalla","bathroom_items","la toalla","женский род","полотенце",["полотенце"],["toalla","la toalla"],"La toalla está junto a la ducha.","Полотенце висит рядом с душем.","Necesito una toalla limpia.","Мне нужно чистое полотенце.","La ___ está junto a la ducha.",["toalla"]),
+      foundationItem("cepillo","bathroom_items","el cepillo","мужской род","щетка",["щетка","щётка"],["cepillo","el cepillo"],"El cepillo está junto al lavabo.","Щетка лежит рядом с раковиной.","Uso el cepillo todas las mañanas.","Я пользуюсь щеткой каждое утро.","El ___ está junto al lavabo.",["cepillo"]),
+      foundationItem("secador","bathroom_items","el secador","мужской род","фен",["фен"],["secador","el secador"],"El secador está en el cajón.","Фен лежит в ящике.","Me seco el pelo con el secador.","Я сушу волосы феном.","El ___ está en el cajón.",["secador"]),
+
+      foundationItem("enchufe","small_home_items","el enchufe","мужской род","розетка",["розетка"],["enchufe","el enchufe"],"El enchufe está junto a la mesa.","Розетка находится рядом со столом.","Conecto la lámpara al enchufe.","Я подключаю лампу к розетке.","El ___ está junto a la mesa.",["enchufe"]),
+      foundationItem("interruptor","small_home_items","el interruptor","мужской род","выключатель",["выключатель"],["interruptor","el interruptor"],"El interruptor está junto a la puerta.","Выключатель находится рядом с дверью.","Pulso el interruptor para encender la luz.","Я нажимаю выключатель, чтобы включить свет.","El ___ está junto a la puerta.",["interruptor"]),
+      foundationItem("llave","small_home_items","la llave","женский род","ключ",["ключ"],["llave","la llave"],"La llave está sobre la mesa.","Ключ лежит на столе.","Cierro la puerta con la llave.","Я закрываю дверь ключом.","La ___ está sobre la mesa.",["llave"]),
+      foundationItem("cubo_basura","small_home_items","el cubo de basura","мужской род","мусорное ведро",["мусорное ведро"],["cubo de basura","el cubo de basura"],"El cubo de basura está debajo del fregadero.","Мусорное ведро стоит под раковиной.","Tiro el papel al cubo de basura.","Я выбрасываю бумагу в мусорное ведро.","El ___ está debajo del fregadero.",["cubo de basura"]),
+      foundationItem("percha","small_home_items","la percha","женский род","вешалка / плечики",["вешалка","плечики"],["percha","la percha"],"La camisa está en una percha.","Рубашка висит на плечиках.","Hay varias perchas en el armario.","В шкафу несколько вешалок.","La camisa está en una ___.",["percha"])
     ];
 
     const CITY_CATEGORIES=[{id:"all",title:"Весь город"},{id:"places",title:"Места"},{id:"opposites",title:"Противоположности"}];
@@ -4489,7 +4538,7 @@
       if(selectedTopic==="prepositions") return "Посмотри значение и два примера, затем выбери нужный предлог самостоятельно.";
       if(selectedTopic==="connectors") return "Выбери группу, посмотри перевод и способ употребления, а затем закрепи конструкцию без подсказок.";
       if(selectedTopic==="activities") return "Учи полезные сочетания сразу с глаголами, затем закрепляй их без подсказок.";
-      if(selectedTopic==="home") return "Переключайся между комнатами, частями дома и типами жилья. На каждой карточке показана соответствующая иллюстрация.";
+      if(selectedTopic==="home") return "Переключайся между комнатами, частями дома, типами жилья и предметами по комнатам. Для новых карточек уже зарезервированы отдельные места под будущие растровые ассеты.";
       if(selectedTopic==="colors") return "Смотри на чистую цветную плашку, запоминай испанское название и форму прилагательного, затем узнавай цвет без подписи.";
       return "Посмотри перевод и примеры, затем переходи к заданиям без подсказок.";
     }
@@ -4543,7 +4592,10 @@
     function homeArt(word){
       const key=word && word.id ? String(word.id) : "";
       const path=HOME_ASSET_MAP[key] || "";
-      if(!path) return "";
+      if(!path){
+        const reservedPath="assets/picture-labels/"+key+".webp";
+        return '<div class="home-art-reserved" role="img" aria-label="Место для будущей иллюстрации: '+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" data-asset-path="'+escapeHtml(reservedPath)+'"></div>';
+      }
       return '<img class="food-direct-image home-card-image" src="'+withVersion(path,true)+'" alt="'+escapeHtml(word && word.tr ? word.tr : key)+'" data-asset-key="'+escapeHtml(key)+'" draggable="false" loading="eager" decoding="async">';
     }
     const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
