@@ -1741,7 +1741,7 @@
       {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"assets/picture-labels/octopus.webp",
         examples:[["Probamos pulpo en Galicia.","Мы пробуем осьминога в Галисии."],["El pulpo está delicioso.","Осьминог очень вкусный."]],
         cloze:"El ___ está delicioso.",clozeAnswers:["pulpo"]},
-      {id:"seafood",cat:"seafood",word:"el marisco",base:"marisco",gender:"мужской род",tr:"морепродукты",ru:["морепродукты","морепродукт"],answers:["marisco","el marisco","mariscos","los mariscos"],art:"shellfish",
+      {id:"seafood",cat:"seafood",word:"el marisco",base:"marisco",gender:"мужской род",tr:"морепродукты",ru:["морепродукты","морепродукт"],answers:["marisco","el marisco","mariscos","los mariscos"],art:"assets/picture-labels/marisco.webp",
         examples:[["Me gusta mucho el marisco.","Я очень люблю морепродукты."],["La paella lleva marisco.","В паэлье есть морепродукты."]],
         cloze:"La paella lleva ___.",clozeAnswers:["marisco","mariscos"]},
 
@@ -4482,6 +4482,9 @@
       }
       if(selectedTopic==="foods" && word && word.art==="assets/picture-labels/foods/mejillones.webp"){
         return '<img class="food-direct-image mejillones-card-image" src="'+runtimeAssetUrl(MEJILLONES_ASSET_URL, true)+'" alt="Мидии" draggable="false" loading="eager" decoding="async">';
+      }
+      if(selectedTopic==="foods" && word && word.id==="seafood"){
+        return '<img class="food-direct-image marisco-card-image" src="'+runtimeAssetUrl("assets/picture-labels/marisco.webp", true)+'" alt="Морепродукты" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
