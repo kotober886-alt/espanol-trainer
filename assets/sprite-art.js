@@ -67,6 +67,23 @@
   }
 
 
+  const CLOTHES_NEW_RASTER_VERSION="20260920-clothes-raster-refresh1";
+  const CLOTHES_NEW_RASTER_IMAGES={
+    cardigan:"cardigan.webp",
+    hoodie:"hoodie.webp",
+    polo:"polo.webp",
+    vest:"vest.webp"
+  };
+
+  function clothesNewRasterArt(id){
+    const file=CLOTHES_NEW_RASTER_IMAGES[id];
+    if(!file) return "";
+    const base="assets/picture-labels/clothes-new-raster/"+file+"?rev="+CLOTHES_NEW_RASTER_VERSION;
+    return '<img class="clothes-extra-image clothes-new-raster-image" '+
+      'src="'+withVersion(base)+'" '+
+      'alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
+  }
+
   const CLOTHES_EXTRA_IMAGES={
     ankleboots:"ankleboots.webp",
     heels:"heels.webp",
@@ -125,6 +142,9 @@
 
     const extra=clothesExtraArt(id);
     if(extra) return extra;
+
+    const newRaster=clothesNewRasterArt(id);
+    if(newRaster) return newRaster;
 
     return firstSprite([
       ["clothes","clothes",id,6,5],
