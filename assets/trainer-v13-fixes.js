@@ -74,9 +74,23 @@
     if(!item || item.type!=='picture-label') return false;
     const topic=String(item.topic || '').toLowerCase();
     const id=String(item.id || '').toLowerCase();
-    return !!ACTION_PICTURE_TOPICS[topic] ||
-      /^visual_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id) ||
-      /^picture_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id);
+    if(ACTION_PICTURE_TOPICS[topic]) return true;
+    if(/^visual_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id)) return true;
+    if(/^picture_(?:activities|chores|verbs|present|routine|constructions|gustar|past)_/.test(id)) return true;
+
+    // Clothing has both concrete objects and abstract fitting/action phrases.
+    // Only concrete garments may appear in direct picture-to-word tasks.
+    if(topic==='clothes' && /^visual_clothes_/.test(id)){
+      const key=id.replace(/^visual_clothes_/,'');
+      let source=null;
+      try{ source=(CLOTHING_WORDS || []).find(function(word){return String(word&&word.id||'').toLowerCase()===key;}); }catch(e){}
+      if(source){
+        const cat=String(source.cat || '').toLowerCase();
+        const grammar=String(source.gender || '').toLowerCase();
+        if(cat==='tryon' || /глагол|действи|фраза|выражени|сочетани|конструкци/.test(grammar)) return true;
+      }
+    }
+    return false;
   }
   const HIDE_STUDY_ART_IDS={seafood:1,shopping:1};
   // `fish` is a valid study-card id in Foods/Animals; never hide it globally.
@@ -120,7 +134,9 @@
         selectedMode='all';
         let items=baseFiltered();
         selectedMode=mode;
-        if(mode==='pictures') return items.filter(function(x){return x&&x.type==='picture-label';});
+        if(mode==='pictures') return items.filter(function(x){
+          return x && x.type==='picture-label' && !isForbiddenActionPicture(x);
+        });
         return items.filter(function(x){return x&&['choice','context-choice','match','category-sort'].indexOf(x.type)>=0;});
       };
     }
