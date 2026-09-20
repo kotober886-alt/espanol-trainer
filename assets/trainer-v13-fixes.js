@@ -65,7 +65,7 @@
     visual_foods_mussels:1,visual_foods_squid:1,visual_foods_octopus:1,visual_foods_seafood:1,
     visual_activities_shopping:1,visual_activities_fish:1
   };
-  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,mussels:1,squid:1,octopus:1,seafood:1,shopping:1};
+  const HIDE_STUDY_ART_IDS={lentils:1,beans:1,wine:1,beer:1,squid:1,octopus:1,seafood:1,shopping:1};
   // `fish` is a valid study-card id in Foods/Animals; never hide it globally.
 
   try{
@@ -83,7 +83,9 @@
     if(typeof studyArt==='function'){
       const baseStudyArt=studyArt;
       studyArt=function(word){
-        if(word && HIDE_STUDY_ART_IDS[word.id]) return '';
+        const art=word && String(word.art || '');
+        const isDirectFoodRaster=/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.(?:webp|png)(?:\?|$)/i.test(art);
+        if(word && HIDE_STUDY_ART_IDS[word.id] && !isDirectFoodRaster) return '';
         return baseStudyArt(word);
       };
     }

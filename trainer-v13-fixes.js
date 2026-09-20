@@ -85,7 +85,9 @@
     if(typeof studyArt==='function'){
       const baseStudyArt=studyArt;
       studyArt=function(word){
-        if(word && HIDE_STUDY_ART_IDS[word.id]) return '';
+        const art=word && String(word.art || '');
+        const isDirectFoodRaster=/^assets\/picture-labels\/foods\/[a-z0-9_-]+\.(?:webp|png)(?:\?|$)/i.test(art);
+        if(word && HIDE_STUDY_ART_IDS[word.id] && !isDirectFoodRaster) return '';
         return baseStudyArt(word);
       };
     }
