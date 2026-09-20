@@ -4462,6 +4462,7 @@
     function colorArt(hex){
       return '<div class="color-swatch" style="background-color:'+escapeHtml(hex || "#ffffff")+'" role="img" aria-label="Однотонная цветная плашка"></div>';
     }
+    const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";
     function studyArt(word){
       if(selectedTopic==="foods" && word && word.id==="fish"){
         return '<img class="food-direct-image fish-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/fish.webp", true)+'" alt="Рыба" draggable="false" loading="eager" decoding="async">';
@@ -4470,7 +4471,7 @@
         return '<img class="food-direct-image tuna-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/tuna.webp", true)+'" alt="Банка тунца" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods" && word && word.id==="shrimp"){
-        return '<img class="food-direct-image shrimp-card-image" src="'+runtimeAssetUrl("assets/picture-labels/foods/shrimp.webp", true)+'" alt="Креветка" draggable="false" loading="eager" decoding="async">';
+        return '<img class="food-direct-image shrimp-card-image" src="'+runtimeAssetUrl(SHRIMP_ASSET_URL, true)+'" alt="Креветка" draggable="false" loading="eager" decoding="async">';
       }
       if(selectedTopic==="foods") return foodArt(word.art);
       if(selectedTopic==="clothes") return clothingArt(word.art || word.id);
@@ -4870,7 +4871,7 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-shrimp-direct1"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-shrimp-inline2"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>

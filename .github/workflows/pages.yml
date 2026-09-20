@@ -25,6 +25,34 @@ jobs:
         uses: actions/checkout@v5
       - name: Настроить Pages
         uses: actions/configure-pages@v5
+      - name: Проверить и встроить ассет креветок
+        shell: bash
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import base64
+
+          asset = Path("assets/picture-labels/foods/shrimp.webp")
+          with Image.open(asset) as im:
+              im.load()
+              if im.size != (512, 512):
+                  im = im.convert("RGB").resize((512, 512), Image.Resampling.LANCZOS)
+              else:
+                  im = im.convert("RGB")
+              im.save(asset, "WEBP", quality=92, method=6)
+
+          data_uri = "data:image/webp;base64," + base64.b64encode(asset.read_bytes()).decode("ascii")
+          page = Path("index.html")
+          html = page.read_text(encoding="utf-8")
+          source = 'const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";'
+          target = 'const SHRIMP_ASSET_URL = "' + data_uri + '";'
+          if source not in html:
+              raise SystemExit("Shrimp asset marker not found in index.html")
+          page.write_text(html.replace(source, target, 1), encoding="utf-8")
+          print("shrimp.webp validated, re-encoded and embedded into deployed index")
+          PY
       - name: Подготовить сайт
         uses: actions/upload-pages-artifact@v4
         with:
