@@ -1738,7 +1738,7 @@
       {id:"squid",cat:"seafood",word:"el calamar",base:"calamar",gender:"мужской род",tr:"кальмар",ru:["кальмар"],answers:["calamar","el calamar"],art:"assets/picture-labels/foods/squid.webp",
         examples:[["El calamar está muy tierno.","Кальмар очень нежный."],["Quiero calamar a la plancha.","Я хочу кальмара на гриле."]],
         cloze:"Quiero ___ a la plancha.",clozeAnswers:["calamar"]},
-      {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"",
+      {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"octopus",
         examples:[["Probamos pulpo en Galicia.","Мы пробуем осьминога в Галисии."],["El pulpo está delicioso.","Осьминог очень вкусный."]],
         cloze:"El ___ está delicioso.",clozeAnswers:["pulpo"]},
       {id:"seafood",cat:"seafood",word:"el marisco",base:"marisco",gender:"мужской род",tr:"морепродукты",ru:["морепродукты","морепродукт"],answers:["marisco","el marisco","mariscos","los mariscos"],art:"shellfish",
@@ -4524,10 +4524,8 @@
       const isPresent=selectedTopic==="present";
       const hasTable=!!word.table;
       els.studyCard.classList.toggle("no-art",!hasArt);
+      els.foodArt.hidden=false;
       els.foodArt.innerHTML=studyArt(word);
-      if(selectedTopic==="foods" && word && word.id==="octopus"){
-        els.foodArt.innerHTML="";
-      }
       els.foodWord.textContent=word.word;
       els.foodGender.textContent=word.gender;
       els.foodCategoryLabel.textContent=foodCategoryTitle(word.cat);
@@ -4881,14 +4879,14 @@
     }
   </script>
   <script src="assets/sprite-art.js?v=20260919-clothes-new3"></script>
-  <script src="assets/food-sprite-art.js?v=20260920-octopus-hard-clear3"></script>
+  <script src="assets/food-sprite-art.js?v=20260920-octopus-approved4"></script>
   <script src="assets/hq-clothes-row1.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-clothes.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-foods.js?v=20260918-valid-raster2"></script>
   <script src="assets/img-activities.js?v=20260918-valid-raster2"></script>
   <script src="assets/visual-coverage.js?v=20260918-clothing-figures1"></script>
   <script src="assets/exercise-quality-fixes.js?v=20260918-valid-raster2"></script>
-  <script src="assets/trainer-v13-fixes.js?v=20260920-octopus-hard-clear3"></script>
+  <script src="assets/trainer-v13-fixes.js?v=20260920-octopus-approved4"></script>
 
 <script>
     // Client-side cache busting for raster assets and inline background sprites.
@@ -4980,30 +4978,6 @@
   </script>
 
 <script>
-    // Final guard: the Foods card "el pulpo" must not render any legacy octopus artwork.
-    (function(){
-      try{
-        if(typeof renderStudy==="function" && !renderStudy.__octopusArtGuard){
-          const baseRenderStudy=renderStudy;
-          const guarded=function(){
-            baseRenderStudy();
-            try{
-              if(selectedTopic==="foods"){
-                const words=currentFoodWords();
-                const word=words && words[wordIndex];
-                if(word && word.id==="octopus"){
-                  els.foodArt.innerHTML="";
-                  els.foodArt.hidden=true;
-                  els.studyCard.classList.add("no-art");
-                }
-              }
-            }catch(e){}
-          };
-          guarded.__octopusArtGuard=true;
-          renderStudy=guarded;
-        }
-      }catch(e){}
-    })();
     initializeApp();  </script>
 </body>
 </html>

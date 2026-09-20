@@ -19,6 +19,9 @@
 
   const FOOD_SPRITE_IMAGE=withVersion("assets/picture-labels/study-foods-v3.webp");
   const FOOD_EXTRA_SPRITE_IMAGE=withVersion("assets/picture-labels/study-foods-extra-v1.webp");
+  const FOOD_CARD_IMAGES={
+    octopus:withVersion("assets/picture-labels/octopus.webp")
+  };
 
   // Historical 7x5 food grid. Keep this module independent from clothing sprites.
   const FOOD_SPRITE_MAP={
@@ -52,6 +55,7 @@
   }
 
   window.foodArt=function(id){
+    if(FOOD_CARD_IMAGES[id]) return '<img class="food-direct-image food-card-image food-card-image-'+id+'" src="'+FOOD_CARD_IMAGES[id]+'" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async">';
     const direct=directFoodArt(id);
     if(direct) return direct;
     if(FOOD_SPRITE_MAP[id]) return sprite(FOOD_SPRITE_IMAGE,FOOD_SPRITE_MAP[id],7,5,"foods",0.9525);
