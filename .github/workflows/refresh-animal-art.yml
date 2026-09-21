@@ -1,0 +1,80 @@
+name: Пересобрать картинки животных
+
+on:
+  push:
+    paths:
+      - ".github/workflows/refresh-animal-art.yml"
+      - "scripts/build_animal_sprite_v5.py"
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить репозиторий
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Установить Pillow
+        run: python -m pip install --quiet pillow
+
+      - name: Собрать новый stock-vector спрайт животных
+        run: python scripts/build_animal_sprite_v5.py
+
+      - name: Переключить тренажёр на новый спрайт
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('assets/animals-topic.js')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r"assets/picture-labels/study-animals-v\d+\.webp", "assets/picture-labels/study-animals-v5.webp", s)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('assets/animals-card-art-fix.js')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r"const SRC='[^']+';", "const SRC='./assets/picture-labels/study-animals-v5.webp?v=1';", s, count=1)
+          s = re.sub(r"const FALLBACK='[^']+';", "const FALLBACK='./assets/picture-labels/study-animals-v5.webp?v=1';", s, count=1)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('assets/trainer-v13-fixes.js')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r"assets/animals-card-art-fix\.js\?v=\d+", "assets/animals-card-art-fix.js?v=5", s)
+          s = re.sub(r"assets/animals-topic\.js\?v=\d+", "assets/animals-topic.js?v=8", s)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r"assets/trainer-v13-fixes\.js\?v=[^\"']+", "assets/trainer-v13-fixes.js?v=20260917animals5", s)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Проверить новый WebP
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageStat
+          p='assets/picture-labels/study-animals-v5.webp'
+          im=Image.open(p)
+          im.load()
+          assert im.size == (1350,600), im.size
+          assert im.mode in ('RGBA','RGB'), im.mode
+          stat=ImageStat.Stat(im.convert('RGB'))
+          assert max(stat.var) > 100, stat.var
+          print('OK', im.format, im.mode, im.size)
+          PY
+
+      - name: Сохранить новый спрайт и подключения
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/picture-labels/study-animals-v5.webp assets/animals-topic.js assets/animals-card-art-fix.js assets/trainer-v13-fixes.js index.html
+          if git diff --cached --quiet; then
+            echo "Изменений нет"
+            exit 0
+          fi
+          git commit -m "Replace animal art with softer stock-vector style"
+          git push origin HEAD:main

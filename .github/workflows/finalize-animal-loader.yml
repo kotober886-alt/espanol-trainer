@@ -1,0 +1,35 @@
+name: Finalize animal loader
+
+on:
+  push:
+    paths:
+      - '.finalize-animal-loader'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep one fresh trainer loader
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          lines=[line for line in s.splitlines() if 'assets/trainer-v13-fixes.js' not in line]
+          s='\n'.join(lines)
+          tag='  <script src="assets/trainer-v13-fixes.js?v=20260917-approved3"></script>\n'
+          s=s.replace('</body>',tag+'</body>')
+          p.write_text(s+'\n',encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          rm -f .finalize-animal-loader
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Use single fresh animal loader"
+          git push

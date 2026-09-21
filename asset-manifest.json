@@ -1,0 +1,800 @@
+{
+  "foods": [
+    {
+      "id": "bread",
+      "art": "bread"
+    },
+    {
+      "id": "milk",
+      "art": "milk"
+    },
+    {
+      "id": "cheese",
+      "art": "cheese"
+    },
+    {
+      "id": "egg",
+      "art": "egg"
+    },
+    {
+      "id": "rice",
+      "art": "rice"
+    },
+    {
+      "id": "pasta",
+      "art": "pasta"
+    },
+    {
+      "id": "chicken",
+      "art": "chicken"
+    },
+    {
+      "id": "fish",
+      "art": "fish"
+    },
+    {
+      "id": "meat",
+      "art": "meat"
+    },
+    {
+      "id": "potato",
+      "art": "potato"
+    },
+    {
+      "id": "tomato",
+      "art": "tomato"
+    },
+    {
+      "id": "apple",
+      "art": "apple"
+    },
+    {
+      "id": "banana",
+      "art": "banana"
+    },
+    {
+      "id": "orange",
+      "art": "orange"
+    },
+    {
+      "id": "water",
+      "art": "water"
+    },
+    {
+      "id": "coffee",
+      "art": "coffee"
+    },
+    {
+      "id": "tea",
+      "art": "tea"
+    },
+    {
+      "id": "salt",
+      "art": "salt"
+    },
+    {
+      "id": "beef",
+      "art": "meat"
+    },
+    {
+      "id": "pork",
+      "art": "meat"
+    },
+    {
+      "id": "turkey",
+      "art": "chicken"
+    },
+    {
+      "id": "ham",
+      "art": "meat"
+    },
+    {
+      "id": "sausage",
+      "art": "sausage"
+    },
+    {
+      "id": "salmon",
+      "art": "assets/picture-labels/foods/salmon.webp"
+    },
+    {
+      "id": "tuna",
+      "art": "assets/picture-labels/foods/tuna.webp"
+    },
+    {
+      "id": "shrimp",
+      "art": "assets/picture-labels/foods/shrimp.webp",
+      "lexemes": [
+        "la gamba",
+        "el camarón"
+      ]
+    },
+    {
+      "id": "mejillones",
+      "art": "assets/picture-labels/foods/mejillones.webp"
+    },
+    {
+      "id": "squid",
+      "art": "assets/picture-labels/foods/squid.webp"
+    },
+    {
+      "id": "octopus",
+      "art": ""
+    },
+    {
+      "id": "seafood",
+      "art": "assets/picture-labels/marisco.webp"
+    },
+    {
+      "id": "cookie",
+      "art": "cookie"
+    },
+    {
+      "id": "cake",
+      "art": "cake"
+    },
+    {
+      "id": "icecream",
+      "art": "icecream"
+    },
+    {
+      "id": "chocolate",
+      "art": "chocolate"
+    },
+    {
+      "id": "candy",
+      "art": "candy"
+    },
+    {
+      "id": "muffin",
+      "art": "muffin"
+    },
+    {
+      "id": "flan",
+      "art": "flan"
+    },
+    {
+      "id": "juice",
+      "art": "juice"
+    },
+    {
+      "id": "lemonade",
+      "art": "juice"
+    },
+    {
+      "id": "soda",
+      "art": "soda"
+    },
+    {
+      "id": "wine",
+      "art": "wine"
+    },
+    {
+      "id": "beer",
+      "art": "beer"
+    },
+    {
+      "id": "hotchocolate",
+      "art": "coffee"
+    },
+    {
+      "id": "soup",
+      "art": "soup"
+    },
+    {
+      "id": "salad",
+      "art": "salad"
+    },
+    {
+      "id": "omelette",
+      "art": "egg"
+    },
+    {
+      "id": "sandwich",
+      "art": "sandwich"
+    },
+    {
+      "id": "pizza",
+      "art": "pizza"
+    },
+    {
+      "id": "paella",
+      "art": "rice"
+    },
+    {
+      "id": "stew",
+      "art": "soup"
+    },
+    {
+      "id": "puree",
+      "art": "puree"
+    },
+    {
+      "id": "flour",
+      "art": "bag"
+    },
+    {
+      "id": "sugar",
+      "art": "sugar"
+    },
+    {
+      "id": "oil",
+      "art": "bottle"
+    },
+    {
+      "id": "vinegar",
+      "art": "bottle"
+    },
+    {
+      "id": "butter",
+      "art": "butter"
+    },
+    {
+      "id": "jam",
+      "art": "jar"
+    },
+    {
+      "id": "honey",
+      "art": "honey"
+    },
+    {
+      "id": "lentils",
+      "art": "lentils"
+    },
+    {
+      "id": "beans",
+      "art": "beans"
+    }
+  ],
+  "clothes": [
+    {
+      "id": "tshirt",
+      "art": "tshirt"
+    },
+    {
+      "id": "shirt",
+      "art": "shirt"
+    },
+    {
+      "id": "blouse",
+      "art": "blouse"
+    },
+    {
+      "id": "sweater",
+      "art": "sweater"
+    },
+    {
+      "id": "jacket",
+      "art": "jacket"
+    },
+    {
+      "id": "coat",
+      "art": "coat"
+    },
+    {
+      "id": "dress",
+      "art": "dress"
+    },
+    {
+      "id": "skirt",
+      "art": "skirt"
+    },
+    {
+      "id": "trousers",
+      "art": "trousers"
+    },
+    {
+      "id": "jeans",
+      "art": "jeans"
+    },
+    {
+      "id": "shorts",
+      "art": "shorts"
+    },
+    {
+      "id": "suit",
+      "art": "suit"
+    },
+    {
+      "id": "pajamas",
+      "art": "pajamas"
+    },
+    {
+      "id": "underwear",
+      "art": "underwear"
+    },
+    {
+      "id": "socks",
+      "art": "socks"
+    },
+    {
+      "id": "shoes",
+      "art": "shoes"
+    },
+    {
+      "id": "sneakers",
+      "art": "sneakers"
+    },
+    {
+      "id": "boots",
+      "art": "boots"
+    },
+    {
+      "id": "ankleboots",
+      "art": "ankleboots"
+    },
+    {
+      "id": "sandals",
+      "art": "sandals"
+    },
+    {
+      "id": "heels",
+      "art": "heels"
+    },
+    {
+      "id": "slippers",
+      "art": "slippers"
+    },
+    {
+      "id": "belt",
+      "art": "belt"
+    },
+    {
+      "id": "scarf",
+      "art": "scarf"
+    },
+    {
+      "id": "gloves",
+      "art": "gloves"
+    },
+    {
+      "id": "sunglasses",
+      "art": "sunglasses"
+    },
+    {
+      "id": "umbrella",
+      "art": "umbrella"
+    },
+    {
+      "id": "tie",
+      "art": "tie"
+    },
+    {
+      "id": "bowtie",
+      "art": "bowtie"
+    },
+    {
+      "id": "handkerchief",
+      "art": "handkerchief"
+    },
+    {
+      "id": "necklace",
+      "art": "necklace"
+    },
+    {
+      "id": "bracelet",
+      "art": "bracelet"
+    },
+    {
+      "id": "ring",
+      "art": "ring"
+    },
+    {
+      "id": "earrings",
+      "art": "earrings"
+    },
+    {
+      "id": "watch",
+      "art": "watch"
+    },
+    {
+      "id": "brooch",
+      "art": "brooch"
+    },
+    {
+      "id": "chain",
+      "art": "chain"
+    },
+    {
+      "id": "hat",
+      "art": "hat"
+    },
+    {
+      "id": "cap",
+      "art": "cap"
+    },
+    {
+      "id": "beanie",
+      "art": "beanie"
+    },
+    {
+      "id": "beret",
+      "art": "beret"
+    },
+    {
+      "id": "hood",
+      "art": "hood"
+    },
+    {
+      "id": "handbag",
+      "art": "handbag"
+    },
+    {
+      "id": "backpack",
+      "art": "backpack"
+    },
+    {
+      "id": "wallet",
+      "art": "wallet"
+    },
+    {
+      "id": "coinpurse",
+      "art": "coinpurse"
+    },
+    {
+      "id": "suitcase",
+      "art": "suitcase"
+    },
+    {
+      "id": "waistbag",
+      "art": "waistbag"
+    }
+  ],
+  "activities": [
+    {
+      "id": "do_sport",
+      "art": "do_sport"
+    },
+    {
+      "id": "gym",
+      "art": "gym"
+    },
+    {
+      "id": "yoga",
+      "art": "yoga"
+    },
+    {
+      "id": "run",
+      "art": "run"
+    },
+    {
+      "id": "swim",
+      "art": "swim"
+    },
+    {
+      "id": "cycle",
+      "art": "cycle"
+    },
+    {
+      "id": "football",
+      "art": "football"
+    },
+    {
+      "id": "tennis",
+      "art": "tennis"
+    },
+    {
+      "id": "dance",
+      "art": "dance"
+    },
+    {
+      "id": "train",
+      "art": "train"
+    },
+    {
+      "id": "videogames",
+      "art": "videogames"
+    },
+    {
+      "id": "boardgames",
+      "art": "boardgames"
+    },
+    {
+      "id": "cards",
+      "art": "cards"
+    },
+    {
+      "id": "chess",
+      "art": "chess"
+    },
+    {
+      "id": "puzzles",
+      "art": "puzzles"
+    },
+    {
+      "id": "online",
+      "art": "online"
+    },
+    {
+      "id": "level",
+      "art": "level"
+    },
+    {
+      "id": "books",
+      "art": "books"
+    },
+    {
+      "id": "news",
+      "art": "news"
+    },
+    {
+      "id": "spanish",
+      "art": "spanish"
+    },
+    {
+      "id": "languages",
+      "art": "languages"
+    },
+    {
+      "id": "learn",
+      "art": "learn"
+    },
+    {
+      "id": "homework",
+      "art": "homework"
+    },
+    {
+      "id": "notes",
+      "art": "notes"
+    },
+    {
+      "id": "podcast",
+      "art": "podcast"
+    },
+    {
+      "id": "draw",
+      "art": "draw"
+    },
+    {
+      "id": "paint",
+      "art": "paint"
+    },
+    {
+      "id": "photos",
+      "art": "photos"
+    },
+    {
+      "id": "videos",
+      "art": "videos"
+    },
+    {
+      "id": "stories",
+      "art": "stories"
+    },
+    {
+      "id": "crafts",
+      "art": "crafts"
+    },
+    {
+      "id": "guitar",
+      "art": "guitar"
+    },
+    {
+      "id": "cook",
+      "art": "cook"
+    },
+    {
+      "id": "movies",
+      "art": "movies"
+    },
+    {
+      "id": "series",
+      "art": "series"
+    },
+    {
+      "id": "music",
+      "art": "music"
+    },
+    {
+      "id": "walk",
+      "art": "walk"
+    },
+    {
+      "id": "travel",
+      "art": "travel"
+    },
+    {
+      "id": "shopping",
+      "art": "shopping"
+    },
+    {
+      "id": "rest",
+      "art": "rest"
+    },
+    {
+      "id": "friends",
+      "art": "friends"
+    },
+    {
+      "id": "hike",
+      "art": "hike"
+    },
+    {
+      "id": "camp",
+      "art": "camp"
+    },
+    {
+      "id": "plants",
+      "art": "plants"
+    },
+    {
+      "id": "dog",
+      "art": "dog"
+    },
+    {
+      "id": "picnic",
+      "art": "picnic"
+    },
+    {
+      "id": "fish",
+      "art": "fishing"
+    },
+    {
+      "id": "garden",
+      "art": "garden"
+    }
+  ],
+  "pictures": [
+    {
+      "id": "woman_clothes",
+      "topic": "clothes",
+      "question": "Подпиши одежду и аксессуары девушки вместе с их цветами.",
+      "scene": "clothes_woman"
+    },
+    {
+      "id": "woman_clothes_2",
+      "topic": "clothes",
+      "question": "Подпиши второй женский образ вместе с цветами.",
+      "scene": "clothes_woman_2"
+    },
+    {
+      "id": "woman_clothes_3",
+      "topic": "clothes",
+      "question": "Подпиши третий женский образ вместе с цветами.",
+      "scene": "clothes_woman_3"
+    },
+    {
+      "id": "woman_clothes_4",
+      "topic": "clothes",
+      "question": "Подпиши четвёртый женский образ вместе с цветами.",
+      "scene": "clothes_woman_4"
+    },
+    {
+      "id": "woman_clothes_5",
+      "topic": "clothes",
+      "question": "Подпиши пятый женский образ вместе с цветами.",
+      "scene": "clothes_woman_5"
+    },
+    {
+      "id": "man_clothes",
+      "topic": "clothes",
+      "question": "Подпиши одежду мужчины вместе с её цветами.",
+      "scene": "clothes_man"
+    },
+    {
+      "id": "man_clothes_2",
+      "topic": "clothes",
+      "question": "Подпиши второй мужской образ вместе с цветами.",
+      "scene": "clothes_man_2"
+    },
+    {
+      "id": "man_clothes_3",
+      "topic": "clothes",
+      "question": "Подпиши третий мужской образ вместе с цветами.",
+      "scene": "clothes_man_3"
+    },
+    {
+      "id": "man_clothes_4",
+      "topic": "clothes",
+      "question": "Подпиши четвёртый мужской образ вместе с цветами.",
+      "scene": "clothes_man_4"
+    },
+    {
+      "id": "man_clothes_5",
+      "topic": "clothes",
+      "question": "Подпиши пятый мужской образ вместе с цветами.",
+      "scene": "clothes_man_5"
+    },
+    {
+      "id": "food_basket",
+      "topic": "foods",
+      "question": "Подпиши продукты в корзине.",
+      "scene": "food_basket"
+    },
+    {
+      "id": "food_shelf",
+      "topic": "foods",
+      "question": "Подпиши продукты на магазинной полке.",
+      "scene": "food_shelf"
+    },
+    {
+      "id": "food_bag",
+      "topic": "foods",
+      "question": "Подпиши продукты, которые выглядывают из пакета с покупками.",
+      "scene": "food_bag"
+    },
+    {
+      "id": "food_fridge",
+      "topic": "foods",
+      "question": "Подпиши продукты на полках холодильника.",
+      "scene": "food_fridge"
+    },
+    {
+      "id": "food_table",
+      "topic": "foods",
+      "question": "Подпиши заметные ингредиенты супа, салата и торта на столе.",
+      "scene": "food_table"
+    },
+    {
+      "id": "soup_chicken",
+      "topic": "foods",
+      "question": "Куриный суп: подпиши ингредиенты вокруг блюда.",
+      "scene": "dish_soup_chicken"
+    },
+    {
+      "id": "soup_lentil",
+      "topic": "foods",
+      "question": "Чечевичный суп: подпиши его основные ингредиенты.",
+      "scene": "dish_soup_lentil"
+    },
+    {
+      "id": "soup_seafood",
+      "topic": "foods",
+      "question": "Суп с морепродуктами: подпиши ингредиенты.",
+      "scene": "dish_soup_seafood"
+    },
+    {
+      "id": "salad_tuna",
+      "topic": "foods",
+      "question": "Салат с тунцом: подпиши ингредиенты.",
+      "scene": "dish_salad_tuna"
+    },
+    {
+      "id": "salad_chicken",
+      "topic": "foods",
+      "question": "Салат с курицей: подпиши ингредиенты.",
+      "scene": "dish_salad_chicken"
+    },
+    {
+      "id": "salad_seafood",
+      "topic": "foods",
+      "question": "Рисовый салат с морепродуктами: подпиши ингредиенты.",
+      "scene": "dish_salad_seafood"
+    },
+    {
+      "id": "cake_chocolate",
+      "topic": "foods",
+      "question": "Шоколадный торт: подпиши ингредиенты.",
+      "scene": "dish_cake_chocolate"
+    },
+    {
+      "id": "dessert_flan",
+      "topic": "foods",
+      "question": "Флан: подпиши четыре основных ингредиента.",
+      "scene": "dish_flan"
+    },
+    {
+      "id": "dessert_cookies",
+      "topic": "foods",
+      "question": "Печенье с шоколадом: подпиши ингредиенты.",
+      "scene": "dish_cookies"
+    },
+    {
+      "id": "main_tortilla",
+      "topic": "foods",
+      "question": "Испанская тортилья: подпиши ингредиенты.",
+      "scene": "dish_tortilla"
+    },
+    {
+      "id": "main_pizza",
+      "topic": "foods",
+      "question": "Пицца с ветчиной: подпиши ингредиенты.",
+      "scene": "dish_pizza"
+    },
+    {
+      "id": "main_stew",
+      "topic": "foods",
+      "question": "Мясное рагу: подпиши ингредиенты.",
+      "scene": "dish_stew"
+    }
+  ]
+}

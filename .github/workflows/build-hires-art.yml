@@ -1,0 +1,10 @@
+name: Build high-resolution illustrations
+
+on:
+  workflow_dispatch:
+
+jobs:
+  note:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "High-resolution rebuild is disabled until dedicated source files are uploaded."
