@@ -28,9 +28,7 @@
     button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {
       outline:3px solid rgba(98,83,217,.28); outline-offset:2px;
     }
-    .app { width:min(1220px,100%); margin:auto; padding:24p
-      
-      x; }
+    .app { width:min(1220px,100%); margin:auto; padding:24px; }
     header {
       display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:22px;
     }
