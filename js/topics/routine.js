@@ -1395,6 +1395,42 @@ const EXERCISES = [
     ],
     "displayAnswer": "Утро: despertarse, levantarse, ducharse · День: ir al trabajo, almorzar · Вечер: volver a casa, cenar, acostarse",
     "e": "Категории не пересекаются внутри этого задания; каждое слово используется один раз."
+  },
+  {
+    "id": "audio_story_weekend_1",
+    "topic": "routine",
+    "type": "audio_story_quiz",
+    "theme": "planes",
+    "skill": "Аудирование · Правда / Ложь",
+    "title": "Аудирование: Planes para el fin de semana",
+    "q": "Прослушай историю о планах на выходные и отметь: правда или ложь.",
+    "audioText": "Hola, me llamo Ana. Este fin de semana no trabajo. El sábado por la mañana voy al mercado con mi hermana y después almorzamos en casa. Por la tarde quedo con mi amiga Laura para pasear por el centro. El domingo quiero descansar, leer un libro y llamar a mis padres. Si hace buen tiempo, también voy al parque.",
+    "statements": [
+      {
+        "id": "s1",
+        "text": "Ana trabaja este fin de semana.",
+        "isTrue": false,
+        "explanation": "En el audio: «Este fin de semana no trabajo»."
+      },
+      {
+        "id": "s2",
+        "text": "El sábado por la mañana Ana va al mercado con su hermana.",
+        "isTrue": true,
+        "explanation": "En el audio: «voy al mercado con mi hermana»."
+      },
+      {
+        "id": "s3",
+        "text": "El sábado por la tarde Ana queda con Laura.",
+        "isTrue": true,
+        "explanation": "En el audio: «Por la tarde quedo con mi amiga Laura»."
+      },
+      {
+        "id": "s4",
+        "text": "El domingo Ana quiere ir a trabajar.",
+        "isTrue": false,
+        "explanation": "En el audio: «El domingo quiero descansar, leer un libro y llamar a mis padres»."
+      }
+    ]
   }
 ];
 

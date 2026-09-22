@@ -7552,6 +7552,42 @@ const EXERCISES = [
     ],
     "displayAnswer": "1. la ternera · 2. la patata · 3. el tomate · 4. las judías · 5. el aceite",
     "e": "В рагу показаны говядина, картофель, помидор, фасоль и масло."
+  },
+  {
+    "id": "audio_story_cafe_1",
+    "topic": "foods",
+    "type": "audio_story_quiz",
+    "theme": "comida",
+    "skill": "Аудирование · Правда / Ложь",
+    "title": "Аудирование: En la cafetería",
+    "q": "Прослушай историю и отметь для каждого утверждения: правда или ложь.",
+    "audioText": "Hola, me llamo Carlos. Todos los días voy a una cafetería cerca de mi oficina. Siempre pido un café con leche y una tostada con tomate. Hoy no hay tostadas, así que pido un cruasán dulce. La camarera es muy amable y siempre me saluda con una sonrisa.",
+    "statements": [
+      {
+        "id": "s1",
+        "text": "Carlos va a la cafetería solo los fines de semana.",
+        "isTrue": false,
+        "explanation": "En el audio: «Todos los días voy a una cafetería»."
+      },
+      {
+        "id": "s2",
+        "text": "La cafetería está cerca de su oficina.",
+        "isTrue": true,
+        "explanation": "En el audio: «cerca de mi oficina»."
+      },
+      {
+        "id": "s3",
+        "text": "Hoy Carlos pidió una tostada con tomate.",
+        "isTrue": false,
+        "explanation": "En el audio: «Hoy no hay tostadas, así que pido un cruasán»."
+      },
+      {
+        "id": "s4",
+        "text": "La camarera es antipática.",
+        "isTrue": false,
+        "explanation": "En el audio: «La camarera es muy amable»."
+      }
+    ]
   }
 ];
 

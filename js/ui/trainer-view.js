@@ -5,14 +5,18 @@
 export function createTrainerView(deps){
   const {els,$,escapeHtml,shuffle,normalize,fold,normalizePictureAnswer,pictureAsset,
     bindPictureImageFallback,getState,patchState,isVocabularyTopic,answerEngine,progress,
-    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate}=deps;
+    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate,playAudioStory}=deps;
 
   let orderPool=[],orderState=[],matchPool=[],matchState=[],clozePool=[],clozeState=[];
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
+  let audioStoryState={},audioStoryRate=1;
 
   function resetCard(){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
-    dragSelection=null;sortState={};sortSelection=null;sortPool=[];
+    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};audioStoryRate=1;
+    const checkBtn=$("checkBtn"),showBtn=$("showBtn");
+    if(checkBtn)checkBtn.disabled=false;
+    if(showBtn){showBtn.hidden=false;showBtn.textContent="Посмотреть ответ";}
     els.answerInput.value="";els.answerInput.disabled=false;els.answerInput.hidden=false;
     els.answerLabel.hidden=false;els.answerLabel.textContent="Твой ответ";
     els.audioActions.hidden=true;els.choiceGrid.hidden=true;els.choiceGrid.className="choice-grid";els.choiceGrid.innerHTML="";
@@ -139,10 +143,101 @@ export function createTrainerView(deps){
     els.sortBank.ondrop=function(e){e.preventDefault();const raw=e.dataTransfer.getData("text/plain");if(raw.indexOf("sort:")===0){sortState[raw.slice(5)]=null;sortSelection=null;renderSort();}};
   }
 
+  function audioStoryKey(statement,index){
+    return String(statement&&statement.id!==undefined?statement.id:index);
+  }
+
+  function audioStoryComplete(item){
+    const statements=item.statements||[];
+    return statements.length>0&&statements.every((statement,index)=>
+      Object.prototype.hasOwnProperty.call(audioStoryState,audioStoryKey(statement,index)));
+  }
+
+  function updateAudioStorySelection(item){
+    (item.statements||[]).forEach(function(statement,index){
+      const key=audioStoryKey(statement,index);
+      const selected=Object.prototype.hasOwnProperty.call(audioStoryState,key)?audioStoryState[key]:null;
+      const card=els.choiceGrid.querySelector('[data-story-statement="'+index+'"]');
+      if(!card)return;
+      card.querySelectorAll("[data-story-value]").forEach(function(btn){
+        const value=btn.dataset.storyValue==="true";
+        const active=selected!==null&&selected===value;
+        btn.classList.toggle("selected",active);
+        btn.setAttribute("aria-pressed",String(active));
+      });
+    });
+    const checkBtn=$("checkBtn");
+    if(checkBtn)checkBtn.disabled=!audioStoryComplete(item);
+  }
+
+  function renderAudioStory(item){
+    const statements=item.statements||[];
+    els.choiceGrid.hidden=false;
+    els.choiceGrid.className="choice-grid audio-story-quiz";
+    els.choiceGrid.innerHTML=
+      '<div class="audio-story-toolbar">'+
+        '<div class="audio-story-heading"><strong>'+escapeHtml(item.title||"Аудирование")+'</strong><span>Прослушай историю и отметь каждое утверждение.</span></div>'+
+        '<div class="audio-story-controls">'+
+          '<button class="audio-story-play" data-story-play type="button"><span aria-hidden="true">▶</span> Послушать историю</button>'+
+          '<button class="audio-story-speed" data-story-speed type="button" aria-label="Скорость воспроизведения 1.0">1.0×</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="audio-story-list">'+statements.map(function(statement,index){
+        return '<article class="audio-story-card" data-story-statement="'+index+'">'+
+          '<p class="audio-story-statement">'+escapeHtml(statement.text||"")+'</p>'+
+          '<div class="audio-story-actions" role="group" aria-label="Правда или ложь">'+
+            '<button class="audio-story-choice" data-story-value="true" type="button" aria-pressed="false"><span>Правда</span><small>Verdadero</small></button>'+
+            '<button class="audio-story-choice" data-story-value="false" type="button" aria-pressed="false"><span>Ложь</span><small>Falso</small></button>'+
+          '</div>'+
+          '<p class="audio-story-explanation" data-story-explanation hidden></p>'+
+        '</article>';
+      }).join("")+'</div>'+
+      '<div class="audio-story-transcript-wrap" data-story-transcript-wrap hidden>'+
+        '<button class="audio-story-transcript-toggle" data-story-transcript-toggle type="button" aria-expanded="false">Показать текст истории</button>'+
+        '<div class="audio-story-transcript" data-story-transcript hidden>'+escapeHtml(item.audioText||item.audio||"")+'</div>'+
+      '</div>';
+
+    const playBtn=els.choiceGrid.querySelector("[data-story-play]");
+    const speedBtn=els.choiceGrid.querySelector("[data-story-speed]");
+    if(playBtn)playBtn.addEventListener("click",function(){
+      if(typeof playAudioStory==="function")playAudioStory(item.audioText||item.audio||"",audioStoryRate,playBtn);
+    });
+    if(speedBtn)speedBtn.addEventListener("click",function(){
+      audioStoryRate=audioStoryRate===1?0.8:1;
+      speedBtn.textContent=audioStoryRate===1?"1.0×":"0.8×";
+      speedBtn.setAttribute("aria-label","Скорость воспроизведения "+(audioStoryRate===1?"1.0":"0.8"));
+    });
+
+    els.choiceGrid.querySelectorAll("[data-story-statement]").forEach(function(card){
+      const index=Number(card.dataset.storyStatement),statement=statements[index];
+      card.querySelectorAll("[data-story-value]").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          if(getState().checkedCurrent)return;
+          audioStoryState[audioStoryKey(statement,index)]=btn.dataset.storyValue==="true";
+          updateAudioStorySelection(item);
+        });
+      });
+    });
+
+    const transcriptToggle=els.choiceGrid.querySelector("[data-story-transcript-toggle]");
+    const transcript=els.choiceGrid.querySelector("[data-story-transcript]");
+    if(transcriptToggle&&transcript)transcriptToggle.addEventListener("click",function(){
+      const open=transcript.hidden;
+      transcript.hidden=!open;
+      transcriptToggle.setAttribute("aria-expanded",String(open));
+      transcriptToggle.textContent=open?"Скрыть текст истории":"Показать текст истории";
+    });
+    updateAudioStorySelection(item);
+  }
+
   function setupExercise(item){
     resetCard();patchState({checkedCurrent:false});
     const type=item.type||"text";
-    if(type==="color-prompt"){
+    if(type==="audio_story_quiz"){
+      els.answerInput.hidden=true;els.answerLabel.hidden=true;
+      const showBtn=$("showBtn");if(showBtn)showBtn.hidden=true;
+      renderAudioStory(item);
+    }else if(type==="color-prompt"){
       els.choiceGrid.hidden=false;els.choiceGrid.className="choice-grid color-prompt-grid";els.choiceGrid.innerHTML=colorArt(item.colorHex);
       els.answerLabel.textContent="Название цвета";els.answerInput.placeholder="Напиши цвет по-испански…";els.answerInput.focus();
     }else if(type==="choice"||type==="context-choice"){
@@ -196,6 +291,10 @@ export function createTrainerView(deps){
   }
 
   function currentAnswer(item){
+    if(item.type==="audio_story_quiz"){
+      if(!audioStoryComplete(item))return "";
+      return (item.statements||[]).map((statement,index)=>audioStoryState[audioStoryKey(statement,index)]?"true":"false").join(" | ");
+    }
     if(item.type==="match"){if(matchState.some(v=>v===null))return "";return matchState.map(id=>{const t=structuredToken(matchPool,id);return t?t.text:"";}).join(" | ");}
     if(item.type==="cloze-passage"){if(clozeState.some(v=>v===null))return "";return clozeState.map(id=>{const t=structuredToken(clozePool,id);return t?t.text:"";}).join(" | ");}
     if(item.type==="category-sort"){if((item.sortTokens||[]).some(t=>!sortState[t.id]))return "";return item.sortTokens.map(t=>sortState[t.id]).join(" | ");}
@@ -206,7 +305,29 @@ export function createTrainerView(deps){
   }
 
   function markAnswers(item){
-    if(item.type==="choice"||item.type==="context-choice"){
+    if(item.type==="audio_story_quiz"){
+      (item.statements||[]).forEach(function(statement,index){
+        const key=audioStoryKey(statement,index),selected=audioStoryState[key],correct=selected===Boolean(statement.isTrue);
+        const card=els.choiceGrid.querySelector('[data-story-statement="'+index+'"]');
+        if(!card)return;
+        card.classList.add(correct?"result-good":"result-bad");
+        card.querySelectorAll("[data-story-value]").forEach(function(btn){
+          const value=btn.dataset.storyValue==="true";
+          btn.disabled=true;
+          if(value===Boolean(statement.isTrue))btn.classList.add("result-good");
+          if(value===selected&&value!==Boolean(statement.isTrue))btn.classList.add("result-bad");
+        });
+        const explanation=card.querySelector("[data-story-explanation]");
+        if(explanation&&!correct){
+          explanation.textContent=statement.explanation||"";
+          explanation.hidden=!statement.explanation;
+        }
+      });
+      const transcriptWrap=els.choiceGrid.querySelector("[data-story-transcript-wrap]");
+      if(transcriptWrap)transcriptWrap.hidden=false;
+      const checkBtn=$("checkBtn");if(checkBtn)checkBtn.disabled=true;
+      const nextBtn=$("nextBtn");if(nextBtn)nextBtn.focus();
+    }else if(item.type==="choice"||item.type==="context-choice"){
       const selected=normalize(els.answerInput.value),correct=(item.a||[]).map(normalize);
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(btn=>{if(normalize(btn.dataset.choice)===selected)btn.classList.add(correct.indexOf(selected)>=0?"result-good":"result-bad");});
     }else if(item.type==="match"){
@@ -283,11 +404,26 @@ export function createTrainerView(deps){
     if(!value.trim()){
       const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.",match:"Сначала заполни все соответствия.",
         "cloze-passage":"Сначала заполни все пропуски в тексте.","category-sort":"Сначала распредели все слова по колонкам.",
-        "picture-label":"Сначала подпиши все отмеченные предметы."};
+        "picture-label":"Сначала подпиши все отмеченные предметы.",
+        "audio_story_quiz":"Сначала отметь «Правда» или «Ложь» для каждого утверждения."};
       els.feedback.textContent=map[item.type]||"Сначала напиши или собери свой вариант.";els.feedback.className="feedback bad";
       if(!els.answerInput.hidden)els.answerInput.focus();return;
     }
-    const result=answerEngine.checkAnswer(item,value),exact=result.exact,near=result.near;
+    const result=item.type==="audio_story_quiz"
+      ?(function(){
+        const statements=item.statements||[];
+        const correctCount=statements.reduce((count,statement,index)=>
+          count+(audioStoryState[audioStoryKey(statement,index)]===Boolean(statement.isTrue)?1:0),0);
+        const exact=statements.length>0&&correctCount===statements.length;
+        return {
+          exact,
+          near:false,
+          displayAnswer:correctCount+" из "+statements.length+" утверждений верно",
+          feedback:exact?"Все утверждения отмечены верно.":"Верно "+correctCount+" из "+statements.length+". Посмотри пояснения к ошибкам."
+        };
+      })()
+      :answerEngine.checkAnswer(item,value);
+    const exact=result.exact,near=result.near;
     if(typeof safeVibrate==="function") safeVibrate(exact?20:[30,40,30]);
     els.answerText.textContent=result.displayAnswer;markAnswers(item);
     let scheduled=false;

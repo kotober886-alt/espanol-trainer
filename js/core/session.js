@@ -18,7 +18,8 @@ const TEST_TYPES = new Set([
   "cloze",
   "cloze-passage",
   "category-sort",
-  "ser-estar-hay"
+  "ser-estar-hay",
+  "audio_story_quiz"
 ]);
 
 function uniqueExercises(items) {
@@ -113,7 +114,7 @@ export function buildExercisePool({
     });
   } else if (mode === "audio") {
     items = items.filter(function (item) {
-      return item.type === "audio";
+      return item.type === "audio" || item.type === "audio_story_quiz";
     });
   }
 

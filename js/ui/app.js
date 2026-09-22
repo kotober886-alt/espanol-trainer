@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-ux-sync1";
+import { createTrainerView } from "./trainer-view.js?v=20260922-audio-story1";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
@@ -27,7 +27,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js?v=20260922-transparent-session1";
+  } from "../core/session.js?v=20260922-audio-story1";
   import {
     registerTopic,
     getTopic,
@@ -45,14 +45,14 @@ import { load, save } from "../core/storage.js";
   import { prepositionsTopic } from "../topics/prepositions.js";
   import { connectorsTopic } from "../topics/connectors.js";
   import { pastTopic } from "../topics/past.js";
-  import { routineTopic } from "../topics/routine.js";
+  import { routineTopic } from "../topics/routine.js?v=20260922-audio-story1";
   import { calendarTopic } from "../topics/calendar.js";
   import { practicalTopic } from "../topics/practical.js";
   import { cityTopic } from "../topics/city.js";
   import { homeTopic } from "../topics/home.js";
   import { choresTopic } from "../topics/chores.js";
   import { colorsTopic } from "../topics/colors.js";
-  import { foodsTopic } from "../topics/foods.js";
+  import { foodsTopic } from "../topics/foods.js?v=20260922-audio-story1";
   import { clothesTopic } from "../topics/clothes.js";
   import { activitiesTopic } from "../topics/activities.js";
   import { animalsTopic } from "../topics/animals.js";
@@ -630,7 +630,7 @@ window.LegacyProgressAdapter = {
       } else if(selectedMode==="tests"){
         items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
       } else if(selectedMode==="audio"){
-        items=items.filter(function(x){ return x.type==="audio"; });
+        items=items.filter(function(x){ return x.type==="audio" || x.type==="audio_story_quiz"; });
       }
       return items;
     }
@@ -1232,9 +1232,11 @@ window.LegacyProgressAdapter = {
     }
 
     function setSpeakingState(active,source){
-      [els.audioPrompt,els.slowAudioPrompt,els.studyListen,els.voicePreview].forEach(function(btn){
+      const controls=[els.audioPrompt,els.slowAudioPrompt,els.studyListen,els.voicePreview];
+      controls.forEach(function(btn){
         if(btn) btn.classList.toggle("speaking",active && btn===source);
       });
+      if(source&&controls.indexOf(source)<0&&source.classList)source.classList.toggle("speaking",active);
     }
 
     function speakText(text,rate,source){
@@ -1378,7 +1380,8 @@ window.LegacyProgressAdapter = {
         syncSession:syncSessionProjection,renderStats,renderApp:render,onFinish:finishSession,
         setTrainingFavicon:function(value){if(window.DynamicFavicon)window.DynamicFavicon.setTraining(value);},
         colorArt:function(hex){return studyCardView.colorArt(hex);},
-        safeVibrate
+        safeVibrate,
+        playAudioStory:function(text,rate,source){speakText(text,rate,source);}
       });
       resultsView=createResultsView({
         els,$,getState:getUiState,patchState:patchUiState,syncSession:syncSessionProjection,
@@ -1419,8 +1422,8 @@ window.LegacyProgressAdapter = {
       // except choice options: Enter there means "Проверить".
       if((event.key==="Enter" || event.key===" ") && event.target && event.target.closest){
         const nativeControl=event.target.closest("button,a,select");
-        const choiceOption=event.target.closest(".choice-option");
-        if(nativeControl && !(event.key==="Enter" && choiceOption)) return;
+        const answerOption=event.target.closest(".choice-option,.audio-story-choice");
+        if(nativeControl && !(event.key==="Enter" && answerOption)) return;
       }
 
       if(els.trainerLayout.hidden || els.trainerLayout.classList.contains("catalog-view")) return;
