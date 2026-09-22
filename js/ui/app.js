@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-story-cafe-integrated13";
+import { createTrainerView } from "./trainer-view.js?v=20260922-story-weekend14";
 import { createResultsView } from "./results-view.js?v=20260922-mascot-priority5";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
@@ -45,7 +45,7 @@ import { load, save } from "../core/storage.js";
   import { prepositionsTopic } from "../topics/prepositions.js";
   import { connectorsTopic } from "../topics/connectors.js";
   import { pastTopic } from "../topics/past.js";
-  import { routineTopic } from "../topics/routine.js?v=20260922-spanish-statements11";
+  import { routineTopic } from "../topics/routine.js?v=20260922-story-weekend14";
   import { calendarTopic } from "../topics/calendar.js";
   import { practicalTopic } from "../topics/practical.js?v=20260922-spanish-statements11";
   import { cityTopic } from "../topics/city.js?v=20260922-spanish-statements11";

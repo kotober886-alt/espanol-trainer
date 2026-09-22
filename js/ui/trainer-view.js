@@ -177,7 +177,7 @@ export function createTrainerView(deps){
     els.choiceGrid.hidden=false;
     els.choiceGrid.className="choice-grid audio-story-quiz";
     els.choiceGrid.innerHTML=
-      (item.image?'<img class="audio-story-cover" src="'+escapeHtml(item.image)+'" alt="'+escapeHtml(item.imageAlt||"Иллюстрация к истории")+'" onerror="this.style.display=\'none\'">':'')+
+      (item.image?'<img class="audio-story-cover story-quiz-cover" src="'+escapeHtml(item.image)+'" alt="'+escapeHtml(item.imageAlt||"Иллюстрация к истории")+'" onerror="this.style.display=\'none\'">':'')+
       '<div class="audio-story-toolbar">'+
         '<div class="audio-story-heading"><strong>'+escapeHtml(item.title||"Аудирование")+'</strong><span>Прослушай историю и отметь каждое утверждение.</span></div>'+
         '<div class="audio-story-controls audio-player">'+
