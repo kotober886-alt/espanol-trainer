@@ -672,6 +672,8 @@ window.LegacyProgressAdapter = {
       els.homeStreakStat.textContent=streak+" дн.";
       const last=topicById(uiSettings.lastTopic || "verbs");
       els.continueTopic.textContent=last.title;
+      const continueCard=$("continueBtn");
+      if(continueCard) continueCard.setAttribute("aria-label","Продолжить изучение: "+last.title);
     }
     function setNav(active){
       ["Home","Learn","Practice","Mistakes","More"].forEach(function(name){

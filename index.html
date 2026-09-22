@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-stats-layout2">
+  <link rel="stylesheet" href="css/base.css?v=20260922-cards-align3">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-stats-layout2";
+      const CURRENT_BUILD="20260922-cards-align3";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -102,16 +102,29 @@
           <span class="home-primary-cta">Начать примерно на 7 минут →</span>
         </button>
         <button class="home-card learn" id="learnWordsBtn" type="button">
-          <i class="home-card-icon" aria-hidden="true">Aa</i><strong>Учить слова</strong>
-          <span>Слово, перевод и живые примеры в контексте</span><b class="home-card-chip">Выбрать тему →</b>
+          <i class="home-card-icon" aria-hidden="true">Aa</i>
+          <div class="home-card-content">
+            <strong>Учить слова</strong>
+            <span>Слово, перевод и живые примеры в контексте</span>
+          </div>
+          <b class="home-card-chip">Выбрать тему →</b>
         </button>
         <button class="home-card" id="continueBtn" type="button">
-          <i class="home-card-icon" aria-hidden="true">↻</i><strong>Продолжить</strong>
-          <span class="continue-topic-tag" id="continueTopic">Последняя выбранная тема</span><b class="home-card-chip">Выбрать длину занятия →</b>
+          <i class="home-card-icon" aria-hidden="true">↻</i>
+          <div class="home-card-content">
+            <strong>Продолжить</strong>
+            <span class="home-card-hint">Продолжить изучение:</span>
+            <span class="continue-topic-tag" id="continueTopic">Последняя выбранная тема</span>
+          </div>
+          <b class="home-card-chip">Выбрать длину занятия →</b>
         </button>
         <button class="home-card" id="chooseTopicBtn" type="button">
-          <i class="home-card-icon" aria-hidden="true">▦</i><strong>Все задания</strong>
-          <span>Грамматика, перевод, аудирование и тесты по темам</span><b class="home-card-chip">Открыть задания →</b>
+          <i class="home-card-icon" aria-hidden="true">▦</i>
+          <div class="home-card-content">
+            <strong>Все задания</strong>
+            <span>Грамматика, перевод, аудирование и тесты по темам</span>
+          </div>
+          <b class="home-card-chip">Открыть задания →</b>
         </button>
       </div>
     </section>
@@ -539,6 +552,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-stats-layout2"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-cards-align3"></script>
 </body>
 </html>
