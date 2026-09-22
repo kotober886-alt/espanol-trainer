@@ -4551,8 +4551,10 @@ window.LegacyProgressAdapter = {
         if(!els.answerInput.hidden) els.answerInput.focus();
         return;
       }
-      const exact=item.type==="picture-label" ? pictureAnswersMatch(item,normalize) : matchesAccepted(value,item.a,normalize);
-      const near=!exact && (item.type==="picture-label" ? pictureAnswersMatch(item,fold) : matchesAccepted(value,item.a,fold));
+      const answerResult=window.AnswerEngine.checkAnswer(item,value);
+      const exact=answerResult.exact;
+      const near=answerResult.near;
+      els.answerText.textContent=answerResult.displayAnswer;
       markStructuredAnswers(item);
       let scheduled=false;
       if(!checkedCurrent){
@@ -4581,13 +4583,13 @@ window.LegacyProgressAdapter = {
         checkedCurrent=true; renderStats();
       }
       if(exact){
-        els.feedback.textContent=item.sessionReview ? "Верно! Повторение закреплено." : "Верно! Отличная работа.";
+        els.feedback.textContent=answerResult.feedback;
         els.feedback.className="feedback good";
       } else if(near){
-        els.feedback.textContent="Почти верно — проверь ударение или букву ñ."+(scheduled ? " Это задание вернётся через несколько карточек." : "");
+        els.feedback.textContent=answerResult.feedback+(scheduled ? " Это задание вернётся через несколько карточек." : "");
         els.feedback.className="feedback near";
       } else {
-        els.feedback.textContent="Пока не совпало. Попробуй ещё раз или открой ответ сама."+(scheduled ? " Это задание вернётся через несколько карточек." : "");
+        els.feedback.textContent=answerResult.feedback+(scheduled ? " Это задание вернётся через несколько карточек." : " Попробуй ещё раз или открой ответ сама.");
         els.feedback.className="feedback bad";
       }
     }
@@ -4890,6 +4892,12 @@ window.LegacyProgressAdapter = {
     recordSessionResult,
     getMascotState
   } from "./js/core/progress.js";
+  import {
+    checkAnswer as checkAnswerCore,
+    normalizeExact,
+    normalizeNear,
+    splitAnswerVariants
+  } from "./js/core/answers.js";
 
   const adapter = window.LegacyProgressAdapter;
   if (!adapter) throw new Error("LegacyProgressAdapter is missing.");
@@ -4946,6 +4954,13 @@ window.LegacyProgressAdapter = {
     recordSkip,
     recordSessionResult,
     getMascotState
+  });
+
+  window.AnswerEngine = Object.freeze({
+    checkAnswer: checkAnswerCore,
+    normalizeExact,
+    normalizeNear,
+    splitAnswerVariants
   });
 
   function updateHeaderMascot(context, accuracy = null, currentStreak = null) {
