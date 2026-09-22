@@ -4,7 +4,7 @@
  */
 export function createStudyCardView(deps){
   const {els,$,escapeHtml,fold,getState,patchState,getStudyItems,getCategories,getTopic,
-    runtimeAssetUrl,withVersion,onStartPractice}=deps;
+    runtimeAssetUrl,withVersion,onStartPractice,onStudyAction,safeVibrate}=deps;
 
   const SWIPE_THRESHOLD = 72;
   const SWIPE_AXIS_LOCK = 10;
@@ -56,6 +56,7 @@ export function createStudyCardView(deps){
     }
 
     swipeAnimating=true;
+    if(typeof safeVibrate==="function") safeVibrate(15);
     const card=els.studyCard;
     const exitX=direction<0 ? "-112%" : "112%";
     const exitRotation=direction<0 ? "-9deg" : "9deg";
@@ -429,7 +430,23 @@ export function createStudyCardView(deps){
     render();
   }
 
+  function handleShortcut(key){
+    if(key==="ArrowLeft"){
+      previous();
+      return true;
+    }
+    if(key==="ArrowRight"){
+      next();
+      return true;
+    }
+    if(key==="Space"){
+      if(typeof onStudyAction==="function") onStudyAction();
+      return true;
+    }
+    return false;
+  }
+
   bindTouchSwipe();
 
-  return Object.freeze({render,currentWords,renderPicker,openPicker,previous,next,selectIndex,colorArt});
+  return Object.freeze({render,currentWords,renderPicker,openPicker,previous,next,selectIndex,colorArt,handleShortcut});
 }

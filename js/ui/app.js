@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
-import { createStudyCardView } from "./study-card.js";
-import { createTrainerView } from "./trainer-view.js?v=20260922-transparent-session1";
+import { createStudyCardView } from "./study-card.js?v=20260922-haptics-keys1";
+import { createTrainerView } from "./trainer-view.js?v=20260922-haptics-keys1";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
 import { load, save } from "../core/storage.js";
   import {
@@ -175,6 +175,17 @@ let streak = 0;
 let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: .86 });
 let feedbackAudioContext = null;
 let mascotReactionTimer = 0;
+
+function safeVibrate(pattern){
+  try{
+    if(typeof navigator==="undefined" || !("vibrate" in navigator) || typeof navigator.vibrate!=="function"){
+      return false;
+    }
+    return navigator.vibrate(pattern);
+  }catch(error){
+    return false;
+  }
+}
 
 function feedbackSoundsEnabled(){
   return audioSettings.feedbackSounds !== false &&
@@ -1176,7 +1187,9 @@ window.LegacyProgressAdapter = {
         clothingArt:function(id){return typeof window.clothingArt==="function"?window.clothingArt(id):"";},
         activityArt:function(id){return typeof window.activityArt==="function"?window.activityArt(id):"";},
         cityArt:function(id){return typeof window.cityArt==="function"?window.cityArt(id):"";},
-        onStartPractice:startFoodPractice
+        onStartPractice:startFoodPractice,
+        onStudyAction:speakStudy,
+        safeVibrate
       });
       trainerView=createTrainerView({
         els,$,escapeHtml,shuffle,normalize,fold,normalizePictureAnswer,pictureAsset,bindPictureImageFallback,
@@ -1185,7 +1198,8 @@ window.LegacyProgressAdapter = {
         answerEngine:window.AnswerEngine,progress:window.TrainerProgress,
         syncSession:syncSessionProjection,renderStats,renderApp:render,onFinish:finishSession,
         setTrainingFavicon:function(value){if(window.DynamicFavicon)window.DynamicFavicon.setTraining(value);},
-        colorArt:function(hex){return studyCardView.colorArt(hex);}
+        colorArt:function(hex){return studyCardView.colorArt(hex);},
+        safeVibrate
       });
       resultsView=createResultsView({
         els,$,getState:getUiState,patchState:patchUiState,syncSession:syncSessionProjection,
@@ -1199,6 +1213,43 @@ window.LegacyProgressAdapter = {
     function startFoodPractice(){
       openSessionDialog(selectedTopic);
     }
+
+    function shortcutTargetIsEditable(target){
+      if(!target || !target.closest) return false;
+      return Boolean(target.closest('input,textarea,[contenteditable="true"],[contenteditable=""]'));
+    }
+
+    function shortcutHasOpenDialog(){
+      return Boolean(document.querySelector("dialog[open]"));
+    }
+
+    function handleGlobalShortcut(event){
+      if(event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+      if(shortcutTargetIsEditable(event.target) || shortcutHasOpenDialog()) return;
+
+      // Let focused native controls keep their standard Enter/Space behavior.
+      if((event.key==="Enter" || event.key===" ") && event.target && event.target.closest && event.target.closest("button,a,select")){
+        return;
+      }
+
+      if(els.trainerLayout.hidden || els.trainerLayout.classList.contains("catalog-view")) return;
+
+      if(!els.studyView.hidden && foodPhase==="study" && selectedMode==="all"){
+        const studyKey=event.key===" " ? "Space" : event.key;
+        if(studyCardView && studyCardView.handleShortcut(studyKey)){
+          event.preventDefault();
+        }
+        return;
+      }
+
+      if(!els.exerciseView.hidden){
+        if(trainerView && trainerView.handleShortcut(event.key)){
+          event.preventDefault();
+        }
+      }
+    }
+
+    document.addEventListener("keydown",handleGlobalShortcut);
     $("startFoodPractice").addEventListener("click",startFoodPractice);
     $("prevWord").addEventListener("click",function(){studyCardView.previous();});
     els.nextWord.addEventListener("click",function(){studyCardView.next();});

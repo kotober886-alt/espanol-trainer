@@ -5,7 +5,7 @@
 export function createTrainerView(deps){
   const {els,$,escapeHtml,shuffle,normalize,fold,normalizePictureAnswer,pictureAsset,
     bindPictureImageFallback,getState,patchState,isVocabularyTopic,answerEngine,progress,
-    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt}=deps;
+    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate}=deps;
 
   let orderPool=[],orderState=[],matchPool=[],matchState=[],clozePool=[],clozeState=[];
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
@@ -288,6 +288,7 @@ export function createTrainerView(deps){
       if(!els.answerInput.hidden)els.answerInput.focus();return;
     }
     const result=answerEngine.checkAnswer(item,value),exact=result.exact,near=result.near;
+    if(typeof safeVibrate==="function") safeVibrate(exact?20:[30,40,30]);
     els.answerText.textContent=result.displayAnswer;markAnswers(item);
     let scheduled=false;
     if(!state.checkedCurrent){
@@ -315,8 +316,10 @@ export function createTrainerView(deps){
 
   function move(delta){
     let state=getState();if(!state.queue.length)return;
+    const skipping=delta>0&&!state.checkedCurrent;
+    if(skipping && typeof safeVibrate==="function") safeVibrate([30,40,30]);
     if(state.sessionActive&&state.sessionController){
-      if(delta>0&&!state.checkedCurrent){
+      if(skipping){
         const item=state.queue[state.index],record=state.sessionController.recordResult({correct:false,skipped:true});
         if(record.counted&&progress){
           const p=progress.recordSkip({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,firstAttempt:true});
@@ -333,7 +336,30 @@ export function createTrainerView(deps){
     patchState({index:next,checkedCurrent:false});renderApp();
   }
 
+  function selectChoiceByIndex(index){
+    const state=getState();
+    if(state.checkedCurrent) return false;
+    const options=Array.from(els.choiceGrid.querySelectorAll(".choice-option"));
+    const button=options[index];
+    if(!button || button.disabled || els.choiceGrid.hidden) return false;
+    button.click();
+    return true;
+  }
+
+  function handleShortcut(key){
+    if(/^[1-4]$/.test(key)){
+      return selectChoiceByIndex(Number(key)-1);
+    }
+    if(key==="Enter"){
+      const state=getState();
+      if(state.checkedCurrent) move(1);
+      else checkAnswer();
+      return true;
+    }
+    return false;
+  }
+
   function clearOrder(){orderState=[];renderOrderWidget();}
 
-  return Object.freeze({renderExercise,setupExercise,currentAnswer,checkAnswer,move,clearOrder,resetCard});
+  return Object.freeze({renderExercise,setupExercise,currentAnswer,checkAnswer,move,clearOrder,resetCard,selectChoiceByIndex,handleShortcut});
 }
