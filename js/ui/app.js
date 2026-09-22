@@ -1227,9 +1227,12 @@ window.LegacyProgressAdapter = {
       if(event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
       if(shortcutTargetIsEditable(event.target) || shortcutHasOpenDialog()) return;
 
-      // Let focused native controls keep their standard Enter/Space behavior.
-      if((event.key==="Enter" || event.key===" ") && event.target && event.target.closest && event.target.closest("button,a,select")){
-        return;
+      // Let focused native controls keep their standard Enter/Space behavior,
+      // except choice options: Enter there means "Проверить".
+      if((event.key==="Enter" || event.key===" ") && event.target && event.target.closest){
+        const nativeControl=event.target.closest("button,a,select");
+        const choiceOption=event.target.closest(".choice-option");
+        if(nativeControl && !(event.key==="Enter" && choiceOption)) return;
       }
 
       if(els.trainerLayout.hidden || els.trainerLayout.classList.contains("catalog-view")) return;
