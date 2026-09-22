@@ -641,8 +641,11 @@
       100% { opacity:1; transform:translateY(0) scale(1); }
     }
     .result-icon { display:grid; place-items:center; width:68px; height:68px; border-radius:22px; background:#eeeaff; color:var(--violet); font-size:30px; }
-    .result-mascot { display:block; width:min(210px,55vw); height:auto; max-height:210px; object-fit:contain; filter:drop-shadow(0 12px 22px rgba(35,28,89,.14)); }
+    .result-mascot { display:block; width:100%; max-width:220px; height:auto; margin:0 auto 16px auto; border-radius:20px; object-fit:contain; filter:drop-shadow(0 12px 22px rgba(35,28,89,.14)); }
     .result-mascot[hidden] { display:none; }
+    @media (max-width:640px) {
+      .result-mascot { max-width:180px; }
+    }
     .session-result h2 { margin:0; font-size:clamp(28px,5vw,44px); letter-spacing:-.045em; }
     .session-result > p { margin:8px auto 22px; color:var(--muted); }
     .result-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; width:min(480px,100%); margin:0 auto 22px; }

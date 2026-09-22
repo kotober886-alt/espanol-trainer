@@ -2,8 +2,8 @@
  * Completed-session results view.
  */
 export function createResultsView(deps){
-  const {els,$,getState,patchState,syncSession,progress,ensureApproveMascot,ensureStrictMascot,
-    ensureLowMascot,setResultFavicon,setHeaderMascotMood,onReviewMistakes}=deps;
+  const {els,$,getState,patchState,syncSession,progress,
+    setResultFavicon,setHeaderMascotMood,onReviewMistakes}=deps;
 
   const RESULT_PHRASES = {
     triumph: ["¡Increíble!", "¡Eres un crack!", "¡Victoria!"],
@@ -146,21 +146,11 @@ export function createResultsView(deps){
     if(progress) progress.recordSessionResult({...result,accuracy});
 
     const band=resultBand(accuracy);
-    const mode=band==="triumph"?"approve":(band==="steady"?"strict":"low");
     showResultSpeechBubble(band,result);
-    els.resultMascot.dataset.mode=mode;
-    els.resultMascot.hidden=true;
+    els.resultMascot.dataset.mode="victory";
+    els.resultMascot.alt="Рыжий кот-победитель с секундомером";
+    els.resultMascot.hidden=false;
     if(els.resultIcon) els.resultIcon.hidden=true;
-
-    const show=function(loader,alt){
-      els.resultMascot.alt=alt;
-      loader().then(function(){
-        if(els.resultMascot.dataset.mode===mode) els.resultMascot.hidden=false;
-      }).catch(function(){els.resultMascot.hidden=true;});
-    };
-    if(mode==="approve") show(ensureApproveMascot,"Одобряющий кот-маскот");
-    else if(mode==="strict") show(ensureStrictMascot,"Серьёзный кот-маскот");
-    else show(ensureLowMascot,"Недовольный кот-маскот");
 
     setResultFavicon(accuracy,getState().streak);
     const repeatButton=$("repeatMistakesBtn");
