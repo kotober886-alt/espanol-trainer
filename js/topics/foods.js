@@ -34,8 +34,8 @@ const STUDY_ITEMS = [
       "pan"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -69,8 +69,8 @@ const STUDY_ITEMS = [
       "leche"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -104,8 +104,8 @@ const STUDY_ITEMS = [
       "queso"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -139,8 +139,8 @@ const STUDY_ITEMS = [
       "huevo"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -174,8 +174,8 @@ const STUDY_ITEMS = [
       "arroz"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -211,8 +211,8 @@ const STUDY_ITEMS = [
       "pasta"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -248,8 +248,8 @@ const STUDY_ITEMS = [
       "pollo"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -284,8 +284,8 @@ const STUDY_ITEMS = [
       "pescado"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -319,8 +319,8 @@ const STUDY_ITEMS = [
       "carne"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -359,8 +359,8 @@ const STUDY_ITEMS = [
       "papa"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -395,8 +395,8 @@ const STUDY_ITEMS = [
       "tomate"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -430,8 +430,8 @@ const STUDY_ITEMS = [
       "manzana"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -467,8 +467,8 @@ const STUDY_ITEMS = [
       "plátano"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -502,8 +502,8 @@ const STUDY_ITEMS = [
       "naranja"
     ],
     "meta": {
-      "categoryTitle": "base",
-      "categoryOrder": 999,
+      "categoryTitle": "Базовые",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -537,8 +537,8 @@ const STUDY_ITEMS = [
       "agua"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -572,8 +572,8 @@ const STUDY_ITEMS = [
       "café"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -607,8 +607,8 @@ const STUDY_ITEMS = [
       "té"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -642,8 +642,8 @@ const STUDY_ITEMS = [
       "sal"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -682,8 +682,8 @@ const STUDY_ITEMS = [
       "carne de ternera"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -719,8 +719,8 @@ const STUDY_ITEMS = [
       "cerdo"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -755,8 +755,8 @@ const STUDY_ITEMS = [
       "pavo"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -792,8 +792,8 @@ const STUDY_ITEMS = [
       "jamón"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -829,8 +829,8 @@ const STUDY_ITEMS = [
       "salchicha"
     ],
     "meta": {
-      "categoryTitle": "meat",
-      "categoryOrder": 999,
+      "categoryTitle": "Мясо и птица",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -864,8 +864,8 @@ const STUDY_ITEMS = [
       "salmón"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -899,8 +899,8 @@ const STUDY_ITEMS = [
       "atún"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -947,8 +947,8 @@ const STUDY_ITEMS = [
       "camarones"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -982,8 +982,8 @@ const STUDY_ITEMS = [
       "mejillones"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1017,8 +1017,8 @@ const STUDY_ITEMS = [
       "calamar"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1052,8 +1052,8 @@ const STUDY_ITEMS = [
       "pulpo"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1091,8 +1091,8 @@ const STUDY_ITEMS = [
       "mariscos"
     ],
     "meta": {
-      "categoryTitle": "seafood",
-      "categoryOrder": 999,
+      "categoryTitle": "Морепродукты",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1127,8 +1127,8 @@ const STUDY_ITEMS = [
       "galleta"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1167,8 +1167,8 @@ const STUDY_ITEMS = [
       "pastel"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1202,8 +1202,8 @@ const STUDY_ITEMS = [
       "helado"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1237,8 +1237,8 @@ const STUDY_ITEMS = [
       "chocolate"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1274,8 +1274,8 @@ const STUDY_ITEMS = [
       "caramelo"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1312,8 +1312,8 @@ const STUDY_ITEMS = [
       "magdalena"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1349,8 +1349,8 @@ const STUDY_ITEMS = [
       "flan"
     ],
     "meta": {
-      "categoryTitle": "desserts",
-      "categoryOrder": 999,
+      "categoryTitle": "Десерты",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1387,8 +1387,8 @@ const STUDY_ITEMS = [
       "jugo"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1422,8 +1422,8 @@ const STUDY_ITEMS = [
       "limonada"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1459,8 +1459,8 @@ const STUDY_ITEMS = [
       "refresco"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1494,8 +1494,8 @@ const STUDY_ITEMS = [
       "vino"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1529,8 +1529,8 @@ const STUDY_ITEMS = [
       "cerveza"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1564,8 +1564,8 @@ const STUDY_ITEMS = [
       "caliente"
     ],
     "meta": {
-      "categoryTitle": "drinks",
-      "categoryOrder": 999,
+      "categoryTitle": "Напитки",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1599,8 +1599,8 @@ const STUDY_ITEMS = [
       "sopa"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1634,8 +1634,8 @@ const STUDY_ITEMS = [
       "ensalada"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1671,8 +1671,8 @@ const STUDY_ITEMS = [
       "tortilla"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1711,8 +1711,8 @@ const STUDY_ITEMS = [
       "sándwich"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1746,8 +1746,8 @@ const STUDY_ITEMS = [
       "pizza"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1781,8 +1781,8 @@ const STUDY_ITEMS = [
       "paella"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1818,8 +1818,8 @@ const STUDY_ITEMS = [
       "guiso"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1853,8 +1853,8 @@ const STUDY_ITEMS = [
       "puré"
     ],
     "meta": {
-      "categoryTitle": "dishes",
-      "categoryOrder": 999,
+      "categoryTitle": "Основные блюда",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1888,8 +1888,8 @@ const STUDY_ITEMS = [
       "harina"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1923,8 +1923,8 @@ const STUDY_ITEMS = [
       "azúcar"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1961,8 +1961,8 @@ const STUDY_ITEMS = [
       "aceite"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -1996,8 +1996,8 @@ const STUDY_ITEMS = [
       "vinagre"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -2032,8 +2032,8 @@ const STUDY_ITEMS = [
       "mantequilla"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -2069,8 +2069,8 @@ const STUDY_ITEMS = [
       "mermelada"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -2105,8 +2105,8 @@ const STUDY_ITEMS = [
       "miel"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -2140,8 +2140,8 @@ const STUDY_ITEMS = [
       "lentejas"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   },
@@ -2178,8 +2178,8 @@ const STUDY_ITEMS = [
       "frijoles"
     ],
     "meta": {
-      "categoryTitle": "grocery",
-      "categoryOrder": 999,
+      "categoryTitle": "Бакалея",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все продукты"
     }
   }

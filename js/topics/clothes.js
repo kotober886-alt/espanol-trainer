@@ -34,8 +34,8 @@ const STUDY_ITEMS = [
       "camiseta"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -69,8 +69,8 @@ const STUDY_ITEMS = [
       "camisa"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -104,8 +104,8 @@ const STUDY_ITEMS = [
       "blusa"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -143,8 +143,8 @@ const STUDY_ITEMS = [
       "suéter"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -182,8 +182,8 @@ const STUDY_ITEMS = [
       "cardigan"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -222,8 +222,8 @@ const STUDY_ITEMS = [
       "sudadera"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -257,8 +257,8 @@ const STUDY_ITEMS = [
       "chaleco"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -293,8 +293,8 @@ const STUDY_ITEMS = [
       "polo"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -330,8 +330,8 @@ const STUDY_ITEMS = [
       "chaqueta"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -365,8 +365,8 @@ const STUDY_ITEMS = [
       "abrigo"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -400,8 +400,8 @@ const STUDY_ITEMS = [
       "vestido"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -435,8 +435,8 @@ const STUDY_ITEMS = [
       "falda"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -472,8 +472,8 @@ const STUDY_ITEMS = [
       "pantalones"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -510,8 +510,8 @@ const STUDY_ITEMS = [
       "jeans"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -548,8 +548,8 @@ const STUDY_ITEMS = [
       "shorts"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -583,8 +583,8 @@ const STUDY_ITEMS = [
       "traje"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -618,8 +618,8 @@ const STUDY_ITEMS = [
       "pijama"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -654,8 +654,8 @@ const STUDY_ITEMS = [
       "ropa interior"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -689,8 +689,8 @@ const STUDY_ITEMS = [
       "calcetines"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -726,8 +726,8 @@ const STUDY_ITEMS = [
       "zapatos"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -764,8 +764,8 @@ const STUDY_ITEMS = [
       "tenis"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -801,8 +801,8 @@ const STUDY_ITEMS = [
       "botas"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -838,8 +838,8 @@ const STUDY_ITEMS = [
       "botines"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -875,8 +875,8 @@ const STUDY_ITEMS = [
       "sandalias"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -913,8 +913,8 @@ const STUDY_ITEMS = [
       "tacones"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -949,8 +949,8 @@ const STUDY_ITEMS = [
       "zapatillas de casa"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -984,8 +984,8 @@ const STUDY_ITEMS = [
       "cinturón"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1019,8 +1019,8 @@ const STUDY_ITEMS = [
       "bufanda"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1054,8 +1054,8 @@ const STUDY_ITEMS = [
       "guantes"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1090,8 +1090,8 @@ const STUDY_ITEMS = [
       "gafas de sol"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1125,8 +1125,8 @@ const STUDY_ITEMS = [
       "paraguas"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1160,8 +1160,8 @@ const STUDY_ITEMS = [
       "corbata"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1196,8 +1196,8 @@ const STUDY_ITEMS = [
       "pajarita"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1231,8 +1231,8 @@ const STUDY_ITEMS = [
       "pañuelo"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1268,8 +1268,8 @@ const STUDY_ITEMS = [
       "collar"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1303,8 +1303,8 @@ const STUDY_ITEMS = [
       "pulsera"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1338,8 +1338,8 @@ const STUDY_ITEMS = [
       "anillo"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1373,8 +1373,8 @@ const STUDY_ITEMS = [
       "pendientes"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1409,8 +1409,8 @@ const STUDY_ITEMS = [
       "reloj"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1444,8 +1444,8 @@ const STUDY_ITEMS = [
       "broche"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1480,8 +1480,8 @@ const STUDY_ITEMS = [
       "cadena"
     ],
     "meta": {
-      "categoryTitle": "jewelry",
-      "categoryOrder": 999,
+      "categoryTitle": "Украшения",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1515,8 +1515,8 @@ const STUDY_ITEMS = [
       "sombrero"
     ],
     "meta": {
-      "categoryTitle": "headwear",
-      "categoryOrder": 999,
+      "categoryTitle": "Головные уборы",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1552,8 +1552,8 @@ const STUDY_ITEMS = [
       "gorra"
     ],
     "meta": {
-      "categoryTitle": "headwear",
-      "categoryOrder": 999,
+      "categoryTitle": "Головные уборы",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1587,8 +1587,8 @@ const STUDY_ITEMS = [
       "gorro"
     ],
     "meta": {
-      "categoryTitle": "headwear",
-      "categoryOrder": 999,
+      "categoryTitle": "Головные уборы",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1622,8 +1622,8 @@ const STUDY_ITEMS = [
       "boina"
     ],
     "meta": {
-      "categoryTitle": "headwear",
-      "categoryOrder": 999,
+      "categoryTitle": "Головные уборы",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1657,8 +1657,8 @@ const STUDY_ITEMS = [
       "capucha"
     ],
     "meta": {
-      "categoryTitle": "headwear",
-      "categoryOrder": 999,
+      "categoryTitle": "Головные уборы",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1693,8 +1693,8 @@ const STUDY_ITEMS = [
       "bolso"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1728,8 +1728,8 @@ const STUDY_ITEMS = [
       "mochila"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1766,8 +1766,8 @@ const STUDY_ITEMS = [
       "cartera"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1803,8 +1803,8 @@ const STUDY_ITEMS = [
       "monedero"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1838,8 +1838,8 @@ const STUDY_ITEMS = [
       "maleta"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1873,8 +1873,8 @@ const STUDY_ITEMS = [
       "riñonera"
     ],
     "meta": {
-      "categoryTitle": "bags",
-      "categoryOrder": 999,
+      "categoryTitle": "Сумки",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1909,8 +1909,8 @@ const STUDY_ITEMS = [
       "talla"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1946,8 +1946,8 @@ const STUDY_ITEMS = [
       "probadores"
     ],
     "meta": {
-      "categoryTitle": "store",
-      "categoryOrder": 999,
+      "categoryTitle": "В магазине",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -1982,8 +1982,8 @@ const STUDY_ITEMS = [
       "sujetador"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2018,8 +2018,8 @@ const STUDY_ITEMS = [
       "medias"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2056,8 +2056,8 @@ const STUDY_ITEMS = [
       "mallas"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2094,8 +2094,8 @@ const STUDY_ITEMS = [
       "chandal"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2130,8 +2130,8 @@ const STUDY_ITEMS = [
       "bañador"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2165,8 +2165,8 @@ const STUDY_ITEMS = [
       "impermeable"
     ],
     "meta": {
-      "categoryTitle": "clothes",
-      "categoryOrder": 999,
+      "categoryTitle": "Одежда",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2201,8 +2201,8 @@ const STUDY_ITEMS = [
       "chanclas"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2236,8 +2236,8 @@ const STUDY_ITEMS = [
       "botas de agua"
     ],
     "meta": {
-      "categoryTitle": "shoes",
-      "categoryOrder": 999,
+      "categoryTitle": "Обувь",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2271,8 +2271,8 @@ const STUDY_ITEMS = [
       "cremallera"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2309,8 +2309,8 @@ const STUDY_ITEMS = [
       "boton"
     ],
     "meta": {
-      "categoryTitle": "accessories",
-      "categoryOrder": 999,
+      "categoryTitle": "Аксессуары",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2345,8 +2345,8 @@ const STUDY_ITEMS = [
       "probarme"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2381,8 +2381,8 @@ const STUDY_ITEMS = [
       "pongo"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2417,8 +2417,8 @@ const STUDY_ITEMS = [
       "quito"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2452,8 +2452,8 @@ const STUDY_ITEMS = [
       "cambiarme"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2487,8 +2487,8 @@ const STUDY_ITEMS = [
       "abrocho"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2522,8 +2522,8 @@ const STUDY_ITEMS = [
       "desabrocha"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2557,8 +2557,8 @@ const STUDY_ITEMS = [
       "queda"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2592,8 +2592,8 @@ const STUDY_ITEMS = [
       "grande"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2628,8 +2628,8 @@ const STUDY_ITEMS = [
       "pequeño"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2665,8 +2665,8 @@ const STUDY_ITEMS = [
       "aprietan"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2703,8 +2703,8 @@ const STUDY_ITEMS = [
       "largo"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2738,8 +2738,8 @@ const STUDY_ITEMS = [
       "combina"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2773,8 +2773,8 @@ const STUDY_ITEMS = [
       "oferta"
     ],
     "meta": {
-      "categoryTitle": "tryon",
-      "categoryOrder": 999,
+      "categoryTitle": "Примерка и размер",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2809,8 +2809,8 @@ const STUDY_ITEMS = [
       "talla"
     ],
     "meta": {
-      "categoryTitle": "store",
-      "categoryOrder": 999,
+      "categoryTitle": "В магазине",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2848,8 +2848,8 @@ const STUDY_ITEMS = [
       "probarmelo"
     ],
     "meta": {
-      "categoryTitle": "store",
-      "categoryOrder": 999,
+      "categoryTitle": "В магазине",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2885,8 +2885,8 @@ const STUDY_ITEMS = [
       "probadores"
     ],
     "meta": {
-      "categoryTitle": "store",
-      "categoryOrder": 999,
+      "categoryTitle": "В магазине",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все слова"
     }
   },
@@ -2921,8 +2921,8 @@ const STUDY_ITEMS = [
       "llevo"
     ],
     "meta": {
-      "categoryTitle": "store",
-      "categoryOrder": 999,
+      "categoryTitle": "В магазине",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все слова"
     }
   }

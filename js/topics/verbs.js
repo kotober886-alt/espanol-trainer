@@ -66,8 +66,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -133,8 +133,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -200,8 +200,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -266,8 +266,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -333,8 +333,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -400,8 +400,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -467,8 +467,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -533,8 +533,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -601,8 +601,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -669,8 +669,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "core",
-      "categoryOrder": 999,
+      "categoryTitle": "Самые нужные",
+      "categoryOrder": 1,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -736,8 +736,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -802,8 +802,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -870,8 +870,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -936,8 +936,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1002,8 +1002,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1068,8 +1068,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1135,8 +1135,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1202,8 +1202,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1269,8 +1269,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1336,8 +1336,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "food",
-      "categoryOrder": 999,
+      "categoryTitle": "Еда и напитки",
+      "categoryOrder": 2,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1402,8 +1402,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1468,8 +1468,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1534,8 +1534,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1601,8 +1601,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1668,8 +1668,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1735,8 +1735,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1801,8 +1801,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1867,8 +1867,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "routine",
-      "categoryOrder": 999,
+      "categoryTitle": "Распорядок дня",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -1934,8 +1934,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2001,8 +2001,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2068,8 +2068,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2136,8 +2136,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2203,8 +2203,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2270,8 +2270,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2338,8 +2338,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2405,8 +2405,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2473,8 +2473,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "home",
-      "categoryOrder": 999,
+      "categoryTitle": "Дом",
+      "categoryOrder": 4,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2539,8 +2539,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2606,8 +2606,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2674,8 +2674,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2742,8 +2742,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2808,8 +2808,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2874,8 +2874,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -2941,8 +2941,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3008,8 +3008,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3075,8 +3075,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3142,8 +3142,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3210,8 +3210,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3277,8 +3277,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "work",
-      "categoryOrder": 999,
+      "categoryTitle": "Работа и учёба",
+      "categoryOrder": 5,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3344,8 +3344,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3411,8 +3411,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3477,8 +3477,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3544,8 +3544,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3612,8 +3612,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3679,8 +3679,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3745,8 +3745,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3812,8 +3812,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3879,8 +3879,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "shopping",
-      "categoryOrder": 999,
+      "categoryTitle": "Покупки и дела",
+      "categoryOrder": 6,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -3946,8 +3946,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4013,8 +4013,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4080,8 +4080,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4147,8 +4147,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4213,8 +4213,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4280,8 +4280,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4347,8 +4347,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4414,8 +4414,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4480,8 +4480,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "communication",
-      "categoryOrder": 999,
+      "categoryTitle": "Общение",
+      "categoryOrder": 7,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4547,8 +4547,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4615,8 +4615,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4682,8 +4682,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4749,8 +4749,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4816,8 +4816,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4883,8 +4883,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "movement",
-      "categoryOrder": 999,
+      "categoryTitle": "Передвижение",
+      "categoryOrder": 8,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -4950,8 +4950,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -5017,8 +5017,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -5084,8 +5084,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -5151,8 +5151,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -5219,8 +5219,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   },
@@ -5286,8 +5286,8 @@ const STUDY_ITEMS = [
       ]
     },
     "meta": {
-      "categoryTitle": "plans",
-      "categoryOrder": 999,
+      "categoryTitle": "Планы и решения",
+      "categoryOrder": 9,
       "allCategoryTitle": "Все глаголы"
     }
   }
