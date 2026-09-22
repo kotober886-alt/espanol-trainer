@@ -2913,8 +2913,8 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
     let pendingSessionTopic = selectedTopic;
     let sessionSize = Number(uiSettings.sessionSize) || 10;
     let sessionActive = false;
+    let sessionController = null;
     let sessionResults = {answered:0,correct:0,wrong:0,wrongIds:[]};
-    let sessionSeen = {};
 
     const $ = (id) => document.getElementById(id);
     const els = {
@@ -3257,6 +3257,17 @@ window.LegacyProgressAdapter = {
       return result;
     }
     function filteredExercises(){
+      if(window.TrainerSession){
+        return window.TrainerSession.buildExercisePool({
+          topicId:selectedTopic,
+          mode:selectedMode,
+          categoryId:isVocabularyTopic() ? foodCategory : "all",
+          customExercises:custom,
+          legacyExercises:allExercises(),
+          stats:stats
+        });
+      }
+
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="pictures"){
@@ -3270,9 +3281,41 @@ window.LegacyProgressAdapter = {
       }
       return items;
     }
+
+    function syncSessionProjection(){
+      if(!sessionController) return;
+      const state=sessionController.getState();
+      const summary=state.summary;
+      queue=state.queue;
+      index=state.index;
+      sessionResults={
+        answered:summary.answered,
+        correct:summary.correct,
+        wrong:summary.wrong,
+        wrongIds:summary.wrongIds.slice()
+      };
+    }
+
     function buildQueue(keepIndex){
+      if(sessionActive && sessionController){
+        syncSessionProjection();
+        render();
+        return;
+      }
+
       const items=filteredExercises();
-      queue=keepIndex ? items : diverseShuffle(items,sessionActive ? sessionSize : items.length);
+
+      if(keepIndex){
+        queue=items;
+      } else if(window.TrainerSession){
+        queue=window.TrainerSession.buildQueue(items,{
+          size:items.length,
+          topicId:selectedTopic
+        });
+      } else {
+        queue=diverseShuffle(items,items.length);
+      }
+
       if(!keepIndex || index>=queue.length) index=0;
       render();
     }
@@ -3355,6 +3398,8 @@ window.LegacyProgressAdapter = {
     }
     function showHome(){
       sessionActive=false;
+      if(sessionController) sessionController.stop();
+      sessionController=null;
       if(window.DynamicFavicon) window.DynamicFavicon.setTime();
       els.homeView.hidden=false;
       els.trainerLayout.hidden=true;
@@ -3398,22 +3443,65 @@ window.LegacyProgressAdapter = {
       document.querySelectorAll("[data-session-mode]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.sessionMode===selectedMode);});
       els.sessionDialog.showModal();
     }
-    function startSession(topic,size,mode){
+    function startTrainingSession(topic,size,mode){
+      if(!window.TrainerSession){
+        throw new Error("TrainerSession is not initialized.");
+      }
+
       selectedTopic=topic || pendingSessionTopic || "all";
       sessionSize=Number(size || sessionSize) || 10;
       selectedMode=mode || selectedMode || "all";
-      foodPhase="practice"; sessionActive=true; index=0;
-      sessionResults={answered:0,correct:0,wrong:0,wrongIds:[]};
-      sessionSeen={};
+      foodPhase="practice";
+      sessionActive=true;
+      checkedCurrent=false;
+
+      sessionController=window.TrainerSession.createSession({
+        topicId:selectedTopic,
+        mode:selectedMode,
+        categoryId:isVocabularyTopic() ? foodCategory : "all",
+        size:sessionSize,
+        customExercises:custom,
+        legacyExercises:allExercises(),
+        stats:stats
+      });
+
+      syncSessionProjection();
+
       uiSettings.sessionSize=sessionSize;
       if(selectedTopic!=="all") uiSettings.lastTopic=selectedTopic;
       write(STORAGE.ui,uiSettings);
-      showWorkspace(); buildQueue(false);
+
+      showWorkspace();
+      render();
+    }
+
+    function startSession(topic,size,mode){
+      return startTrainingSession(topic,size,mode);
     }
     function finishSession(){
+      if(sessionController){
+        syncSessionProjection();
+      }
+
+      const summary=sessionController
+        ? sessionController.getSummary()
+        : {
+            answered:Math.max(0,Number(sessionResults.answered)||0),
+            correct:Math.max(0,Number(sessionResults.correct)||0),
+            wrong:Math.max(0,Number(sessionResults.wrong)||0),
+            wrongIds:(sessionResults.wrongIds || []).slice()
+          };
+
+      sessionResults={
+        answered:summary.answered,
+        correct:summary.correct,
+        wrong:summary.wrong,
+        wrongIds:summary.wrongIds.slice()
+      };
+
       sessionActive=false;
       els.studyView.hidden=true; els.exerciseView.hidden=true; els.emptyView.hidden=true; els.sessionResult.hidden=false;
-      els.resultTotal.textContent=queue.length;
+      els.resultTotal.textContent=sessionResults.answered;
       els.resultCorrect.textContent=sessionResults.correct;
       els.resultWrong.textContent=sessionResults.wrong;
       els.resultMessage.textContent=sessionResults.wrong
@@ -3422,6 +3510,15 @@ window.LegacyProgressAdapter = {
 
       const answered=Math.max(0,Number(sessionResults.answered)||0);
       const accuracy=answered ? (Number(sessionResults.correct)||0)/answered*100 : 0;
+
+      if(window.TrainerProgress){
+        window.TrainerProgress.recordSessionResult({
+          answered:sessionResults.answered,
+          correct:sessionResults.correct,
+          wrong:sessionResults.wrong,
+          accuracy:accuracy
+        });
+      }
       const showApproveMascot=accuracy>=80 && accuracy<=100;
       const showStrictMascot=accuracy>=60 && accuracy<=79;
       const showLowMascot=accuracy>=0 && accuracy<=59;
@@ -4558,29 +4655,64 @@ window.LegacyProgressAdapter = {
       markStructuredAnswers(item);
       let scheduled=false;
       if(!checkedCurrent){
-        const statsId=item.originalId || item.id;
-        const firstAttempt=!sessionActive || !sessionSeen[statsId];
-        if(firstAttempt){
+        if(sessionActive && sessionController){
+          const sessionRecord=sessionController.recordResult({
+            correct:exact,
+            answerResult:answerResult
+          });
+
+          scheduled=sessionRecord.scheduledReview;
+
+          if(sessionRecord.counted && window.TrainerProgress){
+            const progressRecord=window.TrainerProgress.recordAnswer({
+              exerciseId:item.id,
+              originalId:item.originalId || null,
+              topic:item.topic || null,
+              correct:exact,
+              firstAttempt:true
+            });
+
+            stats=window.TrainerProgress.getStats();
+            streak=progressRecord.streak;
+
+            if(window.DynamicFavicon){
+              window.DynamicFavicon.setTraining(streak);
+            }
+          }
+
+          syncSessionProjection();
+
+          els.progressLabel.textContent=(index+1)+" / "+queue.length;
+          els.progressBar.style.width=((index+1)/Math.max(1,queue.length)*100)+"%";
+        } else if(window.TrainerProgress){
+          const progressRecord=window.TrainerProgress.recordAnswer({
+            exerciseId:item.id,
+            originalId:item.originalId || null,
+            topic:item.topic || null,
+            correct:exact,
+            firstAttempt:true
+          });
+
+          stats=window.TrainerProgress.getStats();
+          streak=progressRecord.streak;
+
+          if(!exact){
+            scheduled=scheduleReview(item);
+          }
+        } else {
+          const statsId=item.originalId || item.id;
           const row=stats[statsId] || {tries:0,correct:0,wrong:0};
           row.tries++;
           if(exact) row.correct++; else row.wrong++;
           stats[statsId]=row;
           streak=exact ? streak+1 : 0;
           if(!exact) scheduled=scheduleReview(item);
+          write(STORAGE.stats,stats);
+          write(STORAGE.streak,streak);
         }
-        if(sessionActive && firstAttempt){
-          sessionSeen[statsId]=true;
-          sessionResults.answered++;
-          if(exact) sessionResults.correct++;
-          else {
-            sessionResults.wrong++;
-            const wrongId=item.originalId || item.id;
-            if(sessionResults.wrongIds.indexOf(wrongId)<0) sessionResults.wrongIds.push(wrongId);
-          }
-          if(window.DynamicFavicon) window.DynamicFavicon.setTraining(streak);
-        }
-        if(firstAttempt){write(STORAGE.stats,stats); write(STORAGE.streak,streak);}
-        checkedCurrent=true; renderStats();
+
+        checkedCurrent=true;
+        renderStats();
       }
       if(exact){
         els.feedback.textContent=answerResult.feedback;
@@ -4595,22 +4727,51 @@ window.LegacyProgressAdapter = {
     }
     function move(delta){
       if(!queue.length) return;
-      if(sessionActive && delta>0 && !checkedCurrent){
-        const item=queue[index];
-        const statsId=item.originalId || item.id;
-        if(!sessionSeen[statsId]){
-          sessionSeen[statsId]=true;
-          sessionResults.answered++;
-          sessionResults.wrong++;
-          if(sessionResults.wrongIds.indexOf(statsId)<0) sessionResults.wrongIds.push(statsId);
-          const row=stats[statsId] || {tries:0,correct:0,wrong:0};
-          row.tries++; row.wrong++; stats[statsId]=row; streak=0;
-          write(STORAGE.stats,stats); write(STORAGE.streak,streak);
+
+      if(sessionActive && sessionController){
+        if(delta>0 && !checkedCurrent){
+          const item=queue[index];
+
+          const sessionRecord=sessionController.recordResult({
+            correct:false,
+            skipped:true
+          });
+
+          if(sessionRecord.counted && window.TrainerProgress){
+            const progressRecord=window.TrainerProgress.recordSkip({
+              exerciseId:item.id,
+              originalId:item.originalId || null,
+              topic:item.topic || null,
+              firstAttempt:true
+            });
+
+            stats=window.TrainerProgress.getStats();
+            streak=progressRecord.streak;
+          }
+
+          syncSessionProjection();
+          renderStats();
         }
+
+        if(delta>0){
+          const step=sessionController.next();
+          syncSessionProjection();
+
+          if(step.finished){
+            finishSession();
+            return;
+          }
+        } else if(delta<0){
+          sessionController.previous();
+          syncSessionProjection();
+        }
+
+        checkedCurrent=false;
+        render();
+        return;
       }
-      if(sessionActive && delta>0 && index===queue.length-1){finishSession();return;}
-      if(sessionActive) index=Math.max(0,Math.min(queue.length-1,index+delta));
-      else index=(index+delta+queue.length)%queue.length;
+
+      index=(index+delta+queue.length)%queue.length;
       render();
     }
     function openDialog(){
@@ -4644,7 +4805,7 @@ window.LegacyProgressAdapter = {
       const words=currentFoodWords();
       if(wordIndex<words.length-1){wordIndex++;renderStudy();} else {startFoodPractice();}
     });
-    els.backToWordsBtn.addEventListener("click",function(){sessionActive=false;selectedMode="all";foodPhase="study";wordIndex=0;showWorkspace();render();});
+    els.backToWordsBtn.addEventListener("click",function(){sessionActive=false;if(sessionController)sessionController.stop();sessionController=null;selectedMode="all";foodPhase="study";wordIndex=0;showWorkspace();render();});
     $("checkBtn").addEventListener("click",checkAnswer);
     els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
     els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(slowerRate(),els.slowAudioPrompt);});
@@ -4898,6 +5059,11 @@ window.LegacyProgressAdapter = {
     normalizeNear,
     splitAnswerVariants
   } from "./js/core/answers.js";
+  import {
+    buildExercisePool,
+    buildQueue as buildSessionQueue,
+    createSession
+  } from "./js/core/session.js";
 
   const adapter = window.LegacyProgressAdapter;
   if (!adapter) throw new Error("LegacyProgressAdapter is missing.");
@@ -4963,6 +5129,12 @@ window.LegacyProgressAdapter = {
     splitAnswerVariants
   });
 
+  window.TrainerSession = Object.freeze({
+    buildExercisePool,
+    buildQueue: buildSessionQueue,
+    createSession
+  });
+
   function updateHeaderMascot(context, accuracy = null, currentStreak = null) {
     if (typeof window.setHeaderMascot !== "function") return;
     window.setHeaderMascot(
@@ -4991,7 +5163,6 @@ window.LegacyProgressAdapter = {
     };
 
     favicon.setResult = function (accuracy, currentStreak) {
-      recordSessionResult({ accuracy });
       originalSetResult(accuracy, currentStreak);
       updateHeaderMascot("result", accuracy, currentStreak);
     };
