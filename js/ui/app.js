@@ -1,7 +1,8 @@
 import { createCatalogView } from "./catalog.js";
-import { createStudyCardView } from "./study-card.js?v=20260922-haptics-keys1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-haptics-keys1";
+import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
+import { createTrainerView } from "./trainer-view.js?v=20260922-ux-sync1";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
+import { createNavigation } from "./navigation.js?v=20260922-ux-sync1";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -288,6 +289,8 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
     let studyCardView=null;
     let trainerView=null;
     let resultsView=null;
+    let navigationView=null;
+    let mistakeExerciseSnapshot=[];
 
     const $ = (id) => document.getElementById(id);
     const els = {
@@ -311,7 +314,10 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
       foodFilters:$("foodFilters"), foodCategoryLabel:$("foodCategoryLabel"), studyTitle:$("studyTitle"), studyIntroText:$("studyIntroText"),
       studyDots:$("studyDots"), nextWord:$("nextWord"), backToWordsBtn:$("backToWordsBtn"),
       pronounTabs:$("pronounTabs"), pronounDetails:$("pronounDetails"), examplesTitle:$("examplesTitle"),
-      homeView:$("homeView"), trainerLayout:$("trainerLayout"), topicCatalog:$("topicCatalog"), topicSearch:$("topicSearch"),
+      homeView:$("homeView"), mistakesView:$("mistakesView"), mistakesEmpty:$("mistakesEmpty"),
+      mistakesContent:$("mistakesContent"), mistakesCount:$("mistakesCount"), mistakesList:$("mistakesList"),
+      mistakesStartBtn:$("mistakesStartBtn"), mistakesWordsBtn:$("mistakesWordsBtn"),
+      trainerLayout:$("trainerLayout"), topicCatalog:$("topicCatalog"), topicSearch:$("topicSearch"),
       catalogTitle:$("catalogTitle"), catalogText:$("catalogText"), continueTopic:$("continueTopic"),
       homeDoneStat:$("homeDoneStat"), homeAccuracyStat:$("homeAccuracyStat"), homeStreakStat:$("homeStreakStat"),
       sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionResult:$("sessionResult"),
@@ -682,14 +688,18 @@ window.LegacyProgressAdapter = {
       els.homeAccuracyStat.textContent=homeAccuracy+"%";
       els.homeStreakStat.textContent=streak+" дн.";
       const last=topicById(uiSettings.lastTopic || "verbs");
-      els.continueTopic.textContent="Тема: "+last.title;
+      els.continueTopic.textContent="Вернуться к: "+last.title;
       const continueCard=$("continueBtn");
-      if(continueCard) continueCard.setAttribute("aria-label","Продолжить. Тема: "+last.title);
+      if(continueCard) continueCard.setAttribute("aria-label","Продолжить тему: "+last.title);
     }
     function setNav(active){
-      ["Home","Learn","Practice","Mistakes","More"].forEach(function(name){
-        const btn=$("nav"+name); if(btn) btn.classList.toggle("active",name.toLowerCase()===active);
-      });
+      return navigationView ? navigationView.setActive(active) : active;
+    }
+
+    function currentSectionNav(){
+      if(els.mistakesView && !els.mistakesView.hidden) return "mistakes";
+      if(!els.homeView.hidden) return "home";
+      return foodPhase==="study" ? "words" : (selectedMode==="mistakes" ? "mistakes" : "practice");
     }
     function showHome(){
       sessionActive=false;
@@ -697,6 +707,7 @@ window.LegacyProgressAdapter = {
       sessionController=null;
       if(window.DynamicFavicon) window.DynamicFavicon.setTime();
       els.homeView.hidden=false;
+      els.mistakesView.hidden=true;
       els.trainerLayout.hidden=true;
       els.sessionResult.hidden=true;
       setNav("home");
@@ -708,6 +719,7 @@ window.LegacyProgressAdapter = {
       catalogIntent=intent || "learn";
       topicSearch=""; els.topicSearch.value="";
       els.homeView.hidden=true;
+      els.mistakesView.hidden=true;
       els.trainerLayout.hidden=false;
       els.trainerLayout.classList.add("catalog-view");
       els.catalogTitle.textContent=catalogIntent==="learn" ? "Что будем учить?" : "Что будем тренировать?";
@@ -724,12 +736,174 @@ window.LegacyProgressAdapter = {
         else window.DynamicFavicon.setTime();
       }
       els.homeView.hidden=true;
+      els.mistakesView.hidden=true;
       els.trainerLayout.hidden=false;
       els.trainerLayout.classList.remove("catalog-view");
       els.sessionResult.hidden=true;
       setNav(foodPhase==="study" ? "learn" : (selectedMode==="mistakes" ? "mistakes" : "practice"));
       window.scrollTo({top:0,behavior:"smooth"});
     }
+    function mistakeExerciseKey(item){
+      return String((item && (item.originalId || item.reviewOf || item.id)) || "");
+    }
+
+    function collectMistakeExercises(){
+      const exercises=allExercises();
+      const byId=new Map();
+      exercises.forEach(function(item){
+        [item.id,item.originalId].filter(Boolean).forEach(function(id){
+          if(!byId.has(String(id))) byId.set(String(id),item);
+        });
+      });
+
+      const rows=getMistakes({exercises});
+      const combined=[];
+      const seen=new Set();
+
+      rows.forEach(function(row){
+        const item=byId.get(String(row.id));
+        if(!item) return;
+        const key=mistakeExerciseKey(item);
+        if(!key || seen.has(key)) return;
+        seen.add(key);
+        combined.push(item);
+      });
+
+      (sessionResults.mistakes || []).forEach(function(item){
+        const key=mistakeExerciseKey(item);
+        if(!key || seen.has(key)) return;
+        seen.add(key);
+        combined.push(item);
+      });
+
+      return combined;
+    }
+
+    function mistakeStudyItem(item){
+      const topic=registeredTopic(item.topic);
+      if(!topic || !Array.isArray(topic.studyItems)) return null;
+
+      const concept=exerciseConcept(item).split(":").slice(1).join(":");
+      let study=topic.studyItems.find(function(word){return String(word.id)===concept;});
+      if(study) return study;
+
+      const answers=(item.a || []).map(normalize);
+      study=topic.studyItems.find(function(word){
+        const values=[word.word,word.base].concat(word.answers || []).filter(Boolean).map(normalize);
+        return values.some(function(value){return answers.indexOf(value)>=0;});
+      });
+      return study || null;
+    }
+
+    function cleanPromptTail(value){
+      return String(value || "")
+        .replace(/^[^:]+:\s*/,"")
+        .replace(/[.?！!]+$/,"")
+        .trim();
+    }
+
+    function mistakeDisplay(item){
+      const study=mistakeStudyItem(item);
+      if(study){
+        return {
+          es:String(study.word || study.base || (study.answers || [])[0] || item.q || ""),
+          ru:String(study.tr || (study.ru || [])[0] || item.skill || "")
+        };
+      }
+
+      const q=String(item.q || "");
+      const answer=String((item.a || [])[0] || item.displayAnswer || "");
+      if(/на испанск|испанский вариант/i.test(q)){
+        return {es:answer,ru:cleanPromptTail(q)};
+      }
+      if(/на русск/i.test(q)){
+        return {es:cleanPromptTail(q),ru:answer};
+      }
+
+      const explanation=String(item.e || "");
+      const pair=explanation.match(/^([^—\n]+?)\s+—\s+([^\n]+?)(?:\.|$)/);
+      if(pair) return {es:pair[1].trim(),ru:pair[2].trim()};
+
+      const answerHasCyrillic=/[А-Яа-яЁё]/.test(answer);
+      const questionHasCyrillic=/[А-Яа-яЁё]/.test(q);
+      if(!answerHasCyrillic && questionHasCyrillic) return {es:answer,ru:q};
+      if(answerHasCyrillic && !questionHasCyrillic) return {es:q,ru:answer};
+      return {es:answer || q,ru:item.skill || topicById(item.topic).title};
+    }
+
+    function mistakeCountLabel(count){
+      const n=Math.max(0,Number(count)||0);
+      const mod10=n%10,mod100=n%100;
+      const word=mod10===1&&mod100!==11?"ошибка":(mod10>=2&&mod10<=4&&(mod100<12||mod100>14)?"ошибки":"ошибок");
+      return n+" "+word;
+    }
+
+    function renderMistakesView(){
+      mistakeExerciseSnapshot=collectMistakeExercises();
+      const count=mistakeExerciseSnapshot.length;
+      const empty=count===0;
+
+      els.mistakesEmpty.hidden=!empty;
+      els.mistakesContent.hidden=empty;
+      els.mistakesCount.hidden=empty;
+      els.mistakesCount.textContent=mistakeCountLabel(count);
+      els.mistakesStartBtn.textContent="Разобрать ошибки ("+count+")";
+
+      els.mistakesList.innerHTML=mistakeExerciseSnapshot.map(function(item,index){
+        const display=mistakeDisplay(item);
+        const topic=topicById(item.topic);
+        return '<article class="mistake-item">'+
+          '<div class="mistake-index">'+(index+1)+'</div>'+
+          '<div class="mistake-copy"><strong lang="es">'+escapeHtml(display.es)+'</strong><span>'+escapeHtml(display.ru)+'</span></div>'+
+          '<span class="mistake-topic">'+escapeHtml(topic.title)+'</span>'+
+        '</article>';
+      }).join("");
+    }
+
+    function showMistakes(){
+      sessionActive=false;
+      if(sessionController) sessionController.stop();
+      sessionController=null;
+      if(window.DynamicFavicon) window.DynamicFavicon.setTime();
+
+      els.homeView.hidden=true;
+      els.trainerLayout.hidden=true;
+      els.sessionResult.hidden=true;
+      els.mistakesView.hidden=false;
+
+      renderMistakesView();
+      setNav("mistakes");
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function startSavedMistakes(){
+      const items=mistakeExerciseSnapshot.slice();
+      if(!items.length){
+        showMistakes();
+        return;
+      }
+
+      selectedTopic="all";
+      selectedMode="mistakes";
+      foodPhase="practice";
+      sessionActive=true;
+      sessionRound="main";
+      primarySessionResult=null;
+      checkedCurrent=false;
+      sessionSize=items.length;
+
+      sessionController=window.TrainerSession.createSession({
+        topicId:"all",
+        mode:"mistakes",
+        size:items.length,
+        pool:items
+      });
+
+      syncSessionProjection();
+      showWorkspace();
+      render();
+    }
+
     function openSessionDialog(topic){
       pendingSessionTopic=topic || selectedTopic;
       if(["all","tests","pictures","audio"].indexOf(selectedMode)<0) selectedMode="all";
@@ -1208,6 +1382,15 @@ window.LegacyProgressAdapter = {
         setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);},
         onReviewMistakes:startMistakeReview
       });
+      navigationView=createNavigation({
+        $,
+        onHome:showHome,
+        onWords:function(){showCatalog("learn");},
+        onPractice:function(){showCatalog("practice");},
+        onMistakes:showMistakes,
+        onMore:function(){els.moreDialog.showModal();}
+      });
+      navigationView.bind();
     }
 
     function startFoodPractice(){
@@ -1311,15 +1494,12 @@ window.LegacyProgressAdapter = {
     $("learnWordsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});
     $("chooseTopicBtn").addEventListener("click",function(){showCatalog("practice");});
-    $("navHome").addEventListener("click",showHome);
-    $("navLearn").addEventListener("click",function(){showCatalog("learn");});
-    $("navPractice").addEventListener("click",function(){showCatalog("practice");});
-    $("navMistakes").addEventListener("click",function(){startSession("all",10,"mistakes");});
-    $("navMore").addEventListener("click",function(){setNav("more");els.moreDialog.showModal();});
     els.moreDialog.addEventListener("close",function(){
-      setNav(els.homeView.hidden ? (foodPhase==="study" ? "learn" : (selectedMode==="mistakes" ? "mistakes" : "practice")) : "home");
+      setNav(currentSectionNav());
     });
     $("moreAddBtn").addEventListener("click",function(){els.moreDialog.close();openDialog();});
+    els.mistakesStartBtn.addEventListener("click",startSavedMistakes);
+    els.mistakesWordsBtn.addEventListener("click",function(){showCatalog("learn");});
     els.topicSearch.addEventListener("input",function(){topicSearch=els.topicSearch.value;renderTopics();});
     els.wordSearch.addEventListener("input",function(){studySearch=els.wordSearch.value;wordIndex=0;studyCardView.render();});
     els.studyPickerBtn.addEventListener("click",function(){studyCardView.openPicker();});

@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-haptics-keys1">
+  <link rel="stylesheet" href="css/base.css?v=20260922-ux-sync1">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-haptics-keys1";
+      const CURRENT_BUILD="20260922-ux-sync1";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -58,7 +58,7 @@
       </div>
       <div class="header-actions">
         <button class="btn btn-soft desktop-secondary" id="homeBtn" type="button">⌂ Главная</button>
-        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">◫ Учить</button>
+        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">◫ Слова</button>
         <button class="btn btn-primary" id="addBtn" type="button" hidden>＋ Своё задание</button>
       </div>
     </header>
@@ -112,19 +112,44 @@
         <button class="home-card" id="continueBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">↻</i>
           <div class="home-card-content">
-            <strong>Продолжить</strong>
-            <span id="continueTopic">Тема: Последняя выбранная тема</span>
+            <strong>Продолжить тему</strong>
+            <span id="continueTopic">Вернуться к: Последняя выбранная тема</span>
           </div>
           <b class="home-card-chip">Выбрать длину →</b>
         </button>
         <button class="home-card" id="chooseTopicBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">▦</i>
           <div class="home-card-content">
-            <strong>Все задания</strong>
-            <span>Грамматика, перевод, аудирование и тесты по темам</span>
+            <strong>Практика заданий</strong>
+            <span>Грамматика, аудирование и тесты по темам</span>
           </div>
-          <b class="home-card-chip">Открыть задания →</b>
+          <b class="home-card-chip">К заданиям →</b>
         </button>
+      </div>
+    </section>
+
+    <section class="mistakes-view" id="mistakesView" hidden>
+      <div class="mistakes-shell">
+        <div class="mistakes-head">
+          <div>
+            <span class="mistakes-eyebrow">Разбор сложного</span>
+            <h2>Ошибки</h2>
+            <p>Здесь собраны слова и фразы, в которых уже были ошибки.</p>
+          </div>
+          <div class="mistakes-count" id="mistakesCount" hidden>0 ошибок</div>
+        </div>
+
+        <div class="mistakes-empty" id="mistakesEmpty">
+          <img src="assets/picture-labels/hero-mascot-v2.webp?v=20260920-hero3" alt="Довольный кот-маскот">
+          <h3>Ошибок пока нет!</h3>
+          <p>Все темы пройдены чисто</p>
+          <button class="btn btn-soft" id="mistakesWordsBtn" type="button">Перейти к словам</button>
+        </div>
+
+        <div class="mistakes-content" id="mistakesContent" hidden>
+          <div class="mistakes-list" id="mistakesList"></div>
+          <button class="btn btn-primary mistakes-start" id="mistakesStartBtn" type="button">Разобрать ошибки (0)</button>
+        </div>
       </div>
     </section>
 
@@ -284,9 +309,9 @@
   </main>
 
   <nav class="bottom-nav" id="bottomNav" aria-label="Основная навигация">
-    <button id="navHome" type="button"><span aria-hidden="true">⌂</span>Домой</button>
-    <button id="navLearn" type="button"><span aria-hidden="true">◫</span>Учить</button>
-    <button id="navPractice" class="active" type="button"><span aria-hidden="true">✦</span>Практика</button>
+    <button id="navHome" type="button"><span aria-hidden="true">⌂</span>Главная</button>
+    <button id="navWords" type="button"><span aria-hidden="true">◫</span>Слова</button>
+    <button id="navPractice" type="button"><span aria-hidden="true">✦</span>Практика</button>
     <button id="navMistakes" type="button"><span aria-hidden="true">↻</span>Ошибки</button>
     <button id="navMore" type="button"><span aria-hidden="true">•••</span>Ещё</button>
   </nav>
@@ -551,6 +576,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-haptics-keys1"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-ux-sync1"></script>
 </body>
 </html>
