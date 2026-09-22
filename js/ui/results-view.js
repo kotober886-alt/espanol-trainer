@@ -3,7 +3,7 @@
  */
 export function createResultsView(deps){
   const {els,$,getState,patchState,syncSession,progress,ensureApproveMascot,ensureStrictMascot,
-    ensureLowMascot,setResultFavicon,onReviewMistakes}=deps;
+    ensureLowMascot,setResultFavicon,setHeaderMascotMood,onReviewMistakes}=deps;
 
   const RESULT_PHRASES = {
     triumph: ["¡Increíble!", "¡Eres un crack!", "¡Victoria!"],
@@ -74,8 +74,15 @@ export function createResultsView(deps){
     return dialog;
   }
 
+  function applyHeaderMood(result){
+    if(typeof setHeaderMascotMood!=="function") return;
+    const accuracy=result.answered?result.correct/result.answered*100:0;
+    setHeaderMascotMood(accuracy>=60?"happy":"angry");
+  }
+
   function showMistakeChoice(summary){
     const result=normalizeSummary(summary);
+    applyHeaderMood(result);
     const dialog=ensureMistakeDialog();
     const count=result.mistakes.length || result.wrong;
     dialog.querySelector("#mistakeReviewText").textContent=
@@ -135,6 +142,7 @@ export function createResultsView(deps){
       "Отлично: занятие пройдено без ошибок.";
 
     const accuracy=result.answered?result.correct/result.answered*100:0;
+    applyHeaderMood(result);
     if(progress) progress.recordSessionResult({...result,accuracy});
 
     const band=resultBand(accuracy);

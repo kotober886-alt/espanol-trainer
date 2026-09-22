@@ -1,7 +1,7 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
 import { createTrainerView } from "./trainer-view.js?v=20260922-unified-audio3";
-import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
+import { createResultsView } from "./results-view.js?v=20260922-mascot-priority5";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
   import {
@@ -245,6 +245,7 @@ function showMascotReaction(reaction){
   const slot=document.querySelector(".mark.mascot-slot");
   if(!slot) return;
 
+  if(window.HeaderMascot) window.HeaderMascot.react(reaction.type,900);
   window.clearTimeout(mascotReactionTimer);
 
   slot.classList.remove("mascot-react-success","mascot-react-triumph","mascot-react-confused");
@@ -718,7 +719,15 @@ window.LegacyProgressAdapter = {
       }
       return foodPhase==="study" ? "words" : (selectedMode==="mistakes" ? "mistakes" : "practice");
     }
+    function resetHeaderMascot(){
+      if(window.HeaderMascot) window.HeaderMascot.resetToIdle();
+    }
+    function setHeaderMascotMood(mood){
+      if(window.HeaderMascot) window.HeaderMascot.setMood(mood);
+    }
+
     function showHome(){
+      resetHeaderMascot();
       sessionActive=false;
       if(sessionController) sessionController.stop();
       sessionController=null;
@@ -732,6 +741,7 @@ window.LegacyProgressAdapter = {
       window.scrollTo({top:0,behavior:"smooth"});
     }
     function showCatalog(intent){
+      resetHeaderMascot();
       if(window.DynamicFavicon) window.DynamicFavicon.setTime();
       catalogIntent=intent || "learn";
       topicSearch=""; els.topicSearch.value="";
@@ -748,6 +758,7 @@ window.LegacyProgressAdapter = {
       window.scrollTo({top:0,behavior:"smooth"});
     }
     function showWorkspace(){
+      if(!sessionActive) resetHeaderMascot();
       if(window.DynamicFavicon){
         if(sessionActive) window.DynamicFavicon.setTraining(streak);
         else window.DynamicFavicon.setTime();
@@ -931,6 +942,7 @@ window.LegacyProgressAdapter = {
       els.sessionDialog.showModal();
     }
     function startTrainingSession(topic,size,mode){
+      resetHeaderMascot();
       if(!window.TrainerSession){
         throw new Error("TrainerSession is not initialized.");
       }
@@ -969,6 +981,7 @@ window.LegacyProgressAdapter = {
     }
 
     function startMistakeReview(mistakes,primarySummary){
+      resetHeaderMascot();
       if(!window.TrainerSession || !Array.isArray(mistakes) || !mistakes.length){
         return resultsView.showFinal(primarySummary);
       }
@@ -1415,6 +1428,7 @@ window.LegacyProgressAdapter = {
         progress:window.TrainerProgress,ensureApproveMascot:ensureResultMascot,
         ensureStrictMascot:ensureStrictResultMascot,ensureLowMascot:ensureLowResultMascot,
         setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);},
+        setHeaderMascotMood:setHeaderMascotMood,
         onReviewMistakes:startMistakeReview
       });
       navigationView=createNavigation({

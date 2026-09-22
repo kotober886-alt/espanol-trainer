@@ -20,7 +20,7 @@
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-unified-audio3";
+      const CURRENT_BUILD="20260922-mascot-priority5";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -51,7 +51,8 @@
   class="brand-mascot"
   id="brandMascot"
   src="assets/picture-labels/mascot-morning-coffee.webp?v=20260921"
-  alt="Маскот тренажёра"
+  alt="Утренний сонный кот с кофе"
+  title="Утренний кот с кофе · 06:00–09:00"
 >
 </div>
         <div><h1>Español</h1><p class="subtitle">Личный тренажёр без подсказок</p></div>
@@ -533,60 +534,7 @@
       });
     })();
   </script>
-
-
-  <script>
-(function(){
-  const mascot = document.getElementById("brandMascot");
-  if (!mascot) return;
-   const MASCOTS = {
-  morning: "assets/picture-labels/mascot-morning-coffee.webp?v=20260921",
-  day:     "assets/picture-labels/mascot-day-focused.webp?v=20260921",
-  evening: "assets/picture-labels/mascot-evening-tired.webp?v=20260921",
-  night:   "assets/picture-labels/mascot-night-sleeping.webp?v=20260921",
-  success: "assets/picture-labels/mascot-success-streak.webp?v=20260921",
-  low:     "assets/picture-labels/mascot-low-result.webp?v=20260921"
-};
-
-  function setMascot(state){
-    const file = MASCOTS[state];
-    if (!file) return;
-    mascot.style.opacity = "0";
-    setTimeout(() => {
-      mascot.src = file;
-      mascot.className = "brand-mascot state-" + state;
-      mascot.style.opacity = "1";
-    }, 150);
-  }
-
-  function getTimeState(){
-    const hour = new Date().getHours();
-    if (hour >= 0 && hour < 7) return "night";
-    if (hour >= 7 && hour < 12) return "morning";
-    if (hour >= 12 && hour < 21) return "day";
-    return "evening";
-  }
-
-  setMascot(getTimeState());
-
-  const streak = Number(localStorage.getItem("successStreak") || 0);
-  const lastScore = Number(localStorage.getItem("lastScore") || 100);
-
-  if (lastScore < 60) {
-    setMascot("low");
-  } else if (streak >= 5) {
-    setMascot("success");
-  }
-
-  setInterval(() => {
-    if (lastScore >= 60 && streak < 5) {
-      setMascot(getTimeState());
-    }
-  }, 3600000);
-
-  window.setHeaderMascot = setMascot;
-})();
-</script>
-  <script type="module" src="./js/ui/app.js?v=20260922-unified-audio3"></script>
+  <script src="js/ui/mascot.js?v=20260922-mascot-priority5"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-mascot-priority5"></script>
 </body>
 </html>
