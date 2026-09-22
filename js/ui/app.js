@@ -2,7 +2,7 @@ import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
 import { createTrainerView } from "./trainer-view.js?v=20260922-ux-sync1";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
-import { createNavigation } from "./navigation.js?v=20260922-ux-sync1";
+import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -691,6 +691,7 @@ window.LegacyProgressAdapter = {
       els.continueTopic.textContent="Вернуться к: "+last.title;
       const continueCard=$("continueBtn");
       if(continueCard) continueCard.setAttribute("aria-label","Продолжить тему: "+last.title);
+      if(navigationView) navigationView.setBadge("mistakes",collectMistakeExercises().length);
     }
     function setNav(active){
       return navigationView ? navigationView.setActive(active) : active;
@@ -851,6 +852,7 @@ window.LegacyProgressAdapter = {
       els.mistakesCount.hidden=empty;
       els.mistakesCount.textContent=mistakeCountLabel(count);
       els.mistakesStartBtn.textContent="Разобрать ошибки ("+count+")";
+      if(navigationView) navigationView.setBadge("mistakes",count);
 
       els.mistakesList.innerHTML=mistakeExerciseSnapshot.map(function(item,index){
         const display=mistakeDisplay(item);
@@ -1491,8 +1493,6 @@ window.LegacyProgressAdapter = {
     $("closeDialog").addEventListener("click",function(){els.dialog.close();});
     els.dialog.addEventListener("click",function(e){ if(e.target===els.dialog) els.dialog.close(); });
     els.answerInput.addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();checkAnswer();} });
-    $("homeBtn").addEventListener("click",showHome);
-    $("topicsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("todayBtn").addEventListener("click",function(){selectedMode="all";startSession("all",10,"all");});
     $("learnWordsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});

@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-ux-sync1">
+  <link rel="stylesheet" href="css/base.css?v=20260922-desktop-nav1">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-ux-sync1";
+      const CURRENT_BUILD="20260922-desktop-nav1";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -57,8 +57,15 @@
         <div><h1>Español</h1><p class="subtitle">Личный тренажёр без подсказок</p></div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-soft desktop-secondary" id="homeBtn" type="button">⌂ Главная</button>
-        <button class="btn btn-soft desktop-secondary" id="topicsBtn" type="button">◫ Слова</button>
+        <nav class="header-nav" aria-label="Разделы тренажёра">
+          <button class="header-nav-link" id="headerNavHome" type="button">Главная</button>
+          <button class="header-nav-link" id="headerNavWords" type="button">Слова</button>
+          <button class="header-nav-link" id="headerNavPractice" type="button">Практика</button>
+          <button class="header-nav-link" id="headerNavMistakes" type="button">
+            <span>Ошибки</span>
+            <span class="header-nav-badge" data-nav-badge="mistakes" hidden>0</span>
+          </button>
+        </nav>
         <button class="btn btn-primary" id="addBtn" type="button" hidden>＋ Своё задание</button>
       </div>
     </header>
@@ -576,6 +583,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-ux-sync1"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-desktop-nav1"></script>
 </body>
 </html>
