@@ -117,7 +117,7 @@
 
     .choice-grid.audio-story-quiz { grid-template-columns:minmax(0,1fr); gap:14px; margin-bottom:22px; }
     .audio-story-toolbar {
-      display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px;
       border:1px solid #ddd8f0; border-radius:17px; background:#faf9ff;
     }
     .audio-story-heading { min-width:0; display:grid; gap:3px; }
@@ -771,7 +771,7 @@
       .audio-actions { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:7px; }
       .audio-prompt,.audio-slow { width:100%; min-width:0; justify-content:center; padding:11px 8px; font-size:13px; }
       .audio-settings { margin-top:9px; }
-      .audio-story-toolbar { align-items:stretch; flex-direction:column; gap:8px; padding:10px; }
+      .audio-story-toolbar { align-items:stretch; flex-direction:column; gap:8px; padding:10px 14px; }
       .audio-story-controls { width:100%; }
       .audio-story-play { flex:1 1 auto; }
       .audio-story-speed { flex:0 0 auto; }
@@ -1526,20 +1526,27 @@
 }
 
 
-/* Audio story cover · 20260922-story-weekend14 */
-.audio-story-cover, .story-quiz-cover {
+/* Audio story cover · 20260923-story-cover-aspect19 */
+.audio-story-cover,
+.story-quiz-cover,
+.story-quiz-cover img {
   display:block;
   width:100%;
-  height:180px;
-  max-height:180px;
+  height:auto;
+  aspect-ratio:16 / 9;
   object-fit:cover;
-  border-radius:16px;
-  margin:0 0 12px;
+  object-position:center;
+  border-radius:18px;
+}
+.audio-story-cover,
+.story-quiz-cover {
+  margin:0 0 10px;
 }
 @media (max-width:520px) {
-  .audio-story-cover, .story-quiz-cover {
-    height:140px;
-    max-height:140px;
+  .audio-story-cover,
+  .story-quiz-cover,
+  .story-quiz-cover img {
+    max-height:200px;
   }
 }
 
