@@ -13,7 +13,8 @@ import { load, save } from "../core/storage.js";
     recordAnswer,
     recordSkip,
     recordSessionResult,
-    getMascotState
+    getMascotState,
+    getProgressReaction
   } from "../core/progress.js";
   import {
     checkAnswer as checkAnswerCore,
@@ -172,6 +173,105 @@ let custom = [];
 let streak = 0;
 
 let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: .86 });
+let feedbackAudioContext = null;
+let mascotReactionTimer = 0;
+let mascotBubbleTimer = 0;
+
+function feedbackSoundsEnabled(){
+  return audioSettings.feedbackSounds !== false &&
+    audioSettings.soundEnabled !== false &&
+    audioSettings.muted !== true;
+}
+
+function playFeedbackSound(type){
+  if(!feedbackSoundsEnabled()) return;
+  const AudioContextCtor=window.AudioContext || window.webkitAudioContext;
+  if(!AudioContextCtor) return;
+
+  try{
+    if(!feedbackAudioContext) feedbackAudioContext=new AudioContextCtor();
+    const context=feedbackAudioContext;
+    if(context.state==="suspended") context.resume().catch(function(){});
+
+    const now=context.currentTime;
+    const oscillator=context.createOscillator();
+    const gain=context.createGain();
+
+    oscillator.type=type==="confused" ? "triangle" : "sine";
+    const startFrequency=type==="confused" ? 245 : (type==="triumph" ? 660 : 590);
+    const endFrequency=type==="confused" ? 185 : (type==="triumph" ? 900 : 720);
+
+    oscillator.frequency.setValueAtTime(startFrequency,now);
+    oscillator.frequency.exponentialRampToValueAtTime(endFrequency,now+.075);
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(type==="triumph" ? .045 : .032,now+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.095);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now+.1);
+  }catch(error){}
+}
+
+function mascotBubble(){
+  const slot=document.querySelector(".mark.mascot-slot");
+  if(!slot) return null;
+  let bubble=slot.querySelector(".mascot-reaction-bubble");
+  if(!bubble){
+    bubble=document.createElement("span");
+    bubble.className="mascot-reaction-bubble";
+    bubble.setAttribute("role","status");
+    bubble.setAttribute("aria-live","polite");
+    slot.appendChild(bubble);
+  }
+  return bubble;
+}
+
+function showMascotReaction(reaction){
+  if(!reaction || !reaction.type) return;
+  const slot=document.querySelector(".mark.mascot-slot");
+  if(!slot) return;
+
+  window.clearTimeout(mascotReactionTimer);
+  window.clearTimeout(mascotBubbleTimer);
+
+  slot.classList.remove("mascot-react-success","mascot-react-triumph","mascot-react-confused");
+  void slot.offsetWidth;
+  slot.classList.add("mascot-react-"+reaction.type);
+
+  const bubble=mascotBubble();
+  if(bubble){
+    bubble.textContent=reaction.message || "";
+    bubble.className="mascot-reaction-bubble is-"+reaction.type;
+    requestAnimationFrame(function(){bubble.classList.add("is-visible");});
+    mascotBubbleTimer=window.setTimeout(function(){bubble.classList.remove("is-visible");},1250);
+  }
+
+  playFeedbackSound(reaction.type);
+
+  mascotReactionTimer=window.setTimeout(function(){
+    slot.classList.remove("mascot-react-success","mascot-react-triumph","mascot-react-confused");
+  },900);
+}
+
+function queueMascotReaction(result){
+  if(!result || !result.recorded || !result.reaction) return;
+  window.setTimeout(function(){showMascotReaction(result.reaction);},170);
+}
+
+function recordAnswerWithReaction(payload){
+  const result=recordAnswer(payload);
+  queueMascotReaction(result);
+  return result;
+}
+
+function recordSkipWithReaction(payload){
+  const result=recordSkip(payload);
+  queueMascotReaction(result);
+  return result;
+}
 let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
     if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:.86};
     if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
@@ -1308,10 +1408,11 @@ window.LegacyProgressAdapter = {
     getLastResult,
     getTopicStats,
     getMistakes,
-    recordAnswer,
-    recordSkip,
+    recordAnswer: recordAnswerWithReaction,
+    recordSkip: recordSkipWithReaction,
     recordSessionResult,
-    getMascotState
+    getMascotState,
+    getProgressReaction
   });
 
   window.AnswerEngine = Object.freeze({

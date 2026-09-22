@@ -6,6 +6,153 @@ export function createStudyCardView(deps){
   const {els,$,escapeHtml,fold,getState,patchState,getStudyItems,getCategories,getTopic,
     runtimeAssetUrl,withVersion,onStartPractice}=deps;
 
+  const SWIPE_THRESHOLD = 72;
+  const SWIPE_AXIS_LOCK = 10;
+  let swipe = null;
+  let swipeAnimating = false;
+
+  function interactiveTouchTarget(target){
+    return Boolean(
+      target &&
+      target.closest &&
+      target.closest("button,input,select,textarea,a,[contenteditable='true']")
+    );
+  }
+
+  function resetSwipeVisual(immediate){
+    els.studyCard.classList.remove("is-swipe-dragging","is-swipe-settling");
+    els.studyCard.style.transition=immediate ? "none" : "";
+    els.studyCard.style.transform="";
+    els.studyCard.style.opacity="";
+    if(immediate){
+      requestAnimationFrame(function(){
+        els.studyCard.style.transition="";
+      });
+    }
+  }
+
+  function canSwipe(direction){
+    const state=getState();
+    const words=currentWords();
+    if(direction<0) return state.wordIndex < words.length-1;
+    return state.wordIndex > 0;
+  }
+
+  function animateSwipe(direction){
+    if(swipeAnimating || !canSwipe(direction)){
+      resetSwipeVisual(false);
+      return;
+    }
+
+    swipeAnimating=true;
+    const card=els.studyCard;
+    const exitX=direction<0 ? "-112%" : "112%";
+    const exitRotation=direction<0 ? "-9deg" : "9deg";
+
+    card.classList.remove("is-swipe-dragging");
+    card.classList.add("is-swipe-settling");
+    card.style.transition="transform 180ms cubic-bezier(.22,.75,.32,1), opacity 150ms ease";
+    card.style.transform="translate3d("+exitX+",0,0) rotate("+exitRotation+")";
+    card.style.opacity=".12";
+
+    window.setTimeout(function(){
+      const state=getState();
+      patchState({wordIndex:state.wordIndex+(direction<0?1:-1)});
+      render();
+
+      const enterX=direction<0 ? "34px" : "-34px";
+      const enterRotation=direction<0 ? "2.5deg" : "-2.5deg";
+      card.style.transition="none";
+      card.style.transform="translate3d("+enterX+",0,0) rotate("+enterRotation+")";
+      card.style.opacity=".82";
+
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          card.style.transition="transform 220ms cubic-bezier(.2,.8,.3,1), opacity 180ms ease";
+          card.style.transform="translate3d(0,0,0) rotate(0deg)";
+          card.style.opacity="1";
+
+          window.setTimeout(function(){
+            swipeAnimating=false;
+            resetSwipeVisual(false);
+          },230);
+        });
+      });
+    },175);
+  }
+
+  function handleTouchStart(event){
+    if(swipeAnimating || event.touches.length!==1 || interactiveTouchTarget(event.target)) return;
+    const touch=event.touches[0];
+    swipe={
+      startX:touch.clientX,
+      startY:touch.clientY,
+      dx:0,
+      dy:0,
+      axis:null
+    };
+    els.studyCard.classList.remove("is-swipe-settling");
+    els.studyCard.style.transition="none";
+  }
+
+  function handleTouchMove(event){
+    if(!swipe || event.touches.length!==1) return;
+    const touch=event.touches[0];
+    swipe.dx=touch.clientX-swipe.startX;
+    swipe.dy=touch.clientY-swipe.startY;
+
+    const absX=Math.abs(swipe.dx);
+    const absY=Math.abs(swipe.dy);
+
+    if(!swipe.axis && (absX>SWIPE_AXIS_LOCK || absY>SWIPE_AXIS_LOCK)){
+      if(absY>absX*1.15){
+        swipe.axis="vertical";
+        resetSwipeVisual(true);
+        return;
+      }
+      if(absX>absY*1.15) swipe.axis="horizontal";
+    }
+
+    if(swipe.axis!=="horizontal") return;
+
+    event.preventDefault();
+    const limitedX=Math.max(-150,Math.min(150,swipe.dx));
+    const rotation=Math.max(-6,Math.min(6,limitedX/24));
+    els.studyCard.classList.add("is-swipe-dragging");
+    els.studyCard.style.transform="translate3d("+limitedX+"px,0,0) rotate("+rotation+"deg)";
+  }
+
+  function handleTouchEnd(){
+    if(!swipe) return;
+    const current=swipe;
+    swipe=null;
+
+    if(current.axis!=="horizontal"){
+      resetSwipeVisual(false);
+      return;
+    }
+
+    if(Math.abs(current.dx)>=SWIPE_THRESHOLD){
+      animateSwipe(current.dx<0?-1:1);
+    }else{
+      els.studyCard.classList.remove("is-swipe-dragging");
+      els.studyCard.classList.add("is-swipe-settling");
+      els.studyCard.style.transition="transform 190ms cubic-bezier(.2,.8,.3,1)";
+      els.studyCard.style.transform="translate3d(0,0,0) rotate(0deg)";
+      window.setTimeout(function(){resetSwipeVisual(false);},195);
+    }
+  }
+
+  function bindTouchSwipe(){
+    els.studyCard.addEventListener("touchstart",handleTouchStart,{passive:true});
+    els.studyCard.addEventListener("touchmove",handleTouchMove,{passive:false});
+    els.studyCard.addEventListener("touchend",handleTouchEnd,{passive:true});
+    els.studyCard.addEventListener("touchcancel",function(){
+      swipe=null;
+      resetSwipeVisual(false);
+    },{passive:true});
+  }
+
   function currentWords(){
     const state=getState();
     let words=getStudyItems(state.selectedTopic).slice();
@@ -274,6 +421,8 @@ export function createStudyCardView(deps){
     els.wordSearch.value="";
     render();
   }
+
+  bindTouchSwipe();
 
   return Object.freeze({render,currentWords,renderPicker,openPicker,previous,next,selectIndex,colorArt});
 }
