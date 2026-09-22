@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-audio-story1";
+import { createTrainerView } from "./trainer-view.js?v=20260922-audio-speed2";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";

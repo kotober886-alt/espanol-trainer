@@ -129,7 +129,7 @@
       min-height:42px; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px;
       color:#fff; background:linear-gradient(135deg,var(--violet),var(--violet-2)); box-shadow:0 8px 18px rgba(80,62,170,.16);
     }
-    .audio-story-speed { min-width:66px; min-height:42px; padding:9px 12px; color:#4d438f; background:#f0edff; border:1px solid #d7d0f4; }
+    .audio-story-speed { min-width:82px; min-height:42px; padding:9px 12px; color:#4d438f; background:#f0edff; border:1px solid #d7d0f4; white-space:nowrap; }
     .audio-story-list { display:grid; gap:10px; }
     .audio-story-card { padding:14px; border:1px solid var(--line); border-radius:16px; background:#fff; }
     .audio-story-card.result-good { border-color:#7cc9a6; background:#f0faf5; }

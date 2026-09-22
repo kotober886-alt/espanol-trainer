@@ -203,9 +203,11 @@ export function createTrainerView(deps){
       if(typeof playAudioStory==="function")playAudioStory(item.audioText||item.audio||"",audioStoryRate,playBtn);
     });
     if(speedBtn)speedBtn.addEventListener("click",function(){
-      audioStoryRate=audioStoryRate===1?0.8:1;
-      speedBtn.textContent=audioStoryRate===1?"1.0×":"0.8×";
-      speedBtn.setAttribute("aria-label","Скорость воспроизведения "+(audioStoryRate===1?"1.0":"0.8"));
+      const rates=[1,0.8,0.6];
+      const currentIndex=rates.findIndex(rate=>Math.abs(rate-audioStoryRate)<0.001);
+      audioStoryRate=rates[(currentIndex+1)%rates.length];
+      speedBtn.textContent=audioStoryRate===0.6?"🐌 0.6×":audioStoryRate.toFixed(1)+"×";
+      speedBtn.setAttribute("aria-label","Скорость воспроизведения "+audioStoryRate.toFixed(1)+(audioStoryRate===0.6?", медленно":""));
     });
 
     els.choiceGrid.querySelectorAll("[data-story-statement]").forEach(function(card){
