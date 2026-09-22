@@ -107,18 +107,17 @@ import { load, save } from "../core/storage.js";
 }
 
    function pictureAsset(scene, forceReload) {
-      const safeScene=String(scene || "");
-      if(safeScene.indexOf("animal-")===0 && window.TopicRegistryFacade){
+      const rawScene=String(scene || "");
+      if(rawScene.indexOf("animal-")===0 && window.TopicRegistryFacade){
         const animals=window.TopicRegistryFacade.getTopic("animals");
-        const animalId=safeScene.slice("animal-".length);
+        const animalId=rawScene.slice("animal-".length);
         const word=animals && animals.studyItems.find(function(item){return item.id===animalId;});
         if(word && word.image) return runtimeAssetUrl(word.image,!!forceReload);
       }
-  const safeScene = String(scene || "").trim().replace(/[^a-z0-9_-]/gi, "");
-  if (!safeScene) return "";
-  // Версия добавляется прямо в момент построения карточки.
-  return runtimeAssetUrl("assets/picture-labels/" + safeScene + ".webp", !!forceReload);
-}
+      const safeScene=rawScene.trim().replace(/[^a-z0-9_-]/gi,"");
+      if(!safeScene) return "";
+      return runtimeAssetUrl("assets/picture-labels/"+safeScene+".webp",!!forceReload);
+    }
 
     function bindPictureImageFallback(img,scene){
       if(!img) return;
