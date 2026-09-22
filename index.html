@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-transparent-session1">
+  <link rel="stylesheet" href="css/base.css?v=20260922-home-refresh1">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-transparent-session1";
+      const CURRENT_BUILD="20260922-home-refresh1";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -72,28 +72,46 @@
           <h2>Твой тренажер испанского на каждый день</h2>
           <p>Тут можно учить слова и делать разные упражнения, слушать аудирование и решать задачи для закрепления знаний</p>
         </div>
-        <div class="home-stats">
-          <div class="home-stat"><strong id="homeDoneStat">0</strong><span>решено</span></div>
-          <div class="home-stat"><strong id="homeAccuracyStat">0%</strong><span>верно</span></div>
-          <div class="home-stat"><strong id="homeStreakStat">0</strong><span>серия</span></div>
+        <div class="home-stats" aria-label="Статистика обучения">
+          <div class="home-stat">
+            <span class="home-stat-icon" aria-hidden="true">🔥</span>
+            <div><strong id="homeStreakStat">0 дн.</strong><span>серия</span></div>
+          </div>
+          <div class="home-stat">
+            <span class="home-stat-icon" aria-hidden="true">🎯</span>
+            <div><strong id="homeAccuracyStat">0%</strong><span>точность</span></div>
+          </div>
+          <div class="home-stat">
+            <span class="home-stat-icon" aria-hidden="true">📚</span>
+            <div><strong id="homeDoneStat">0</strong><span>всего</span></div>
+          </div>
         </div>
       </div>
       <div class="home-actions">
-        <button class="home-card primary" id="todayBtn" type="button">
-          <i class="home-card-icon" aria-hidden="true">✦</i><strong>Тренировка на сегодня</strong>
-          <span>10 разнообразных заданий из разных тем</span><b>Начать примерно на 7 минут →</b>
+        <button class="home-card primary home-card-today" id="todayBtn" type="button">
+          <div class="home-primary-head">
+            <div class="home-primary-copy">
+              <i class="home-card-icon" aria-hidden="true">✦</i>
+              <div>
+                <strong>Тренировка на сегодня</strong>
+                <span>10 разнообразных заданий из разных тем</span>
+              </div>
+            </div>
+            <span class="home-timer-badge" aria-label="Примерно семь минут">⏱️ ~7 мин</span>
+          </div>
+          <span class="home-primary-cta">Начать примерно на 7 минут →</span>
         </button>
         <button class="home-card learn" id="learnWordsBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">Aa</i><strong>Учить слова</strong>
-          <span>Слово, перевод и живые примеры в контексте</span><b>Выбрать тему →</b>
+          <span>Слово, перевод и живые примеры в контексте</span><b class="home-card-chip">Выбрать тему →</b>
         </button>
         <button class="home-card" id="continueBtn" type="button">
           <i class="home-card-icon" aria-hidden="true">↻</i><strong>Продолжить</strong>
-          <span id="continueTopic">Последняя выбранная тема</span><b>Выбрать длину занятия →</b>
+          <span class="continue-topic-tag" id="continueTopic">Последняя выбранная тема</span><b class="home-card-chip">Выбрать длину занятия →</b>
         </button>
         <button class="home-card" id="chooseTopicBtn" type="button">
-          <i class="home-card-icon" aria-hidden="true">▦</i><strong>Выбрать тему</strong>
-          <span>Все темы разложены по понятным группам</span><b>Открыть каталог →</b>
+          <i class="home-card-icon" aria-hidden="true">▦</i><strong>Все задания</strong>
+          <span>Грамматика, перевод, аудирование и тесты по темам</span><b class="home-card-chip">Открыть задания →</b>
         </button>
       </div>
     </section>
@@ -521,6 +539,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-transparent-session1"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-home-refresh1"></script>
 </body>
 </html>

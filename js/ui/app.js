@@ -668,7 +668,7 @@ window.LegacyProgressAdapter = {
       els.streakStat.textContent=streak;
       els.homeDoneStat.textContent=done;
       els.homeAccuracyStat.textContent=done ? Math.round(right/done*100)+"%" : "0%";
-      els.homeStreakStat.textContent=streak;
+      els.homeStreakStat.textContent=streak+" дн.";
       const last=topicById(uiSettings.lastTopic || "verbs");
       els.continueTopic.textContent=last.title;
     }
