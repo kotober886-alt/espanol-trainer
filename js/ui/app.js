@@ -47,7 +47,7 @@ import { load, save } from "../core/storage.js";
   import { pastTopic } from "../topics/past.js";
   import { routineTopic } from "../topics/routine.js?v=20260922-story-weekend14";
   import { calendarTopic } from "../topics/calendar.js";
-  import { practicalTopic } from "../topics/practical.js?v=20260922-spanish-statements11";
+  import { practicalTopic } from "../topics/practical.js?v=20260922-story-hotel-final15";
   import { cityTopic } from "../topics/city.js?v=20260922-spanish-statements11";
   import { homeTopic } from "../topics/home.js";
   import { choresTopic } from "../topics/chores.js";
