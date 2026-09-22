@@ -1740,6 +1740,133 @@ const EXERCISES = [
     ],
     "displayAnswer": "Время: ¿Qué hora es?, Es la una., Son las… · Даты: ¿Qué fecha es hoy?, el 15 de septiembre, en 2026 · Цены: ¿Cuánto cuesta?, ¿Cuánto cuestan?, euros / céntimos · Количество: muy + прилагательное / наречие, mucho / mucha, muchos / muchas",
     "e": "Категории не пересекаются внутри этого задания; каждое слово используется один раз."
+  },
+  {
+    "id": "audio_story_practical_hotel_1",
+    "topic": "practical",
+    "foodCat": "prices",
+    "type": "audio_story_quiz",
+    "theme": "hotel",
+    "skill": "Аудирование · Правда / Ложь",
+    "title": "Аудирование: En la recepción del hotel",
+    "q": "Прослушай разговор на ресепшн и отметь: правда или ложь.",
+    "audioText": "Buenas tardes. Tengo una reserva a nombre de Elena Gómez por tres noches. ¿El desayuno está incluido en el precio? Sí, se sirve de ocho a diez y media en la primera planta. Aquí tiene su tarjeta, la habitación está en el cuarto piso.",
+    "statements": [
+      {"id":"s1","text":"Бронь оформлена на имя Elena Gómez на три ночи.","isTrue":true,"explanation":"В аудио: «una reserva a nombre de Elena Gómez por tres noches»."},
+      {"id":"s2","text":"Завтрак не входит в стоимость.","isTrue":false,"explanation":"На вопрос о включённом завтраке отвечают «Sí», то есть завтрак включён."},
+      {"id":"s3","text":"Завтрак подают с восьми до половины одиннадцатого.","isTrue":true,"explanation":"В аудио: «se sirve de ocho a diez y media»."},
+      {"id":"s4","text":"Номер находится на первом этаже.","isTrue":false,"explanation":"Номер находится на четвёртом этаже: «la habitación está en el cuarto piso»."}
+    ]
+  },
+  {
+    "id": "order_practical_reserve_table",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Я хочу заказать столик на двоих»",
+    "tokens": ["Quiero","reservar","una","mesa","para","dos.","somos","por"],
+    "a": ["Quiero reservar una mesa para dos."],
+    "e": "После quiero используется инфинитив reservar; para dos — «на двоих»."
+  },
+  {
+    "id": "order_practical_no_understand",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Мы не понимаем по-испански»",
+    "tokens": ["Nosotros","no","entendemos","español.","habla","bien"],
+    "a": ["Nosotros no entendemos español."],
+    "e": "С nosotros форма entender в Presente — entendemos; отрицание no ставится перед глаголом."
+  },
+  {
+    "id": "order_practical_blue_shirt_price",
+    "topic": "practical",
+    "foodCat": "prices",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Сколько стоит эта синяя рубашка?»",
+    "tokens": ["¿Cuánto","cuesta","esta","camisa","azul?","paga","este"],
+    "a": ["¿Cuánto cuesta esta camisa azul?"],
+    "e": "Camisa — женский род: esta camisa; один предмет — cuesta."
+  },
+  {
+    "id": "order_practical_speak_slower",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Можете говорить помедленнее, пожалуйста?»",
+    "tokens": ["¿Puede","hablar","más","despacio,","por","favor?","puedo","habla"],
+    "a": ["¿Puede hablar más despacio, por favor?"],
+    "e": "После puede используется инфинитив hablar; por favor ставится как вежливая просьба."
+  },
+  {
+    "id": "order_practical_hotel_room",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Я хотела бы номер на две ночи»",
+    "tokens": ["Quisiera","una","habitación","para","dos","noches.","tengo","por"],
+    "a": ["Quisiera una habitación para dos noches."],
+    "e": "Quisiera — вежливое «я хотела бы»; para dos noches — на две ночи."
+  },
+  {
+    "id": "fill_practical_gift_para",
+    "topic": "practical",
+    "foodCat": "prices",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Este regalo es ____ ti.",
+    "options": ["para","por","de","con"],
+    "a": ["para"],
+    "e": "Para используется для адресата или получателя: подарок для тебя."
+  },
+  {
+    "id": "fill_practical_problem_gender",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Tengo un ____ importante que resolver.",
+    "options": ["problema","duda","pregunta","situación"],
+    "a": ["problema"],
+    "e": "El problema — мужского рода, хотя слово оканчивается на -a: un problema importante."
+  },
+  {
+    "id": "fill_practical_because_tired",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Hoy no puedo salir ____ estoy muy cansado.",
+    "options": ["porque","por qué","para","pero"],
+    "a": ["porque"],
+    "e": "Porque без ударения и пробела вводит причину: «потому что я очень устал»."
+  },
+  {
+    "id": "fill_practical_hotel_purpose",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Vamos al hotel ____ dejar las maletas.",
+    "options": ["para","por","porque","de"],
+    "a": ["para"],
+    "e": "Para + infinitivo выражает цель: идём в отель, чтобы оставить чемоданы."
+  },
+  {
+    "id": "fill_practical_walk_por",
+    "topic": "practical",
+    "foodCat": "quantity",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Caminamos ____ el centro durante una hora.",
+    "options": ["por","para","a","con"],
+    "a": ["por"],
+    "e": "Por используется для движения по пространству: caminar por el centro."
   }
 ];
 

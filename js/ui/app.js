@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-unified-audio3";
+import { createTrainerView } from "./trainer-view.js?v=20260922-new-tasks8";
 import { createResultsView } from "./results-view.js?v=20260922-mascot-priority5";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
@@ -27,7 +27,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js?v=20260922-filter-multiselect7";
+  } from "../core/session.js?v=20260922-new-tasks8";
   import {
     registerTopic,
     getTopic,
@@ -47,8 +47,8 @@ import { load, save } from "../core/storage.js";
   import { pastTopic } from "../topics/past.js";
   import { routineTopic } from "../topics/routine.js?v=20260922-audio-story1";
   import { calendarTopic } from "../topics/calendar.js";
-  import { practicalTopic } from "../topics/practical.js";
-  import { cityTopic } from "../topics/city.js";
+  import { practicalTopic } from "../topics/practical.js?v=20260922-new-tasks8";
+  import { cityTopic } from "../topics/city.js?v=20260922-new-tasks8";
   import { homeTopic } from "../topics/home.js";
   import { choresTopic } from "../topics/chores.js";
   import { colorsTopic } from "../topics/colors.js";
@@ -638,7 +638,7 @@ window.LegacyProgressAdapter = {
       if(format==="audio") return type==="audio"||type==="audio_story_quiz"||Boolean(item&&item.audio)||Boolean(item&&item.audioText);
       if(format==="pictures") return type==="picture-label"||type==="color-prompt"||Boolean(item&&item.pictureScene)||Boolean(item&&Array.isArray(item.pictureLabels)&&item.pictureLabels.length);
       if(format==="phrase") return type==="order";
-      if(format==="fill") return type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
+      if(format==="fill") return type==="fill-choice"||type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
       if(format==="choice") return type==="choice"||type==="context-choice";
       return false;
     }

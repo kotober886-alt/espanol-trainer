@@ -242,7 +242,7 @@ export function createTrainerView(deps){
     }else if(type==="color-prompt"){
       els.choiceGrid.hidden=false;els.choiceGrid.className="choice-grid color-prompt-grid";els.choiceGrid.innerHTML=colorArt(item.colorHex);
       els.answerLabel.textContent="Название цвета";els.answerInput.placeholder="Напиши цвет по-испански…";els.answerInput.focus();
-    }else if(type==="choice"||type==="context-choice"){
+    }else if(type==="choice"||type==="context-choice"||type==="fill-choice"){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.choiceGrid.hidden=false;
       els.choiceGrid.innerHTML=shuffle(item.options||[]).map(option=>'<button class="choice-option" data-choice="'+escapeHtml(option)+
         '" type="button">'+escapeHtml(option)+'</button>').join("");
@@ -329,7 +329,7 @@ export function createTrainerView(deps){
       if(transcriptWrap)transcriptWrap.hidden=false;
       const checkBtn=$("checkBtn");if(checkBtn)checkBtn.disabled=true;
       const nextBtn=$("nextBtn");if(nextBtn)nextBtn.focus();
-    }else if(item.type==="choice"||item.type==="context-choice"){
+    }else if(item.type==="choice"||item.type==="context-choice"||item.type==="fill-choice"){
       const selected=normalize(els.answerInput.value),correct=(item.a||[]).map(normalize);
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(btn=>{if(normalize(btn.dataset.choice)===selected)btn.classList.add(correct.indexOf(selected)>=0?"result-good":"result-bad");});
     }else if(item.type==="match"){
@@ -404,7 +404,7 @@ export function createTrainerView(deps){
     let state=getState();if(!state.queue.length)return;
     const item=state.queue[state.index],value=currentAnswer(item);
     if(!value.trim()){
-      const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.",match:"Сначала заполни все соответствия.",
+      const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.","fill-choice":"Сначала выбери слово для пропуска.",match:"Сначала заполни все соответствия.",
         "cloze-passage":"Сначала заполни все пропуски в тексте.","category-sort":"Сначала распредели все слова по колонкам.",
         "picture-label":"Сначала подпиши все отмеченные предметы.",
         "audio_story_quiz":"Сначала отметь «Правда» или «Ложь» для каждого утверждения."};

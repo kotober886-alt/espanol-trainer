@@ -2365,6 +2365,134 @@ const EXERCISES = [
     ],
     "displayAnswer": "Места в городе: la farmacia, el banco, el cine, la escuela · Положительное описание: bonito, limpio, tranquilo, seguro · Отрицательное описание: feo, sucio, ruidoso, peligroso",
     "e": "Каждое слово относится только к одной колонке в этом задании."
+  },
+  {
+    "id": "audio_story_city_directions_1",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "audio_story_quiz",
+    "theme": "directions",
+    "skill": "Аудирование · Правда / Ложь",
+    "title": "Аудирование: Preguntar por la calle",
+    "q": "Прослушай объяснение маршрута и отметь: правда или ложь.",
+    "audioText": "Perdone, ¿para ir a la estación de tren? Debe seguir todo recto por esta avenida hasta el semáforo y luego girar a la izquierda. La estación está justo al lado del parque grande, a unos diez minutos a pie.",
+    "statements": [
+      {"id":"s1","text":"Человек спрашивает, как пройти к железнодорожной станции.","isTrue":true,"explanation":"В начале аудио звучит: «¿para ir a la estación de tren?»."},
+      {"id":"s2","text":"У светофора нужно повернуть направо.","isTrue":false,"explanation":"Нужно повернуть налево: «girar a la izquierda»."},
+      {"id":"s3","text":"Станция находится рядом с большим парком.","isTrue":true,"explanation":"В аудио: «La estación está justo al lado del parque grande»."},
+      {"id":"s4","text":"До станции около двадцати минут на машине.","isTrue":false,"explanation":"В аудио сказано: около десяти минут пешком — «a unos diez minutos a pie»."}
+    ]
+  },
+  {
+    "id": "order_city_pharmacy_nearest",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Где находится ближайшая аптека?»",
+    "tokens": ["¿Dónde","está","la","farmacia","más","cercana?","es","hay"],
+    "a": ["¿Dónde está la farmacia más cercana?"],
+    "e": "Для местонахождения конкретного объекта используется estar: ¿Dónde está...?"
+  },
+  {
+    "id": "order_city_like_city",
+    "topic": "city",
+    "foodCat": "opposites",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Мне очень нравится этот город»",
+    "tokens": ["Me","gusta","mucho","esta","ciudad","yo","gustan"],
+    "a": ["Me gusta mucho esta ciudad"],
+    "displayAnswer": "Me gusta mucho esta ciudad.",
+    "e": "С единственным существительным ciudad используется gusta."
+  },
+  {
+    "id": "order_city_train_ticket",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Мне нужно купить билет на поезд»",
+    "tokens": ["Necesito","comprar","un","billete","de","tren.","para","somos"],
+    "a": ["Necesito comprar un billete de tren."],
+    "e": "После necesito используется инфинитив: necesito comprar."
+  },
+  {
+    "id": "order_city_cafe_near",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Здесь рядом есть кафе?»",
+    "tokens": ["¿Hay","una","cafetería","cerca","de","aquí?","está","es"],
+    "a": ["¿Hay una cafetería cerca de aquí?"],
+    "e": "Hay используется, когда спрашиваем о наличии места поблизости."
+  },
+  {
+    "id": "order_city_how_station",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "order",
+    "skill": "Собери фразу",
+    "q": "Собери: «Как мне добраться до железнодорожной станции?»",
+    "tokens": ["¿Cómo","llego","a","la","estación","de","tren?","dónde","voy"],
+    "a": ["¿Cómo llego a la estación de tren?"],
+    "e": "Llegar a — «добраться до»: ¿Cómo llego a...?"
+  },
+  {
+    "id": "fill_city_madrid_location",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Madrid ____ en el centro de España.",
+    "options": ["está","es","tiene","hay"],
+    "a": ["está"],
+    "e": "Для местоположения города используется estar: Madrid está..."
+  },
+  {
+    "id": "fill_city_station_location",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "La estación ____ al lado del parque.",
+    "options": ["está","es","hay","tiene"],
+    "a": ["está"],
+    "e": "Местонахождение конкретной станции выражается estar."
+  },
+  {
+    "id": "fill_city_supermarket_exists",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "En esta calle ____ un supermercado.",
+    "options": ["hay","está","es","son"],
+    "a": ["hay"],
+    "e": "Hay вводит новый неопределённый объект: «на этой улице есть супермаркет»."
+  },
+  {
+    "id": "fill_city_pharmacy_article",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Busco ____ farmacia cerca de aquí.",
+    "options": ["una","un","el","los"],
+    "a": ["una"],
+    "e": "Farmacia — существительное женского рода: una farmacia."
+  },
+  {
+    "id": "fill_city_shirt_gender",
+    "topic": "city",
+    "foodCat": "places",
+    "type": "fill-choice",
+    "skill": "Вставь слово",
+    "q": "Quiero comprar ____ camisa azul.",
+    "options": ["esta","este","estos","estas"],
+    "a": ["esta"],
+    "e": "Camisa — женский род, единственное число: esta camisa."
   }
 ];
 
