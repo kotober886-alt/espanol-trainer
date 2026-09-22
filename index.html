@@ -2869,12 +2869,20 @@
 
     
 
-    const STORAGE = { stats:"espanol_stats_v1", custom:"espanol_custom_v1", streak:"espanol_streak_v1", audio:"espanol_audio_v1", ui:"espanol_ui_v2" };
-    let stats = read(STORAGE.stats,{});
-    let custom = read(STORAGE.custom,[]);
-    let streak = read(STORAGE.streak,0);
-    let audioSettings = read(STORAGE.audio,{voiceURI:"",voiceLocale:"auto",rate:.86});
-    let uiSettings = read(STORAGE.ui,{lastTopic:"verbs",sessionSize:10});
+    const STORAGE = {
+  stats: "progress.stats",
+  custom: "custom",
+  streak: "progress.streak",
+  audio: "espanol_audio_v1",
+  ui: "espanol_ui_v2"
+};
+
+let stats = {};
+let custom = [];
+let streak = 0;
+
+let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: .86 });
+let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
     if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:.86};
     if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
     if(!audioSettings.voiceLocale) audioSettings.voiceLocale="auto";
@@ -2945,7 +2953,25 @@
 
     function read(key,fallback){ try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
     function write(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
-
+/* TEMP STEP-3 PROGRESS BRIDGE */
+window.LegacyProgressAdapter = {
+  originalRead: read,
+  originalWrite: write,
+  keys: {
+    stats: STORAGE.stats,
+    custom: STORAGE.custom,
+    streak: STORAGE.streak
+  },
+  hydrate: function (state) {
+    stats = state.stats;
+    custom = state.custom;
+    streak = state.streak;
+  },
+  installIO: function (nextRead, nextWrite) {
+    read = nextRead;
+    write = nextWrite;
+  }
+};
     const RESULT_MASCOT_PARTS = [
       "assets/picture-labels/result-mascot-approve/part-01.txt",
       "assets/picture-labels/result-mascot-approve/part-02.txt",
@@ -4850,10 +4876,115 @@
     })();
   </script>
 
-<script>
-    initializeApp();
-    runResultTestFromUrl();
-  </script>
+<script type="module">
+  import { load, save } from "./js/core/storage.js";
+  import {
+    getStats,
+    getExerciseStats,
+    getStreak,
+    getLastResult,
+    getTopicStats,
+    getMistakes,
+    recordAnswer,
+    recordSkip,
+    recordSessionResult,
+    getMascotState
+  } from "./js/core/progress.js";
+
+  const adapter = window.LegacyProgressAdapter;
+  if (!adapter) throw new Error("LegacyProgressAdapter is missing.");
+
+  const state = load();
+
+  adapter.hydrate({
+    stats: { ...state.progress.stats },
+    custom: state.custom.slice(),
+    streak: state.progress.streak
+  });
+
+  function bridgeRead(key, fallback) {
+    const current = load();
+    if (key === adapter.keys.stats) return { ...current.progress.stats };
+    if (key === adapter.keys.custom) return current.custom.slice();
+    if (key === adapter.keys.streak) return current.progress.streak;
+    return adapter.originalRead(key, fallback);
+  }
+
+  function bridgeWrite(key, value) {
+    if (
+      key !== adapter.keys.stats &&
+      key !== adapter.keys.custom &&
+      key !== adapter.keys.streak
+    ) {
+      adapter.originalWrite(key, value);
+      return;
+    }
+
+    const current = load();
+    if (key === adapter.keys.stats) {
+      current.progress.stats = value && typeof value === "object" && !Array.isArray(value) ? { ...value } : {};
+    }
+    if (key === adapter.keys.custom) {
+      current.custom = Array.isArray(value) ? value.slice() : [];
+    }
+    if (key === adapter.keys.streak) {
+      current.progress.streak = Math.max(0, Number(value) || 0);
+    }
+    save(current);
+  }
+
+  adapter.installIO(bridgeRead, bridgeWrite);
+
+  window.TrainerProgress = Object.freeze({
+    getStats,
+    getExerciseStats,
+    getStreak,
+    getLastResult,
+    getTopicStats,
+    getMistakes,
+    recordAnswer,
+    recordSkip,
+    recordSessionResult,
+    getMascotState
+  });
+
+  function updateHeaderMascot(context, accuracy = null, currentStreak = null) {
+    if (typeof window.setHeaderMascot !== "function") return;
+    window.setHeaderMascot(
+      getMascotState({
+        context,
+        accuracy,
+        streak: currentStreak
+      })
+    );
+  }
+
+  if (window.DynamicFavicon) {
+    const favicon = window.DynamicFavicon;
+    const originalSetTime = favicon.setTime.bind(favicon);
+    const originalSetTraining = favicon.setTraining.bind(favicon);
+    const originalSetResult = favicon.setResult.bind(favicon);
+
+    favicon.setTime = function () {
+      originalSetTime();
+      updateHeaderMascot("time");
+    };
+
+    favicon.setTraining = function (currentStreak) {
+      originalSetTraining(currentStreak);
+      updateHeaderMascot("training", null, currentStreak);
+    };
+
+    favicon.setResult = function (accuracy, currentStreak) {
+      recordSessionResult({ accuracy });
+      originalSetResult(accuracy, currentStreak);
+      updateHeaderMascot("result", accuracy, currentStreak);
+    };
+  }
+
+  initializeApp();
+  runResultTestFromUrl();
+</script>
   <script>
 (function(){
   const mascot = document.getElementById("brandMascot");
