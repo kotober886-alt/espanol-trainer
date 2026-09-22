@@ -1,8 +1,9 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
 import { createTrainerView } from "./trainer-view.js?v=20260922-story-weekend14";
-import { createResultsView } from "./results-view.js?v=20260922-mascot-priority5";
+import { createResultsView } from "./results-view.js?v=20260923-blitz-mode18";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
+import { createPracticeView } from "./practice-view.js?v=20260923-blitz-mode18";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -310,6 +311,7 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10, session
     let trainerView=null;
     let resultsView=null;
     let navigationView=null;
+    let practiceView=null;
     let mistakeExerciseSnapshot=[];
 
     const $ = (id) => document.getElementById(id);
@@ -475,6 +477,20 @@ window.LegacyProgressAdapter = {
     function allExercises(){
       const base=window.TopicRegistryFacade ? window.TopicRegistryFacade.getAllExercises() : [];
       return base.concat(custom);
+    }
+    function blitzSource(){
+      const topics=window.TopicRegistryFacade ? window.TopicRegistryFacade.getTopics() : [];
+      const studyItems=[];
+      topics.forEach(function(topic){
+        if(!topic || topic.id==="__mixed" || !Array.isArray(topic.studyItems)) return;
+        topic.studyItems.forEach(function(item){
+          studyItems.push(Object.assign({topicId:topic.id},item));
+        });
+      });
+      return {exercises:allExercises(),studyItems:studyItems};
+    }
+    function closeBlitz(){
+      if(practiceView) practiceView.closeGame();
     }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
@@ -746,6 +762,8 @@ window.LegacyProgressAdapter = {
     }
 
     function showHome(){
+      closeBlitz();
+      if(practiceView) practiceView.hide();
       resetHeaderMascot();
       sessionActive=false;
       if(sessionController) sessionController.stop();
@@ -760,6 +778,7 @@ window.LegacyProgressAdapter = {
       window.scrollTo({top:0,behavior:"smooth"});
     }
     function showCatalog(intent){
+      closeBlitz();
       resetHeaderMascot();
       if(window.DynamicFavicon) window.DynamicFavicon.setTime();
       catalogIntent=intent || "learn";
@@ -774,9 +793,15 @@ window.LegacyProgressAdapter = {
         : "Выбери тему, длину занятия и при желании тип заданий.";
       setNav(catalogIntent==="learn" ? "learn" : "practice");
       renderTopics(); renderStats();
+      if(practiceView){
+        if(catalogIntent==="practice") practiceView.show();
+        else practiceView.hide();
+      }
       window.scrollTo({top:0,behavior:"smooth"});
     }
     function showWorkspace(){
+      closeBlitz();
+      if(practiceView) practiceView.hide();
       if(!sessionActive) resetHeaderMascot();
       if(window.DynamicFavicon){
         if(sessionActive) window.DynamicFavicon.setTraining(streak);
@@ -909,6 +934,8 @@ window.LegacyProgressAdapter = {
     }
 
     function showMistakes(){
+      closeBlitz();
+      if(practiceView) practiceView.hide();
       sessionActive=false;
       if(sessionController) sessionController.stop();
       sessionController=null;
@@ -1487,6 +1514,11 @@ window.LegacyProgressAdapter = {
         setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);},
         setHeaderMascotMood:setHeaderMascotMood,
         onReviewMistakes:startMistakeReview
+      });
+      practiceView=createPracticeView({
+        host:$("topicCatalog"),
+        getSource:blitzSource,
+        onReturn:function(){showCatalog("practice");}
       });
       navigationView=createNavigation({
         $,
