@@ -1749,6 +1749,8 @@ const EXERCISES = [
     "theme": "hotel",
     "skill": "Аудирование · Правда / Ложь",
     "title": "Аудирование: En la recepción del hotel",
+    "image": "assets/images/stories/story_hotel.webp",
+    "imageAlt": "Рыжий кот на ресепшн отеля рядом с карточкой-ключом",
     "q": "Прослушай разговор на ресепшн и отметь: правда или ложь.",
     "audioText": "Buenas tardes. Tengo una reserva a nombre de Elena Gómez por tres noches. ¿El desayuno está incluido en el precio? Sí, se sirve de ocho a diez y media en la primera planta. Aquí tiene su tarjeta, la habitación está en el cuarto piso.",
     "statements": [

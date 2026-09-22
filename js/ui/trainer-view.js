@@ -176,7 +176,11 @@ export function createTrainerView(deps){
     const currentRate=typeof getAudioRate==="function"?getAudioRate():1;
     els.choiceGrid.hidden=false;
     els.choiceGrid.className="choice-grid audio-story-quiz";
+    const cover=item.image
+      ?'<div class="audio-story-cover" data-story-cover><img src="'+escapeHtml(item.image)+'" alt="'+escapeHtml(item.imageAlt||item.title||"Иллюстрация к аудиоистории")+'" loading="eager" decoding="async"></div>'
+      :"";
     els.choiceGrid.innerHTML=
+      cover+
       '<div class="audio-story-toolbar">'+
         '<div class="audio-story-heading"><strong>'+escapeHtml(item.title||"Аудирование")+'</strong><span>Прослушай историю и отметь каждое утверждение.</span></div>'+
         '<div class="audio-story-controls audio-player">'+
@@ -199,6 +203,11 @@ export function createTrainerView(deps){
         '<div class="audio-story-transcript" data-story-transcript hidden>'+escapeHtml(item.audioText||item.audio||"")+'</div>'+
       '</div>';
 
+    const coverImage=els.choiceGrid.querySelector("[data-story-cover] img");
+    if(coverImage)coverImage.addEventListener("error",function(){
+      const wrap=coverImage.closest("[data-story-cover]");
+      if(wrap)wrap.hidden=true;
+    });
     const playBtn=els.choiceGrid.querySelector("[data-story-play]");
     const speedBtn=els.choiceGrid.querySelector("[data-story-speed]");
     if(playBtn)playBtn.addEventListener("click",function(){
