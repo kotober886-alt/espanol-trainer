@@ -6,6 +6,41 @@ import { load, save } from "./storage.js";
 
 export const SUCCESS_STREAK_THRESHOLD = 3;
 
+const SUCCESS_REPLIES = ["¡Bien!", "¡Muy bien!"];
+const TRIUMPH_REPLIES = ["¡Genial!", "¡De maravilla!", "¡Sigue así!"];
+const CONFUSED_REPLIES = ["¡Casi!", "¡Tú puedes!"];
+
+export function getProgressReaction({
+  correct,
+  previousStreak = 0,
+  streak = 0
+} = {}) {
+  const resolvedStreak = Math.max(0, Number(streak) || 0);
+  const resolvedPrevious = Math.max(0, Number(previousStreak) || 0);
+
+  if (!correct) {
+    return {
+      type: "confused",
+      message: CONFUSED_REPLIES[resolvedPrevious % CONFUSED_REPLIES.length],
+      streak: resolvedStreak
+    };
+  }
+
+  if (resolvedStreak >= SUCCESS_STREAK_THRESHOLD) {
+    return {
+      type: "triumph",
+      message: TRIUMPH_REPLIES[(resolvedStreak - SUCCESS_STREAK_THRESHOLD) % TRIUMPH_REPLIES.length],
+      streak: resolvedStreak
+    };
+  }
+
+  return {
+    type: "success",
+    message: SUCCESS_REPLIES[Math.max(0, resolvedStreak - 1) % SUCCESS_REPLIES.length],
+    streak: resolvedStreak
+  };
+}
+
 export function getStats() {
   return { ...load().progress.stats };
 }
@@ -42,6 +77,7 @@ export function recordAnswer({
   }
 
   const state = load();
+  const previousStreak = Math.max(0, Number(state.progress.streak) || 0);
   const previous = state.progress.stats[statsId] || { tries: 0, correct: 0, wrong: 0 };
 
   const row = {
@@ -64,7 +100,14 @@ export function recordAnswer({
     recorded: true,
     id: statsId,
     row: { ...row },
-    streak: state.progress.streak
+    correct: Boolean(correct),
+    previousStreak,
+    streak: state.progress.streak,
+    reaction: getProgressReaction({
+      correct: Boolean(correct),
+      previousStreak,
+      streak: state.progress.streak
+    })
   };
 }
 

@@ -750,3 +750,100 @@
   from { transform: rotate(-4deg) scale(1); }
   to   { transform: rotate(4deg) scale(1.1); }
 }
+
+
+/* Touch study-card interactions */
+.study-card {
+  touch-action: pan-y;
+  transform-origin: 50% 86%;
+  backface-visibility: hidden;
+}
+.study-card.is-swipe-dragging {
+  will-change: transform;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.study-card.is-swipe-settling {
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Header mascot feedback */
+.mark.mascot-slot {
+  isolation: isolate;
+}
+.mascot-reaction-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 7px);
+  z-index: 5;
+  max-width: min(170px, 70vw);
+  padding: 6px 9px;
+  border: 1px solid rgba(111, 99, 207, .16);
+  border-radius: 12px 12px 12px 4px;
+  background: rgba(255,255,255,.97);
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(55, 45, 115, .16);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 7px) scale(.94);
+  transition: opacity .16s ease, transform .2s cubic-bezier(.2,.8,.3,1);
+}
+.mascot-reaction-bubble.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+.mascot-reaction-bubble.is-triumph {
+  border-color: rgba(98,83,217,.24);
+}
+.mascot-reaction-bubble.is-confused {
+  border-color: rgba(224,137,87,.25);
+}
+
+.mascot-react-success .brand-mascot {
+  animation: mascotSuccessPop .55s cubic-bezier(.2,.85,.3,1) both !important;
+}
+.mascot-react-triumph .brand-mascot {
+  animation: mascotTriumphReaction .82s cubic-bezier(.2,.85,.3,1) both !important;
+}
+.mascot-react-confused .brand-mascot {
+  animation: mascotConfusedReaction .62s ease-in-out both !important;
+}
+
+@keyframes mascotSuccessPop {
+  0%,100% { transform: translateY(0) rotate(0) scale(1); }
+  42% { transform: translateY(-5px) rotate(-4deg) scale(1.08); }
+  68% { transform: translateY(0) rotate(3deg) scale(1.04); }
+}
+@keyframes mascotTriumphReaction {
+  0%,100% { transform: translateY(0) rotate(0) scale(1); }
+  24% { transform: translateY(-11px) rotate(-8deg) scale(1.1); }
+  48% { transform: translateY(-2px) rotate(7deg) scale(1.07); }
+  70% { transform: translateY(-7px) rotate(-4deg) scale(1.08); }
+  86% { transform: translateY(0) rotate(3deg) scale(1.03); }
+}
+@keyframes mascotConfusedReaction {
+  0%,100% { transform: translateX(0) rotate(0) scale(1); }
+  22% { transform: translateX(-4px) rotate(-5deg) scale(.99); }
+  46% { transform: translateX(4px) rotate(5deg) scale(1.01); }
+  68% { transform: translateX(-3px) rotate(-3deg) scale(1); }
+  84% { transform: translateX(2px) rotate(2deg) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-card,
+  .study-card.is-swipe-dragging,
+  .study-card.is-swipe-settling,
+  .mascot-reaction-bubble {
+    transition-duration: .01ms !important;
+  }
+  .mascot-react-success .brand-mascot,
+  .mascot-react-triumph .brand-mascot,
+  .mascot-react-confused .brand-mascot {
+    animation: none !important;
+  }
+}
