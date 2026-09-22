@@ -38,9 +38,20 @@ export function createStudyCardView(deps){
     return state.wordIndex > 0;
   }
 
+  function settleSwipeBack(){
+    const card=els.studyCard;
+    card.classList.remove("is-swipe-dragging");
+    card.classList.add("is-swipe-settling");
+    card.style.transition="transform 190ms cubic-bezier(.2,.8,.3,1), opacity 160ms ease";
+    card.style.transform="translate3d(0,0,0) rotate(0deg)";
+    card.style.opacity="1";
+    window.setTimeout(function(){resetSwipeVisual(false);},195);
+  }
+
   function animateSwipe(direction){
-    if(swipeAnimating || !canSwipe(direction)){
-      resetSwipeVisual(false);
+    if(swipeAnimating) return;
+    if(!canSwipe(direction)){
+      settleSwipeBack();
       return;
     }
 
@@ -135,11 +146,7 @@ export function createStudyCardView(deps){
     if(Math.abs(current.dx)>=SWIPE_THRESHOLD){
       animateSwipe(current.dx<0?-1:1);
     }else{
-      els.studyCard.classList.remove("is-swipe-dragging");
-      els.studyCard.classList.add("is-swipe-settling");
-      els.studyCard.style.transition="transform 190ms cubic-bezier(.2,.8,.3,1)";
-      els.studyCard.style.transform="translate3d(0,0,0) rotate(0deg)";
-      window.setTimeout(function(){resetSwipeVisual(false);},195);
+      settleSwipeBack();
     }
   }
 
