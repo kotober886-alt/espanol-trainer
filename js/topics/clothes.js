@@ -14,6 +14,10 @@ const CLOTHING_CATEGORIES = [
       {id:"tryon",title:"Примерка и размер"},
       {id:"store",title:"В магазине"}
     ];
+function clothingWord(id,cat,word,base,gender,tr,ru,answers,art,examples,cloze,clozeAnswers){
+      return {id:id,cat:cat,word:word,base:base,gender:gender,tr:tr,ru:ru,answers:answers,art:art,examples:examples,cloze:cloze,clozeAnswers:clozeAnswers};
+    }
+
 const CLOTHING_WORDS = [
       clothingWord("tshirt","clothes","la camiseta","camiseta","женский род","футболка",["футболка"],["camiseta","la camiseta"],"tshirt",
         [["Llevo una camiseta blanca.","На мне белая футболка."],["Esta camiseta es muy cómoda.","Эта футболка очень удобная."]],"Llevo una ___ blanca.",["camiseta"]),
