@@ -579,23 +579,7 @@ window.LegacyProgressAdapter = {
     }
 
 
-    function render(){
-      if(sessionActive && window.DynamicFavicon) window.DynamicFavicon.setTraining(streak);
-      if(els.trainerLayout.classList.contains("catalog-view")) catalogView.render();
-      renderStats();
-      els.topicName.textContent=topicById(selectedTopic).title;
-      els.sessionResult.hidden=true;
-      const canStudy=isVocabularyTopic();
-      els.topicTabs.hidden=selectedTopic==="all" || selectedTopic==="custom";
-      els.learnTab.disabled=!canStudy;
-      els.learnTab.classList.toggle("active",canStudy && foodPhase==="study");
-      els.practiceTab.classList.toggle("active",foodPhase!=="study");
-      if(canStudy && selectedMode==="all" && foodPhase==="study"){
-        studyCardView.render();
-        return;
-      }
-      trainerView.renderExercise();
-    }
+    function renderTopics(){ return catalogView.render(); }
     function renderStats(){
       const values=Object.values(stats);
       const done=values.reduce(function(sum,x){return sum+(x.tries||0);},0);
@@ -978,9 +962,7 @@ window.LegacyProgressAdapter = {
       speakText(parts.join(" "),audioSettings.rate,els.studyListen);
     }
     function render(){
-      if(sessionActive && window.DynamicFavicon){
-        window.DynamicFavicon.setTraining(streak);
-      }
+      if(sessionActive && window.DynamicFavicon) window.DynamicFavicon.setTraining(streak);
       if(els.trainerLayout.classList.contains("catalog-view")) renderTopics();
       renderStats();
       els.topicName.textContent=topicById(selectedTopic).title;
@@ -990,44 +972,11 @@ window.LegacyProgressAdapter = {
       els.learnTab.disabled=!canStudy;
       els.learnTab.classList.toggle("active",canStudy && foodPhase==="study");
       els.practiceTab.classList.toggle("active",foodPhase!=="study");
-      if(isVocabularyTopic() && selectedMode==="all" && foodPhase==="study"){
-        renderStudy();
+      if(canStudy && selectedMode==="all" && foodPhase==="study"){
+        studyCardView.render();
         return;
       }
-      els.studyView.hidden=true;
-      if(!queue.length){
-        els.exerciseView.hidden=true; els.emptyView.hidden=false;
-        if(selectedMode==="mistakes"){
-          els.emptyTitle.textContent="Ошибок пока нет";
-          els.emptyText.textContent="Задания, в которых была ошибка, появятся здесь для повторения.";
-        } else if(selectedMode==="tests"){
-          els.emptyTitle.textContent="Тестов в этой теме пока нет";
-          els.emptyText.textContent="Выбери другую тему или режим «Все».";
-        } else if(selectedMode==="pictures"){
-          els.emptyTitle.textContent="Картинок в этой теме пока нет";
-          els.emptyText.textContent="Выбери другую тему или режим «Всё».";
-        } else if(selectedMode==="audio"){
-          els.emptyTitle.textContent="Аудиозаданий в этой теме пока нет";
-          els.emptyText.textContent="Выбери другую тему или режим «Всё».";
-        } else {
-          els.emptyTitle.textContent="В этой теме пока нет заданий";
-          els.emptyText.textContent="Добавь собственное задание или выбери другую тему.";
-        }
-        return;
-      }
-      els.exerciseView.hidden=false; els.emptyView.hidden=true;
-      els.backToWordsBtn.hidden=!isVocabularyTopic();
-      const item=queue[index];
-      els.questionText.textContent=item.q;
-      els.skillLabel.textContent=item.skill || "Практика";
-      els.questionNumber.textContent="Задание "+(index+1)+" из "+queue.length;
-      els.progressLabel.textContent=(index+1)+" / "+queue.length;
-      els.progressBar.style.width=((index+1)/queue.length*100)+"%";
-      els.answerText.textContent=item.displayAnswer || item.a.join(" / ");
-      els.explanation.textContent=item.e || "";
-      els.explanation.hidden=!item.e;
-      $("prevBtn").hidden=sessionActive && index===0;
-      setupExercise(item);
+      trainerView.renderExercise();
     }
     function checkAnswer(){ return trainerView.checkAnswer(); }
     function move(delta){ return trainerView.move(delta); }
