@@ -1403,8 +1403,6 @@ const EXERCISES = [
     "theme": "planes",
     "skill": "Аудирование · Правда / Ложь",
     "title": "Аудирование: Planes para el fin de semana",
-    "image": "assets/images/stories/story_weekend.webp",
-    "imageAlt": "Рыжий кот планирует выходные в парке с блокнотом",
     "q": "Прослушай историю о планах на выходные и отметь: правда или ложь.",
     "audioText": "Hola, me llamo Ana. Este fin de semana no trabajo. El sábado por la mañana voy al mercado con mi hermana y después almorzamos en casa. Por la tarde quedo con mi amiga Laura para pasear por el centro. El domingo quiero descansar, leer un libro y llamar a mis padres. Si hace buen tiempo, también voy al parque.",
     "statements": [
