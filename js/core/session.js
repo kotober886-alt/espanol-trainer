@@ -22,6 +22,66 @@ const TEST_TYPES = new Set([
   "audio_story_quiz"
 ]);
 
+const PRACTICE_FORMATS = new Set([
+  "audio",
+  "pictures",
+  "phrase",
+  "fill",
+  "choice"
+]);
+
+function exerciseMatchesFormat(item, format) {
+  if (!item || !format) return false;
+
+  const type = String(item.type || "");
+
+  if (format === "audio") {
+    return (
+      type === "audio" ||
+      type === "audio_story_quiz" ||
+      Boolean(item.audio) ||
+      Boolean(item.audioText)
+    );
+  }
+
+  if (format === "pictures") {
+    return (
+      type === "picture-label" ||
+      type === "color-prompt" ||
+      Boolean(item.pictureScene) ||
+      (Array.isArray(item.pictureLabels) && item.pictureLabels.length > 0)
+    );
+  }
+
+  if (format === "phrase") {
+    return type === "order";
+  }
+
+  if (format === "fill") {
+    return (
+      type === "cloze" ||
+      type === "cloze-passage" ||
+      type === "ser-estar-hay"
+    );
+  }
+
+  if (format === "choice") {
+    return type === "choice" || type === "context-choice";
+  }
+
+  return false;
+}
+
+function normalizeFormats(formats) {
+  if (!Array.isArray(formats)) return [];
+
+  return Array.from(new Set(
+    formats
+      .map(function (value) { return String(value || ""); })
+      .filter(function (value) { return PRACTICE_FORMATS.has(value); })
+  ));
+}
+
 function uniqueExercises(items) {
   const result = [];
   const seen = new Set();
@@ -54,6 +114,7 @@ function registeredExercises() {
 export function buildExercisePool({
   topicId = "all",
   mode = "all",
+  formats = [],
   categoryId = "all",
   customExercises = [],
   legacyExercises = [],
@@ -99,23 +160,33 @@ export function buildExercisePool({
     });
   }
 
-  if (mode === "pictures") {
-    items = items.filter(function (item) {
-      return item.type === "picture-label" || item.type === "color-prompt";
-    });
-  } else if (mode === "mistakes") {
+  if (mode === "mistakes") {
     items = items.filter(function (item) {
       const row = stats[item.id] || stats[item.originalId];
       return row && Number(row.wrong) > 0;
     });
-  } else if (mode === "tests") {
-    items = items.filter(function (item) {
-      return TEST_TYPES.has(item.type);
-    });
-  } else if (mode === "audio") {
-    items = items.filter(function (item) {
-      return item.type === "audio" || item.type === "audio_story_quiz";
-    });
+  } else {
+    const activeFormats = normalizeFormats(formats);
+
+    if (activeFormats.length) {
+      items = items.filter(function (item) {
+        return activeFormats.some(function (format) {
+          return exerciseMatchesFormat(item, format);
+        });
+      });
+    } else if (mode === "pictures") {
+      items = items.filter(function (item) {
+        return exerciseMatchesFormat(item, "pictures");
+      });
+    } else if (mode === "tests") {
+      items = items.filter(function (item) {
+        return TEST_TYPES.has(item.type);
+      });
+    } else if (mode === "audio") {
+      items = items.filter(function (item) {
+        return exerciseMatchesFormat(item, "audio");
+      });
+    }
   }
 
   return uniqueExercises(items);

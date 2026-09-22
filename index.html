@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-unified-audio3">
+  <link rel="stylesheet" href="css/base.css?v=20260922-filter-multiselect7">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-mascot-priority5";
+      const CURRENT_BUILD="20260922-filter-multiselect7";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -336,13 +336,19 @@
           <button class="session-option active" data-session-size="10" type="button">10<br><small>обычно</small></button>
           <button class="session-option" data-session-size="20" type="button">20<br><small>подольше</small></button>
         </div></div>
-        <div class="field"><label>Что смешивать?</label><div class="focus-options">
-          <button class="focus-option active" data-session-mode="all" type="button">Всё</button>
-          <button class="focus-option" data-session-mode="tests" type="button">Тесты</button>
-          <button class="focus-option" data-session-mode="pictures" type="button">Картинки</button>
-          <button class="focus-option" data-session-mode="audio" type="button">Аудио</button>
-        </div></div>
-        <button class="btn btn-primary" id="startSessionBtn" type="button">Начать занятие →</button>
+        <div class="field practice-filter-field">
+          <label>Форматы заданий</label>
+          <div class="practice-filter-chips" id="practiceFilterChips" role="group" aria-label="Форматы заданий">
+            <button class="practice-filter-chip is-active" data-session-format="all" type="button" aria-pressed="true">Все</button>
+            <button class="practice-filter-chip" data-session-format="audio" type="button" aria-pressed="false">🎧 Аудио</button>
+            <button class="practice-filter-chip" data-session-format="pictures" type="button" aria-pressed="false">🖼 С картинками</button>
+            <button class="practice-filter-chip" data-session-format="phrase" type="button" aria-pressed="false">🧩 Собери фразу</button>
+            <button class="practice-filter-chip" data-session-format="fill" type="button" aria-pressed="false">✍️ Вставь слово</button>
+            <button class="practice-filter-chip" data-session-format="choice" type="button" aria-pressed="false">❓ Выбор ответа</button>
+          </div>
+          <p class="practice-available-count" id="sessionAvailableCount" aria-live="polite">Доступно заданий: 0</p>
+        </div>
+        <button class="btn btn-primary" id="startSessionBtn" type="button">Начать тренировку →</button>
       </div>
     </form>
   </dialog>
@@ -535,6 +541,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260922-mascot-priority5"></script>
-  <script type="module" src="./js/ui/app.js?v=20260922-mascot-priority5"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-filter-multiselect7"></script>
 </body>
 </html>

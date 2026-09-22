@@ -27,7 +27,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js?v=20260922-audio-story1";
+  } from "../core/session.js?v=20260922-filter-multiselect7";
   import {
     registerTopic,
     getTopic,
@@ -275,13 +275,19 @@ function recordSkipWithReaction(payload){
   queueMascotReaction(result);
   return result;
 }
-let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
+let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10, sessionFormats: [] });
     if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:1};
     audioSettings.rate=normalizeAudioRate(audioSettings.rate);
     if(!audioSettings.voiceLocale) audioSettings.voiceLocale="auto";
     let spanishVoices = [];
+    const PRACTICE_FORMAT_IDS=["audio","pictures","phrase","fill","choice"];
     let selectedTopic = uiSettings.lastTopic || "verbs";
     let selectedMode = "all";
+    let selectedFormats = new Set(
+      Array.isArray(uiSettings.sessionFormats)
+        ? uiSettings.sessionFormats.filter(function(value){return PRACTICE_FORMAT_IDS.indexOf(value)>=0;})
+        : []
+    );
     let queue = [];
     let index = 0;
     let checkedCurrent = false;
@@ -334,7 +340,7 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
       trainerLayout:$("trainerLayout"), topicCatalog:$("topicCatalog"), topicSearch:$("topicSearch"),
       catalogTitle:$("catalogTitle"), catalogText:$("catalogText"), continueTopic:$("continueTopic"),
       homeDoneStat:$("homeDoneStat"), homeAccuracyStat:$("homeAccuracyStat"), homeStreakStat:$("homeStreakStat"),
-      sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionResult:$("sessionResult"),
+      sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionAvailableCount:$("sessionAvailableCount"), sessionResult:$("sessionResult"),
       resultTotal:$("resultTotal"), resultCorrect:$("resultCorrect"), resultWrong:$("resultWrong"), resultMessage:$("resultMessage"),
       resultIcon:$("resultIcon"), resultMascot:$("resultMascot"),
       learnTab:$("learnTab"), practiceTab:$("practiceTab"), topicTabs:$("topicTabs"), moreDialog:$("moreDialog"),
@@ -623,11 +629,26 @@ window.LegacyProgressAdapter = {
       }
       return result;
     }
+    function selectedFormatList(){
+      return Array.from(selectedFormats);
+    }
+
+    function exerciseMatchesPracticeFormat(item,format){
+      const type=String((item&&item.type)||"");
+      if(format==="audio") return type==="audio"||type==="audio_story_quiz"||Boolean(item&&item.audio)||Boolean(item&&item.audioText);
+      if(format==="pictures") return type==="picture-label"||type==="color-prompt"||Boolean(item&&item.pictureScene)||Boolean(item&&Array.isArray(item.pictureLabels)&&item.pictureLabels.length);
+      if(format==="phrase") return type==="order";
+      if(format==="fill") return type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
+      if(format==="choice") return type==="choice"||type==="context-choice";
+      return false;
+    }
+
     function filteredExercises(){
       if(window.TrainerSession){
         return window.TrainerSession.buildExercisePool({
           topicId:selectedTopic,
           mode:selectedMode,
+          formats:selectedMode==="all"?selectedFormatList():[],
           categoryId:isVocabularyTopic() ? foodCategory : "all",
           customExercises:custom,
           legacyExercises:allExercises(),
@@ -637,14 +658,12 @@ window.LegacyProgressAdapter = {
 
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
-      if(selectedMode==="pictures"){
-        items=items.filter(function(x){ return x.type==="picture-label" || x.type==="color-prompt"; });
-      } else if(selectedMode==="mistakes"){
+      if(selectedMode==="mistakes"){
         items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
-      } else if(selectedMode==="tests"){
-        items=items.filter(function(x){ return ["choice","context-choice","match","cloze-passage","category-sort","ser-estar-hay"].indexOf(x.type)>=0; });
-      } else if(selectedMode==="audio"){
-        items=items.filter(function(x){ return x.type==="audio" || x.type==="audio_story_quiz"; });
+      } else if(selectedMode==="all"&&selectedFormats.size){
+        items=items.filter(function(item){
+          return selectedFormatList().some(function(format){return exerciseMatchesPracticeFormat(item,format);});
+        });
       }
       return items;
     }
@@ -933,15 +952,45 @@ window.LegacyProgressAdapter = {
       render();
     }
 
+    function practicePoolForDialog(){
+      return buildExercisePool({
+        topicId:pendingSessionTopic || selectedTopic,
+        mode:"all",
+        formats:selectedFormatList(),
+        categoryId:(pendingSessionTopic===selectedTopic&&isVocabularyTopic()) ? foodCategory : "all",
+        customExercises:custom,
+        legacyExercises:allExercises(),
+        stats:stats
+      });
+    }
+
+    function updatePracticeFilterUi(){
+      const allActive=selectedFormats.size===0;
+      document.querySelectorAll("[data-session-format]").forEach(function(btn){
+        const format=btn.dataset.sessionFormat;
+        const active=format==="all"?allActive:selectedFormats.has(format);
+        btn.classList.toggle("is-active",active);
+        btn.setAttribute("aria-pressed",String(active));
+      });
+      const available=practicePoolForDialog().length;
+      if(els.sessionAvailableCount){
+        els.sessionAvailableCount.textContent="Доступно заданий: "+available;
+        els.sessionAvailableCount.classList.toggle("is-empty",available===0);
+      }
+      const startButton=$("startSessionBtn");
+      if(startButton) startButton.disabled=available===0;
+      return available;
+    }
+
     function openSessionDialog(topic){
       pendingSessionTopic=topic || selectedTopic;
-      if(["all","tests","pictures","audio"].indexOf(selectedMode)<0) selectedMode="all";
+      selectedMode="all";
       els.sessionTopicLabel.textContent=topicById(pendingSessionTopic).title;
       document.querySelectorAll("[data-session-size]").forEach(function(btn){btn.classList.toggle("active",Number(btn.dataset.sessionSize)===sessionSize);});
-      document.querySelectorAll("[data-session-mode]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.sessionMode===selectedMode);});
+      updatePracticeFilterUi();
       els.sessionDialog.showModal();
     }
-    function startTrainingSession(topic,size,mode){
+    function startTrainingSession(topic,size,formats){
       resetHeaderMascot();
       if(!window.TrainerSession){
         throw new Error("TrainerSession is not initialized.");
@@ -949,7 +998,10 @@ window.LegacyProgressAdapter = {
 
       selectedTopic=topic || pendingSessionTopic || "all";
       sessionSize=Number(size || sessionSize) || 10;
-      selectedMode=mode || selectedMode || "all";
+      selectedMode="all";
+      if(Array.isArray(formats)){
+        selectedFormats=new Set(formats.filter(function(value){return PRACTICE_FORMAT_IDS.indexOf(value)>=0;}));
+      }
       foodPhase="practice";
       sessionActive=true;
       sessionRound="main";
@@ -959,6 +1011,7 @@ window.LegacyProgressAdapter = {
       sessionController=window.TrainerSession.createSession({
         topicId:selectedTopic,
         mode:selectedMode,
+        formats:selectedFormatList(),
         categoryId:isVocabularyTopic() ? foodCategory : "all",
         size:sessionSize,
         customExercises:custom,
@@ -969,6 +1022,7 @@ window.LegacyProgressAdapter = {
       syncSessionProjection();
 
       uiSettings.sessionSize=sessionSize;
+      uiSettings.sessionFormats=selectedFormatList();
       if(selectedTopic!=="all") uiSettings.lastTopic=selectedTopic;
       write(STORAGE.ui,uiSettings);
 
@@ -976,8 +1030,8 @@ window.LegacyProgressAdapter = {
       render();
     }
 
-    function startSession(topic,size,mode){
-      return startTrainingSession(topic,size,mode);
+    function startSession(topic,size,formats){
+      return startTrainingSession(topic,size,formats);
     }
 
     function startMistakeReview(mistakes,primarySummary){
@@ -1359,7 +1413,7 @@ window.LegacyProgressAdapter = {
 
     function getUiState(){
       return {
-        stats,custom,streak,uiSettings,selectedTopic,selectedMode,queue,index,checkedCurrent,wordIndex,
+        stats,custom,streak,uiSettings,selectedTopic,selectedMode,selectedFormats:selectedFormatList(),queue,index,checkedCurrent,wordIndex,
         foodPhase,foodCategory,catalogIntent,topicSearch,studySearch,studyPickerQuery,pendingSessionTopic,
         sessionSize,sessionActive,sessionController,sessionResults,sessionRound,primarySessionResult
       };
@@ -1371,6 +1425,9 @@ window.LegacyProgressAdapter = {
       if("uiSettings" in patch) uiSettings=patch.uiSettings;
       if("selectedTopic" in patch) selectedTopic=patch.selectedTopic;
       if("selectedMode" in patch) selectedMode=patch.selectedMode;
+      if("selectedFormats" in patch&&Array.isArray(patch.selectedFormats)){
+        selectedFormats=new Set(patch.selectedFormats.filter(function(value){return PRACTICE_FORMAT_IDS.indexOf(value)>=0;}));
+      }
       if("queue" in patch) queue=patch.queue;
       if("index" in patch) index=patch.index;
       if("checkedCurrent" in patch) checkedCurrent=patch.checkedCurrent;
@@ -1536,7 +1593,7 @@ window.LegacyProgressAdapter = {
     $("closeDialog").addEventListener("click",function(){els.dialog.close();});
     els.dialog.addEventListener("click",function(e){ if(e.target===els.dialog) els.dialog.close(); });
     els.answerInput.addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();checkAnswer();} });
-    $("todayBtn").addEventListener("click",function(){selectedMode="all";startSession("all",10,"all");});
+    $("todayBtn").addEventListener("click",function(){selectedMode="all";selectedFormats.clear();startSession("all",10,[]);});
     $("learnWordsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});
     $("chooseTopicBtn").addEventListener("click",function(){showCatalog("practice");});
@@ -1568,13 +1625,24 @@ window.LegacyProgressAdapter = {
         document.querySelectorAll("[data-session-size]").forEach(function(x){x.classList.toggle("active",x===btn);});
       });
     });
-    document.querySelectorAll("[data-session-mode]").forEach(function(btn){
+    document.querySelectorAll("[data-session-format]").forEach(function(btn){
       btn.addEventListener("click",function(){
-        selectedMode=btn.dataset.sessionMode;
-        document.querySelectorAll("[data-session-mode]").forEach(function(x){x.classList.toggle("active",x===btn);});
+        const format=btn.dataset.sessionFormat;
+        if(format==="all"){
+          selectedFormats.clear();
+        }else if(selectedFormats.has(format)){
+          selectedFormats.delete(format);
+        }else{
+          selectedFormats.add(format);
+        }
+        updatePracticeFilterUi();
       });
     });
-    $("startSessionBtn").addEventListener("click",function(){els.sessionDialog.close();startSession(pendingSessionTopic,sessionSize,selectedMode);});
+    $("startSessionBtn").addEventListener("click",function(){
+      if(updatePracticeFilterUi()===0) return;
+      els.sessionDialog.close();
+      startSession(pendingSessionTopic,sessionSize,selectedFormatList());
+    });
     $("resultHomeBtn").addEventListener("click",showHome);
     $("repeatMistakesBtn").addEventListener("click",function(){
       const mistakes=(sessionResults.mistakes||[]).slice();
