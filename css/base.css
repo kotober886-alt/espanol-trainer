@@ -476,7 +476,49 @@
     .topic-tab { padding:6px 10px; border:0; border-radius:10px; background:#f1eff8; color:var(--muted); font-size:12px; font-weight:800; }
     .topic-tab.active { color:white; background:var(--ink); }
     .session-result { padding:clamp(34px,7vw,80px) 24px; text-align:center; }
-    .result-visual { display:grid; place-items:center; min-height:68px; margin:0 auto 18px; }
+    .result-visual { display:grid; place-items:center; gap:7px; min-height:68px; margin:0 auto 18px; }
+    .result-speech-bubble {
+      position:relative;
+      z-index:2;
+      max-width:min(310px,82vw);
+      padding:10px 15px;
+      border:1px solid rgba(111,99,207,.14);
+      border-radius:17px 17px 17px 6px;
+      background:#fff;
+      color:var(--ink);
+      box-shadow:0 12px 28px rgba(35,28,89,.13);
+      font-size:clamp(15px,4vw,18px);
+      font-weight:900;
+      line-height:1.15;
+      text-align:center;
+      opacity:0;
+      transform:translateY(8px) scale(.9);
+      transform-origin:50% 100%;
+      pointer-events:none;
+    }
+    .result-speech-bubble::after {
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:-8px;
+      width:16px;
+      height:16px;
+      background:#fff;
+      border-right:1px solid rgba(111,99,207,.14);
+      border-bottom:1px solid rgba(111,99,207,.14);
+      transform:translateX(-50%) rotate(45deg);
+    }
+    .result-speech-bubble.is-visible {
+      animation:resultSpeechPop .42s cubic-bezier(.2,.9,.3,1) both;
+    }
+    .result-speech-bubble.is-triumph { border-color:rgba(98,83,217,.22); }
+    .result-speech-bubble.is-steady { border-color:rgba(74,126,105,.18); }
+    .result-speech-bubble.is-low { border-color:rgba(196,92,92,.2); }
+    @keyframes resultSpeechPop {
+      0% { opacity:0; transform:translateY(8px) scale(.9); }
+      68% { opacity:1; transform:translateY(-2px) scale(1.035); }
+      100% { opacity:1; transform:translateY(0) scale(1); }
+    }
     .result-icon { display:grid; place-items:center; width:68px; height:68px; border-radius:22px; background:#eeeaff; color:var(--violet); font-size:30px; }
     .result-mascot { display:block; width:min(210px,55vw); height:auto; max-height:210px; object-fit:contain; filter:drop-shadow(0 12px 22px rgba(35,28,89,.14)); }
     .result-mascot[hidden] { display:none; }
@@ -772,38 +814,6 @@
 .mark.mascot-slot {
   isolation: isolate;
 }
-.mascot-reaction-bubble {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 7px);
-  z-index: 5;
-  max-width: min(170px, 70vw);
-  padding: 6px 9px;
-  border: 1px solid rgba(111, 99, 207, .16);
-  border-radius: 12px 12px 12px 4px;
-  background: rgba(255,255,255,.97);
-  color: var(--ink);
-  box-shadow: 0 8px 20px rgba(55, 45, 115, .16);
-  font-size: 12px;
-  font-weight: 850;
-  line-height: 1;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 7px) scale(.94);
-  transition: opacity .16s ease, transform .2s cubic-bezier(.2,.8,.3,1);
-}
-.mascot-reaction-bubble.is-visible {
-  opacity: 1;
-  transform: translate(-50%, 0) scale(1);
-}
-.mascot-reaction-bubble.is-triumph {
-  border-color: rgba(98,83,217,.24);
-}
-.mascot-reaction-bubble.is-confused {
-  border-color: rgba(224,137,87,.25);
-}
-
 .mascot-react-success .brand-mascot {
   animation: mascotSuccessPop .55s cubic-bezier(.2,.85,.3,1) both !important;
 }
@@ -838,8 +848,9 @@
   .study-card,
   .study-card.is-swipe-dragging,
   .study-card.is-swipe-settling,
-  .mascot-reaction-bubble {
+  .result-speech-bubble {
     transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
   }
   .mascot-react-success .brand-mascot,
   .mascot-react-triumph .brand-mascot,

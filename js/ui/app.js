@@ -175,7 +175,6 @@ let streak = 0;
 let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: .86 });
 let feedbackAudioContext = null;
 let mascotReactionTimer = 0;
-let mascotBubbleTimer = 0;
 
 function feedbackSoundsEnabled(){
   return audioSettings.feedbackSounds !== false &&
@@ -215,39 +214,16 @@ function playFeedbackSound(type){
   }catch(error){}
 }
 
-function mascotBubble(){
-  const slot=document.querySelector(".mark.mascot-slot");
-  if(!slot) return null;
-  let bubble=slot.querySelector(".mascot-reaction-bubble");
-  if(!bubble){
-    bubble=document.createElement("span");
-    bubble.className="mascot-reaction-bubble";
-    bubble.setAttribute("role","status");
-    bubble.setAttribute("aria-live","polite");
-    slot.appendChild(bubble);
-  }
-  return bubble;
-}
-
 function showMascotReaction(reaction){
   if(!reaction || !reaction.type) return;
   const slot=document.querySelector(".mark.mascot-slot");
   if(!slot) return;
 
   window.clearTimeout(mascotReactionTimer);
-  window.clearTimeout(mascotBubbleTimer);
 
   slot.classList.remove("mascot-react-success","mascot-react-triumph","mascot-react-confused");
   void slot.offsetWidth;
   slot.classList.add("mascot-react-"+reaction.type);
-
-  const bubble=mascotBubble();
-  if(bubble){
-    bubble.textContent=reaction.message || "";
-    bubble.className="mascot-reaction-bubble is-"+reaction.type;
-    requestAnimationFrame(function(){bubble.classList.add("is-visible");});
-    mascotBubbleTimer=window.setTimeout(function(){bubble.classList.remove("is-visible");},1250);
-  }
 
   playFeedbackSound(reaction.type);
 

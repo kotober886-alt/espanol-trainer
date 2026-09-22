@@ -5,6 +5,45 @@ export function createResultsView(deps){
   const {els,$,getState,patchState,syncSession,progress,ensureApproveMascot,ensureStrictMascot,
     ensureLowMascot,setResultFavicon}=deps;
 
+  const RESULT_PHRASES = {
+    triumph: ["¡Increíble!", "¡Eres un crack!", "¡Victoria!"],
+    steady: ["¡Buen intento!", "¡Casi perfecto!", "¡A seguir practicando!"],
+    low: ["¡Miau... concéntrate!", "¡A repasar la lección!", "¡No te rindas!"]
+  };
+
+  function resultBand(accuracy){
+    if(accuracy>80) return "triumph";
+    if(accuracy>=50) return "steady";
+    return "low";
+  }
+
+  function resultPhrase(band,result){
+    const phrases=RESULT_PHRASES[band];
+    const seed=Math.max(0,Number(result.correct)||0)+Math.max(0,Number(result.wrong)||0)+Math.max(0,Number(result.answered)||0);
+    return phrases[seed%phrases.length];
+  }
+
+  function showResultSpeechBubble(band,result){
+    const visual=els.resultMascot.parentElement;
+    if(!visual) return;
+
+    let bubble=visual.querySelector(".result-speech-bubble");
+    if(!bubble){
+      bubble=document.createElement("div");
+      bubble.className="result-speech-bubble";
+      bubble.setAttribute("role","status");
+      bubble.setAttribute("aria-live","polite");
+      visual.insertBefore(bubble,els.resultMascot);
+    }
+
+    bubble.textContent=resultPhrase(band,result);
+    bubble.className="result-speech-bubble is-"+band;
+    void bubble.offsetWidth;
+    requestAnimationFrame(function(){
+      bubble.classList.add("is-visible");
+    });
+  }
+
   function finish(){
     if(getState().sessionController) syncSession();
     const state=getState();
@@ -31,7 +70,9 @@ export function createResultsView(deps){
     const accuracy=result.answered?result.correct/result.answered*100:0;
     if(progress) progress.recordSessionResult({...result,accuracy});
 
-    const mode=accuracy>=80?"approve":(accuracy>=60?"strict":"low");
+    const band=resultBand(accuracy);
+    const mode=band==="triumph"?"approve":(band==="steady"?"strict":"low");
+    showResultSpeechBubble(band,result);
     els.resultMascot.dataset.mode=mode;
     els.resultMascot.hidden=true;
     if(els.resultIcon) els.resultIcon.hidden=true;
