@@ -1,4 +1,4 @@
-import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-mode18";
+import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-juice20";
 
 /**
  * Practice catalog enhancements: Blitz entry banner + lifecycle.
@@ -50,7 +50,10 @@ export function createPracticeView(options={}){
           '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+
         '</span>'+
       '</span>'+
-      '<img class="blitz-banner-cat" src="assets/images/mascot/blitz_mascot.webp" alt="Блиц кот" onerror="this.style.display=\'none\'">';
+      '<span class="blitz-banner-cover" aria-hidden="true">'+
+        '<img src="assets/images/mascot/blitz_banner.webp" alt="" onload="this.parentElement.classList.add(\'is-loaded\')" onerror="this.parentElement.style.display=\'none\'">'+
+      '</span>'+
+      '<img class="blitz-banner-cat" src="assets/images/mascot/blitz_mascot.webp?v=20260923-blitz-juice20" alt="Блиц кот" onerror="this.style.display=\'none\'">';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
 
     const catalogHead=host.querySelector(".catalog-head");

@@ -1,3 +1,13 @@
+import {
+  isBlitzSoundEnabled,
+  setBlitzSoundEnabled,
+  primeBlitzAudio,
+  playSuccessSound,
+  playErrorSound,
+  playTickSound,
+  playFinishSound
+} from "./blitz-audio.js?v=20260923-blitz-juice20";
+
 /**
  * Fast 60-second game mode.
  * Uses only tap-friendly multiple-choice questions and generated vocabulary translations.
@@ -177,6 +187,7 @@ export function createBlitzGame(options={}){
   let wrongCount=0;
   let combo=0;
   let maxCombo=0;
+  let lastTickSecond=null;
 
   function readHighScore(){
     try {
@@ -211,6 +222,7 @@ export function createBlitzGame(options={}){
     root.setAttribute("aria-label","Блиц на 60 секунд");
     root.innerHTML=
       '<div class="blitz-shell">'+
+        '<button class="blitz-sound-toggle" data-blitz-sound type="button" aria-label="Выключить звук" aria-pressed="true">🔊</button>'+
         '<div class="blitz-topbar">'+
           '<button class="blitz-back" data-blitz-exit type="button">← К тренировкам</button>'+
           '<div class="blitz-clock" data-blitz-clock aria-live="off">00:60</div>'+
@@ -218,7 +230,7 @@ export function createBlitzGame(options={}){
         '</div>'+
         '<div class="blitz-time-track" aria-hidden="true"><span data-blitz-time-bar></span></div>'+
         '<main class="blitz-play" data-blitz-play>'+
-          '<div class="blitz-round-meta"><span data-blitz-combo>Комбо ×0</span><span>⚡ Быстрый выбор</span></div>'+
+          '<div class="blitz-round-meta"><span class="blitz-combo-badge" data-blitz-combo>Комбо ×0</span><span>⚡ Быстрый выбор</span></div>'+
           '<div class="blitz-question-wrap">'+
             '<p class="blitz-kicker">Выбери ответ</p>'+
             '<h1 class="blitz-question" data-blitz-question></h1>'+
@@ -226,7 +238,7 @@ export function createBlitzGame(options={}){
           '</div>'+
         '</main>'+
         '<section class="blitz-game-over" data-blitz-game-over hidden>'+
-          '<img class="blitz-victory" src="assets/images/mascot/victory.webp?v=20260923-blitz-mode18" alt="Рыжий кот-победитель с секундомером" onerror="this.style.display=\'none\'">'+
+          '<img class="blitz-victory" src="assets/images/mascot/victory.webp?v=20260923-blitz-juice20" alt="Рыжий кот-победитель с секундомером" onerror="this.style.display=\'none\'">'+
           '<div class="blitz-record-badge" data-blitz-record hidden>🎉 Новый рекорд!</div>'+
           '<p class="blitz-game-over-kicker">Время вышло</p>'+
           '<h2>Блиц завершён!</h2>'+
@@ -252,8 +264,31 @@ export function createBlitzGame(options={}){
       button.addEventListener("click",exitToPractice);
     });
     root.querySelector("[data-blitz-restart]").addEventListener("click",start);
+    root.querySelector("[data-blitz-sound]").addEventListener("click",function(){
+      const enabled=setBlitzSoundEnabled(!isBlitzSoundEnabled());
+      syncSoundButton(enabled);
+    });
     document.body.appendChild(root);
+    syncSoundButton();
     return root;
+  }
+
+  function syncSoundButton(enabled){
+    if(!root) return;
+    const active=typeof enabled==="boolean" ? enabled : isBlitzSoundEnabled();
+    const button=root.querySelector("[data-blitz-sound]");
+    if(!button) return;
+    button.textContent=active?"🔊":"🔇";
+    button.setAttribute("aria-pressed",active?"true":"false");
+    button.setAttribute("aria-label",active?"Выключить звук":"Включить звук");
+  }
+
+  function vibrate(pattern){
+    try {
+      if(typeof navigator!=="undefined" && typeof navigator.vibrate==="function"){
+        navigator.vibrate(pattern);
+      }
+    } catch(error) {}
   }
 
   function nextQuestion(){
@@ -280,14 +315,29 @@ export function createBlitzGame(options={}){
   }
 
   function pointsForCombo(value){
-    if(value>=6) return 20;
+    if(value>=10) return 25;
+    if(value>=5) return 20;
     if(value>=3) return 15;
     return 10;
   }
 
   function updateHud(){
     root.querySelector("[data-blitz-score]").textContent=String(score);
-    root.querySelector("[data-blitz-combo]").textContent="Комбо ×"+combo;
+    const badge=root.querySelector("[data-blitz-combo]");
+    badge.classList.remove("is-live","is-fire","is-ultra");
+
+    if(combo>=10){
+      badge.textContent="⚡ НЕОСТАНОВИМ! x2.5";
+      badge.classList.add("is-live","is-ultra");
+    }else if(combo>=5){
+      badge.textContent="🔥 В ОГНЕ! x2.0";
+      badge.classList.add("is-live","is-fire");
+    }else if(combo>=3){
+      badge.textContent="x1.5";
+      badge.classList.add("is-live");
+    }else{
+      badge.textContent="Комбо ×"+combo;
+    }
   }
 
   function chooseAnswer(button,selected,question){
@@ -303,6 +353,8 @@ export function createBlitzGame(options={}){
       correctCount+=1;
       score+=pointsForCombo(combo);
       button.classList.add("is-correct");
+      playSuccessSound();
+      vibrate(18);
     }else{
       wrongCount+=1;
       combo=0;
@@ -310,6 +362,8 @@ export function createBlitzGame(options={}){
       buttons.forEach(function(item){
         if(normalize(item.textContent)===normalize(question.correct)) item.classList.add("is-correct");
       });
+      playErrorSound();
+      vibrate([40,30,40]);
     }
 
     updateHud();
@@ -323,8 +377,15 @@ export function createBlitzGame(options={}){
     if(!running) return;
     const remaining=Math.max(0,endAt-performance.now());
     const seconds=Math.ceil(remaining/1000);
-    root.querySelector("[data-blitz-clock]").textContent="00:"+String(seconds).padStart(2,"0");
+    const clock=root.querySelector("[data-blitz-clock]");
+    clock.textContent="00:"+String(seconds).padStart(2,"0");
+    clock.classList.toggle("is-urgent",seconds>=1 && seconds<=5);
     root.querySelector("[data-blitz-time-bar]").style.transform="scaleX("+(remaining/GAME_MS)+")";
+
+    if(seconds>=1 && seconds<=5 && seconds!==lastTickSecond){
+      lastTickSecond=seconds;
+      playTickSound();
+    }
     if(remaining<=0) finish();
   }
 
@@ -333,6 +394,8 @@ export function createBlitzGame(options={}){
     running=false;
     locked=true;
     clearTimers();
+    playFinishSound();
+    vibrate(100);
 
     const previous=readHighScore();
     const newRecord=score>previous;
@@ -348,7 +411,9 @@ export function createBlitzGame(options={}){
     root.querySelector("[data-blitz-correct]").textContent=String(correctCount);
     root.querySelector("[data-blitz-wrong]").textContent=String(wrongCount);
     root.querySelector("[data-blitz-max-combo]").textContent=String(maxCombo);
-    root.querySelector("[data-blitz-clock]").textContent="00:00";
+    const clock=root.querySelector("[data-blitz-clock]");
+    clock.textContent="00:00";
+    clock.classList.remove("is-urgent");
     root.querySelector("[data-blitz-time-bar]").style.transform="scaleX(0)";
   }
 
@@ -360,12 +425,15 @@ export function createBlitzGame(options={}){
     maxCombo=0;
     cursor=0;
     locked=false;
+    lastTickSecond=null;
     updateHud();
   }
 
   function start(){
     const screen=ensureRoot();
     clearTimers();
+    primeBlitzAudio();
+    syncSoundButton();
     pool=buildBlitzPool(getSource());
     resetState();
 
@@ -377,7 +445,9 @@ export function createBlitzGame(options={}){
       running=false;
       screen.querySelector("[data-blitz-play]").hidden=true;
       screen.querySelector("[data-blitz-empty]").hidden=false;
-      screen.querySelector("[data-blitz-clock]").textContent="00:60";
+      const clock=screen.querySelector("[data-blitz-clock]");
+      clock.textContent="00:60";
+      clock.classList.remove("is-urgent");
       screen.querySelector("[data-blitz-time-bar]").style.transform="scaleX(1)";
       return;
     }
@@ -386,7 +456,9 @@ export function createBlitzGame(options={}){
     screen.querySelector("[data-blitz-play]").hidden=false;
     running=true;
     endAt=performance.now()+GAME_MS;
-    screen.querySelector("[data-blitz-clock]").textContent="00:60";
+    const clock=screen.querySelector("[data-blitz-clock]");
+    clock.textContent="00:60";
+    clock.classList.remove("is-urgent");
     screen.querySelector("[data-blitz-time-bar]").style.transform="scaleX(1)";
     nextQuestion();
     timerId=setInterval(updateTimer,100);
