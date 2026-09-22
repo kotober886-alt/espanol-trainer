@@ -699,6 +699,9 @@ window.LegacyProgressAdapter = {
     function currentSectionNav(){
       if(els.mistakesView && !els.mistakesView.hidden) return "mistakes";
       if(!els.homeView.hidden) return "home";
+      if(els.trainerLayout.classList.contains("catalog-view")){
+        return catalogIntent==="learn" ? "words" : "practice";
+      }
       return foodPhase==="study" ? "words" : (selectedMode==="mistakes" ? "mistakes" : "practice");
     }
     function showHome(){
