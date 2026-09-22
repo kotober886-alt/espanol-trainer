@@ -1402,3 +1402,99 @@
     transition:none;
   }
 }
+
+
+/* Unified speech player · 20260922-unified-audio3 */
+.audio-player {
+  display:flex;
+  align-items:stretch;
+  gap:8px;
+}
+.audio-actions.audio-player {
+  flex-wrap:nowrap;
+  margin:0 0 22px;
+}
+.study-audio-player {
+  margin:0 0 18px;
+}
+.audio-player .audio-play,
+.audio-story-controls .audio-play {
+  min-height:46px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  margin:0;
+  padding:11px 16px;
+  border:0;
+  border-radius:14px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--violet),var(--violet-2));
+  font-size:14px;
+  font-weight:850;
+  box-shadow:0 8px 18px rgba(80,62,170,.18);
+  cursor:pointer;
+}
+.audio-player .audio-play > span,
+.audio-story-controls .audio-play > span {
+  display:grid;
+  place-items:center;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+}
+.audio-player .audio-speed,
+.audio-story-controls .audio-speed {
+  flex:0 0 auto;
+  min-width:76px;
+  min-height:46px;
+  padding:10px 13px;
+  border:1px solid #d7d0f4;
+  border-radius:14px;
+  background:#f0edff;
+  color:#4d438f;
+  font-size:14px;
+  font-weight:850;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.audio-player .audio-speed:hover,
+.audio-story-controls .audio-speed:hover {
+  background:#e8e3ff;
+  border-color:#c5bbea;
+}
+.audio-player .audio-play.speaking,
+.audio-story-controls .audio-play.speaking {
+  animation:audioPulse 1s ease-in-out infinite;
+}
+.audio-player .audio-play.speaking > span,
+.audio-story-controls .audio-play.speaking > span {
+  background:rgba(255,255,255,.3);
+}
+.audio-story-controls.audio-player {
+  flex:0 0 auto;
+}
+@media (max-width:520px) {
+  .audio-player {
+    width:100%;
+    gap:8px;
+  }
+  .audio-player .audio-play,
+  .audio-story-controls .audio-play {
+    flex:1 1 auto;
+    min-width:0;
+    min-height:50px;
+    padding:12px 13px;
+    font-size:14px;
+  }
+  .audio-player .audio-speed,
+  .audio-story-controls .audio-speed {
+    min-width:78px;
+    min-height:50px;
+    padding:11px 12px;
+  }
+  .study-audio-player {
+    width:100%;
+  }
+}

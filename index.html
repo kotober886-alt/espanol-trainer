@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-audio-speed2">
+  <link rel="stylesheet" href="css/base.css?v=20260922-unified-audio3">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-audio-speed2";
+      const CURRENT_BUILD="20260922-unified-audio3";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -212,7 +212,10 @@
                 </div>
                 <div class="food-translation" id="foodTranslation"></div>
                 <div class="pronoun-details" id="pronounDetails" hidden></div>
-                <button class="study-listen" id="studyListen" type="button"><span aria-hidden="true">▶</span> Послушать произношение</button>
+                <div class="study-audio-player audio-player" aria-label="Озвучивание карточки">
+                  <button class="study-listen audio-play" id="studyListen" type="button"><span aria-hidden="true">▶</span> Послушать</button>
+                  <button class="audio-speed" id="studyAudioSpeed" data-audio-speed type="button" aria-label="Скорость воспроизведения 1.0">1.0×</button>
+                </div>
                 <div class="examples-title" id="examplesTitle">В контексте</div>
                 <div class="example-list" id="foodExamples"></div>
               </div>
@@ -236,9 +239,9 @@
               <span id="questionNumber">Задание 1</span>
             </div>
             <h2 class="question" id="questionText"></h2>
-            <div class="audio-actions" id="audioActions" hidden>
-              <button class="audio-prompt" id="audioPrompt" type="button"><span aria-hidden="true">▶</span> Прослушать</button>
-              <button class="audio-slow" id="slowAudioPrompt" type="button"><span aria-hidden="true">◷</span> Медленнее · 0,64×</button>
+            <div class="audio-actions audio-player" id="audioActions" hidden>
+              <button class="audio-prompt audio-play" id="audioPrompt" type="button"><span aria-hidden="true">▶</span> Послушать</button>
+              <button class="audio-speed" id="slowAudioPrompt" data-audio-speed type="button" aria-label="Скорость воспроизведения 1.0">1.0×</button>
             </div>
             <div class="choice-grid" id="choiceGrid" hidden></div>
             <div class="order-widget" id="orderWidget" hidden>
@@ -377,8 +380,9 @@
               <select class="voice-select" id="voiceSelect" aria-describedby="voiceStatus"><option value="">Автоматически: лучший для региона</option></select>
             </label>
             <div class="audio-control-label">Скорость по умолчанию<div class="speed-toggle" role="group" aria-label="Скорость воспроизведения">
-              <button class="speed-option active" data-audio-rate="0.86" type="button">Комфортно</button>
-              <button class="speed-option" data-audio-rate="0.68" type="button">Спокойно</button>
+              <button class="speed-option active" data-audio-rate="1" type="button">1.0×</button>
+              <button class="speed-option" data-audio-rate="0.8" type="button">0.8×</button>
+              <button class="speed-option" data-audio-rate="0.6" type="button">0.6×</button>
             </div></div>
             <button class="voice-preview" id="voicePreview" type="button">▶ Проверить голос</button>
             <p class="voice-status" id="voiceStatus">Подбираем самый естественный голос на этом устройстве…</p>
@@ -583,6 +587,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-audio-speed2"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-unified-audio3"></script>
 </body>
 </html>

@@ -5,15 +5,16 @@
 export function createTrainerView(deps){
   const {els,$,escapeHtml,shuffle,normalize,fold,normalizePictureAnswer,pictureAsset,
     bindPictureImageFallback,getState,patchState,isVocabularyTopic,answerEngine,progress,
-    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate,playAudioStory}=deps;
+    syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate,
+    playAudioStory,getAudioRate,cycleAudioRate}=deps;
 
   let orderPool=[],orderState=[],matchPool=[],matchState=[],clozePool=[],clozeState=[];
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
-  let audioStoryState={},audioStoryRate=1;
+  let audioStoryState={};
 
   function resetCard(){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
-    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};audioStoryRate=1;
+    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};
     const checkBtn=$("checkBtn"),showBtn=$("showBtn");
     if(checkBtn)checkBtn.disabled=false;
     if(showBtn){showBtn.hidden=false;showBtn.textContent="Посмотреть ответ";}
@@ -172,14 +173,15 @@ export function createTrainerView(deps){
 
   function renderAudioStory(item){
     const statements=item.statements||[];
+    const currentRate=typeof getAudioRate==="function"?getAudioRate():1;
     els.choiceGrid.hidden=false;
     els.choiceGrid.className="choice-grid audio-story-quiz";
     els.choiceGrid.innerHTML=
       '<div class="audio-story-toolbar">'+
         '<div class="audio-story-heading"><strong>'+escapeHtml(item.title||"Аудирование")+'</strong><span>Прослушай историю и отметь каждое утверждение.</span></div>'+
-        '<div class="audio-story-controls">'+
-          '<button class="audio-story-play" data-story-play type="button"><span aria-hidden="true">▶</span> Послушать историю</button>'+
-          '<button class="audio-story-speed" data-story-speed type="button" aria-label="Скорость воспроизведения 1.0">1.0×</button>'+
+        '<div class="audio-story-controls audio-player">'+
+          '<button class="audio-story-play audio-play" data-story-play type="button"><span aria-hidden="true">▶</span> Послушать</button>'+
+          '<button class="audio-story-speed audio-speed" data-story-speed data-audio-speed type="button" aria-label="Скорость воспроизведения '+currentRate.toFixed(1)+'">'+currentRate.toFixed(1)+'×</button>'+
         '</div>'+
       '</div>'+
       '<div class="audio-story-list">'+statements.map(function(statement,index){
@@ -200,14 +202,11 @@ export function createTrainerView(deps){
     const playBtn=els.choiceGrid.querySelector("[data-story-play]");
     const speedBtn=els.choiceGrid.querySelector("[data-story-speed]");
     if(playBtn)playBtn.addEventListener("click",function(){
-      if(typeof playAudioStory==="function")playAudioStory(item.audioText||item.audio||"",audioStoryRate,playBtn);
+      const rate=typeof getAudioRate==="function"?getAudioRate():1;
+      if(typeof playAudioStory==="function")playAudioStory(item.audioText||item.audio||"",rate,playBtn);
     });
     if(speedBtn)speedBtn.addEventListener("click",function(){
-      const rates=[1,0.8,0.6];
-      const currentIndex=rates.findIndex(rate=>Math.abs(rate-audioStoryRate)<0.001);
-      audioStoryRate=rates[(currentIndex+1)%rates.length];
-      speedBtn.textContent=audioStoryRate===0.6?"🐌 0.6×":audioStoryRate.toFixed(1)+"×";
-      speedBtn.setAttribute("aria-label","Скорость воспроизведения "+audioStoryRate.toFixed(1)+(audioStoryRate===0.6?", медленно":""));
+      if(typeof cycleAudioRate==="function")cycleAudioRate(speedBtn);
     });
 
     els.choiceGrid.querySelectorAll("[data-story-statement]").forEach(function(card){
@@ -235,6 +234,7 @@ export function createTrainerView(deps){
   function setupExercise(item){
     resetCard();patchState({checkedCurrent:false});
     const type=item.type||"text";
+    if(type!=="audio_story_quiz"&&(item.audio||item.audioText))els.audioActions.hidden=false;
     if(type==="audio_story_quiz"){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;
       const showBtn=$("showBtn");if(showBtn)showBtn.hidden=true;
@@ -283,7 +283,7 @@ export function createTrainerView(deps){
         escapeHtml(label)+'</label><input id="formInput'+i+'" data-form-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false"></div>').join("");
       const first=els.formGrid.querySelector("input");if(first)first.focus();
     }else{
-      if(type==="audio"){els.audioActions.hidden=false;els.answerLabel.textContent="Что ты услышала?";els.answerInput.placeholder="Запиши предложение…";}
+      if(type==="audio"){els.answerLabel.textContent="Что ты услышала?";els.answerInput.placeholder="Запиши предложение…";}
       else if(type==="correct"){els.answerLabel.textContent="Исправленный вариант";els.answerInput.placeholder="Напиши предложение без ошибки…";}
       else if(type==="dialogue"){els.answerLabel.textContent="Твоя реплика";els.answerInput.placeholder="Ответь по-испански…";}
       else if(type==="ser-estar-hay"){els.answerLabel.textContent="Нужная форма";els.answerInput.placeholder="Например: es, estoy, están или hay…";}

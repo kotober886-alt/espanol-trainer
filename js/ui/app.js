@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-audio-speed2";
+import { createTrainerView } from "./trainer-view.js?v=20260922-unified-audio3";
 import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
@@ -173,7 +173,21 @@ let stats = {};
 let custom = [];
 let streak = 0;
 
-let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: .86 });
+const AUDIO_RATES=[1,0.8,0.6];
+
+function normalizeAudioRate(value){
+  const numeric=Number(value);
+  if(!Number.isFinite(numeric)) return 1;
+  return AUDIO_RATES.reduce(function(best,rate){
+    return Math.abs(rate-numeric)<Math.abs(best-numeric)?rate:best;
+  },AUDIO_RATES[0]);
+}
+
+function audioRateLabel(rate){
+  return normalizeAudioRate(rate).toFixed(1)+"×";
+}
+
+let audioSettings = read(STORAGE.audio, { voiceURI: "", voiceLocale: "auto", rate: 1 });
 let feedbackAudioContext = null;
 let mascotReactionTimer = 0;
 
@@ -261,10 +275,9 @@ function recordSkipWithReaction(payload){
   return result;
 }
 let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
-    if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:.86};
-    if(typeof audioSettings.rate!=="number") audioSettings.rate=.86;
+    if(!audioSettings || typeof audioSettings!=="object") audioSettings={voiceURI:"",voiceLocale:"auto",rate:1};
+    audioSettings.rate=normalizeAudioRate(audioSettings.rate);
     if(!audioSettings.voiceLocale) audioSettings.voiceLocale="auto";
-    if(Math.abs(audioSettings.rate-.74)<.01) audioSettings.rate=.68;
     let spanishVoices = [];
     let selectedTopic = uiSettings.lastTopic || "verbs";
     let selectedMode = "all";
@@ -299,7 +312,7 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
       answerLabel:$("answerLabel"), audioActions:$("audioActions"), audioPrompt:$("audioPrompt"), slowAudioPrompt:$("slowAudioPrompt"),
       audioSettings:$("audioSettings"), voiceLocaleSelect:$("voiceLocaleSelect"), voiceSelect:$("voiceSelect"), voicePreview:$("voicePreview"), voiceStatus:$("voiceStatus"),
       voiceDebug:$("voiceDebug"), voiceDebugCounts:$("voiceDebugCounts"), voiceDebugLog:$("voiceDebugLog"), voiceRefresh:$("voiceRefresh"),
-      studyListen:$("studyListen"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
+      studyListen:$("studyListen"), studyAudioSpeed:$("studyAudioSpeed"), choiceGrid:$("choiceGrid"), orderWidget:$("orderWidget"),
       orderBuilt:$("orderBuilt"), orderBank:$("orderBank"), formGrid:$("formGrid"),
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
       clozeWidget:$("clozeWidget"), clozePassage:$("clozePassage"), clozeBank:$("clozeBank"),
@@ -1216,23 +1229,34 @@ window.LegacyProgressAdapter = {
       return spanishVoices[0] || null;
     }
 
-    function slowerRate(){
-      return Math.max(.54,Math.round((audioSettings.rate-.22)*100)/100);
+    function setAudioRate(rate){
+      audioSettings.rate=normalizeAudioRate(rate);
+      write(STORAGE.audio,audioSettings);
+      updateSpeedButtons();
+      return audioSettings.rate;
+    }
+
+    function cycleAudioRate(){
+      const current=normalizeAudioRate(audioSettings.rate);
+      const index=AUDIO_RATES.indexOf(current);
+      return setAudioRate(AUDIO_RATES[(index+1)%AUDIO_RATES.length]);
     }
 
     function updateSpeedButtons(){
+      audioSettings.rate=normalizeAudioRate(audioSettings.rate);
       document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
         const active=Math.abs(Number(btn.dataset.audioRate)-audioSettings.rate)<.01;
         btn.classList.toggle("active",active);
         btn.setAttribute("aria-pressed",String(active));
       });
-      const shown=slowerRate().toFixed(2).replace(".",",");
-      els.slowAudioPrompt.innerHTML='<span aria-hidden="true">◷</span> Медленнее · '+shown+'×';
-      els.slowAudioPrompt.setAttribute("aria-label","Прослушать медленнее, скорость "+shown);
+      document.querySelectorAll("[data-audio-speed]").forEach(function(btn){
+        btn.textContent=audioRateLabel(audioSettings.rate);
+        btn.setAttribute("aria-label","Скорость воспроизведения "+audioSettings.rate.toFixed(1)+". Нажми, чтобы изменить.");
+      });
     }
 
     function setSpeakingState(active,source){
-      const controls=[els.audioPrompt,els.slowAudioPrompt,els.studyListen,els.voicePreview];
+      const controls=[els.audioPrompt,els.studyListen,els.voicePreview];
       controls.forEach(function(btn){
         if(btn) btn.classList.toggle("speaking",active && btn===source);
       });
@@ -1257,7 +1281,7 @@ window.LegacyProgressAdapter = {
       } else {
         utterance.lang=preferred || "es-ES";
       }
-      utterance.rate=rate || audioSettings.rate || .86;
+      utterance.rate=normalizeAudioRate(rate===undefined||rate===null?audioSettings.rate:rate);
       utterance.pitch=1;
       utterance.volume=1;
       utterance.onstart=function(){setSpeakingState(true,source);};
@@ -1267,8 +1291,9 @@ window.LegacyProgressAdapter = {
 
     function speakCurrent(rate,source){
       const item=queue[index];
-      if(!item || !item.audio) return;
-      speakText(item.audio,rate,source);
+      const text=item&&(item.audio||item.audioText);
+      if(!text) return;
+      speakText(text,rate,source);
     }
 
     function speakStudy(){
@@ -1381,7 +1406,9 @@ window.LegacyProgressAdapter = {
         setTrainingFavicon:function(value){if(window.DynamicFavicon)window.DynamicFavicon.setTraining(value);},
         colorArt:function(hex){return studyCardView.colorArt(hex);},
         safeVibrate,
-        playAudioStory:function(text,rate,source){speakText(text,rate,source);}
+        playAudioStory:function(text,rate,source){speakText(text,rate,source);},
+        getAudioRate:function(){return audioSettings.rate;},
+        cycleAudioRate:cycleAudioRate
       });
       resultsView=createResultsView({
         els,$,getState:getUiState,patchState:patchUiState,syncSession:syncSessionProjection,
@@ -1450,8 +1477,9 @@ window.LegacyProgressAdapter = {
     els.backToWordsBtn.addEventListener("click",function(){sessionActive=false;if(sessionController)sessionController.stop();sessionController=null;selectedMode="all";foodPhase="study";wordIndex=0;showWorkspace();render();});
     $("checkBtn").addEventListener("click",checkAnswer);
     els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
-    els.slowAudioPrompt.addEventListener("click",function(){speakCurrent(slowerRate(),els.slowAudioPrompt);});
+    els.slowAudioPrompt.addEventListener("click",function(){cycleAudioRate();});
     els.studyListen.addEventListener("click",speakStudy);
+    els.studyAudioSpeed.addEventListener("click",function(){cycleAudioRate();});
     els.voicePreview.addEventListener("click",function(){
       speakText("Hola. Hoy practicamos español con calma y claridad.",audioSettings.rate,els.voicePreview);
     });
@@ -1478,9 +1506,7 @@ window.LegacyProgressAdapter = {
     });
     document.querySelectorAll("[data-audio-rate]").forEach(function(btn){
       btn.addEventListener("click",function(){
-        audioSettings.rate=Number(btn.dataset.audioRate);
-        write(STORAGE.audio,audioSettings);
-        updateSpeedButtons();
+        setAudioRate(Number(btn.dataset.audioRate));
         speakText("Escucha esta frase con atención.",audioSettings.rate,btn);
       });
     });
