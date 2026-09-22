@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260922-remove-story-art10";
+import { createTrainerView } from "./trainer-view.js?v=20260922-story-cafe-integrated13";
 import { createResultsView } from "./results-view.js?v=20260922-mascot-priority5";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { load, save } from "../core/storage.js";
@@ -52,7 +52,7 @@ import { load, save } from "../core/storage.js";
   import { homeTopic } from "../topics/home.js";
   import { choresTopic } from "../topics/chores.js";
   import { colorsTopic } from "../topics/colors.js";
-  import { foodsTopic } from "../topics/foods.js?v=20260922-spanish-statements11";
+  import { foodsTopic } from "../topics/foods.js?v=20260922-story-cafe-integrated13";
   import { clothesTopic } from "../topics/clothes.js";
   import { activitiesTopic } from "../topics/activities.js";
   import { animalsTopic } from "../topics/animals.js";
