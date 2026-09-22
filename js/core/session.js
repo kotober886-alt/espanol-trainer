@@ -76,8 +76,14 @@ export function buildExercisePool({
         return item && item.topic === topicId;
       });
 
+      const legacyTopicExercises = legacyExercises.filter(function (item) {
+        return item && item.topic === topicId;
+      });
+
       items = uniqueExercises(
-        registered.exercises.concat(topicCustom)
+        registered.exercises
+          .concat(legacyTopicExercises)
+          .concat(topicCustom)
       );
     } else {
       items = legacyExercises.filter(function (item) {

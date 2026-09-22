@@ -1025,394 +1025,76 @@
       }
     ].concat(PRACTICAL_WORDS.filter(function(item){return ["poco","bastante","demasiado"].indexOf(item.id)>=0;})).filter(Boolean);
 
-    const FOOD_CATEGORIES = [
-      {id:"all",title:"Все продукты"},
-      {id:"base",title:"Базовые"},
-      {id:"meat",title:"Мясо и птица"},
-      {id:"seafood",title:"Морепродукты"},
-      {id:"desserts",title:"Десерты"},
-      {id:"drinks",title:"Напитки"},
-      {id:"dishes",title:"Основные блюда"},
-      {id:"grocery",title:"Бакалея"}
-    ];
+    let FOOD_CATEGORIES = [];
+    let FOOD_WORDS = [];
+    let CLOTHING_CATEGORIES = [];
+    let CLOTHING_WORDS = [];
+    let VERB_CATEGORIES = [];
+    let VERB_WORDS = [];
+    let VERB_STUDY_WORDS = [];
+    let MIGRATED_TOPIC_EXERCISES = [];
 
-    const FOOD_WORDS = [
-      {id:"bread",cat:"grocery",word:"el pan",base:"pan",gender:"мужской род",tr:"хлеб",ru:["хлеб"],answers:["pan","el pan"],art:"bread",
-        examples:[["Compro pan fresco.","Я покупаю свежий хлеб."],["El pan está en la mesa.","Хлеб находится на столе."]],
-        cloze:"Compro ___ fresco.",clozeAnswers:["pan"]},
-      {id:"milk",cat:"base",word:"la leche",base:"leche",gender:"женский род",tr:"молоко",ru:["молоко"],answers:["leche","la leche"],art:"milk",
-        examples:[["Bebo leche por la mañana.","Я пью молоко утром."],["Necesitamos un litro de leche.","Нам нужен литр молока."]],
-        cloze:"Bebo ___ por la mañana.",clozeAnswers:["leche"]},
-      {id:"cheese",cat:"base",word:"el queso",base:"queso",gender:"мужской род",tr:"сыр",ru:["сыр"],answers:["queso","el queso"],art:"cheese",
-        examples:[["Me gusta el queso.","Мне нравится сыр."],["Este queso es muy suave.","Этот сыр очень нежный."]],
-        cloze:"Me gusta el ___.",clozeAnswers:["queso"]},
-      {id:"egg",cat:"base",word:"el huevo",base:"huevo",gender:"мужской род",tr:"яйцо",ru:["яйцо"],answers:["huevo","el huevo"],art:"egg",
-        examples:[["Como un huevo en el desayuno.","Я ем яйцо на завтрак."],["Los huevos están en la nevera.","Яйца находятся в холодильнике."]],
-        cloze:"Como un ___ en el desayuno.",clozeAnswers:["huevo"]},
-      {id:"rice",cat:"grocery",word:"el arroz",base:"arroz",gender:"мужской род",tr:"рис",ru:["рис"],answers:["arroz","el arroz"],art:"rice",
-        examples:[["Cocinamos arroz con verduras.","Мы готовим рис с овощами."],["Quiero una porción de arroz.","Я хочу порцию риса."]],
-        cloze:"Cocinamos ___ con verduras.",clozeAnswers:["arroz"]},
-      {id:"pasta",cat:"grocery",word:"la pasta",base:"pasta",gender:"женский род",tr:"макароны, паста",ru:["макароны","паста","макароны паста"],answers:["pasta","la pasta"],art:"pasta",
-        examples:[["Hoy comemos pasta.","Сегодня мы едим пасту."],["La pasta está caliente.","Паста горячая."]],
-        cloze:"Hoy comemos ___.",clozeAnswers:["pasta"]},
-      {id:"chicken",cat:"meat",word:"el pollo",base:"pollo",gender:"мужской род",tr:"курица, куриное мясо",ru:["курица","куриное мясо","курятина"],answers:["pollo","el pollo"],art:"chicken",
-        examples:[["Como pollo con patatas.","Я ем курицу с картофелем."],["El pollo está en el horno.","Курица находится в духовке."]],
-        cloze:"Como ___ con patatas.",clozeAnswers:["pollo"]},
-      {id:"fish",cat:"seafood",word:"el pescado",base:"pescado",gender:"мужской род",tr:"рыба как продукт",ru:["рыба","рыба как продукт"],answers:["pescado","el pescado"],art:"assets/picture-labels/foods/fish.webp",
-        examples:[["Prefiero el pescado.","Я предпочитаю рыбу."],["Compramos pescado fresco.","Мы покупаем свежую рыбу."]],
-        cloze:"Prefiero el ___.",clozeAnswers:["pescado"]},
-      {id:"meat",cat:"meat",word:"la carne",base:"carne",gender:"женский род",tr:"мясо",ru:["мясо"],answers:["carne","la carne"],art:"meat",
-        examples:[["No como mucha carne.","Я не ем много мяса."],["La carne está lista.","Мясо готово."]],
-        cloze:"No como mucha ___.",clozeAnswers:["carne"]},
-      {id:"potato",cat:"base",word:"la patata",base:"patata",gender:"женский род",tr:"картофель, картофелина",ru:["картофель","картошка","картофелина"],answers:["patata","la patata","papa","la papa"],art:"potato",
-        examples:[["Pelo una patata.","Я чищу картофелину."],["Necesito dos patatas.","Мне нужны две картофелины."]],
-        cloze:"Pelo una ___.",clozeAnswers:["patata","papa"]},
-      {id:"tomato",cat:"base",word:"el tomate",base:"tomate",gender:"мужской род",tr:"помидор",ru:["помидор","томат"],answers:["tomate","el tomate"],art:"tomato",
-        examples:[["Corto un tomate.","Я режу помидор."],["Los tomates están maduros.","Помидоры спелые."]],
-        cloze:"Corto un ___.",clozeAnswers:["tomate"]},
-      {id:"apple",cat:"base",word:"la manzana",base:"manzana",gender:"женский род",tr:"яблоко",ru:["яблоко"],answers:["manzana","la manzana"],art:"apple",
-        examples:[["Como una manzana.","Я ем яблоко."],["La manzana es roja.","Яблоко красное."]],
-        cloze:"Como una ___.",clozeAnswers:["manzana"]},
-      {id:"banana",cat:"base",word:"el plátano",base:"plátano",gender:"мужской род",tr:"банан",ru:["банан"],answers:["plátano","el plátano","banana","la banana"],art:"banana",
-        examples:[["Compro plátanos.","Я покупаю бананы."],["El plátano está maduro.","Банан спелый."]],
-        cloze:"El ___ está maduro.",clozeAnswers:["plátano"]},
-      {id:"orange",cat:"base",word:"la naranja",base:"naranja",gender:"женский род",tr:"апельсин",ru:["апельсин"],answers:["naranja","la naranja"],art:"orange",
-        examples:[["Quiero zumo de naranja.","Я хочу апельсиновый сок."],["La naranja es dulce.","Апельсин сладкий."]],
-        cloze:"La ___ es dulce.",clozeAnswers:["naranja"]},
-      {id:"water",cat:"drinks",word:"el agua",base:"agua",gender:"женский род",tr:"вода",ru:["вода"],answers:["agua","el agua"],art:"water",
-        examples:[["Bebo agua todos los días.","Я пью воду каждый день."],["Quiero un vaso de agua.","Я хочу стакан воды."]],
-        cloze:"Bebo ___ todos los días.",clozeAnswers:["agua"]},
-      {id:"coffee",cat:"drinks",word:"el café",base:"café",gender:"мужской род",tr:"кофе",ru:["кофе"],answers:["café","el café"],art:"coffee",
-        examples:[["Tomo café sin azúcar.","Я пью кофе без сахара."],["El café está caliente.","Кофе горячий."]],
-        cloze:"Tomo ___ sin azúcar.",clozeAnswers:["café"]},
-      {id:"tea",cat:"drinks",word:"el té",base:"té",gender:"мужской род",tr:"чай",ru:["чай"],answers:["té","el té"],art:"tea",
-        examples:[["Bebo té por la tarde.","Я пью чай после обеда."],["Prefiero el té verde.","Я предпочитаю зелёный чай."]],
-        cloze:"Bebo ___ por la tarde.",clozeAnswers:["té"]},
-      {id:"salt",cat:"grocery",word:"la sal",base:"sal",gender:"женский род",tr:"соль",ru:["соль"],answers:["sal","la sal"],art:"salt",
-        examples:[["Añade un poco de sal.","Добавь немного соли."],["La sal está en la mesa.","Соль находится на столе."]],
-        cloze:"Añade un poco de ___.",clozeAnswers:["sal"]},
-      {id:"beef",cat:"meat",word:"la ternera",base:"ternera",gender:"женский род",tr:"говядина, телятина",ru:["говядина","телятина","говядина телятина"],answers:["ternera","la ternera","carne de ternera","la carne de ternera"],art:"meat",
-        examples:[["Compro ternera para la cena.","Я покупаю говядину на ужин."],["La ternera está muy tierna.","Говядина очень нежная."]],
-        cloze:"Compro ___ para la cena.",clozeAnswers:["ternera","carne de ternera"]},
-      {id:"pork",cat:"meat",word:"la carne de cerdo",base:"carne de cerdo",gender:"женский род",tr:"свинина",ru:["свинина"],answers:["carne de cerdo","la carne de cerdo","cerdo","el cerdo"],art:"meat",
-        examples:[["No como carne de cerdo.","Я не ем свинину."],["La carne de cerdo está en la nevera.","Свинина находится в холодильнике."]],
-        cloze:"No como carne de ___.",clozeAnswers:["cerdo"]},
-      {id:"turkey",cat:"meat",word:"el pavo",base:"pavo",gender:"мужской род",tr:"индейка",ru:["индейка","индюшка"],answers:["pavo","el pavo"],art:"chicken",
-        examples:[["Hoy cocinamos pavo.","Сегодня мы готовим индейку."],["El pavo tiene poca grasa.","В индейке мало жира."]],
-        cloze:"Hoy cocinamos ___.",clozeAnswers:["pavo"]},
-      {id:"ham",cat:"meat",word:"el jamón",base:"jamón",gender:"мужской род",tr:"ветчина, хамон",ru:["ветчина","хамон","ветчина хамон"],answers:["jamón","el jamón"],art:"meat",
-        examples:[["Quiero un bocadillo de jamón.","Я хочу бутерброд с ветчиной."],["El jamón está muy rico.","Хамон очень вкусный."]],
-        cloze:"Quiero un bocadillo de ___.",clozeAnswers:["jamón"]},
-      {id:"sausage",cat:"meat",word:"la salchicha",base:"salchicha",gender:"женский род",tr:"сосиска, колбаска",ru:["сосиска","колбаска","сосиска колбаска"],answers:["salchicha","la salchicha"],art:"sausage",
-        examples:[["Como una salchicha con pan.","Я ем сосиску с хлебом."],["Las salchichas están calientes.","Сосиски горячие."]],
-        cloze:"Como una ___ con pan.",clozeAnswers:["salchicha"]},
+    function legacyCategoriesFromTopic(topic, allTitle) {
+      const seen = new Map();
 
-      {id:"salmon",cat:"seafood",word:"el salmón",base:"salmón",gender:"мужской род",tr:"лосось",ru:["лосось"],answers:["salmón","el salmón"],art:"assets/picture-labels/foods/salmon.webp",
-        examples:[["El salmón está en el horno.","Лосось находится в духовке."],["Me gusta el salmón con arroz.","Мне нравится лосось с рисом."]],
-        cloze:"Me gusta el ___ con arroz.",clozeAnswers:["salmón"]},
-      {id:"tuna",cat:"seafood",word:"el atún",base:"atún",gender:"мужской род",tr:"тунец",ru:["тунец"],answers:["atún","el atún"],art:"assets/picture-labels/foods/tuna.webp",
-        examples:[["La ensalada lleva atún.","В салате есть тунец."],["Compro una lata de atún.","Я покупаю банку тунца."]],
-        cloze:"Compro una lata de ___.",clozeAnswers:["atún"]},
-      {id:"shrimp",cat:"seafood",word:"la gamba / el camarón",base:"gamba / camarón",gender:"женский род (gamba) / мужской род (camarón)",tr:"креветка",ru:["креветка","креветки"],answers:["gamba","la gamba","gambas","las gambas","camarón","el camarón","camaron","el camaron","camarones","los camarones"],art:"assets/picture-labels/foods/shrimp.webp",
-        examples:[["En España se usa «gamba».","В Испании употребляется «gamba»."],["En América Latina se usa «camarón».","В Латинской Америке употребляется «camarón»."]],
-        cloze:"Compramos ___ para la cena.",clozeAnswers:["gamba","gambas","camarón","camaron","camarones"]},
-      {id:"mejillones",cat:"seafood",word:"los mejillones",base:"mejillones",gender:"мужской род, множественное число",tr:"мидии",ru:["мидии"],answers:["mejillones","los mejillones"],art:"assets/picture-labels/foods/mejillones.webp",
-        examples:[["Los mejillones están listos.","Мидии готовы."],["Nunca como mejillones.","Я никогда не ем мидии."]],
-        cloze:"Nunca como ___.",clozeAnswers:["mejillones"]},
-      {id:"squid",cat:"seafood",word:"el calamar",base:"calamar",gender:"мужской род",tr:"кальмар",ru:["кальмар"],answers:["calamar","el calamar"],art:"assets/picture-labels/foods/squid.webp",
-        examples:[["El calamar está muy tierno.","Кальмар очень нежный."],["Quiero calamar a la plancha.","Я хочу кальмара на гриле."]],
-        cloze:"Quiero ___ a la plancha.",clozeAnswers:["calamar"]},
-      {id:"octopus",cat:"seafood",word:"el pulpo",base:"pulpo",gender:"мужской род",tr:"осьминог",ru:["осьминог"],answers:["pulpo","el pulpo"],art:"assets/picture-labels/octopus.webp",
-        examples:[["Probamos pulpo en Galicia.","Мы пробуем осьминога в Галисии."],["El pulpo está delicioso.","Осьминог очень вкусный."]],
-        cloze:"El ___ está delicioso.",clozeAnswers:["pulpo"]},
-      {id:"seafood",cat:"seafood",word:"el marisco",base:"marisco",gender:"мужской род",tr:"морепродукты",ru:["морепродукты","морепродукт"],answers:["marisco","el marisco","mariscos","los mariscos"],art:"assets/picture-labels/marisco.webp",
-        examples:[["Me gusta mucho el marisco.","Я очень люблю морепродукты."],["La paella lleva marisco.","В паэлье есть морепродукты."]],
-        cloze:"La paella lleva ___.",clozeAnswers:["marisco","mariscos"]},
+      (topic.studyItems || []).forEach(function (item) {
+        const id=item.cat || item.category;
+        if(!id || seen.has(id)) return;
 
-      {id:"cookie",cat:"desserts",word:"la galleta",base:"galleta",gender:"женский род",tr:"печенье",ru:["печенье","печенька"],answers:["galleta","la galleta"],art:"cookie",
-        examples:[["Como una galleta con café.","Я ем печенье с кофе."],["Estas galletas tienen chocolate.","В этом печенье есть шоколад."]],
-        cloze:"Como una ___ con café.",clozeAnswers:["galleta"]},
-      {id:"cake",cat:"desserts",word:"la tarta",base:"tarta",gender:"женский род",tr:"торт, пирог",ru:["торт","пирог","торт пирог"],answers:["tarta","la tarta","pastel","el pastel"],art:"cake",
-        examples:[["La tarta es de chocolate.","Торт шоколадный."],["Preparo una tarta para mi cumpleaños.","Я готовлю торт на свой день рождения."]],
-        cloze:"La ___ es de chocolate.",clozeAnswers:["tarta","pastel"]},
-      {id:"icecream",cat:"desserts",word:"el helado",base:"helado",gender:"мужской род",tr:"мороженое",ru:["мороженое"],answers:["helado","el helado"],art:"icecream",
-        examples:[["Quiero un helado de vainilla.","Я хочу ванильное мороженое."],["El helado está muy frío.","Мороженое очень холодное."]],
-        cloze:"Quiero un ___ de vainilla.",clozeAnswers:["helado"]},
-      {id:"chocolate",cat:"desserts",word:"el chocolate",base:"chocolate",gender:"мужской род",tr:"шоколад",ru:["шоколад"],answers:["chocolate","el chocolate"],art:"chocolate",
-        examples:[["Me encanta el chocolate negro.","Я обожаю тёмный шоколад."],["Esta tarta lleva chocolate.","В этом торте есть шоколад."]],
-        cloze:"Me encanta el ___ negro.",clozeAnswers:["chocolate"]},
-      {id:"candy",cat:"desserts",word:"el caramelo",base:"caramelo",gender:"мужской род",tr:"конфета, карамель",ru:["конфета","карамель","конфета карамель"],answers:["caramelo","el caramelo"],art:"candy",
-        examples:[["El niño come un caramelo.","Ребёнок ест конфету."],["No quiero más caramelos.","Я больше не хочу конфет."]],
-        cloze:"El niño come un ___.",clozeAnswers:["caramelo"]},
-      {id:"muffin",cat:"desserts",word:"la magdalena",base:"magdalena",gender:"женский род",tr:"кекс",ru:["кекс","маффин"],answers:["magdalena","la magdalena","muffin","el muffin"],art:"muffin",
-        examples:[["Desayuno una magdalena.","Я завтракаю кексом."],["La magdalena está muy esponjosa.","Кекс очень воздушный."]],
-        cloze:"Desayuno una ___.",clozeAnswers:["magdalena"]},
-      {id:"flan",cat:"desserts",word:"el flan",base:"flan",gender:"мужской род",tr:"флан, карамельный пудинг",ru:["флан","карамельный пудинг","пудинг"],answers:["flan","el flan"],art:"flan",
-        examples:[["De postre quiero flan.","На десерт я хочу флан."],["El flan lleva huevos y leche.","Во флане есть яйца и молоко."]],
-        cloze:"De postre quiero ___.",clozeAnswers:["flan"]},
+        const meta=item.meta || {};
+        seen.set(id,{
+          id:id,
+          title:meta.categoryTitle || id,
+          order:Number.isFinite(Number(meta.categoryOrder)) ? Number(meta.categoryOrder) : 999
+        });
+      });
 
-      {id:"juice",cat:"drinks",word:"el zumo",base:"zumo",gender:"мужской род",tr:"сок",ru:["сок"],answers:["zumo","el zumo","jugo","el jugo"],art:"juice",
-        examples:[["Bebo zumo de naranja.","Я пью апельсиновый сок."],["El zumo está en la nevera.","Сок находится в холодильнике."]],
-        cloze:"Bebo ___ de naranja.",clozeAnswers:["zumo","jugo"]},
-      {id:"lemonade",cat:"drinks",word:"la limonada",base:"limonada",gender:"женский род",tr:"лимонад",ru:["лимонад"],answers:["limonada","la limonada"],art:"juice",
-        examples:[["La limonada está muy fría.","Лимонад очень холодный."],["Preparo limonada con hielo.","Я готовлю лимонад со льдом."]],
-        cloze:"Preparo ___ con hielo.",clozeAnswers:["limonada"]},
-      {id:"soda",cat:"drinks",word:"el refresco",base:"refresco",gender:"мужской род",tr:"газированный напиток",ru:["газировка","газированный напиток","прохладительный напиток"],answers:["refresco","el refresco"],art:"soda",
-        examples:[["No bebo muchos refrescos.","Я не пью много газировки."],["Quiero un refresco sin azúcar.","Я хочу газировку без сахара."]],
-        cloze:"Quiero un ___ sin azúcar.",clozeAnswers:["refresco"]},
-      {id:"wine",cat:"drinks",word:"el vino",base:"vino",gender:"мужской род",tr:"вино",ru:["вино"],answers:["vino","el vino"],art:"wine",
-        examples:[["Prefiero el vino blanco.","Я предпочитаю белое вино."],["La botella de vino está en la mesa.","Бутылка вина находится на столе."]],
-        cloze:"Prefiero el ___ blanco.",clozeAnswers:["vino"]},
-      {id:"beer",cat:"drinks",word:"la cerveza",base:"cerveza",gender:"женский род",tr:"пиво",ru:["пиво"],answers:["cerveza","la cerveza"],art:"beer",
-        examples:[["Quiero una cerveza sin alcohol.","Я хочу безалкогольное пиво."],["La cerveza está fría.","Пиво холодное."]],
-        cloze:"Quiero una ___ sin alcohol.",clozeAnswers:["cerveza"]},
-      {id:"hotchocolate",cat:"drinks",word:"el chocolate caliente",base:"chocolate caliente",gender:"мужской род",tr:"горячий шоколад",ru:["горячий шоколад"],answers:["chocolate caliente","el chocolate caliente"],art:"coffee",
-        examples:[["En invierno bebo chocolate caliente.","Зимой я пью горячий шоколад."],["El chocolate caliente lleva leche.","В горячем шоколаде есть молоко."]],
-        cloze:"En invierno bebo chocolate ___.",clozeAnswers:["caliente"]},
+      return [{id:"all",title:allTitle}].concat(
+        Array.from(seen.values())
+          .sort(function(a,b){return a.order-b.order;})
+          .map(function(category){
+            return {id:category.id,title:category.title};
+          })
+      );
+    }
 
-      {id:"soup",cat:"dishes",word:"la sopa",base:"sopa",gender:"женский род",tr:"суп",ru:["суп"],answers:["sopa","la sopa"],art:"soup",
-        examples:[["La sopa está caliente.","Суп горячий."],["Hoy preparo sopa de verduras.","Сегодня я готовлю овощной суп."]],
-        cloze:"Hoy preparo ___ de verduras.",clozeAnswers:["sopa"]},
-      {id:"salad",cat:"dishes",word:"la ensalada",base:"ensalada",gender:"женский род",tr:"салат",ru:["салат"],answers:["ensalada","la ensalada"],art:"salad",
-        examples:[["Quiero una ensalada pequeña.","Я хочу маленький салат."],["La ensalada lleva tomate y atún.","В салате есть помидор и тунец."]],
-        cloze:"Quiero una ___ pequeña.",clozeAnswers:["ensalada"]},
-      {id:"omelette",cat:"dishes",word:"la tortilla",base:"tortilla",gender:"женский род",tr:"омлет, тортилья",ru:["омлет","тортилья","омлет тортилья"],answers:["tortilla","la tortilla"],art:"egg",
-        examples:[["La tortilla lleva huevos y patatas.","В тортилье есть яйца и картофель."],["Comemos tortilla para cenar.","Мы едим тортилью на ужин."]],
-        cloze:"Comemos ___ para cenar.",clozeAnswers:["tortilla"]},
-      {id:"sandwich",cat:"dishes",word:"el bocadillo",base:"bocadillo",gender:"мужской род",tr:"бутерброд, сэндвич",ru:["бутерброд","сэндвич","бутерброд сэндвич"],answers:["bocadillo","el bocadillo","sándwich","el sándwich"],art:"sandwich",
-        examples:[["Quiero un bocadillo de queso.","Я хочу бутерброд с сыром."],["El bocadillo está listo.","Бутерброд готов."]],
-        cloze:"Quiero un ___ de queso.",clozeAnswers:["bocadillo","sándwich"]},
-      {id:"pizza",cat:"dishes",word:"la pizza",base:"pizza",gender:"женский род",tr:"пицца",ru:["пицца"],answers:["pizza","la pizza"],art:"pizza",
-        examples:[["Pedimos una pizza grande.","Мы заказываем большую пиццу."],["La pizza lleva queso y tomate.","В пицце есть сыр и помидор."]],
-        cloze:"Pedimos una ___ grande.",clozeAnswers:["pizza"]},
-      {id:"paella",cat:"dishes",word:"la paella",base:"paella",gender:"женский род",tr:"паэлья",ru:["паэлья"],answers:["paella","la paella"],art:"rice",
-        examples:[["La paella lleva arroz y marisco.","В паэлье есть рис и морепродукты."],["Hoy comemos paella.","Сегодня мы едим паэлью."]],
-        cloze:"Hoy comemos ___.",clozeAnswers:["paella"]},
-      {id:"stew",cat:"dishes",word:"el guiso",base:"guiso",gender:"мужской род",tr:"рагу, тушёное блюдо",ru:["рагу","тушёное блюдо","тушеное блюдо"],answers:["guiso","el guiso"],art:"soup",
-        examples:[["El guiso lleva carne y patatas.","В рагу есть мясо и картофель."],["Mi abuela prepara un guiso delicioso.","Моя бабушка готовит вкусное рагу."]],
-        cloze:"El ___ lleva carne y patatas.",clozeAnswers:["guiso"]},
-      {id:"puree",cat:"dishes",word:"el puré",base:"puré",gender:"мужской род",tr:"пюре",ru:["пюре"],answers:["puré","el puré"],art:"puree",
-        examples:[["Quiero puré de patatas.","Я хочу картофельное пюре."],["El puré está muy suave.","Пюре очень нежное."]],
-        cloze:"Quiero ___ de patatas.",clozeAnswers:["puré"]},
+    /*
+     * TEMP STEP-6 TOPIC DATA BRIDGE
+     * Raw arrays no longer live in index.html. These aliases point at
+     * registered topic data until the remaining legacy renderers are modular.
+     */
+    window.LegacyTopicDataAdapter = {
+      hydrate:function(topics){
+        const foods=topics.foods;
+        const clothes=topics.clothes;
+        const verbs=topics.verbs;
 
-      {id:"flour",cat:"grocery",word:"la harina",base:"harina",gender:"женский род",tr:"мука",ru:["мука"],answers:["harina","la harina"],art:"bag",
-        examples:[["Necesito harina para la tarta.","Мне нужна мука для торта."],["La harina está en el armario.","Мука находится в шкафу."]],
-        cloze:"Necesito ___ para la tarta.",clozeAnswers:["harina"]},
-      {id:"sugar",cat:"grocery",word:"el azúcar",base:"azúcar",gender:"мужской род",tr:"сахар",ru:["сахар"],answers:["azúcar","el azúcar"],art:"sugar",
-        examples:[["Tomo café sin azúcar.","Я пью кофе без сахара."],["Añade una cucharada de azúcar.","Добавь ложку сахара."]],
-        cloze:"Tomo café sin ___.",clozeAnswers:["azúcar"]},
-      {id:"oil",cat:"grocery",word:"el aceite",base:"aceite",gender:"мужской род",tr:"масло растительное",ru:["масло","растительное масло"],answers:["aceite","el aceite","aceite vegetal","el aceite vegetal"],art:"bottle",
-        examples:[["Cocino con aceite de oliva.","Я готовлю с оливковым маслом."],["Necesitamos un poco de aceite.","Нам нужно немного масла."]],
-        cloze:"Cocino con ___ de oliva.",clozeAnswers:["aceite"]},
-      {id:"vinegar",cat:"grocery",word:"el vinagre",base:"vinagre",gender:"мужской род",tr:"уксус",ru:["уксус"],answers:["vinagre","el vinagre"],art:"bottle",
-        examples:[["La ensalada lleva aceite y vinagre.","В салате есть масло и уксус."],["No me gusta mucho el vinagre.","Я не очень люблю уксус."]],
-        cloze:"La ensalada lleva aceite y ___.",clozeAnswers:["vinagre"]},
-      {id:"butter",cat:"grocery",word:"la mantequilla",base:"mantequilla",gender:"женский род",tr:"сливочное масло",ru:["сливочное масло","масло"],answers:["mantequilla","la mantequilla"],art:"butter",
-        examples:[["Como pan con mantequilla.","Я ем хлеб со сливочным маслом."],["La mantequilla está en la nevera.","Сливочное масло находится в холодильнике."]],
-        cloze:"Como pan con ___.",clozeAnswers:["mantequilla"]},
-      {id:"jam",cat:"grocery",word:"la mermelada",base:"mermelada",gender:"женский род",tr:"варенье, джем",ru:["варенье","джем","варенье джем"],answers:["mermelada","la mermelada"],art:"jar",
-        examples:[["Desayuno pan con mermelada.","Я завтракаю хлебом с вареньем."],["La mermelada es de fresa.","Это клубничное варенье."]],
-        cloze:"Desayuno pan con ___.",clozeAnswers:["mermelada"]},
-      {id:"honey",cat:"grocery",word:"la miel",base:"miel",gender:"женский род",tr:"мёд",ru:["мёд","мед"],answers:["miel","la miel"],art:"honey",
-        examples:[["Pongo miel en el té.","Я кладу мёд в чай."],["La miel es muy dulce.","Мёд очень сладкий."]],
-        cloze:"Pongo ___ en el té.",clozeAnswers:["miel"]},
-      {id:"lentils",cat:"grocery",word:"las lentejas",base:"lentejas",gender:"женский род, множественное число",tr:"чечевица",ru:["чечевица"],answers:["lentejas","las lentejas"],art:"lentils",
-        examples:[["Hoy comemos lentejas.","Сегодня мы едим чечевицу."],["Las lentejas tienen mucha proteína.","В чечевице много белка."]],
-        cloze:"Hoy comemos ___.",clozeAnswers:["lentejas"]},
-      {id:"beans",cat:"grocery",word:"las judías",base:"judías",gender:"женский род, множественное число",tr:"фасоль",ru:["фасоль"],answers:["judías","las judías","frijoles","los frijoles"],art:"beans",
-        examples:[["El guiso lleva judías.","В рагу есть фасоль."],["Compramos judías blancas.","Мы покупаем белую фасоль."]],
-        cloze:"El guiso lleva ___.",clozeAnswers:["judías","frijoles"]}
+        FOOD_WORDS=foods.studyItems;
+        FOOD_CATEGORIES=legacyCategoriesFromTopic(foods,"Все продукты");
 
-    ];
+        CLOTHING_WORDS=clothes.studyItems;
+        CLOTHING_CATEGORIES=legacyCategoriesFromTopic(clothes,"Всё");
 
-    const CLOTHING_CATEGORIES = [
-      {id:"all",title:"Все слова"},
-      {id:"clothes",title:"Одежда"},
-      {id:"shoes",title:"Обувь"},
-      {id:"accessories",title:"Аксессуары"},
-      {id:"jewelry",title:"Украшения"},
-      {id:"headwear",title:"Головные уборы"},
-      {id:"bags",title:"Сумки"},
-      {id:"tryon",title:"Примерка и размер"},
-      {id:"store",title:"В магазине"}
-    ];
+        VERB_WORDS=verbs.studyItems;
+        VERB_STUDY_WORDS=verbs.studyItems;
+        VERB_CATEGORIES=legacyCategoriesFromTopic(verbs,"Все глаголы");
+
+        MIGRATED_TOPIC_EXERCISES=
+          verbs.exercises
+            .concat(foods.exercises)
+            .concat(clothes.exercises);
+      }
+    };
+
+    
+
+    
 
     function clothingWord(id,cat,word,base,gender,tr,ru,answers,art,examples,cloze,clozeAnswers){
       return {id:id,cat:cat,word:word,base:base,gender:gender,tr:tr,ru:ru,answers:answers,art:art,examples:examples,cloze:cloze,clozeAnswers:clozeAnswers};
     }
 
-    const CLOTHING_WORDS = [
-      clothingWord("tshirt","clothes","la camiseta","camiseta","женский род","футболка",["футболка"],["camiseta","la camiseta"],"tshirt",
-        [["Llevo una camiseta blanca.","На мне белая футболка."],["Esta camiseta es muy cómoda.","Эта футболка очень удобная."]],"Llevo una ___ blanca.",["camiseta"]),
-      clothingWord("shirt","clothes","la camisa","camisa","женский род","рубашка",["рубашка"],["camisa","la camisa"],"shirt",
-        [["Él lleva una camisa azul.","На нём синяя рубашка."],["Plancho la camisa para mañana.","Я глажу рубашку на завтра."]],"Él lleva una ___ azul.",["camisa"]),
-      clothingWord("blouse","clothes","la blusa","blusa","женский род","блузка",["блузка"],["blusa","la blusa"],"blouse",
-        [["La blusa combina con la falda.","Блузка сочетается с юбкой."],["Busco una blusa elegante.","Я ищу элегантную блузку."]],"Busco una ___ elegante.",["blusa"]),
-      clothingWord("sweater","clothes","el jersey","jersey","мужской род","свитер",["свитер","джемпер"],["jersey","el jersey","suéter","el suéter"],"sweater",
-        [["Me pongo un jersey de lana.","Я надеваю шерстяной свитер."],["Este jersey abriga mucho.","Этот свитер очень тёплый."]],"Me pongo un ___ de lana.",["jersey","suéter"]),
-      clothingWord("cardigan","clothes","el cárdigan","cárdigan","мужской род","кардиган, кофта",["кардиган","кофта"],["cárdigan","cardigan","el cárdigan","el cardigan"],"cardigan",
-        [["Llevo un cárdigan beige.","На мне бежевый кардиган."],["Este cárdigan es muy cómodo.","Этот кардиган очень удобный."]],"Llevo un ___ beige.",["cárdigan","cardigan"]),
-      clothingWord("hoodie","clothes","la sudadera con capucha","sudadera con capucha","женский род","худи, толстовка с капюшоном",["худи","толстовка","толстовка с капюшоном"],["sudadera con capucha","la sudadera con capucha","sudadera","la sudadera"],"hoodie",
-        [["Llevo una sudadera con capucha verde.","На мне зелёное худи."],["Esta sudadera con capucha es muy cómoda.","Это худи очень удобное."]],"Llevo una ___ verde.",["sudadera con capucha","sudadera"]),
-      clothingWord("vest","clothes","el chaleco","chaleco","мужской род","жилет",["жилет"],["chaleco","el chaleco"],"vest",
-        [["Lleva un chaleco beige.","На нём бежевый жилет."],["El chaleco combina con la camisa.","Жилет сочетается с рубашкой."]],"Lleva un ___ beige.",["chaleco"]),
-      clothingWord("polo","clothes","el polo","polo","мужской род","поло",["поло","рубашка поло"],["polo","el polo"],"polo",
-        [["Lleva un polo blanco.","На нём белое поло."],["Este polo es de algodón.","Это поло из хлопка."]],"Lleva un ___ blanco.",["polo"]),
-      clothingWord("jacket","clothes","la chaqueta","chaqueta","женский род","куртка, пиджак",["куртка","пиджак","куртка пиджак"],["chaqueta","la chaqueta"],"jacket",
-        [["Necesito una chaqueta ligera.","Мне нужна лёгкая куртка."],["La chaqueta tiene cuatro bolsillos.","У куртки четыре кармана."]],"Necesito una ___ ligera.",["chaqueta"]),
-      clothingWord("coat","clothes","el abrigo","abrigo","мужской род","пальто",["пальто"],["abrigo","el abrigo"],"coat",
-        [["Ponte el abrigo, hace frío.","Надень пальто, холодно."],["Mi abrigo es largo y negro.","Моё пальто длинное и чёрное."]],"Ponte el ___, hace frío.",["abrigo"]),
-      clothingWord("dress","clothes","el vestido","vestido","мужской род","платье",["платье"],["vestido","el vestido"],"dress",
-        [["Ella lleva un vestido rojo.","На ней красное платье."],["El vestido es para una fiesta.","Это платье для вечеринки."]],"Ella lleva un ___ rojo.",["vestido"]),
-      clothingWord("skirt","clothes","la falda","falda","женский род","юбка",["юбка"],["falda","la falda"],"skirt",
-        [["La falda me queda bien.","Юбка хорошо на мне сидит."],["Prefiero una falda larga.","Я предпочитаю длинную юбку."]],"Prefiero una ___ larga.",["falda"]),
-      clothingWord("trousers","clothes","los pantalones","pantalones","мужской род, множественное число","брюки, штаны",["брюки","штаны","брюки штаны"],["pantalones","los pantalones"],"trousers",
-        [["Estos pantalones son cómodos.","Эти брюки удобные."],["Necesito unos pantalones negros.","Мне нужны чёрные брюки."]],"Estos ___ son cómodos.",["pantalones"]),
-      clothingWord("jeans","clothes","los vaqueros","vaqueros","мужской род, множественное число","джинсы",["джинсы"],["vaqueros","los vaqueros","jeans","los jeans"],"jeans",
-        [["Siempre llevo vaqueros los viernes.","По пятницам я всегда ношу джинсы."],["Los vaqueros están en el armario.","Джинсы находятся в шкафу."]],"Siempre llevo ___ los viernes.",["vaqueros","jeans"]),
-      clothingWord("shorts","clothes","los pantalones cortos","pantalones cortos","мужской род, множественное число","шорты",["шорты"],["pantalones cortos","los pantalones cortos","shorts","los shorts"],"shorts",
-        [["En verano llevo pantalones cortos.","Летом я ношу шорты."],["Estos pantalones cortos son nuevos.","Эти шорты новые."]],"En verano llevo ___.",["pantalones cortos","shorts"]),
-      clothingWord("suit","clothes","el traje","traje","мужской род","костюм",["костюм"],["traje","el traje"],"suit",
-        [["Lleva traje para la entrevista.","Он надевает костюм на собеседование."],["El traje gris es muy elegante.","Серый костюм очень элегантный."]],"Lleva ___ para la entrevista.",["traje"]),
-      clothingWord("pajamas","clothes","el pijama","pijama","мужской род","пижама",["пижама"],["pijama","el pijama"],"pajamas",
-        [["Me pongo el pijama antes de dormir.","Я надеваю пижаму перед сном."],["Este pijama es de algodón.","Эта пижама из хлопка."]],"Me pongo el ___ antes de dormir.",["pijama"]),
-      clothingWord("underwear","clothes","la ropa interior","ropa interior","женский род","нижнее бельё",["нижнее бельё","нижнее белье"],["ropa interior","la ropa interior"],"underwear",
-        [["La ropa interior está en el cajón.","Нижнее бельё находится в ящике."],["Compro ropa interior de algodón.","Я покупаю хлопковое нижнее бельё."]],"La ___ está en el cajón.",["ropa interior"]),
-      clothingWord("socks","clothes","los calcetines","calcetines","мужской род, множественное число","носки",["носки"],["calcetines","los calcetines"],"socks",
-        [["Necesito un par de calcetines.","Мне нужна пара носков."],["Mis calcetines son verdes.","Мои носки зелёные."]],"Necesito un par de ___.",["calcetines"]),
-
-      clothingWord("shoes","shoes","los zapatos","zapatos","мужской род, множественное число","туфли, обувь",["туфли","обувь","туфли обувь"],["zapatos","los zapatos"],"shoes",
-        [["Estos zapatos me quedan pequeños.","Эти туфли мне малы."],["Limpio mis zapatos cada semana.","Я чищу свою обувь каждую неделю."]],"Estos ___ me quedan pequeños.",["zapatos"]),
-      clothingWord("sneakers","shoes","las zapatillas deportivas","zapatillas deportivas","женский род, множественное число","кроссовки",["кроссовки"],["zapatillas deportivas","las zapatillas deportivas","tenis","los tenis"],"sneakers",
-        [["Corro con zapatillas deportivas.","Я бегаю в кроссовках."],["Mis zapatillas deportivas son ligeras.","Мои кроссовки лёгкие."]],"Corro con ___.",["zapatillas deportivas","tenis"]),
-      clothingWord("boots","shoes","las botas","botas","женский род, множественное число","сапоги, ботинки",["сапоги","ботинки","сапоги ботинки"],["botas","las botas"],"boots",
-        [["Llevo botas cuando llueve.","Я ношу сапоги, когда идёт дождь."],["Las botas son de cuero.","Сапоги сделаны из кожи."]],"Llevo ___ cuando llueve.",["botas"]),
-      clothingWord("ankleboots","shoes","los botines","botines","мужской род, множественное число","ботильоны, короткие ботинки",["ботильоны","короткие ботинки","ботильоны короткие ботинки"],["botines","los botines"],"ankleboots",
-        [["Los botines combinan con el vestido.","Ботильоны сочетаются с платьем."],["Estos botines tienen cremallera.","У этих ботильонов есть молния."]],"Los ___ combinan con el vestido.",["botines"]),
-      clothingWord("sandals","shoes","las sandalias","sandalias","женский род, множественное число","сандалии, босоножки",["сандалии","босоножки","сандалии босоножки"],["sandalias","las sandalias"],"sandals",
-        [["Llevo sandalias en la playa.","На пляже я ношу сандалии."],["Estas sandalias son cómodas.","Эти сандалии удобные."]],"Llevo ___ en la playa.",["sandalias"]),
-      clothingWord("heels","shoes","los zapatos de tacón","zapatos de tacón","мужской род, множественное число","туфли на каблуке",["туфли на каблуке"],["zapatos de tacón","los zapatos de tacón","tacones","los tacones"],"heels",
-        [["Ella lleva zapatos de tacón.","Она носит туфли на каблуке."],["Estos tacones son muy altos.","Эти каблуки очень высокие."]],"Ella lleva ___.",["zapatos de tacón","tacones"]),
-      clothingWord("slippers","shoes","las zapatillas de casa","zapatillas de casa","женский род, множественное число","домашние тапочки",["домашние тапочки","тапочки"],["zapatillas de casa","las zapatillas de casa"],"slippers",
-        [["Me pongo las zapatillas de casa.","Я надеваю домашние тапочки."],["Las zapatillas están junto a la cama.","Тапочки стоят рядом с кроватью."]],"Me pongo las ___.",["zapatillas de casa"]),
-
-      clothingWord("belt","accessories","el cinturón","cinturón","мужской род","ремень",["ремень"],["cinturón","el cinturón"],"belt",
-        [["El cinturón es de cuero.","Ремень сделан из кожи."],["Necesito un cinturón más largo.","Мне нужен ремень подлиннее."]],"El ___ es de cuero.",["cinturón"]),
-      clothingWord("scarf","accessories","la bufanda","bufanda","женский род","шарф",["шарф"],["bufanda","la bufanda"],"scarf",
-        [["Me pongo una bufanda roja.","Я надеваю красный шарф."],["La bufanda es muy suave.","Шарф очень мягкий."]],"Me pongo una ___ roja.",["bufanda"]),
-      clothingWord("gloves","accessories","los guantes","guantes","мужской род, множественное число","перчатки",["перчатки"],["guantes","los guantes"],"gloves",
-        [["No encuentro mis guantes.","Я не могу найти свои перчатки."],["Lleva guantes porque hace frío.","Он носит перчатки, потому что холодно."]],"No encuentro mis ___.",["guantes"]),
-      clothingWord("sunglasses","accessories","las gafas de sol","gafas de sol","женский род, множественное число","солнцезащитные очки",["солнцезащитные очки","солнечные очки"],["gafas de sol","las gafas de sol"],"sunglasses",
-        [["Necesito gafas de sol.","Мне нужны солнцезащитные очки."],["Tus gafas de sol están en la mesa.","Твои солнцезащитные очки лежат на столе."]],"Necesito ___.",["gafas de sol"]),
-      clothingWord("umbrella","accessories","el paraguas","paraguas","мужской род","зонт",["зонт"],["paraguas","el paraguas"],"umbrella",
-        [["Lleva un paraguas, va a llover.","Возьми зонт, будет дождь."],["Mi paraguas es amarillo.","Мой зонт жёлтый."]],"Lleva un ___, va a llover.",["paraguas"]),
-      clothingWord("tie","accessories","la corbata","corbata","женский род","галстук",["галстук"],["corbata","la corbata"],"tie",
-        [["La corbata combina con la camisa.","Галстук сочетается с рубашкой."],["No llevo corbata al trabajo.","Я не ношу галстук на работу."]],"La ___ combina con la camisa.",["corbata"]),
-      clothingWord("bowtie","accessories","la pajarita","pajarita","женский род","галстук-бабочка",["галстук-бабочка","бабочка"],["pajarita","la pajarita"],"bowtie",
-        [["Lleva una pajarita negra.","На нём чёрный галстук-бабочка."],["La pajarita es para la boda.","Галстук-бабочка — для свадьбы."]],"Lleva una ___ negra.",["pajarita"]),
-      clothingWord("handkerchief","accessories","el pañuelo","pañuelo","мужской род","платок",["платок"],["pañuelo","el pañuelo"],"handkerchief",
-        [["Lleva un pañuelo en el cuello.","На ней платок на шее."],["El pañuelo tiene flores.","На платке цветочный узор."]],"Lleva un ___ en el cuello.",["pañuelo"]),
-
-      clothingWord("necklace","jewelry","el collar","collar","мужской род","ожерелье, колье",["ожерелье","колье","ожерелье колье"],["collar","el collar"],"necklace",
-        [["El collar es de plata.","Ожерелье сделано из серебра."],["Este collar es un regalo.","Это ожерелье — подарок."]],"El ___ es de plata.",["collar"]),
-      clothingWord("bracelet","jewelry","la pulsera","pulsera","женский род","браслет",["браслет"],["pulsera","la pulsera"],"bracelet",
-        [["Llevo una pulsera dorada.","Я ношу золотистый браслет."],["La pulsera tiene pequeñas piedras.","На браслете есть маленькие камни."]],"Llevo una ___ dorada.",["pulsera"]),
-      clothingWord("ring","jewelry","el anillo","anillo","мужской род","кольцо",["кольцо"],["anillo","el anillo"],"ring",
-        [["El anillo está en la caja.","Кольцо находится в коробке."],["Este anillo me queda grande.","Это кольцо мне велико."]],"El ___ está en la caja.",["anillo"]),
-      clothingWord("earrings","jewelry","los pendientes","pendientes","мужской род, множественное число","серьги",["серьги"],["pendientes","los pendientes"],"earrings",
-        [["Lleva unos pendientes pequeños.","Она носит маленькие серьги."],["Los pendientes son de oro.","Серьги сделаны из золота."]],"Lleva unos ___ pequeños.",["pendientes"]),
-      clothingWord("watch","jewelry","el reloj","reloj","мужской род","наручные часы",["наручные часы","часы"],["reloj","el reloj"],"watch",
-        [["Miro la hora en mi reloj.","Я смотрю время на своих часах."],["Su reloj tiene una correa marrón.","У его часов коричневый ремешок."]],"Miro la hora en mi ___.",["reloj"]),
-      clothingWord("brooch","jewelry","el broche","broche","мужской род","брошь",["брошь"],["broche","el broche"],"brooch",
-        [["El broche tiene forma de flor.","Брошь имеет форму цветка."],["Pone el broche en la chaqueta.","Она прикалывает брошь к пиджаку."]],"El ___ tiene forma de flor.",["broche"]),
-      clothingWord("chain","jewelry","la cadena","cadena","женский род","цепочка",["цепочка","цепь"],["cadena","la cadena"],"chain",
-        [["La cadena es muy fina.","Цепочка очень тонкая."],["Lleva una cadena de oro.","Он носит золотую цепочку."]],"La ___ es muy fina.",["cadena"]),
-
-      clothingWord("hat","headwear","el sombrero","sombrero","мужской род","шляпа",["шляпа"],["sombrero","el sombrero"],"hat",
-        [["El sombrero protege del sol.","Шляпа защищает от солнца."],["Lleva un sombrero de paja.","На нём соломенная шляпа."]],"El ___ protege del sol.",["sombrero"]),
-      clothingWord("cap","headwear","la gorra","gorra","женский род","кепка, бейсболка",["кепка","бейсболка","кепка бейсболка"],["gorra","la gorra"],"cap",
-        [["Me pongo una gorra para correr.","Я надеваю кепку для пробежки."],["La gorra tiene una visera larga.","У кепки длинный козырёк."]],"Me pongo una ___ para correr.",["gorra"]),
-      clothingWord("beanie","headwear","el gorro","gorro","мужской род","шапка",["шапка"],["gorro","el gorro"],"beanie",
-        [["Ponte el gorro, hace frío.","Надень шапку, холодно."],["Mi gorro es de lana.","Моя шапка шерстяная."]],"Ponte el ___, hace frío.",["gorro"]),
-      clothingWord("beret","headwear","la boina","boina","женский род","берет",["берет"],["boina","la boina"],"beret",
-        [["La boina es de color rojo.","Берет красного цвета."],["Lleva la boina un poco inclinada.","Она носит берет немного набок."]],"La ___ es de color rojo.",["boina"]),
-      clothingWord("hood","headwear","la capucha","capucha","женский род","капюшон",["капюшон"],["capucha","la capucha"],"hood",
-        [["Sube la capucha porque llueve.","Подними капюшон, потому что идёт дождь."],["La chaqueta tiene capucha.","У куртки есть капюшон."]],"Sube la ___ porque llueve.",["capucha"]),
-
-      clothingWord("handbag","bags","el bolso","bolso","мужской род","сумка",["сумка","женская сумка"],["bolso","el bolso"],"handbag",
-        [["El móvil está en mi bolso.","Телефон находится в моей сумке."],["Este bolso tiene una correa larga.","У этой сумки длинный ремешок."]],"El móvil está en mi ___.",["bolso"]),
-      clothingWord("backpack","bags","la mochila","mochila","женский род","рюкзак",["рюкзак"],["mochila","la mochila"],"backpack",
-        [["Llevo el portátil en la mochila.","Я ношу ноутбук в рюкзаке."],["La mochila es muy ligera.","Рюкзак очень лёгкий."]],"Llevo el portátil en la ___.",["mochila"]),
-      clothingWord("wallet","bags","la cartera","cartera","женский род","кошелёк, портмоне",["кошелёк","кошелек","портмоне","кошелёк портмоне"],["cartera","la cartera"],"wallet",
-        [["Guardo las tarjetas en la cartera.","Я храню карты в кошельке."],["No encuentro mi cartera.","Я не могу найти свой кошелёк."]],"Guardo las tarjetas en la ___.",["cartera"]),
-      clothingWord("coinpurse","bags","el monedero","monedero","мужской род","кошелёк для мелочи",["кошелёк для мелочи","кошелек для мелочи","монетница"],["monedero","el monedero"],"coinpurse",
-        [["Las monedas están en el monedero.","Монеты находятся в кошельке."],["El monedero es pequeño.","Кошелёк для мелочи маленький."]],"Las monedas están en el ___.",["monedero"]),
-      clothingWord("suitcase","bags","la maleta","maleta","женский род","чемодан",["чемодан"],["maleta","la maleta"],"suitcase",
-        [["Preparo la maleta para el viaje.","Я собираю чемодан для поездки."],["La maleta pesa mucho.","Чемодан много весит."]],"Preparo la ___ para el viaje.",["maleta"]),
-      clothingWord("waistbag","bags","la riñonera","riñonera","женский род","поясная сумка",["поясная сумка"],["riñonera","la riñonera"],"waistbag",
-        [["Guardo las llaves en la riñonera.","Я храню ключи в поясной сумке."],["La riñonera es práctica para caminar.","Поясная сумка удобна для прогулок."]],"Guardo las llaves en la ___.",["riñonera"]),
-
-      clothingWord("size","tryon","la talla","talla","женский род","размер одежды",["размер одежды","размер"],["talla","la talla"],"size",
-        [["¿Qué talla necesitas? — Necesito una talla M.","Какой размер тебе нужен? — Мне нужен размер M."],["¿Qué talla usas normalmente?","Какой размер ты обычно носишь?"]],"¿Qué ___ necesitas? — Necesito una talla M.",["talla"]),
-      clothingWord("fittingroom","store","el probador","probador","мужской род","примерочная",["примерочная"],["probador","el probador","probadores","los probadores"],"fittingroom",
-        [["¿Dónde están los probadores?","Где находятся примерочные?"],["El probador está al fondo de la tienda.","Примерочная находится в глубине магазина."]],"¿Dónde están los ___?",["probadores"]),
-      clothingWord("bra","clothes","el sujetador","sujetador","мужской род","бюстгальтер",["бюстгальтер","лифчик"],["sujetador","el sujetador"],"bra",
-        [["Necesito un sujetador cómodo.","Мне нужен удобный бюстгальтер."],["Este sujetador me queda bien.","Этот бюстгальтер мне хорошо подходит."]],"Necesito un ___ cómodo.",["sujetador"]),
-      clothingWord("tights","clothes","las medias","medias","женский род, множественное число","колготки / чулки",["колготки","чулки"],["medias","las medias"],"",
-        [["Lleva medias negras con el vestido.","Она носит чёрные колготки с платьем."],["Necesito unas medias para este vestido.","Мне нужны колготки к этому платью."]],"Lleva ___ negras con el vestido.",["medias"]),
-      clothingWord("leggings","clothes","los leggings / las mallas","leggings / mallas","множественное число","легинсы",["легинсы"],["leggings","los leggings","mallas","las mallas"],"",
-        [["Me pongo unos leggings para entrenar.","Я надеваю легинсы для тренировки."],["Las mallas son cómodas para hacer deporte.","Легинсы удобны для занятий спортом."]],"Me pongo unos ___ para entrenar.",["leggings","mallas"]),
-      clothingWord("tracksuit","clothes","el chándal","chándal","мужской род","спортивный костюм",["спортивный костюм"],["chándal","chandal","el chándal","el chandal"],"",
-        [["Llevo un chándal cuando hago deporte.","Я ношу спортивный костюм, когда занимаюсь спортом."],["Este chándal es muy cómodo.","Этот спортивный костюм очень удобный."]],"Llevo un ___ cuando hago deporte.",["chándal","chandal"]),
-      clothingWord("swimsuit","clothes","el bañador","bañador","мужской род","купальник / плавки",["купальник","плавки"],["bañador","el bañador"],"",
-        [["He metido el bañador en la maleta.","Я положил(а) купальник в чемодан."],["Necesito un bañador para la piscina.","Мне нужен купальник для бассейна."]],"He metido el ___ en la maleta.",["bañador"]),
-      clothingWord("raincoat","clothes","el impermeable","impermeable","мужской род","дождевик",["дождевик"],["impermeable","el impermeable"],"",
-        [["Ponte el impermeable porque está lloviendo.","Надень дождевик, потому что идёт дождь."],["Mi impermeable es ligero y cómodo.","Мой дождевик лёгкий и удобный."]],"Ponte el ___ porque está lloviendo.",["impermeable"]),
-      clothingWord("flipflops","shoes","las chanclas","chanclas","женский род, множественное число","шлёпанцы",["шлёпанцы","сланцы"],["chanclas","las chanclas"],"",
-        [["Llevo chanclas en la playa.","Я ношу шлёпанцы на пляже."],["Las chanclas están junto a la piscina.","Шлёпанцы лежат рядом с бассейном."]],"Llevo ___ en la playa.",["chanclas"]),
-      clothingWord("rainboots","shoes","las botas de agua","botas de agua","женский род, множественное число","резиновые сапоги",["резиновые сапоги"],["botas de agua","las botas de agua"],"",
-        [["Necesito botas de agua para la lluvia.","Мне нужны резиновые сапоги для дождя."],["Los niños llevan botas de agua.","Дети носят резиновые сапоги."]],"Necesito ___ para la lluvia.",["botas de agua"]),
-      clothingWord("zipper","accessories","la cremallera","cremallera","женский род","молния",["молния"],["cremallera","la cremallera"],"zipper",
-        [["La cremallera de la chaqueta está rota.","Молния на куртке сломана."],["Sube la cremallera del abrigo.","Застегни молнию на пальто."]],"La ___ de la chaqueta está rota.",["cremallera"]),
-      clothingWord("button","accessories","el botón","botón","мужской род","пуговица",["пуговица"],["botón","boton","el botón","el boton"],"button",
-        [["Falta un botón en la camisa.","На рубашке не хватает пуговицы."],["Este botón está suelto.","Эта пуговица плохо держится."]],"Falta un ___ en la camisa.",["botón","boton"]),
-
-      clothingWord("try_on","tryon","probarse algo","probarse algo","фраза / возвратный глагол","примерять что-либо",["примерять что-либо","примерять"],["probarse algo","probarse"],"try_on",
-        [["Quiero probarme esta chaqueta.","Я хочу примерить эту куртку."],["¿Puedo probarme estos zapatos?","Можно мне примерить эти туфли?"]],"Quiero ___ esta chaqueta.",["probarme"]),
-      clothingWord("put_on","tryon","ponerse algo","ponerse algo","фраза / возвратный глагол","надевать что-либо",["надевать что-либо","надевать"],["ponerse algo","ponerse"],"put_on",
-        [["Me pongo el abrigo antes de salir.","Я надеваю пальто перед выходом."],["Ponte la bufanda, hace frío.","Надень шарф, холодно."]],"Me ___ el abrigo antes de salir.",["pongo"]),
-      clothingWord("take_off","tryon","quitarse algo","quitarse algo","фраза / возвратный глагол","снимать что-либо",["снимать что-либо","снимать"],["quitarse algo","quitarse"],"take_off",
-        [["Me quito los zapatos al llegar a casa.","Я снимаю обувь, когда прихожу домой."],["Se quita el abrigo en casa.","Она снимает пальто дома."]],"Me ___ los zapatos al llegar a casa.",["quito"]),
-      clothingWord("change_clothes","tryon","cambiarse de ropa","cambiarse de ropa","фраза / возвратный глагол","переодеваться",["переодеваться"],["cambiarse de ropa","cambiarse"],"change_clothes",
-        [["Voy a cambiarme de ropa.","Я собираюсь переодеться."],["Me cambio de ropa después del trabajo.","Я переодеваюсь после работы."]],"Voy a ___ de ropa.",["cambiarme"]),
-      clothingWord("fasten","tryon","abrocharse","abrocharse","возвратный глагол","застёгиваться",["застёгиваться","застегиваться"],["abrocharse"],"fasten",
-        [["Me abrocho la chaqueta.","Я застёгиваю куртку."],["Abróchate el cinturón.","Застегни ремень."]],"Me ___ la chaqueta.",["abrocho"]),
-      clothingWord("unfasten","tryon","desabrocharse","desabrocharse","возвратный глагол","расстёгиваться",["расстёгиваться","расстегиваться"],["desabrocharse"],"unfasten",
-        [["Se desabrocha el abrigo.","Он расстёгивает пальто."],["Me desabrocho la chaqueta al entrar.","Я расстёгиваю куртку, когда захожу внутрь."]],"Se ___ el abrigo.",["desabrocha"]),
-      clothingWord("fits_well","tryon","me queda bien","me queda bien","фраза","мне хорошо сидит / подходит",["мне хорошо сидит","мне подходит"],["me queda bien"],"fits_well",
-        [["Esta camisa me queda bien.","Эта рубашка мне хорошо сидит."],["El vestido te queda muy bien.","Платье тебе очень идёт."]],"Esta camisa me ___ bien.",["queda"]),
-      clothingWord("too_big","tryon","me queda grande","me queda grande","фраза","мне велико",["мне велико","велико"],["me queda grande"],"too_big",
-        [["Este jersey me queda grande.","Этот свитер мне велик."],["La chaqueta me queda un poco grande.","Куртка мне немного велика."]],"Este jersey me queda ___.",["grande"]),
-      clothingWord("too_small","tryon","me queda pequeño","me queda pequeño","фраза","мне мало",["мне мало","мало"],["me queda pequeño","me queda pequeña"],"too_small",
-        [["El vestido me queda pequeño.","Платье мне мало."],["Esta camiseta me queda pequeña.","Эта футболка мне мала."]],"El vestido me queda ___.",["pequeño"]),
-      clothingWord("too_tight","tryon","me aprieta","me aprieta","фраза","мне жмёт",["мне жмёт","жмёт","жмет"],["me aprieta","me aprietan"],"too_tight",
-        [["Estos zapatos me aprietan.","Эти туфли мне жмут."],["El cinturón me aprieta un poco.","Ремень мне немного жмёт."]],"Estos zapatos me ___.",["aprietan"]),
-      clothingWord("length_fit","tryon","me está largo / corto","me está largo / corto","фраза","мне длинно / коротко",["мне длинно","мне коротко"],["me está largo","me esta largo","me está corto","me esta corto"],"length_fit",
-        [["Este pantalón me está un poco largo.","Эти брюки мне немного длинноваты."],["La falda me está demasiado corta.","Юбка мне слишком коротка."]],"Este pantalón me está un poco ___.",["largo"]),
-      clothingWord("match_with","tryon","combinar con","combinar con","фраза / глагол","сочетаться с",["сочетаться с","сочетаться"],["combinar con"],"match_with",
-        [["La camisa combina con estos pantalones.","Рубашка сочетается с этими брюками."],["¿Esta bufanda combina con el abrigo?","Этот шарф сочетается с пальто?"]],"La camisa ___ con estos pantalones.",["combina"]),
-      clothingWord("on_sale","tryon","estar de oferta","estar de oferta","фраза","быть на распродаже / по акции",["быть на распродаже","быть по акции"],["estar de oferta"],"on_sale",
-        [["Esta chaqueta está de oferta.","Эта куртка сейчас по акции."],["Los zapatos están de oferta esta semana.","Туфли на распродаже на этой неделе."]],"Esta chaqueta está de ___.",["oferta"]),
-
-      clothingWord("another_size","store","¿Tiene otra talla?","¿Tiene otra talla?","фраза","У вас есть другой размер?",["у вас есть другой размер","есть другой размер"],["¿Tiene otra talla?","Tiene otra talla?"],"another_size",
-        [["¿Tiene esta camisa en otra talla?","У вас есть эта рубашка в другом размере?"],["¿Tiene otra talla? Esta me queda pequeña.","У вас есть другой размер? Этот мне мал."]],"¿Tiene esta camisa en otra ___?",["talla"]),
-      clothingWord("can_try_it","store","¿Puedo probármelo?","¿Puedo probármelo?","фраза","Можно это примерить?",["можно это примерить","могу я это примерить"],["¿Puedo probármelo?","Puedo probármelo?","¿Puedo probarmelo?","Puedo probarmelo?"],"can_try_it",
-        [["Me gusta este abrigo. ¿Puedo probármelo?","Мне нравится это пальто. Можно его примерить?"],["¿Puedo probármelo antes de comprarlo?","Можно примерить это перед покупкой?"]],"Me gusta este abrigo. ¿Puedo ___?",["probármelo","probarmelo"]),
-      clothingWord("where_fittingrooms","store","¿Dónde están los probadores?","¿Dónde están los probadores?","фраза","Где примерочные?",["где примерочные","где находятся примерочные"],["¿Dónde están los probadores?","Donde estan los probadores?","Dónde están los probadores?"],"where_fittingrooms",
-        [["¿Dónde están los probadores?","Где находятся примерочные?"],["Los probadores están al fondo, a la derecha.","Примерочные находятся в глубине магазина, справа."]],"¿Dónde están los ___?",["probadores"]),
-      clothingWord("take_it","store","Me lo llevo.","Me lo llevo.","фраза","Я это беру.",["я это беру","беру"],["Me lo llevo.","Me lo llevo"],"take_it",
-        [["Me queda perfecto. Me lo llevo.","Сидит идеально. Я это беру."],["Gracias, me lo llevo.","Спасибо, я это беру."]],"Me queda perfecto. Me lo ___.",["llevo"])
-    ];
+    
 
 
     const COLOR_CATEGORIES = [
@@ -1576,154 +1258,13 @@
       return {id:id,cat:cat,word:word,base:word,gender:label,tr:tr,ru:ru,answers:answers,art:null,examples:[[ex1,ex1ru],[ex2,ex2ru]],cloze:cloze,clozeAnswers:clozeAnswers};
     }
 
-    const VERB_CATEGORIES=[
-      {id:"all",title:"Все глаголы"},
-      {id:"core",title:"Самые нужные"},
-      {id:"food",title:"Еда и напитки"},
-      {id:"routine",title:"Распорядок дня"},
-      {id:"home",title:"Дом"},
-      {id:"work",title:"Работа и учёба"},
-      {id:"shopping",title:"Покупки и дела"},
-      {id:"communication",title:"Общение"},
-      {id:"movement",title:"Передвижение"},
-      {id:"plans",title:"Планы и решения"}
-    ];
-    const VERB_WORDS=[
-      foundationItem("ser","core","ser","неправильный","быть, являться",["быть","являться"],["ser"],"Soy diseñadora.","Я дизайнер.","Madrid es una ciudad grande.","Мадрид — большой город.","Madrid ___ una ciudad grande.",["es"]),
-      foundationItem("estar","core","estar","неправильный","быть, находиться",["быть","находиться"],["estar"],"Estoy en casa.","Я дома.","Estamos un poco cansados.","Мы немного устали.","Ahora ___ en casa.",["estoy"]),
-      foundationItem("tener","core","tener","неправильный","иметь",["иметь","иметь у себя"],["tener"],"Tengo un gato.","У меня есть кот.","Ella tiene tiempo libre.","У неё есть свободное время.","Yo ___ un gato.",["tengo"]),
-      foundationItem("hacer","core","hacer","неправильный","делать",["делать"],["hacer"],"Hago deporte los lunes.","Я занимаюсь спортом по понедельникам.","¿Qué haces hoy?","Что ты делаешь сегодня?","¿Qué ___ hoy?",["haces"]),
-      foundationItem("ir","core","ir","неправильный","идти, ехать",["идти","ехать"],["ir"],"Voy al trabajo en metro.","Я еду на работу на метро.","Vamos al cine esta noche.","Сегодня вечером мы идём в кино.","Yo ___ al trabajo.",["voy"]),
-      foundationItem("venir","core","venir","неправильный","приходить, приезжать",["приходить","приезжать"],["venir"],"Vengo de Madrid.","Я приезжаю из Мадрида.","¿Vienes conmigo?","Ты идёшь со мной?","¿___ conmigo?",["vienes"]),
-      foundationItem("querer","core","querer","неправильный","хотеть, любить",["хотеть","любить"],["querer"],"Quiero un café.","Я хочу кофе.","Queremos viajar por España.","Мы хотим путешествовать по Испании.","Yo ___ un café.",["quiero"]),
-      foundationItem("poder","core","poder","неправильный","мочь",["мочь"],["poder"],"Puedo ayudarte.","Я могу тебе помочь.","Hoy no podemos ir.","Сегодня мы не можем пойти.","Yo ___ ayudarte.",["puedo"]),
-      foundationItem("deber","core","deber","глагол на -er","быть должным, следует",["быть должным","следует","должен"],["deber"],"Debo trabajar mañana.","Завтра я должна работать.","Debes descansar más.","Тебе следует больше отдыхать.","Tú ___ descansar más.",["debes"]),
-      foundationItem("saber","core","saber","неправильный","знать, уметь",["знать","уметь"],["saber"],"Sé la respuesta.","Я знаю ответ.","Sabemos nadar.","Мы умеем плавать.","Yo ___ la respuesta.",["sé","se"]),
+    
+    
 
-      foundationItem("comer","food","comer","глагол на -er","есть, кушать",["есть","кушать"],["comer"],"Como a las dos.","Я ем в два часа.","Comemos juntos los domingos.","По воскресеньям мы едим вместе.","Nosotros ___ juntos.",["comemos"]),
-      foundationItem("beber","food","beber","глагол на -er","пить",["пить"],["beber"],"Bebo mucha agua.","Я пью много воды.","Ellos beben café con leche.","Они пьют кофе с молоком.","Yo ___ mucha agua.",["bebo"]),
-      foundationItem("tomar","food","tomar","глагол на -ar","брать; пить, принимать",["брать","пить","принимать"],["tomar"],"Tomo café por la mañana.","Я пью кофе по утрам.","Toma este medicamento después de comer.","Прими это лекарство после еды.","Yo ___ café por la mañana.",["tomo"]),
-      foundationItem("desayunar","food","desayunar","глагол на -ar","завтракать",["завтракать"],["desayunar"],"Desayuno yogur y fruta.","Я ем йогурт и фрукты на завтрак.","Desayunamos antes de salir.","Мы завтракаем перед выходом.","Yo ___ yogur y fruta.",["desayuno"]),
-      foundationItem("almorzar","food","almorzar","o → ue","обедать",["обедать"],["almorzar"],"Almuerzo con mis compañeros.","Я обедаю с коллегами.","Hoy almorzamos en casa.","Сегодня мы обедаем дома.","Yo ___ con mis compañeros.",["almuerzo"]),
-      foundationItem("cenar","food","cenar","глагол на -ar","ужинать",["ужинать"],["cenar"],"Ceno a las ocho.","Я ужинаю в восемь.","¿Cenamos juntos hoy?","Мы сегодня ужинаем вместе?","Yo ___ a las ocho.",["ceno"]),
-      foundationItem("cocinar","food","cocinar","глагол на -ar","готовить еду",["готовить","готовить еду"],["cocinar"],"Cocino pasta para la cena.","Я готовлю пасту на ужин.","Mi novio cocina muy bien.","Мой парень очень хорошо готовит.","Yo ___ pasta para la cena.",["cocino"]),
-      foundationItem("preparar","food","preparar","глагол на -ar","готовить, подготавливать",["готовить","подготавливать"],["preparar"],"Preparo el desayuno.","Я готовлю завтрак.","Preparamos todo por la noche.","Мы готовим всё вечером.","Yo ___ el desayuno.",["preparo"]),
-      foundationItem("pedir","food","pedir","e → i","просить, заказывать",["просить","заказывать"],["pedir"],"Pido una ensalada.","Я заказываю салат.","Pedimos la cuenta, por favor.","Мы просим счёт.","Yo ___ una ensalada.",["pido"]),
-      foundationItem("probar","food","probar","o → ue","пробовать",["пробовать","попробовать"],["probar"],"Pruebo un postre nuevo.","Я пробую новый десерт.","¿Quieres probar la sopa?","Хочешь попробовать суп?","Yo ___ un postre nuevo.",["pruebo"]),
-
-      foundationItem("vivir","routine","vivir","глагол на -ir","жить",["жить"],["vivir"],"Vivo en Madrid.","Я живу в Мадриде.","Mis padres viven cerca.","Мои родители живут рядом.","Yo ___ en Madrid.",["vivo"]),
-      foundationItem("dormir","routine","dormir","o → ue","спать",["спать"],["dormir"],"Duermo ocho horas.","Я сплю восемь часов.","El gato duerme en el sofá.","Кот спит на диване.","Yo ___ ocho horas.",["duermo"]),
-      foundationItem("despertarse","routine","despertarse","e → ie · возвратный","просыпаться",["просыпаться"],["despertarse"],"Me despierto a las siete.","Я просыпаюсь в семь.","Los domingos nos despertamos tarde.","По воскресеньям мы просыпаемся поздно.","Me ___ a las siete.",["despierto"]),
-      foundationItem("levantarse","routine","levantarse","возвратный","вставать, подниматься",["вставать","подниматься"],["levantarse"],"Me levanto temprano.","Я встаю рано.","Ella se levanta a las ocho.","Она встаёт в восемь.","Me ___ temprano.",["levanto"]),
-      foundationItem("acostarse","routine","acostarse","o → ue · возвратный","ложиться спать",["ложиться","ложиться спать"],["acostarse"],"Me acuesto antes de medianoche.","Я ложусь до полуночи.","Los niños se acuestan temprano.","Дети ложатся рано.","Me ___ antes de medianoche.",["acuesto"]),
-      foundationItem("ducharse","routine","ducharse","возвратный","принимать душ",["принимать душ","мыться в душе"],["ducharse"],"Me ducho por la mañana.","Я принимаю душ утром.","Se ducha después del gimnasio.","Он принимает душ после спортзала.","Me ___ por la mañana.",["ducho"]),
-      foundationItem("vestirse","routine","vestirse","e → i · возвратный","одеваться",["одеваться"],["vestirse"],"Me visto rápido.","Я быстро одеваюсь.","Ella se viste para el trabajo.","Она одевается на работу.","Me ___ rápido.",["visto"]),
-      foundationItem("descansar","routine","descansar","глагол на -ar","отдыхать",["отдыхать"],["descansar"],"Descanso en casa por la noche.","Вечером я отдыхаю дома.","Necesitamos descansar un poco.","Нам нужно немного отдохнуть.","Yo ___ en casa.",["descanso"]),
-
-      foundationItem("limpiar","home","limpiar","глагол на -ar","убирать, чистить",["убирать","чистить"],["limpiar"],"Limpio la cocina.","Я убираю кухню.","Limpiamos el piso los sábados.","Мы убираем квартиру по субботам.","Yo ___ la cocina.",["limpio"]),
-      foundationItem("lavar","home","lavar","глагол на -ar","мыть, стирать",["мыть","стирать"],["lavar"],"Lavo los platos después de cenar.","Я мою посуду после ужина.","Hoy lavamos la ropa.","Сегодня мы стираем одежду.","Yo ___ los platos.",["lavo"]),
-      foundationItem("ordenar","home","ordenar","глагол на -ar","наводить порядок, упорядочивать",["наводить порядок","упорядочивать"],["ordenar"],"Ordeno mi habitación.","Я навожу порядок в комнате.","Tenemos que ordenar el armario.","Нам нужно разобрать шкаф.","Yo ___ mi habitación.",["ordeno"]),
-      foundationItem("guardar","home","guardar","глагол на -ar","класть на место, хранить",["класть на место","хранить","сохранять"],["guardar"],"Guardo la ropa en el armario.","Я убираю одежду в шкаф.","¿Dónde guardas las llaves?","Где ты хранишь ключи?","Yo ___ la ropa en el armario.",["guardo"]),
-      foundationItem("abrir","home","abrir","глагол на -ir","открывать",["открывать","открыть"],["abrir"],"Abro la ventana.","Я открываю окно.","La tienda abre a las nueve.","Магазин открывается в девять.","Yo ___ la ventana.",["abro"]),
-      foundationItem("cerrar","home","cerrar","e → ie","закрывать",["закрывать","закрыть"],["cerrar"],"Cierro la puerta.","Я закрываю дверь.","El supermercado cierra tarde.","Супермаркет закрывается поздно.","Yo ___ la puerta.",["cierro"]),
-      foundationItem("poner","home","poner","неправильный","класть, ставить, надевать",["класть","ставить","надевать"],["poner"],"Pongo el teléfono sobre la mesa.","Я кладу телефон на стол.","Ponemos la mesa antes de cenar.","Мы накрываем на стол перед ужином.","Yo ___ el teléfono sobre la mesa.",["pongo"]),
-      foundationItem("quitar","home","quitar","глагол на -ar","убирать, снимать",["убирать","снимать"],["quitar"],"Quito los platos de la mesa.","Я убираю тарелки со стола.","Se quita el abrigo en casa.","Дома она снимает пальто.","Yo ___ los platos de la mesa.",["quito"]),
-      foundationItem("arreglar","home","arreglar","глагол на -ar","чинить, приводить в порядок",["чинить","приводить в порядок","исправлять"],["arreglar"],"Arreglo mi habitación.","Я привожу комнату в порядок.","Tenemos que arreglar la lámpara.","Нам нужно починить лампу.","Yo ___ mi habitación.",["arreglo"]),
-
-      foundationItem("trabajar","work","trabajar","глагол на -ar","работать",["работать"],["trabajar"],"Trabajo en una empresa grande.","Я работаю в большой компании.","Mi amiga trabaja desde casa.","Моя подруга работает из дома.","Mi amiga ___ desde casa.",["trabaja"]),
-      foundationItem("estudiar","work","estudiar","глагол на -ar","учиться, изучать",["учиться","изучать"],["estudiar"],"Estudio español todos los días.","Я учу испанский каждый день.","Ella estudia diseño.","Она изучает дизайн.","Yo ___ español todos los días.",["estudio"]),
-      foundationItem("aprender","work","aprender","глагол на -er","учить, узнавать новое",["учить","изучать","узнавать новое"],["aprender"],"Aprendo palabras nuevas.","Я учу новые слова.","Aprendemos con la práctica.","Мы учимся на практике.","Yo ___ palabras nuevas.",["aprendo"]),
-      foundationItem("enseñar","work","enseñar","глагол на -ar","учить кого-то, показывать",["обучать","учить кого-то","показывать"],["enseñar"],"Enseño el diseño a mi compañera.","Я показываю дизайн коллеге.","Mi profesor enseña español.","Мой преподаватель учит испанскому.","Yo ___ el diseño a mi compañera.",["enseño"]),
-      foundationItem("leer","work","leer","глагол на -er","читать",["читать"],["leer"],"Leo antes de dormir.","Я читаю перед сном.","Él lee las noticias.","Он читает новости.","Él ___ las noticias.",["lee"]),
-      foundationItem("escribir","work","escribir","глагол на -ir","писать",["писать"],["escribir"],"Escribo un mensaje.","Я пишу сообщение.","Ella escribe historias cortas.","Она пишет короткие истории.","Yo ___ un mensaje.",["escribo"]),
-      foundationItem("empezar","work","empezar","e → ie","начинать",["начинать","начать"],["empezar"],"Empiezo a trabajar a las nueve.","Я начинаю работать в девять.","La clase empieza pronto.","Урок скоро начинается.","Yo ___ a trabajar a las nueve.",["empiezo"]),
-      foundationItem("terminar","work","terminar","глагол на -ar","заканчивать",["заканчивать","закончить"],["terminar"],"Termino el trabajo a las seis.","Я заканчиваю работу в шесть.","Terminamos este proyecto mañana.","Мы заканчиваем этот проект завтра.","Yo ___ el trabajo a las seis.",["termino"]),
-      foundationItem("planear","work","planear","глагол на -ar","планировать",["планировать"],["planear","planificar"],"Planeo la semana el domingo.","В воскресенье я планирую неделю.","Planeamos un viaje corto.","Мы планируем короткую поездку.","Yo ___ la semana el domingo.",["planeo"]),
-      foundationItem("organizar","work","organizar","глагол на -ar","организовывать",["организовывать","организовать"],["organizar"],"Organizo mis tareas por la mañana.","Утром я организую свои задачи.","Ella organiza una reunión.","Она организует встречу.","Yo ___ mis tareas por la mañana.",["organizo"]),
-      foundationItem("enviar","work","enviar","í в формах","отправлять",["отправлять","посылать"],["enviar"],"Envío el archivo por correo.","Я отправляю файл по почте.","Te envío la foto esta noche.","Я отправлю тебе фотографию вечером.","Yo ___ el archivo por correo.",["envío","envio"]),
-      foundationItem("recibir","work","recibir","глагол на -ir","получать, принимать",["получать","принимать"],["recibir"],"Recibo muchos mensajes.","Я получаю много сообщений.","Recibimos el pedido mañana.","Мы получаем заказ завтра.","Yo ___ muchos mensajes.",["recibo"]),
-
-      foundationItem("comprar","shopping","comprar","глагол на -ar","покупать",["покупать","купить"],["comprar"],"Compro comida después del trabajo.","Я покупаю продукты после работы.","Compramos pan y leche.","Мы покупаем хлеб и молоко.","Yo ___ comida después del trabajo.",["compro"]),
-      foundationItem("pagar","shopping","pagar","глагол на -ar","платить",["платить","оплачивать"],["pagar"],"Pago con tarjeta.","Я плачу картой.","¿Pagamos la cuenta juntos?","Мы оплачиваем счёт вместе?","Yo ___ con tarjeta.",["pago"]),
-      foundationItem("costar","shopping","costar","o → ue","стоить",["стоить"],["costar"],"Este vestido cuesta cincuenta euros.","Это платье стоит пятьдесят евро.","¿Cuánto cuestan los zapatos?","Сколько стоят туфли?","Este vestido ___ cincuenta euros.",["cuesta"]),
-      foundationItem("elegir","shopping","elegir","e → i","выбирать",["выбирать","выбрать"],["elegir"],"Elijo la opción más sencilla.","Я выбираю самый простой вариант.","Ella elige un bolso negro.","Она выбирает чёрную сумку.","Yo ___ la opción más sencilla.",["elijo"]),
-      foundationItem("llevar","shopping","llevar","глагол на -ar","нести, брать с собой, носить",["нести","брать с собой","носить"],["llevar"],"Llevo agua en el bolso.","Я ношу воду в сумке.","Ella lleva un vestido azul.","На ней синее платье.","Yo ___ agua en el bolso.",["llevo"]),
-      foundationItem("traer","shopping","traer","неправильный","приносить, привозить",["приносить","привозить"],["traer"],"Traigo postre para todos.","Я приношу десерт для всех.","¿Puedes traer agua?","Можешь принести воды?","Yo ___ postre para todos.",["traigo"]),
-      foundationItem("buscar","shopping","buscar","глагол на -ar","искать",["искать"],["buscar"],"Busco mis llaves.","Я ищу свои ключи.","Estamos buscando un regalo.","Мы ищем подарок.","Yo ___ mis llaves.",["busco"]),
-      foundationItem("encontrar","shopping","encontrar","o → ue","находить, встречать",["находить","встречать"],["encontrar"],"Encuentro las llaves en la mesa.","Я нахожу ключи на столе.","No encontramos esta tienda.","Мы не можем найти этот магазин.","Yo ___ las llaves en la mesa.",["encuentro"]),
-      foundationItem("necesitar","shopping","necesitar","глагол на -ar","нуждаться; нуждаться в чём-то",["нуждаться","нужно"],["necesitar"],"Necesito comprar pan.","Мне нужно купить хлеб.","Necesitamos más tiempo.","Нам нужно больше времени.","Yo ___ comprar pan.",["necesito"]),
-
-      foundationItem("hablar","communication","hablar","глагол на -ar","говорить, разговаривать",["говорить","разговаривать"],["hablar"],"Hablo un poco de español.","Я немного говорю по-испански.","Hablamos del trabajo.","Мы говорим о работе.","Yo ___ español.",["hablo"]),
-      foundationItem("decir","communication","decir","неправильный","говорить, сказать",["говорить","сказать"],["decir"],"Digo la verdad.","Я говорю правду.","¿Qué dices?","Что ты говоришь?","Yo ___ la verdad.",["digo"]),
-      foundationItem("preguntar","communication","preguntar","глагол на -ar","спрашивать",["спрашивать","задать вопрос"],["preguntar"],"Pregunto la dirección.","Я спрашиваю дорогу.","Ella pregunta por el precio.","Она спрашивает о цене.","Yo ___ la dirección.",["pregunto"]),
-      foundationItem("responder","communication","responder","глагол на -er","отвечать",["отвечать"],["responder","contestar"],"Respondo al mensaje.","Я отвечаю на сообщение.","Él responde con calma.","Он отвечает спокойно.","Yo ___ al mensaje.",["respondo"]),
-      foundationItem("escuchar","communication","escuchar","глагол на -ar","слушать",["слушать"],["escuchar"],"Escucho música en el metro.","Я слушаю музыку в метро.","¿Me escuchas?","Ты меня слушаешь?","Yo ___ música en el metro.",["escucho"]),
-      foundationItem("mirar","communication","mirar","глагол на -ar","смотреть на что-то",["смотреть","смотреть на"],["mirar"],"Miro una serie por la noche.","Вечером я смотрю сериал.","Mira esta foto.","Посмотри на эту фотографию.","Yo ___ una serie por la noche.",["miro"]),
-      foundationItem("ver","communication","ver","неправильный","видеть, смотреть",["видеть","смотреть"],["ver"],"Veo a mis amigos el sábado.","Я вижусь с друзьями в субботу.","Vemos una película en casa.","Мы смотрим фильм дома.","Yo ___ a mis amigos el sábado.",["veo"]),
-      foundationItem("llamar","communication","llamar","глагол на -ar","звонить, называть",["звонить","называть"],["llamar"],"Llamo a mi madre por la tarde.","Я звоню маме вечером.","Te llamamos mañana.","Мы позвоним тебе завтра.","Yo ___ a mi madre por la tarde.",["llamo"]),
-      foundationItem("explicar","communication","explicar","глагол на -ar","объяснять",["объяснять"],["explicar"],"Explico el problema.","Я объясняю проблему.","La profesora explica la regla.","Преподавательница объясняет правило.","Yo ___ el problema.",["explico"]),
-
-      foundationItem("salir","movement","salir","неправильный","выходить, уезжать",["выходить","уезжать"],["salir"],"Salgo de casa a las ocho.","Я выхожу из дома в восемь.","Salimos con amigos el viernes.","В пятницу мы встречаемся с друзьями.","Yo ___ de casa a las ocho.",["salgo"]),
-      foundationItem("llegar","movement","llegar","глагол на -ar","приходить, приезжать, прибывать",["приходить","приезжать","прибывать"],["llegar"],"Llego al trabajo a las nueve.","Я приезжаю на работу в девять.","El autobús llega tarde.","Автобус приезжает поздно.","Yo ___ al trabajo a las nueve.",["llego"]),
-      foundationItem("volver","movement","volver","o → ue","возвращаться",["возвращаться","вернуться"],["volver"],"Vuelvo a casa por la noche.","Я возвращаюсь домой вечером.","Volvemos el domingo.","Мы возвращаемся в воскресенье.","Yo ___ a casa por la noche.",["vuelvo"]),
-      foundationItem("caminar","movement","caminar","глагол на -ar","ходить пешком, гулять",["ходить пешком","гулять"],["caminar"],"Camino hasta el metro.","Я иду пешком до метро.","Caminamos por el parque.","Мы гуляем по парку.","Yo ___ hasta el metro.",["camino"]),
-      foundationItem("subir","movement","subir","глагол на -ir","подниматься, загружать",["подниматься","загружать"],["subir"],"Subo por las escaleras.","Я поднимаюсь по лестнице.","Subimos las fotos a la nube.","Мы загружаем фотографии в облако.","Yo ___ por las escaleras.",["subo"]),
-      foundationItem("bajar","movement","bajar","глагол на -ar","спускаться, выходить из транспорта",["спускаться","выходить"],["bajar"],"Bajo en la próxima parada.","Я выхожу на следующей остановке.","Bajamos las escaleras.","Мы спускаемся по лестнице.","Yo ___ en la próxima parada.",["bajo"]),
-
-      foundationItem("recordar","plans","recordar","o → ue","помнить, вспоминать",["помнить","вспоминать"],["recordar"],"Recuerdo esta palabra.","Я помню это слово.","¿Recuerdas su nombre?","Ты помнишь его имя?","Yo ___ esta palabra.",["recuerdo"]),
-      foundationItem("olvidar","plans","olvidar","глагол на -ar","забывать",["забывать","забыть"],["olvidar"],"Olvido las llaves a veces.","Иногда я забываю ключи.","No olvidamos tu cumpleaños.","Мы не забываем твой день рождения.","Yo ___ las llaves a veces.",["olvido"]),
-      foundationItem("decidir","plans","decidir","глагол на -ir","решать, принимать решение",["решать","принимать решение"],["decidir"],"Decido trabajar desde casa.","Я решаю работать из дома.","Decidimos ir mañana.","Мы решаем пойти завтра.","Yo ___ trabajar desde casa.",["decido"]),
-      foundationItem("intentar","plans","intentar","глагол на -ar","пытаться, стараться",["пытаться","стараться"],["intentar"],"Intento hablar español.","Я стараюсь говорить по-испански.","Intentamos llegar temprano.","Мы пытаемся прийти рано.","Yo ___ hablar español.",["intento"]),
-      foundationItem("quedar","plans","quedar","глагол на -ar","договариваться о встрече; оставаться",["договариваться о встрече","оставаться","встречаться"],["quedar"],"Quedo con una amiga el sábado.","В субботу я встречаюсь с подругой.","Nos quedan dos días.","У нас остаётся два дня.","Yo ___ con una amiga el sábado.",["quedo"]),
-      foundationItem("esperar","plans","esperar","глагол на -ar","ждать, надеяться",["ждать","надеяться"],["esperar"],"Espero el autobús.","Я жду автобус.","Esperamos viajar en verano.","Мы надеемся поехать летом.","Yo ___ el autobús.",["espero"])
-    ];
-
-    const VERB_PERSONS=["yo","tú","él / ella / usted","nosotros / nosotras","vosotros / vosotras","ellos / ellas / ustedes"];
-    const VERB_PRESENT_OVERRIDES={
-      ser:["soy","eres","es","somos","sois","son"],
-      estar:["estoy","estás","está","estamos","estáis","están"],
-      tener:["tengo","tienes","tiene","tenemos","tenéis","tienen"],
-      hacer:["hago","haces","hace","hacemos","hacéis","hacen"],
-      ir:["voy","vas","va","vamos","vais","van"],
-      venir:["vengo","vienes","viene","venimos","venís","vienen"],
-      querer:["quiero","quieres","quiere","queremos","queréis","quieren"],
-      poder:["puedo","puedes","puede","podemos","podéis","pueden"],
-      saber:["sé","sabes","sabe","sabemos","sabéis","saben"],
-      almorzar:["almuerzo","almuerzas","almuerza","almorzamos","almorzáis","almuerzan"],
-      pedir:["pido","pides","pide","pedimos","pedís","piden"],
-      probar:["pruebo","pruebas","prueba","probamos","probáis","prueban"],
-      dormir:["duermo","duermes","duerme","dormimos","dormís","duermen"],
-      despertarse:["me despierto","te despiertas","se despierta","nos despertamos","os despertáis","se despiertan"],
-      acostarse:["me acuesto","te acuestas","se acuesta","nos acostamos","os acostáis","se acuestan"],
-      vestirse:["me visto","te vistes","se viste","nos vestimos","os vestís","se visten"],
-      cerrar:["cierro","cierras","cierra","cerramos","cerráis","cierran"],
-      poner:["pongo","pones","pone","ponemos","ponéis","ponen"],
-      empezar:["empiezo","empiezas","empieza","empezamos","empezáis","empiezan"],
-      enviar:["envío","envías","envía","enviamos","enviáis","envían"],
-      costar:["cuesto","cuestas","cuesta","costamos","costáis","cuestan"],
-      elegir:["elijo","eliges","elige","elegimos","elegís","eligen"],
-      traer:["traigo","traes","trae","traemos","traéis","traen"],
-      encontrar:["encuentro","encuentras","encuentra","encontramos","encontráis","encuentran"],
-      decir:["digo","dices","dice","decimos","decís","dicen"],
-      ver:["veo","ves","ve","vemos","veis","ven"],
-      salir:["salgo","sales","sale","salimos","salís","salen"],
-      volver:["vuelvo","vuelves","vuelve","volvemos","volvéis","vuelven"],
-      recordar:["recuerdo","recuerdas","recuerda","recordamos","recordáis","recuerdan"]
-    };
-    function regularPresentForms(infinitive){
-      const reflexive=/se$/.test(infinitive);
-      const base=reflexive ? infinitive.slice(0,-2) : infinitive;
-      const ending=base.slice(-2);
-      const endings={ar:["o","as","a","amos","áis","an"],er:["o","es","e","emos","éis","en"],ir:["o","es","e","imos","ís","en"]}[ending];
-      const stem=base.slice(0,-2);
-      const forms=endings.map(function(suffix){return stem+suffix;});
-      if(!reflexive) return forms;
-      return ["me","te","se","nos","os","se"].map(function(pronoun,i){return pronoun+" "+forms[i];});
-    }
-    const VERB_STUDY_WORDS=VERB_WORDS.map(function(item){
-      const forms=VERB_PRESENT_OVERRIDES[item.id] || regularPresentForms(item.word);
-      return Object.assign({},item,{table:{headers:["Лицо","Форма в Presente"],rows:VERB_PERSONS.map(function(person,i){return [person,forms[i]];})}});
-    });
+    
+    
+    
+    
 
     const PRESENT_CATEGORIES=[{id:"all",title:"Все глаголы"},{id:"ar",title:"Глаголы -ar"},{id:"er",title:"Глаголы -er"},{id:"ir",title:"Глаголы -ir"}];
     const PRESENT_WORDS=[
@@ -2699,7 +2240,6 @@
 
     function foundationExercises(){
       const groups=[
-        {topic:"verbs",words:VERB_WORDS},
         {topic:"present",words:PRESENT_WORDS},
         {topic:"questions",words:QUESTION_WORDS},
         {topic:"constructions",words:CONSTRUCTION_WORDS},
@@ -2775,49 +2315,9 @@
       return items;
     }
 
-    function foodExercises(){
-      const items=[];
-      FOOD_WORDS.forEach(function(word){
-        items.push({
-          id:"food_"+word.id+"_es",topic:"foods",foodCat:word.cat,skill:"Вспомни слово",
-          q:"Переведи на испанский: "+word.tr+".",a:word.answers,
-          e:"Базовая форма: "+word.word+"."
-        });
-        items.push({
-          id:"food_"+word.id+"_ru",topic:"foods",foodCat:word.cat,skill:"Узнай слово",
-          q:"Переведи на русский: "+word.word+".",a:russianAnswers(word),
-          e:word.word+" — "+word.tr+"."
-        });
-        items.push({
-          id:"food_"+word.id+"_ctx",topic:"foods",foodCat:word.cat,skill:"Слово в контексте",
-          q:clozeQuestion(word,"пропущенное слово"),a:word.clozeAnswers,
-          e:word.examples[0][0]+" — "+word.examples[0][1]
-        });
-      });
-      return items;
-    }
+    
 
-    function clothingExercises(){
-      const items=[];
-      CLOTHING_WORDS.forEach(function(word){
-        items.push({
-          id:"clothes_"+word.id+"_es",topic:"clothes",foodCat:word.cat,skill:"Вспомни слово",
-          q:"Переведи на испанский: "+word.tr+".",a:word.answers,
-          e:"Базовая форма: "+word.word+"."
-        });
-        items.push({
-          id:"clothes_"+word.id+"_ru",topic:"clothes",foodCat:word.cat,skill:"Узнай слово",
-          q:"Переведи на русский: "+word.word+".",a:russianAnswers(word),
-          e:word.word+" — "+word.tr+"."
-        });
-        items.push({
-          id:"clothes_"+word.id+"_ctx",topic:"clothes",foodCat:word.cat,skill:"Слово в контексте",
-          q:clozeQuestion(word,"пропущенное слово"),a:word.clozeAnswers,
-          e:word.examples[0][0]+" — "+word.examples[0][1]
-        });
-      });
-      return items;
-    }
+    
 
     function colorExercises(){
       const items=[];
@@ -3073,7 +2573,7 @@ window.LegacyProgressAdapter = {
       }
     }
     initCustomAuthoringAccess();
-    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(foodExercises()).concat(clothingExercises()).concat(colorExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(pictureLabelExercises()).concat(custom); }
+    function allExercises(){ return BUILTIN.concat(foundationExercises()).concat(pronounExercises()).concat(MIGRATED_TOPIC_EXERCISES).concat(colorExercises()).concat(activityExercises()).concat(choiceExercises()).concat(audioExercises()).concat(SPECIAL_EXERCISES).concat(NEW_CHECK_EXERCISES).concat(categorySortExercises()).concat(pictureLabelExercises()).concat(custom); }
     function isVocabularyTopic(){ return selectedTopic!=="all" && selectedTopic!=="custom"; }
     function vocabularyWords(){
       if(selectedTopic==="verbs") return VERB_WORDS;
@@ -5064,6 +4564,33 @@ window.LegacyProgressAdapter = {
     buildQueue as buildSessionQueue,
     createSession
   } from "./js/core/session.js";
+  import {
+    registerTopic,
+    getTopic,
+    hasTopic
+  } from "./js/core/topic-registry.js";
+  import { foodsTopic } from "./js/topics/foods.js";
+  import { clothesTopic } from "./js/topics/clothes.js";
+  import { verbsTopic } from "./js/topics/verbs.js";
+
+  const migratedTopics = [verbsTopic, foodsTopic, clothesTopic];
+
+  migratedTopics.forEach(function (topic) {
+    if (!hasTopic(topic.id)) {
+      registerTopic(topic);
+    }
+  });
+
+  const topicDataAdapter = window.LegacyTopicDataAdapter;
+  if (!topicDataAdapter) {
+    throw new Error("LegacyTopicDataAdapter is missing.");
+  }
+
+  topicDataAdapter.hydrate({
+    verbs:getTopic("verbs"),
+    foods:getTopic("foods"),
+    clothes:getTopic("clothes")
+  });
 
   const adapter = window.LegacyProgressAdapter;
   if (!adapter) throw new Error("LegacyProgressAdapter is missing.");
