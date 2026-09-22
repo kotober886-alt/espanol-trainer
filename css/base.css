@@ -700,6 +700,7 @@
 
     @media (max-width:820px) {
       .app { width:100%; max-width:100%; padding:10px; }
+      #trainerLayout { padding-top:max(16px, env(safe-area-inset-top)); }
       header { align-items:flex-start; margin-bottom:14px; }
       .subtitle { display:none; }
       body { padding-bottom:78px; }

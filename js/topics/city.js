@@ -2377,10 +2377,10 @@ const EXERCISES = [
     "q": "Прослушай объяснение маршрута и отметь: правда или ложь.",
     "audioText": "Perdone, ¿para ir a la estación de tren? Debe seguir todo recto por esta avenida hasta el semáforo y luego girar a la izquierda. La estación está justo al lado del parque grande, a unos diez minutos a pie.",
     "statements": [
-      {"id":"s1","text":"Человек спрашивает, как пройти к железнодорожной станции.","isTrue":true,"explanation":"В начале аудио звучит: «¿para ir a la estación de tren?»."},
-      {"id":"s2","text":"У светофора нужно повернуть направо.","isTrue":false,"explanation":"Нужно повернуть налево: «girar a la izquierda»."},
-      {"id":"s3","text":"Станция находится рядом с большим парком.","isTrue":true,"explanation":"В аудио: «La estación está justo al lado del parque grande»."},
-      {"id":"s4","text":"До станции около двадцати минут на машине.","isTrue":false,"explanation":"В аудио сказано: около десяти минут пешком — «a unos diez minutos a pie»."}
+      {"id":"s1","text":"La persona pregunta cómo llegar a la estación de tren.","isTrue":true,"explanation":"Correcto: al principio pregunta «¿para ir a la estación de tren?»."},
+      {"id":"s2","text":"En el semáforo hay que girar a la derecha.","isTrue":false,"explanation":"Es falso: hay que «girar a la izquierda»."},
+      {"id":"s3","text":"La estación está al lado de un parque grande.","isTrue":true,"explanation":"Correcto: en el audio dice «La estación está justo al lado del parque grande»."},
+      {"id":"s4","text":"La estación está a unos veinte minutos en coche.","isTrue":false,"explanation":"Es falso: está «a unos diez minutos a pie»."}
     ]
   },
   {

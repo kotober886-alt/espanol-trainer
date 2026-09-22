@@ -1752,10 +1752,10 @@ const EXERCISES = [
     "q": "Прослушай разговор на ресепшн и отметь: правда или ложь.",
     "audioText": "Buenas tardes. Tengo una reserva a nombre de Elena Gómez por tres noches. ¿El desayuno está incluido en el precio? Sí, se sirve de ocho a diez y media en la primera planta. Aquí tiene su tarjeta, la habitación está en el cuarto piso.",
     "statements": [
-      {"id":"s1","text":"Бронь оформлена на имя Elena Gómez на три ночи.","isTrue":true,"explanation":"В аудио: «una reserva a nombre de Elena Gómez por tres noches»."},
-      {"id":"s2","text":"Завтрак не входит в стоимость.","isTrue":false,"explanation":"На вопрос о включённом завтраке отвечают «Sí», то есть завтрак включён."},
-      {"id":"s3","text":"Завтрак подают с восьми до половины одиннадцатого.","isTrue":true,"explanation":"В аудио: «se sirve de ocho a diez y media»."},
-      {"id":"s4","text":"Номер находится на первом этаже.","isTrue":false,"explanation":"Номер находится на четвёртом этаже: «la habitación está en el cuarto piso»."}
+      {"id":"s1","text":"La reserva está a nombre de Elena Gómez por tres noches.","isTrue":true,"explanation":"Correcto: en el audio dice «una reserva a nombre de Elena Gómez por tres noches»."},
+      {"id":"s2","text":"El desayuno no está incluido en el precio.","isTrue":false,"explanation":"Es falso: a la pregunta sobre el desayuno responden «Sí», así que está incluido."},
+      {"id":"s3","text":"El desayuno se sirve de ocho a diez y media.","isTrue":true,"explanation":"Correcto: en el audio dice «se sirve de ocho a diez y media»."},
+      {"id":"s4","text":"La habitación está en la primera planta.","isTrue":false,"explanation":"Es falso: en el audio dice «la habitación está en el cuarto piso»."}
     ]
   },
   {
