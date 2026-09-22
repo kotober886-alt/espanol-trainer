@@ -23,62 +23,23 @@ jobs:
     steps:
       - name: Получить файлы
         uses: actions/checkout@v5
-      - name: Настроить Pages
-        uses: actions/configure-pages@v5
-      - name: Проверить и встроить прямые ассеты морепродуктов
+
+      - name: Проверить сайт
         shell: bash
         run: |
-          python -m pip install --quiet pillow
-          python - <<'PY'
-          from pathlib import Path
-          from PIL import Image
-          import base64
+          test -f index.html
+          test -f css/base.css
+          test -f js/ui/app.js
+          test -f build-version.txt
 
-          page = Path("index.html")
-          html = page.read_text(encoding="utf-8")
+      - name: Настроить Pages
+        uses: actions/configure-pages@v5
 
-          assets = [
-              (
-                  Path("assets/picture-labels/foods/shrimp.webp"),
-                  'const SHRIMP_ASSET_URL = "assets/picture-labels/foods/shrimp.webp";',
-                  "SHRIMP_ASSET_URL",
-              ),
-              (
-                  Path("assets/picture-labels/foods/mejillones.webp"),
-                  'const MEJILLONES_ASSET_URL = "assets/picture-labels/foods/mejillones.webp";',
-                  "MEJILLONES_ASSET_URL",
-              ),
-              (
-                  Path("assets/picture-labels/marisco.webp"),
-                  'const MARISCO_ASSET_URL = "assets/picture-labels/marisco.webp";',
-                  "MARISCO_ASSET_URL",
-              ),
-          ]
-
-          for asset, source, label in assets:
-              if not asset.exists():
-                  raise SystemExit(f"{asset} is missing")
-              with Image.open(asset) as im:
-                  im.load()
-                  if im.size != (512, 512):
-                      im = im.convert("RGB").resize((512, 512), Image.Resampling.LANCZOS)
-                  else:
-                      im = im.convert("RGB")
-                  im.save(asset, "WEBP", quality=92, method=6)
-
-              data_uri = "data:image/webp;base64," + base64.b64encode(asset.read_bytes()).decode("ascii")
-              target = f'const {label} = "' + data_uri + '";'
-              if source not in html:
-                  raise SystemExit(f"{label} marker not found in index.html")
-              html = html.replace(source, target, 1)
-
-          page.write_text(html, encoding="utf-8")
-          print("shrimp.webp, mejillones.webp and marisco.webp validated and embedded into deployed index")
-          PY
       - name: Подготовить сайт
         uses: actions/upload-pages-artifact@v4
         with:
           path: .
+
       - name: Опубликовать
         id: deployment
         uses: actions/deploy-pages@v4
