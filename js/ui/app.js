@@ -3,7 +3,7 @@ import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
 import { createTrainerView } from "./trainer-view.js?v=20260922-story-weekend14";
 import { createResultsView } from "./results-view.js?v=20260923-blitz-mode18";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
-import { createPracticeView } from "./practice-view.js?v=20260923-blitz-mode18";
+import { createPracticeView } from "./practice-view.js?v=20260923-blitz-banner-cat21";
 import { load, save } from "../core/storage.js";
   import {
     getStats,

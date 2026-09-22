@@ -42,12 +42,15 @@ export function createPracticeView(options={}){
     banner.className="blitz-banner";
     banner.type="button";
     banner.innerHTML=
-      '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+
-      '<span class="blitz-banner-copy">'+
-        '<strong>Блиц на 60 секунд</strong>'+
-        '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+
+      '<span class="blitz-banner-content">'+
+        '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+
+        '<span class="blitz-banner-copy">'+
+          '<strong>Блиц на 60 секунд</strong>'+
+          '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+
+          '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+
+        '</span>'+
       '</span>'+
-      '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>';
+      '<img class="blitz-banner-cat" src="assets/images/mascot/blitz_mascot.webp" alt="Блиц кот" onerror="this.style.display=\'none\'">';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
 
     const catalogHead=host.querySelector(".catalog-head");
