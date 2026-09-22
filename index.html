@@ -4906,5 +4906,265 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
+<script type="module">
+  import {
+    registerTopic,
+    getTopic,
+    hasTopic
+  } from "./js/core/topic-registry.js";
+
+  import {
+    animalsTopic
+  } from "./js/topics/animals.js";
+
+  const animals = hasTopic("animals")
+    ? getTopic("animals")
+    : registerTopic(animalsTopic);
+
+  /*
+   * TEMPORARY STEP-2 LEGACY BRIDGE
+   */
+  if (!TOPICS.some(function (topic) {
+    return topic.id === animals.id;
+  })) {
+    const customIndex = TOPICS.findIndex(function (topic) {
+      return topic.id === "custom";
+    });
+
+    TOPICS.splice(
+      customIndex < 0 ? TOPICS.length : customIndex,
+      0,
+      {
+        id: animals.id,
+        title: animals.title,
+        icon: animals.icon
+      }
+    );
+  }
+
+  const dailyLifeGroup = TOPIC_GROUPS.find(function (group) {
+    return group.title === "Повседневная жизнь";
+  });
+
+  if (
+    dailyLifeGroup &&
+    !dailyLifeGroup.ids.includes("animals")
+  ) {
+    dailyLifeGroup.ids.push("animals");
+  }
+
+  const animalCategories = [
+    {
+      id: "all",
+      title: "Все животные"
+    }
+  ];
+
+  const seenCategories = new Set();
+
+  animals.studyItems.forEach(function (item) {
+    if (seenCategories.has(item.category)) {
+      return;
+    }
+
+    seenCategories.add(item.category);
+
+    animalCategories.push({
+      id: item.category,
+      title:
+        item.meta && item.meta.categoryTitle
+          ? item.meta.categoryTitle
+          : item.category
+    });
+  });
+
+  const legacyAllExercises = allExercises;
+
+  allExercises = function () {
+    const base = legacyAllExercises();
+
+    const existingIds = new Set(
+      base
+        .map(function (exercise) {
+          return exercise && exercise.id;
+        })
+        .filter(Boolean)
+    );
+
+    const newExercises = animals.exercises.filter(
+      function (exercise) {
+        return !existingIds.has(exercise.id);
+      }
+    );
+
+    return base.concat(newExercises);
+  };
+
+  const legacyVocabularyWords = vocabularyWords;
+
+  vocabularyWords = function () {
+    if (selectedTopic === "animals") {
+      return animals.studyItems;
+    }
+
+    return legacyVocabularyWords();
+  };
+
+  const legacyStudyVocabularyWords = studyVocabularyWords;
+
+  studyVocabularyWords = function () {
+    if (selectedTopic === "animals") {
+      return animals.studyItems;
+    }
+
+    return legacyStudyVocabularyWords();
+  };
+
+  const legacyCategoriesForTopic = categoriesForTopic;
+
+  categoriesForTopic = function (topic) {
+    if (topic === "animals") {
+      return animalCategories;
+    }
+
+    return legacyCategoriesForTopic(topic);
+  };
+
+  const legacyStudyArt = studyArt;
+
+  studyArt = function (word) {
+    if (
+      selectedTopic === "animals" &&
+      word &&
+      word.image
+    ) {
+      const src =
+        typeof runtimeAssetUrl === "function"
+          ? runtimeAssetUrl(word.image, false)
+          : word.image;
+
+      return (
+        '<img class="food-direct-image home-card-image" ' +
+        'src="' + src + '" ' +
+        'alt="' + escapeHtml(word.tr || word.word || "") + '" ' +
+        'draggable="false" ' +
+        'loading="eager" ' +
+        'decoding="async">'
+      );
+    }
+
+    return legacyStudyArt(word);
+  };
+
+  const legacyRenderStudy = renderStudy;
+
+  renderStudy = function () {
+    legacyRenderStudy();
+
+    if (
+      selectedTopic === "animals" &&
+      els &&
+      els.studyCard
+    ) {
+      els.studyCard.classList.remove("no-art");
+    }
+  };
+
+  const legacyPictureAsset = pictureAsset;
+
+  pictureAsset = function (scene, forceReload) {
+    const value = String(scene || "");
+
+    if (value.startsWith("animal-")) {
+      const animalId = value.slice("animal-".length);
+
+      const word = animals.studyItems.find(
+        function (item) {
+          return item.id === animalId;
+        }
+      );
+
+      if (!word) {
+        return "";
+      }
+
+      return typeof runtimeAssetUrl === "function"
+        ? runtimeAssetUrl(word.image, !!forceReload)
+        : word.image;
+    }
+
+    return legacyPictureAsset(scene, forceReload);
+  };
+
+  const legacyStudyTitle = studyTitle;
+
+  studyTitle = function () {
+    return selectedTopic === "animals"
+      ? "Сначала познакомимся с животными"
+      : legacyStudyTitle();
+  };
+
+  const legacyStudyIntro = studyIntro;
+
+  studyIntro = function () {
+    return selectedTopic === "animals"
+      ? "Учи животных по группам: домашние, ферма, дикие, птицы, морские, рептилии и амфибии. На каждой карточке есть иллюстрация и живые примеры."
+      : legacyStudyIntro();
+  };
+
+  const legacyStudyUnitLabel = studyUnitLabel;
+
+  studyUnitLabel = function () {
+    return selectedTopic === "animals"
+      ? "Животное"
+      : legacyStudyUnitLabel();
+  };
+
+  const legacyRenderTopics = renderTopics;
+
+  renderTopics = function () {
+    legacyRenderTopics();
+
+    const count = document.querySelector(
+      '[data-topic="animals"] .topic-count'
+    );
+
+    if (count) {
+      count.textContent =
+        animals.studyItems.length + " слов";
+    }
+  };
+
+  const customTopicSelect =
+    document.getElementById("customTopic");
+
+  if (
+    customTopicSelect &&
+    !customTopicSelect.querySelector(
+      'option[value="animals"]'
+    )
+  ) {
+    const option = document.createElement("option");
+
+    option.value = "animals";
+    option.textContent = animals.title;
+
+    const customOption =
+      customTopicSelect.querySelector(
+        'option[value="custom"]'
+      );
+
+    if (customOption) {
+      customTopicSelect.insertBefore(
+        option,
+        customOption
+      );
+    } else {
+      customTopicSelect.appendChild(option);
+    }
+  }
+
+  renderTopics();
+</script>
 </body>
 </html>

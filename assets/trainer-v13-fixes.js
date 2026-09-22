@@ -244,48 +244,48 @@
   }
   installMariscoCardArt();
 
-  function installAnimalsCardArt(){
-    try{
-      if(typeof renderStudy==='function' && !renderStudy.__animalsArtFinal){
-        const baseRenderStudy=renderStudy;
-        const patched=function(){
-          baseRenderStudy();
-          try{
-            if(selectedTopic==='animals'){
-              const words=currentFoodWords();
-              const word=words[wordIndex];
-              els.studyCard.classList.remove('no-art');
-              els.foodArt.style.display='grid';
-              if(word && typeof animalArt==='function') els.foodArt.innerHTML=animalArt(word.art || word.id);
-            }
-          }catch(e){}
-        };
-        patched.__animalsArtFinal=true;
-        renderStudy=patched;
-      }
-    }catch(e){}
-  }
+  // function installAnimalsCardArt(){
+  //   try{
+  //     if(typeof renderStudy==='function' && !renderStudy.__animalsArtFinal){
+  //       const baseRenderStudy=renderStudy;
+  //       const patched=function(){
+  //         baseRenderStudy();
+  //         try{
+  //           if(selectedTopic==='animals'){
+  //             const words=currentFoodWords();
+  //             const word=words[wordIndex];
+  //             els.studyCard.classList.remove('no-art');
+  //             els.foodArt.style.display='grid';
+  //             if(word && typeof animalArt==='function') els.foodArt.innerHTML=animalArt(word.art || word.id);
+  //           }
+  //         }catch(e){}
+  //       };
+  //       patched.__animalsArtFinal=true;
+  //       renderStudy=patched;
+  //     }
+  //   }catch(e){}
+  // }
 
-  function loadAnimalRasterFix(){
-    const old=document.querySelector('script[data-animals-card-art-fix]');
-    if(old) old.remove();
-    const fix=document.createElement('script');
-    fix.src='assets/animals-card-art-fix.js?v=5-individual2';
-    fix.dataset.animalsCardArtFix='1';
-    fix.onload=function(){
-      installAnimalsCardArt();
-      try{ if(selectedTopic==='animals' && foodPhase==='study') renderStudy(); }catch(e){}
-    };
-    document.body.appendChild(fix);
-  }
+  // function loadAnimalRasterFix(){
+  //   const old=document.querySelector('script[data-animals-card-art-fix]');
+  //   if(old) old.remove();
+  //   const fix=document.createElement('script');
+  //   fix.src='assets/animals-card-art-fix.js?v=5-individual2';
+  //   fix.dataset.animalsCardArtFix='1';
+  //   fix.onload=function(){
+  //     installAnimalsCardArt();
+  //     try{ if(selectedTopic==='animals' && foodPhase==='study') renderStudy(); }catch(e){}
+  //   };
+  //   document.body.appendChild(fix);
+  // }
 
-  const oldAnimals=document.querySelector('script[data-animals-topic]');
-  if(oldAnimals) oldAnimals.remove();
-  const animalsScript=document.createElement('script');
-  animalsScript.src='assets/animals-topic.js?v=8-final1';
-  animalsScript.dataset.animalsTopic='1';
-  animalsScript.onload=loadAnimalRasterFix;
-  document.body.appendChild(animalsScript);
+  // const oldAnimals=document.querySelector('script[data-animals-topic]');
+  // if(oldAnimals) oldAnimals.remove();
+  // const animalsScript=document.createElement('script');
+  // animalsScript.src='assets/animals-topic.js?v=8-final1';
+  // animalsScript.dataset.animalsTopic='1';
+  // animalsScript.onload=loadAnimalRasterFix;
+  // document.body.appendChild(animalsScript);
 
   function loadAnswerTranslations(){
     const old=document.querySelector('script[data-answer-translations]');
