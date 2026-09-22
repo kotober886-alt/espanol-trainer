@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260922-home-refresh1">
+  <link rel="stylesheet" href="css/base.css?v=20260922-stats-layout2">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260922-home-refresh1";
+      const CURRENT_BUILD="20260922-stats-layout2";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -74,16 +74,16 @@
         </div>
         <div class="home-stats" aria-label="Статистика обучения">
           <div class="home-stat">
-            <span class="home-stat-icon" aria-hidden="true">🔥</span>
-            <div><strong id="homeStreakStat">0 дн.</strong><span>серия</span></div>
+            <div class="home-stat-value"><span aria-hidden="true">🔥</span><strong id="homeStreakStat">0 дн.</strong></div>
+            <span class="home-stat-label">серия</span>
           </div>
           <div class="home-stat">
-            <span class="home-stat-icon" aria-hidden="true">🎯</span>
-            <div><strong id="homeAccuracyStat">0%</strong><span>точность</span></div>
+            <div class="home-stat-value"><span aria-hidden="true">🎯</span><strong id="homeAccuracyStat">0%</strong></div>
+            <span class="home-stat-label">точность</span>
           </div>
           <div class="home-stat">
-            <span class="home-stat-icon" aria-hidden="true">📚</span>
-            <div><strong id="homeDoneStat">0</strong><span>всего</span></div>
+            <div class="home-stat-value"><span aria-hidden="true">📚</span><strong id="homeDoneStat">0</strong></div>
+            <span class="home-stat-label">всего</span>
           </div>
         </div>
       </div>
@@ -539,6 +539,6 @@
   window.setHeaderMascot = setMascot;
 })();
 </script>
-  <script type="module" src="./js/ui/app.js?v=20260922-home-refresh1"></script>
+  <script type="module" src="./js/ui/app.js?v=20260922-stats-layout2"></script>
 </body>
 </html>
