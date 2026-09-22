@@ -334,21 +334,6 @@ function statsIdFor(item) {
   );
 }
 
-function createReview(item, statsId) {
-  return {
-    ...item,
-    id:
-      String(item.id || statsId) +
-      "__session_review",
-    originalId: statsId,
-    reviewOf: statsId,
-    sessionReview: true,
-    skill:
-      "Повторение · " +
-      (item.skill || "Практика")
-  };
-}
-
 /**
  * Creates one isolated active-session controller.
  */
@@ -378,9 +363,9 @@ export function createSession(options = {}) {
   let active = queue.length > 0;
 
   const seen = new Set();
-  const scheduledReviews = new Set();
   const history = [];
   const wrongIds = [];
+  const mistakes = [];
 
   let answered = 0;
   let correct = 0;
@@ -404,9 +389,10 @@ export function createSession(options = {}) {
       correct: correct,
       wrong: wrong,
       wrongIds: wrongIds.slice(),
+      mistakes: mistakes.slice(),
       accuracy: accuracy,
-      reviewCount: scheduledReviews.size,
-      queueLength: queue.length,
+      reviewCount: 0,
+      queueLength: initialCount,
       history: history.slice()
     };
   }
@@ -430,28 +416,6 @@ export function createSession(options = {}) {
     const statsId =
       statsIdFor(item);
 
-    const review =
-      item.sessionReview === true;
-
-    if (review) {
-      history.push({
-        itemId: item.id,
-        statsId: statsId,
-        correct: Boolean(isCorrect),
-        skipped: Boolean(skipped),
-        review: true,
-        answerResult: answerResult,
-        index: index
-      });
-
-      return {
-        recorded: true,
-        counted: false,
-        scheduledReview: false,
-        summary: getSummary()
-      };
-    }
-
     if (!statsId || seen.has(statsId)) {
       return {
         recorded: false,
@@ -464,8 +428,6 @@ export function createSession(options = {}) {
     seen.add(statsId);
     answered += 1;
 
-    let scheduledReview = false;
-
     if (isCorrect) {
       correct += 1;
     } else {
@@ -473,14 +435,7 @@ export function createSession(options = {}) {
 
       if (wrongIds.indexOf(statsId) < 0) {
         wrongIds.push(statsId);
-      }
-
-      if (!scheduledReviews.has(statsId)) {
-        scheduledReviews.add(statsId);
-        queue.push(
-          createReview(item, statsId)
-        );
-        scheduledReview = true;
+        mistakes.push(item);
       }
     }
 
@@ -497,7 +452,7 @@ export function createSession(options = {}) {
     return {
       recorded: true,
       counted: true,
-      scheduledReview: scheduledReview,
+      scheduledReview: false,
       summary: getSummary()
     };
   }
@@ -567,6 +522,7 @@ export function createSession(options = {}) {
       index: index,
       current: getCurrent(),
       queue: queue.slice(),
+      mistakes: mistakes.slice(),
       summary: getSummary()
     };
   }
@@ -585,6 +541,9 @@ export function createSession(options = {}) {
     previous: previous,
     isFinished: isFinished,
     getSummary: getSummary,
+    getMistakes: function () {
+      return mistakes.slice();
+    },
     stop: stop
   });
 }

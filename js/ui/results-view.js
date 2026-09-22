@@ -3,7 +3,7 @@
  */
 export function createResultsView(deps){
   const {els,$,getState,patchState,syncSession,progress,ensureApproveMascot,ensureStrictMascot,
-    ensureLowMascot,setResultFavicon}=deps;
+    ensureLowMascot,setResultFavicon,onReviewMistakes}=deps;
 
   const RESULT_PHRASES = {
     triumph: ["¡Increíble!", "¡Eres un crack!", "¡Victoria!"],
@@ -44,20 +44,87 @@ export function createResultsView(deps){
     });
   }
 
-  function finish(){
+  function normalizeSummary(summary){
+    return {
+      answered:Math.max(0,Number(summary && summary.answered)||0),
+      correct:Math.max(0,Number(summary && summary.correct)||0),
+      wrong:Math.max(0,Number(summary && summary.wrong)||0),
+      wrongIds:Array.isArray(summary && summary.wrongIds)?summary.wrongIds.slice():[],
+      mistakes:Array.isArray(summary && summary.mistakes)?summary.mistakes.slice():[]
+    };
+  }
+
+  function ensureMistakeDialog(){
+    let dialog=document.getElementById("mistakeReviewDialog");
+    if(dialog) return dialog;
+
+    dialog=document.createElement("dialog");
+    dialog.id="mistakeReviewDialog";
+    dialog.className="mistake-review-dialog";
+    dialog.innerHTML='<div class="mistake-review-card">'+
+      '<div class="mistake-review-kicker">Основная сессия завершена</div>'+
+      '<h2>Тренировка завершена!</h2>'+
+      '<p id="mistakeReviewText"></p>'+
+      '<div class="mistake-review-actions">'+
+        '<button class="btn btn-primary" id="mistakeReviewStart" type="button"></button>'+
+        '<button class="btn btn-soft" id="mistakeReviewResults" type="button">Посмотреть итоги</button>'+
+      '</div>'+
+    '</div>';
+    document.body.appendChild(dialog);
+    return dialog;
+  }
+
+  function showMistakeChoice(summary){
+    const result=normalizeSummary(summary);
+    const dialog=ensureMistakeDialog();
+    const count=result.mistakes.length || result.wrong;
+    dialog.querySelector("#mistakeReviewText").textContent=
+      "Ты ошибся в "+count+" заданиях. Хочешь разобрать ошибки?";
+    dialog.querySelector("#mistakeReviewStart").textContent=
+      "Отработать ошибки ("+count+")";
+
+    const startButton=dialog.querySelector("#mistakeReviewStart");
+    const resultsButton=dialog.querySelector("#mistakeReviewResults");
+
+    startButton.onclick=function(){
+      dialog.close();
+      if(typeof onReviewMistakes==="function"){
+        onReviewMistakes(result.mistakes,result);
+      }
+    };
+    resultsButton.onclick=function(){
+      dialog.close();
+      showFinal(result);
+    };
+
+    els.studyView.hidden=true;
+    els.exerciseView.hidden=true;
+    els.emptyView.hidden=true;
+    els.sessionResult.hidden=true;
+    dialog.showModal();
+  }
+
+  function completeMain(){
     if(getState().sessionController) syncSession();
     const state=getState();
-    const summary=state.sessionController?state.sessionController.getSummary():{
-      answered:Math.max(0,Number(state.sessionResults.answered)||0),
-      correct:Math.max(0,Number(state.sessionResults.correct)||0),
-      wrong:Math.max(0,Number(state.sessionResults.wrong)||0),
-      wrongIds:(state.sessionResults.wrongIds||[]).slice()
-    };
-    const result={
-      answered:summary.answered,correct:summary.correct,wrong:summary.wrong,
-      wrongIds:(summary.wrongIds||[]).slice()
-    };
+    const summary=state.sessionController?state.sessionController.getSummary():state.sessionResults;
+    const result=normalizeSummary(summary);
     patchState({sessionActive:false,sessionResults:result});
+
+    if(result.wrong>0 && result.mistakes.length){
+      showMistakeChoice(result);
+      return {needsMistakeChoice:true,summary:result};
+    }
+
+    return showFinal(result);
+  }
+
+  function showFinal(summary){
+    const result=normalizeSummary(summary);
+    patchState({sessionActive:false,sessionResults:result});
+
+    const openDialog=document.getElementById("mistakeReviewDialog");
+    if(openDialog && openDialog.open) openDialog.close();
 
     els.studyView.hidden=true;els.exerciseView.hidden=true;els.emptyView.hidden=true;els.sessionResult.hidden=false;
     els.resultTotal.textContent=result.answered;
@@ -88,12 +155,14 @@ export function createResultsView(deps){
     else show(ensureLowMascot,"Недовольный кот-маскот");
 
     setResultFavicon(accuracy,getState().streak);
-    $("repeatMistakesBtn").hidden=!result.wrong;
+    const repeatButton=$("repeatMistakesBtn");
+    repeatButton.hidden=!result.mistakes.length;
+    if(result.mistakes.length) repeatButton.textContent="Отработать ошибки ("+result.mistakes.length+")";
     els.progressLabel.textContent=result.answered+" / "+result.answered;
     els.progressBar.style.width="100%";
     window.scrollTo({top:0,behavior:"smooth"});
     return {summary:result,accuracy};
   }
 
-  return Object.freeze({finish});
+  return Object.freeze({completeMain,showFinal,showMistakeChoice});
 }

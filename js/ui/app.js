@@ -1,7 +1,7 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js";
-import { createTrainerView } from "./trainer-view.js";
-import { createResultsView } from "./results-view.js";
+import { createTrainerView } from "./trainer-view.js?v=20260922-transparent-session1";
+import { createResultsView } from "./results-view.js?v=20260922-transparent-session1";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -26,7 +26,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js";
+  } from "../core/session.js?v=20260922-transparent-session1";
   import {
     registerTopic,
     getTopic,
@@ -270,7 +270,9 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10 });
     let sessionSize = Number(uiSettings.sessionSize) || 10;
     let sessionActive = false;
     let sessionController = null;
-    let sessionResults = {answered:0,correct:0,wrong:0,wrongIds:[]};
+    let sessionResults = {answered:0,correct:0,wrong:0,wrongIds:[],mistakes:[]};
+    let sessionRound = "main";
+    let primarySessionResult = null;
     let catalogView=null;
     let studyCardView=null;
     let trainerView=null;
@@ -626,7 +628,8 @@ window.LegacyProgressAdapter = {
         answered:summary.answered,
         correct:summary.correct,
         wrong:summary.wrong,
-        wrongIds:summary.wrongIds.slice()
+        wrongIds:summary.wrongIds.slice(),
+        mistakes:Array.isArray(summary.mistakes)?summary.mistakes.slice():[]
       };
     }
 
@@ -731,6 +734,8 @@ window.LegacyProgressAdapter = {
       selectedMode=mode || selectedMode || "all";
       foodPhase="practice";
       sessionActive=true;
+      sessionRound="main";
+      primarySessionResult=null;
       checkedCurrent=false;
 
       sessionController=window.TrainerSession.createSession({
@@ -756,7 +761,48 @@ window.LegacyProgressAdapter = {
     function startSession(topic,size,mode){
       return startTrainingSession(topic,size,mode);
     }
-    function finishSession(){ return resultsView.finish(); }
+
+    function startMistakeReview(mistakes,primarySummary){
+      if(!window.TrainerSession || !Array.isArray(mistakes) || !mistakes.length){
+        return resultsView.showFinal(primarySummary);
+      }
+
+      primarySessionResult={
+        answered:Number(primarySummary.answered)||0,
+        correct:Number(primarySummary.correct)||0,
+        wrong:Number(primarySummary.wrong)||0,
+        wrongIds:(primarySummary.wrongIds||[]).slice(),
+        mistakes:(primarySummary.mistakes||[]).slice()
+      };
+
+      sessionRound="mistakes";
+      sessionActive=true;
+      checkedCurrent=false;
+      foodPhase="practice";
+
+      sessionController=window.TrainerSession.createSession({
+        topicId:selectedTopic,
+        mode:"mistake-review",
+        size:mistakes.length,
+        pool:mistakes
+      });
+
+      syncSessionProjection();
+      showWorkspace();
+      render();
+    }
+
+    function finishSession(){
+      if(sessionRound==="mistakes"){
+        if(sessionController) syncSessionProjection();
+        const original=primarySessionResult || sessionResults;
+        sessionActive=false;
+        sessionRound="main";
+        primarySessionResult=null;
+        return resultsView.showFinal(original);
+      }
+      return resultsView.completeMain();
+    }
 
     function runResultTestFromUrl(){
       const params=new URLSearchParams(window.location.search);
@@ -781,7 +827,7 @@ window.LegacyProgressAdapter = {
       foodPhase="practice";
       selectedMode="all";
       showWorkspace();
-      finishSession();
+      resultsView.showFinal(sessionResults);
       els.resultMessage.textContent="Тестовый экран результата: "+normalized+"% правильных ответов.";
     }
     const SPANISH_LOCALES = [
@@ -1082,7 +1128,7 @@ window.LegacyProgressAdapter = {
       return {
         stats,custom,streak,uiSettings,selectedTopic,selectedMode,queue,index,checkedCurrent,wordIndex,
         foodPhase,foodCategory,catalogIntent,topicSearch,studySearch,studyPickerQuery,pendingSessionTopic,
-        sessionSize,sessionActive,sessionController,sessionResults
+        sessionSize,sessionActive,sessionController,sessionResults,sessionRound,primarySessionResult
       };
     }
     function patchUiState(patch){
@@ -1107,6 +1153,8 @@ window.LegacyProgressAdapter = {
       if("sessionActive" in patch) sessionActive=patch.sessionActive;
       if("sessionController" in patch) sessionController=patch.sessionController;
       if("sessionResults" in patch) sessionResults=patch.sessionResults;
+      if("sessionRound" in patch) sessionRound=patch.sessionRound;
+      if("primarySessionResult" in patch) primarySessionResult=patch.primarySessionResult;
     }
     function registeredTopic(id){ return window.TopicRegistryFacade ? window.TopicRegistryFacade.getTopic(id) : null; }
     function initializeViews(){
@@ -1140,7 +1188,8 @@ window.LegacyProgressAdapter = {
         els,$,getState:getUiState,patchState:patchUiState,syncSession:syncSessionProjection,
         progress:window.TrainerProgress,ensureApproveMascot:ensureResultMascot,
         ensureStrictMascot:ensureStrictResultMascot,ensureLowMascot:ensureLowResultMascot,
-        setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);}
+        setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);},
+        onReviewMistakes:startMistakeReview
       });
     }
 
@@ -1244,7 +1293,10 @@ window.LegacyProgressAdapter = {
     });
     $("startSessionBtn").addEventListener("click",function(){els.sessionDialog.close();startSession(pendingSessionTopic,sessionSize,selectedMode);});
     $("resultHomeBtn").addEventListener("click",showHome);
-    $("repeatMistakesBtn").addEventListener("click",function(){startSession("all",Math.min(10,Math.max(5,sessionResults.wrong)),"mistakes");});
+    $("repeatMistakesBtn").addEventListener("click",function(){
+      const mistakes=(sessionResults.mistakes||[]).slice();
+      if(mistakes.length) startMistakeReview(mistakes,sessionResults);
+    });
     $("addForm").addEventListener("submit",function(e){
       e.preventDefault();
       const q=$("customQuestion").value.trim();

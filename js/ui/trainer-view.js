@@ -265,8 +265,10 @@ export function createTrainerView(deps){
     els.exerciseView.hidden=false;els.emptyView.hidden=true;
     els.backToWordsBtn.hidden=!isVocabularyTopic(state.selectedTopic);
     const item=state.queue[state.index];
-    els.questionText.textContent=item.q;els.skillLabel.textContent=item.skill||"Практика";
-    els.questionNumber.textContent="Задание "+(state.index+1)+" из "+state.queue.length;
+    const mistakeRound=state.sessionRound==="mistakes";
+    els.questionText.textContent=item.q;
+    els.skillLabel.textContent=mistakeRound ? "Работа над ошибками" : (item.skill||"Практика");
+    els.questionNumber.textContent=(mistakeRound ? "Работа над ошибками · " : "Задание ")+(state.index+1)+" из "+state.queue.length;
     els.progressLabel.textContent=(state.index+1)+" / "+state.queue.length;
     els.progressBar.style.width=((state.index+1)/state.queue.length*100)+"%";
     els.answerText.textContent=item.displayAnswer||(item.a||[]).join(" / ");
@@ -291,7 +293,7 @@ export function createTrainerView(deps){
     if(!state.checkedCurrent){
       if(state.sessionActive&&state.sessionController){
         const record=state.sessionController.recordResult({correct:exact,answerResult:result});
-        scheduled=record.scheduledReview;
+        scheduled=false;
         if(record.counted&&progress){
           const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:exact,firstAttempt:true});
           patchState({stats:progress.getStats(),streak:p.streak});
@@ -307,7 +309,7 @@ export function createTrainerView(deps){
       }
       patchState({checkedCurrent:true});renderStats();
     }
-    els.feedback.textContent=result.feedback+(exact?"":(scheduled?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
+    els.feedback.textContent=result.feedback+(exact?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
     els.feedback.className=exact?"feedback good":(near?"feedback near":"feedback bad");
   }
 
