@@ -2375,7 +2375,7 @@ const EXERCISES = [
     "skill": "Аудирование · Правда / Ложь",
     "title": "Аудирование: Preguntar por la calle",
     "q": "Прослушай объяснение маршрута и отметь: правда или ложь.",
-    "image": "assets/images/stories/story_city.webp",
+    "image": "assets/images/stories/story_city.webp?v=20260923-highres-stories28",
     "imageAlt": "Рыжий кот с картой на улочке испанского города",
     "audioText": "Perdone, ¿para ir a la estación de tren? Debe seguir todo recto por esta avenida hasta el semáforo y luego girar a la izquierda. La estación está justo al lado del parque grande, a unos diez minutos a pie.",
     "statements": [

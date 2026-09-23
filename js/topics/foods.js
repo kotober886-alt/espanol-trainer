@@ -7560,7 +7560,7 @@ const EXERCISES = [
     "theme": "comida",
     "skill": "Аудирование · Правда / Ложь",
     "title": "Аудирование: En la cafetería",
-    "image": "assets/images/stories/story_cafe.webp",
+    "image": "assets/images/stories/story_cafe.webp?v=20260923-highres-stories28",
     "imageAlt": "Кот в испанском кафе",
     "q": "Прослушай историю и отметь для каждого утверждения: правда или ложь.",
     "audioText": "Hola, me llamo Carlos. Todos los días voy a una cafetería cerca de mi oficina. Siempre pido un café con leche y una tostada con tomate. Hoy no hay tostadas, así que pido un cruasán dulce. La camarera es muy amable y siempre me saluda con una sonrisa.",
