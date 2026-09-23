@@ -1,0 +1,44 @@
+/* Seamless Blitz banner styles */
+.blitz-banner {
+  min-height:130px;
+  background:linear-gradient(135deg,#ff9a3d 0%,#ff6f91 48%,#6357df 100%);
+  position:relative;
+  overflow:hidden;
+  border-radius:20px;
+  padding:16px 20px;
+}
+
+.blitz-banner-content {
+  max-width:60%;
+  z-index:2;
+  position:relative;
+}
+
+.blitz-banner-visual {
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:0;
+  width:45%;
+  max-width:220px;
+  z-index:1;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+.blitz-banner-visual img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:right center;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);
+  mask-image:linear-gradient(to right,transparent 0%,black 35%);
+}
+
+@media (min-width:769px) {
+  .blitz-banner {
+    min-height:150px;
+  }
+}
