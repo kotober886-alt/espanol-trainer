@@ -1,4 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-audio-manager37";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-achievements46";
 import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
 
 function escapeHtml(value) {
@@ -18,12 +18,24 @@ function isSecretItem(item) {
   return Boolean(item && item.category === "secrets");
 }
 
+function secretHint(item) {
+  return String(item && item.secretHint || "").trim() || SECRET_LOCKED_HINT;
+}
+
+function ordinaryRumor(item) {
+  return String(item && item.rumor || "").trim();
+}
+
+function ordinaryCondition(item) {
+  return String(item && (item.conditionText || item.condition) || "").trim() ||
+    "Продолжай тренироваться, чтобы узнать условие.";
+}
+
 function lockedHint(item) {
-  if (isSecretItem(item)) {
-    const rumor = String(item && item.rumor || "").trim();
-    return rumor || SECRET_LOCKED_HINT;
-  }
-  return String(item && (item.conditionText || item.condition) || "Продолжай тренироваться, чтобы узнать условие.");
+  if (isSecretItem(item)) return secretHint(item);
+  const rumor = ordinaryRumor(item);
+  const condition = ordinaryCondition(item);
+  return rumor ? "Слух: " + rumor + " · Как получить: " + condition : condition;
 }
 
 export function createBackpackModal(options = {}) {
@@ -118,7 +130,7 @@ export function createBackpackModal(options = {}) {
       '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
       '" type="button" aria-label="' + escapeHtml(ariaLabel) + '">' +
         '<span class="backpack-card-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack33" alt="" loading="lazy">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements46" alt="" loading="lazy">' +
           (unlocked ? '<span class="backpack-card-spark" aria-hidden="true">✦</span>' : '<span class="backpack-lock" aria-hidden="true">🔒</span>') +
         '</span>' +
         '<span class="backpack-card-copy">' +
@@ -143,8 +155,9 @@ export function createBackpackModal(options = {}) {
     closeLockedDetails();
 
     const secret = isSecretItem(item);
-    const rumor = secret ? String(item.rumor || "").trim() : "";
-    const hint = lockedHint(item);
+    const rumor = secret ? "" : ordinaryRumor(item);
+    const condition = secret ? "" : ordinaryCondition(item);
+    const hint = secret ? secretHint(item) : lockedHint(item);
 
     detailOverlay = document.createElement("div");
     detailOverlay.className = "backpack-detail-overlay";
@@ -155,7 +168,7 @@ export function createBackpackModal(options = {}) {
       '<div class="backpack-detail-card">' +
         '<button class="backpack-detail-close" type="button" aria-label="Закрыть">×</button>' +
         '<div class="backpack-detail-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack33" alt="" aria-hidden="true">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements46" alt="" aria-hidden="true">' +
           '<span class="backpack-detail-lock" aria-hidden="true">🔒</span>' +
         '</div>' +
         '<div class="backpack-detail-copy">' +
@@ -163,8 +176,9 @@ export function createBackpackModal(options = {}) {
           '<h3>' + LOCKED_TITLE + '</h3>' +
           '<p class="backpack-detail-translation">' + LOCKED_TRANSLATION + '</p>' +
           (secret
-            ? '<div class="backpack-secret-hint"><strong>' + escapeHtml(rumor ? "Слух" : "Тайна") + '</strong><p>' + escapeHtml(hint) + '</p></div>'
-            : '<div class="backpack-condition"><strong>Способ получения</strong><p>' + escapeHtml(hint) + '</p></div>') +
+            ? '<div class="backpack-secret-hint"><strong>Таинственная подсказка</strong><p>' + escapeHtml(hint) + '</p></div>'
+            : (rumor ? '<div class="backpack-secret-hint backpack-rumor"><strong>Слух</strong><p>' + escapeHtml(rumor) + '</p></div>' : '') +
+              '<div class="backpack-condition"><strong>Способ получения</strong><p>' + escapeHtml(condition) + '</p></div>') +
         '</div>' +
       '</div>';
 
@@ -253,7 +267,7 @@ export function createBackpackModal(options = {}) {
         '<div class="loot-kicker">¡Nuevo Trofeo Desbloqueado!</div>' +
         '<div class="loot-visual">' +
           '<span class="loot-halo" aria-hidden="true"></span>' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack33" alt="' + escapeHtml(item.titleRu) + '">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements46" alt="' + escapeHtml(item.titleRu) + '">' +
         '</div>' +
         '<h2>' + escapeHtml(item.title) + '</h2>' +
         '<p>' + escapeHtml(item.titleRu) + '</p>' +
