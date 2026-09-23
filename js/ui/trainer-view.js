@@ -1,4 +1,4 @@
-import { renderImposterCard } from "./imposter-card.js?v=20260923-imposter30";
+import { renderImposterCard } from "./imposter-card.js?v=20260923-backpack33";
 
 /**
  * Active trainer view and exercise widgets.
@@ -8,16 +8,16 @@ export function createTrainerView(deps){
   const {els,$,escapeHtml,shuffle,normalize,fold,normalizePictureAnswer,pictureAsset,
     bindPictureImageFallback,getState,patchState,isVocabularyTopic,answerEngine,progress,
     syncSession,renderStats,renderApp,onFinish,setTrainingFavicon,colorArt,safeVibrate,
-    playAudioStory,getAudioRate,cycleAudioRate}=deps;
+    playAudioStory,getAudioRate,cycleAudioRate,backpackManager}=deps;
 
   let orderPool=[],orderState=[],matchPool=[],matchState=[],clozePool=[],clozeState=[];
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
   let audioStoryState={};
-  let imposterState={solved:false,selectedIndex:null};
+  let imposterState={solved:false,selectedIndex:null,elapsedMs:null};
 
   function resetCard(){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
-    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};imposterState={solved:false,selectedIndex:null};
+    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};imposterState={solved:false,selectedIndex:null,elapsedMs:null};
     const checkBtn=$("checkBtn"),showBtn=$("showBtn"),nextBtn=$("nextBtn");
     if(checkBtn){checkBtn.disabled=false;checkBtn.hidden=false;}
     if(showBtn){showBtn.hidden=false;showBtn.textContent="Посмотреть ответ";}
@@ -258,7 +258,7 @@ export function createTrainerView(deps){
           els.feedback.className="feedback bad";
         },
         onSolved:function(payload){
-          imposterState={solved:true,selectedIndex:payload.index};
+          imposterState={solved:true,selectedIndex:payload.index,elapsedMs:payload.elapsedMs};
           checkAnswer();
         },
         onNext:function(){move(1);}
@@ -477,6 +477,15 @@ export function createTrainerView(deps){
         const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:exact,firstAttempt:true});
         patchState({stats:progress.getStats(),streak:p.streak});if(!exact)scheduled=scheduleReview(item);
       }
+      if(backpackManager){
+        backpackManager.checkConditions("answer",{correct:Boolean(exact),item:item});
+        if(item.type==="audio_story_quiz"){
+          backpackManager.checkConditions("story",{item:item,correct:Boolean(exact),completed:true});
+        }
+        if(item.type==="spot_the_imposter"&&exact){
+          backpackManager.checkConditions("imposter",{item:item,correct:true,elapsedMs:imposterState.elapsedMs});
+        }
+      }
       patchState({checkedCurrent:true});renderStats();
     }
     els.feedback.textContent=result.feedback+(exact?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
@@ -494,6 +503,7 @@ export function createTrainerView(deps){
           const p=progress.recordSkip({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,firstAttempt:true});
           patchState({stats:progress.getStats(),streak:p.streak});
         }
+        if(backpackManager) backpackManager.checkConditions("answer",{correct:false,item:item,skipped:true});
         syncSession();renderStats();
       }
       if(delta>0){

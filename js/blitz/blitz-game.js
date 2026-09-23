@@ -173,6 +173,7 @@ export function createBlitzGame(options={}){
   const getSource=typeof options.getSource==="function" ? options.getSource : function(){return {};};
   const onExit=typeof options.onExit==="function" ? options.onExit : function(){};
   const onHighScoreChange=typeof options.onHighScoreChange==="function" ? options.onHighScoreChange : function(){};
+  const onFinish=typeof options.onFinish==="function" ? options.onFinish : function(){};
 
   let root=null;
   let timerId=null;
@@ -402,6 +403,16 @@ export function createBlitzGame(options={}){
     const best=newRecord?score:previous;
     if(newRecord) writeHighScore(score);
     onHighScoreChange(best);
+    onFinish({
+      score:score,
+      correct:correctCount,
+      wrong:wrongCount,
+      total:correctCount+wrongCount,
+      maxCombo:maxCombo,
+      durationMs:GAME_MS,
+      newRecord:newRecord,
+      best:best
+    });
 
     root.querySelector("[data-blitz-play]").hidden=true;
     root.querySelector("[data-blitz-game-over]").hidden=false;

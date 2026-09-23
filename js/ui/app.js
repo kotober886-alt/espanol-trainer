@@ -1,10 +1,11 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260923-imposter30";
-import { createResultsView } from "./results-view.js?v=20260923-blitz-mode18";
+import { createTrainerView } from "./trainer-view.js?v=20260923-backpack33";
+import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
-import { createPracticeView } from "./practice-view.js?v=20260923-blitz-banner-hq29";
+import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack33";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -61,6 +62,8 @@ import { load, save } from "../core/storage.js";
   import { mixedTopic } from "../topics/mixed.js";
 
 
+    const backpackManager = createBackpackManager();
+    window.BackpackManager = backpackManager;
 
     const TOPICS = [
       { id:"all", title:"Все темы", icon:"✦" },
@@ -1506,7 +1509,8 @@ window.LegacyProgressAdapter = {
         safeVibrate,
         playAudioStory:function(text,rate,source){speakText(text,rate,source);},
         getAudioRate:function(){return audioSettings.rate;},
-        cycleAudioRate:cycleAudioRate
+        cycleAudioRate:cycleAudioRate,
+        backpackManager:backpackManager
       });
       resultsView=createResultsView({
         els,$,getState:getUiState,patchState:patchUiState,syncSession:syncSessionProjection,
@@ -1514,12 +1518,14 @@ window.LegacyProgressAdapter = {
         ensureStrictMascot:ensureStrictResultMascot,ensureLowMascot:ensureLowResultMascot,
         setResultFavicon:function(accuracy,currentStreak){if(window.DynamicFavicon)window.DynamicFavicon.setResult(accuracy,currentStreak);},
         setHeaderMascotMood:setHeaderMascotMood,
-        onReviewMistakes:startMistakeReview
+        onReviewMistakes:startMistakeReview,
+        backpackManager:backpackManager
       });
       practiceView=createPracticeView({
         host:$("topicCatalog"),
         getSource:blitzSource,
-        onReturn:function(){showCatalog("practice");}
+        onReturn:function(){showCatalog("practice");},
+        onBlitzComplete:function(result){backpackManager.checkConditions("blitz",result);}
       });
       navigationView=createNavigation({
         $,

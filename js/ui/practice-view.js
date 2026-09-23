@@ -1,4 +1,4 @@
-import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-juice20";
+import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-backpack33";
 
 /**
  * Practice catalog enhancements: Blitz entry banner + lifecycle.
@@ -7,6 +7,7 @@ export function createPracticeView(options={}){
   const host=options.host || document.getElementById("topicCatalog");
   const getSource=typeof options.getSource==="function" ? options.getSource : function(){return {};};
   const onReturn=typeof options.onReturn==="function" ? options.onReturn : function(){};
+  const onBlitzComplete=typeof options.onBlitzComplete==="function" ? options.onBlitzComplete : function(){};
   let banner=null;
 
   function readHighScore(){
@@ -29,6 +30,7 @@ export function createPracticeView(options={}){
   const game=createBlitzGame({
     getSource,
     onHighScoreChange:updateHighScore,
+    onFinish:onBlitzComplete,
     onExit:function(){
       updateHighScore();
       onReturn();

@@ -16,6 +16,7 @@ export function renderImposterCard(container, task, handlers = {}){
   const onSolved=typeof handlers.onSolved==="function"?handlers.onSolved:function(){};
   const onNext=typeof handlers.onNext==="function"?handlers.onNext:function(){};
   let solved=false;
+  const startedAt=typeof performance!=="undefined"&&performance.now?performance.now():Date.now();
 
   container.innerHTML=
     '<section class="imposter-card" aria-label="Спаси кота от ошибки">'+
@@ -99,7 +100,8 @@ export function renderImposterCard(container, task, handlers = {}){
 
       explanationText.textContent=token.explanation || "Здесь спряталась ошибка.";
       explanation.hidden=false;
-      onSolved({task:task,token:token,index:index});
+      const now=typeof performance!=="undefined"&&performance.now?performance.now():Date.now();
+      onSolved({task:task,token:token,index:index,elapsedMs:Math.max(0,now-startedAt)});
     });
 
     tokens.appendChild(chip);

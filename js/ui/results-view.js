@@ -3,7 +3,7 @@
  */
 export function createResultsView(deps){
   const {els,$,getState,patchState,syncSession,progress,
-    setResultFavicon,setHeaderMascotMood,onReviewMistakes}=deps;
+    setResultFavicon,setHeaderMascotMood,onReviewMistakes,backpackManager}=deps;
 
   const RESULT_PHRASES = {
     triumph: ["¡Increíble!", "¡Eres un crack!", "¡Victoria!"],
@@ -117,6 +117,16 @@ export function createResultsView(deps){
     const summary=state.sessionController?state.sessionController.getSummary():state.sessionResults;
     const result=normalizeSummary(summary);
     patchState({sessionActive:false,sessionResults:result});
+
+    if(backpackManager){
+      backpackManager.checkConditions("practice",{
+        summary:result,
+        topicId:state.selectedTopic,
+        mode:state.selectedMode,
+        queue:Array.isArray(state.queue)?state.queue.slice():[],
+        timestamp:Date.now()
+      });
+    }
 
     if(result.wrong>0 && result.mistakes.length){
       showMistakeChoice(result);
