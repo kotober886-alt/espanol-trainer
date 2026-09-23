@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260923-mistake-workout38";
+import { createTrainerView } from "./trainer-view.js?v=20260923-training-actions39";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
@@ -1599,7 +1599,9 @@ window.LegacyProgressAdapter = {
     $("prevWord").addEventListener("click",function(){studyCardView.previous();});
     els.nextWord.addEventListener("click",function(){studyCardView.next();});
     els.backToWordsBtn.addEventListener("click",function(){sessionActive=false;if(sessionController)sessionController.stop();sessionController=null;selectedMode="all";foodPhase="study";wordIndex=0;showWorkspace();render();});
-    $("checkBtn").addEventListener("click",checkAnswer);
+    $("checkBtn").addEventListener("click",function(){
+      if(!$("checkBtn").disabled) checkAnswer();
+    });
     els.audioPrompt.addEventListener("click",function(){speakCurrent(audioSettings.rate,els.audioPrompt);});
     els.slowAudioPrompt.addEventListener("click",function(){cycleAudioRate();});
     els.studyListen.addEventListener("click",speakStudy);
@@ -1636,16 +1638,26 @@ window.LegacyProgressAdapter = {
     });
     els.audioSettings.addEventListener("toggle",function(){if(els.audioSettings.open) refreshVoices();});
     $("clearOrder").addEventListener("click",function(){trainerView.clearOrder();});
-    els.formGrid.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();checkAnswer();}});
+    els.formGrid.addEventListener("keydown",function(e){
+      if(e.key==="Enter"){
+        e.preventDefault();
+        if(!$("checkBtn").disabled) checkAnswer();
+      }
+    });
     $("nextBtn").addEventListener("click",function(){move(1);});
-    $("skipBtn").addEventListener("click",function(){move(1);});
+    $("skipBtn").addEventListener("click",function(){trainerView.skipCurrent();});
     $("prevBtn").addEventListener("click",function(){move(-1);});
-    $("showBtn").addEventListener("click",function(){ els.answerBox.classList.toggle("open"); });
+    $("showBtn").addEventListener("click",function(){trainerView.skipCurrent();});
     $("addBtn").addEventListener("click",openDialog);
     $("emptyAddBtn").addEventListener("click",openDialog);
     $("closeDialog").addEventListener("click",function(){els.dialog.close();});
     els.dialog.addEventListener("click",function(e){ if(e.target===els.dialog) els.dialog.close(); });
-    els.answerInput.addEventListener("keydown",function(e){ if(e.key==="Enter"){e.preventDefault();checkAnswer();} });
+    els.answerInput.addEventListener("keydown",function(e){
+      if(e.key==="Enter"){
+        e.preventDefault();
+        if(!$("checkBtn").disabled) checkAnswer();
+      }
+    });
     $("todayBtn").addEventListener("click",function(){selectedMode="all";selectedFormats.clear();startSession("all",10,[]);});
     $("learnWordsBtn").addEventListener("click",function(){showCatalog("learn");});
     $("continueBtn").addEventListener("click",function(){selectedMode="all";openSessionDialog(uiSettings.lastTopic || "verbs");});

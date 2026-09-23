@@ -14,7 +14,7 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260923-mistake-workout38">
+  <link rel="stylesheet" href="css/base.css?v=20260923-training-actions39">
   <link rel="stylesheet" href="css/imposter.css?v=20260923-imposter30">
   <link rel="stylesheet" href="css/backpack.css?v=20260923-backpack-resolved36">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
@@ -22,7 +22,7 @@
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260923-mistake-workout38";
+      const CURRENT_BUILD="20260923-training-actions39";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -281,9 +281,9 @@
             <input class="answer-input" id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Напиши ответ сама…">
             <div class="feedback" id="feedback" role="status"></div>
             <div class="actions">
-              <button class="btn btn-primary" id="checkBtn" type="button">Проверить</button>
-              <button class="btn btn-ghost" id="showBtn" type="button">Посмотреть ответ</button>
-              <button class="btn btn-soft" id="nextBtn" type="button">Следующее →</button>
+              <button class="btn btn-primary action-main" id="checkBtn" type="button" disabled>Проверить</button>
+              <button class="btn btn-skip" id="showBtn" type="button">Не знаю</button>
+              <button class="btn btn-primary action-main" id="nextBtn" type="button" hidden disabled>Следующее →</button>
             </div>
             <div class="answer-box" id="answerBox">
               <strong>Правильный ответ</strong>
@@ -294,8 +294,8 @@
           <div class="card-footer">
             <button class="nav-btn" id="backToWordsBtn" type="button" hidden>← Учить слова</button>
             <button class="nav-btn" id="prevBtn" type="button">← Назад</button>
-            <span class="subtitle">Enter — проверить ответ</span>
-            <button class="nav-btn" id="skipBtn" type="button">Пропустить →</button>
+            <span class="subtitle">Enter — проверить / продолжить</span>
+            <button class="nav-btn" id="skipBtn" type="button" hidden>Пропустить</button>
           </div>
         </div>
 
@@ -548,6 +548,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260923-logo-easter32"></script>
-  <script type="module" src="./js/ui/app.js?v=20260923-mistake-workout38"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-training-actions39"></script>
 </body>
 </html>

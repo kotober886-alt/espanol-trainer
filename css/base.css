@@ -49,6 +49,23 @@
     .btn-primary:hover { background:#5648cb; }
     .btn-soft { color:var(--ink); background:white; border:1px solid var(--line); }
     .btn-ghost { color:var(--violet); background:#f0edff; }
+    .btn-skip {
+      min-height:46px;
+      padding:10px 12px;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      box-shadow:none;
+      text-decoration:underline;
+      text-decoration-color:transparent;
+      text-underline-offset:4px;
+    }
+    .btn-skip:hover {
+      color:var(--violet);
+      background:#f7f5ff;
+      text-decoration-color:currentColor;
+      box-shadow:none;
+    }
     .btn-danger { color:#a22f3d; background:#fff0f1; }
     .layout { display:grid; grid-template-columns:300px minmax(0,1fr); gap:22px; align-items:start; }
     .sidebar,.workspace { background:rgba(255,255,255,.88); border:1px solid rgba(255,255,255,.9); box-shadow:var(--shadow); }
@@ -308,7 +325,28 @@
     .feedback.good { color:#187052; background:#e9f8f1; }
     .feedback.bad { color:#a53643; background:#fff0f2; }
     .feedback.near { color:#8d6610; background:#fff8d9; }
-    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+    .actions {
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .actions .action-main {
+      min-width:180px;
+      min-height:50px;
+      padding-inline:22px;
+      font-size:16px;
+    }
+    .actions .action-main:disabled {
+      cursor:not-allowed;
+      opacity:.45;
+      box-shadow:none;
+      transform:none;
+    }
+    .actions [hidden] {
+      display:none !important;
+    }
     .answer-box {
       display:none; margin-top:18px; padding:18px; border-radius:17px; color:#332b78; background:#f0eeff; border:1px solid #dcd7ff;
     }
@@ -2052,5 +2090,18 @@ body.blitz-active { overflow:hidden; }
 @media (prefers-reduced-motion: reduce) {
   .mark.mascot-slot {
     transition: none;
+  }
+}
+
+@media (max-width:640px) {
+  .actions {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+  .actions .action-main {
+    width:100%;
+  }
+  .actions .btn-skip {
+    justify-self:center;
   }
 }

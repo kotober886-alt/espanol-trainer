@@ -33,9 +33,9 @@ export function createTrainerView(deps){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
     dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};imposterState={solved:false,selectedIndex:null,elapsedMs:null};
     const checkBtn=$("checkBtn"),showBtn=$("showBtn"),nextBtn=$("nextBtn");
-    if(checkBtn){checkBtn.disabled=false;checkBtn.hidden=false;}
-    if(showBtn){showBtn.hidden=false;showBtn.textContent="Посмотреть ответ";}
-    if(nextBtn)nextBtn.hidden=false;
+    if(checkBtn){checkBtn.disabled=true;checkBtn.hidden=false;}
+    if(showBtn){showBtn.disabled=false;showBtn.hidden=false;showBtn.textContent="Не знаю";}
+    if(nextBtn){nextBtn.disabled=true;nextBtn.hidden=true;}
     els.answerInput.value="";els.answerInput.disabled=false;els.answerInput.hidden=false;
     els.answerLabel.hidden=false;els.answerLabel.textContent="Твой ответ";
     els.audioActions.hidden=true;els.choiceGrid.hidden=true;els.choiceGrid.className="choice-grid";els.choiceGrid.innerHTML="";
@@ -285,7 +285,10 @@ export function createTrainerView(deps){
       els.choiceGrid.innerHTML=shuffle(item.options||[]).map(option=>'<button class="choice-option" data-choice="'+escapeHtml(option)+
         '" type="button">'+escapeHtml(option)+'</button>').join("");
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(btn=>btn.addEventListener("click",function(){
-        els.answerInput.value=btn.dataset.choice;els.choiceGrid.querySelectorAll(".choice-option").forEach(o=>o.classList.toggle("selected",o===btn));
+        if(getState().checkedCurrent)return;
+        els.answerInput.value=btn.dataset.choice;
+        els.choiceGrid.querySelectorAll(".choice-option").forEach(o=>o.classList.toggle("selected",o===btn));
+        syncActionButtons();
       }));
     }else if(type==="match"){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.matchWidget.hidden=false;
@@ -310,7 +313,10 @@ export function createTrainerView(deps){
       els.pictureStage.innerHTML='<div class="picture-visual">'+image+'<div class="picture-image-error" hidden></div>'+markers+
         '</div><div class="picture-fields">'+fields+'</div>';
       bindPictureImageFallback(els.pictureStage.querySelector(".picture-raster"),item.pictureScene);
-      els.pictureStage.querySelectorAll("[data-picture-input]").forEach(input=>input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();checkAnswer();}}));
+      els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input){
+        input.addEventListener("input",syncActionButtons);
+        input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();if(!$("checkBtn").disabled)checkAnswer();}});
+      });
       const first=els.pictureStage.querySelector("[data-picture-input]");if(first)first.focus();
     }else if(type==="order"){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.orderWidget.hidden=false;
@@ -319,6 +325,7 @@ export function createTrainerView(deps){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.formGrid.hidden=false;
       els.formGrid.innerHTML=(item.formLabels||[]).map((label,i)=>'<div class="form-cell"><label for="formInput'+i+'">'+
         escapeHtml(label)+'</label><input id="formInput'+i+'" data-form-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false"></div>').join("");
+      els.formGrid.querySelectorAll("input").forEach(input=>input.addEventListener("input",syncActionButtons));
       const first=els.formGrid.querySelector("input");if(first)first.focus();
     }else{
       if(type==="audio"){els.answerLabel.textContent="Что ты услышала?";els.answerInput.placeholder="Запиши предложение…";}
@@ -328,9 +335,11 @@ export function createTrainerView(deps){
       else els.answerInput.placeholder="Напиши ответ сама…";
       els.answerInput.focus();
     }
+    syncActionButtons();
   }
 
   function currentAnswer(item){
+    if(!item)return "";
     if(item.type==="spot_the_imposter")return imposterState.solved?"__imposter_solved__":"";
     if(item.type==="audio_story_quiz"){
       if(!audioStoryComplete(item))return "";
@@ -343,6 +352,129 @@ export function createTrainerView(deps){
     if(item.type==="order"){return orderState.map(id=>{const t=orderPool.find(v=>v.id===id);return t?t.text:"";}).join(" ");}
     if(item.type==="forms"){const values=Array.from(els.formGrid.querySelectorAll("[data-form-input]")).map(i=>i.value.trim());return values.some(Boolean)?values.join("|"):"";}
     return els.answerInput.value;
+  }
+
+
+  function syncActionButtons(){
+    const state=getState();
+    const item=state.queue[state.index];
+    const checkBtn=$("checkBtn"),showBtn=$("showBtn"),nextBtn=$("nextBtn");
+    if(!item||!checkBtn||!showBtn||!nextBtn)return;
+
+    if(item.type==="spot_the_imposter"){
+      checkBtn.hidden=true;
+      showBtn.hidden=true;
+      nextBtn.hidden=true;
+      return;
+    }
+
+    if(state.checkedCurrent){
+      checkBtn.hidden=true;
+      checkBtn.disabled=true;
+      showBtn.hidden=true;
+      nextBtn.hidden=false;
+      nextBtn.disabled=false;
+      return;
+    }
+
+    checkBtn.hidden=false;
+    checkBtn.disabled=!String(currentAnswer(item)||"").trim();
+    showBtn.hidden=false;
+    showBtn.disabled=false;
+    showBtn.textContent="Не знаю";
+    nextBtn.hidden=true;
+    nextBtn.disabled=true;
+  }
+
+  function revealCorrectAnswer(item){
+    if(!item)return;
+
+    els.answerBox.classList.add("open");
+
+    if(item.type==="choice"||item.type==="context-choice"||item.type==="fill-choice"){
+      const correct=(item.a||[]).map(normalize);
+      els.choiceGrid.querySelectorAll("[data-choice]").forEach(function(btn){
+        btn.disabled=true;
+        if(correct.indexOf(normalize(btn.dataset.choice))>=0){
+          btn.classList.add("result-good");
+        }
+      });
+    }else if(item.type==="audio_story_quiz"){
+      (item.statements||[]).forEach(function(statement,index){
+        const card=els.choiceGrid.querySelector('[data-story-statement="'+index+'"]');
+        if(!card)return;
+        card.querySelectorAll("[data-story-value]").forEach(function(btn){
+          btn.disabled=true;
+          if((btn.dataset.storyValue==="true")===Boolean(statement.isTrue)){
+            btn.classList.add("result-good");
+          }
+        });
+        const explanation=card.querySelector("[data-story-explanation]");
+        if(explanation){
+          explanation.textContent=statement.explanation||"";
+          explanation.hidden=!statement.explanation;
+        }
+      });
+      const transcriptWrap=els.choiceGrid.querySelector("[data-story-transcript-wrap]");
+      if(transcriptWrap)transcriptWrap.hidden=false;
+    }else if(!els.answerInput.hidden){
+      els.answerInput.disabled=true;
+    }
+  }
+
+  function skipCurrent(){
+    let state=getState();
+    if(!state.queue.length||state.checkedCurrent)return false;
+
+    const item=state.queue[state.index];
+    if(typeof safeVibrate==="function")safeVibrate([30,40,30]);
+
+    if(state.sessionActive&&state.sessionController){
+      const record=state.sessionController.recordResult({correct:false,skipped:true});
+      if(record.counted&&progress){
+        const p=progress.recordSkip({
+          exerciseId:item.id,
+          originalId:item.originalId||null,
+          topic:item.topic||null,
+          firstAttempt:true
+        });
+        patchState({stats:progress.getStats(),streak:p.streak});
+      }
+      syncSession();
+      state=getState();
+      els.progressLabel.textContent=(state.index+1)+" / "+state.queue.length;
+      els.progressBar.style.width=((state.index+1)/Math.max(1,state.queue.length)*100)+"%";
+    }else if(progress){
+      const p=progress.recordSkip({
+        exerciseId:item.id,
+        originalId:item.originalId||null,
+        topic:item.topic||null,
+        firstAttempt:true
+      });
+      patchState({stats:progress.getStats(),streak:p.streak});
+      scheduleReview(item);
+    }
+
+    if(backpackManager){
+      backpackManager.checkConditions("answer",{
+        correct:false,
+        item:item,
+        skipped:true,
+        mode:state.selectedMode,
+        sessionRound:state.sessionRound,
+        timestamp:Date.now()
+      });
+    }
+
+    revealCorrectAnswer(item);
+    patchState({checkedCurrent:true});
+    renderStats();
+    els.feedback.textContent="Не страшно — вот правильный ответ. Прочитай и переходи дальше.";
+    els.feedback.className="feedback bad";
+    syncActionButtons();
+    const nextBtn=$("nextBtn");
+    if(nextBtn&&!nextBtn.hidden)nextBtn.focus();
+    return true;
   }
 
   function markAnswers(item){
@@ -370,10 +502,14 @@ export function createTrainerView(deps){
       const transcriptWrap=els.choiceGrid.querySelector("[data-story-transcript-wrap]");
       if(transcriptWrap)transcriptWrap.hidden=false;
       const checkBtn=$("checkBtn");if(checkBtn)checkBtn.disabled=true;
-      const nextBtn=$("nextBtn");if(nextBtn)nextBtn.focus();
     }else if(item.type==="choice"||item.type==="context-choice"||item.type==="fill-choice"){
       const selected=normalize(els.answerInput.value),correct=(item.a||[]).map(normalize);
-      els.choiceGrid.querySelectorAll("[data-choice]").forEach(btn=>{if(normalize(btn.dataset.choice)===selected)btn.classList.add(correct.indexOf(selected)>=0?"result-good":"result-bad");});
+      els.choiceGrid.querySelectorAll("[data-choice]").forEach(function(btn){
+        btn.disabled=true;
+        const normalizedChoice=normalize(btn.dataset.choice);
+        if(correct.indexOf(normalizedChoice)>=0)btn.classList.add("result-good");
+        if(normalizedChoice===selected&&correct.indexOf(selected)<0)btn.classList.add("result-bad");
+      });
     }else if(item.type==="match"){
       els.matchList.querySelectorAll("[data-match-slot]").forEach(function(target){
         const slot=Number(target.dataset.matchSlot),token=structuredToken(matchPool,matchState[slot]);
@@ -517,6 +653,8 @@ export function createTrainerView(deps){
       patchState({checkedCurrent:true});renderStats();
     }
 
+    syncActionButtons();
+
     if(mistakeResolved){
       els.feedback.textContent="Ошибка побеждена! 🎉";
       els.feedback.className="feedback good mistake-resolved-feedback";
@@ -525,32 +663,39 @@ export function createTrainerView(deps){
       els.feedback.className=exact?"feedback good":(near?"feedback near":"feedback bad");
     }
 
-    if(isMistakePractice&&!exact){
+    if(!exact){
       els.answerBox.classList.add("open");
     }
+    const nextBtn=$("nextBtn");
+    if(nextBtn&&!nextBtn.hidden)nextBtn.focus();
   }
 
   function move(delta){
-    let state=getState();if(!state.queue.length)return;
-    const skipping=delta>0&&!state.checkedCurrent;
-    if(skipping && typeof safeVibrate==="function") safeVibrate([30,40,30]);
-    if(state.sessionActive&&state.sessionController){
-      if(skipping){
-        const item=state.queue[state.index],record=state.sessionController.recordResult({correct:false,skipped:true});
-        if(record.counted&&progress){
-          const p=progress.recordSkip({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,firstAttempt:true});
-          patchState({stats:progress.getStats(),streak:p.streak});
-        }
-        if(backpackManager) backpackManager.checkConditions("answer",{correct:false,item:item,skipped:true,mode:state.selectedMode,sessionRound:state.sessionRound,timestamp:Date.now()});
-        syncSession();renderStats();
-      }
-      if(delta>0){
-        const step=state.sessionController.next();syncSession();if(step.finished){onFinish();return;}
-      }else if(delta<0){state.sessionController.previous();syncSession();}
-      patchState({checkedCurrent:false});renderApp();return;
+    let state=getState();if(!state.queue.length)return false;
+
+    if(delta>0&&!state.checkedCurrent){
+      syncActionButtons();
+      return false;
     }
+
+    if(state.sessionActive&&state.sessionController){
+      if(delta>0){
+        const step=state.sessionController.next();
+        syncSession();
+        if(step.finished){onFinish();return true;}
+      }else if(delta<0){
+        state.sessionController.previous();
+        syncSession();
+      }
+      patchState({checkedCurrent:false});
+      renderApp();
+      return true;
+    }
+
     const next=(state.index+delta+state.queue.length)%state.queue.length;
-    patchState({index:next,checkedCurrent:false});renderApp();
+    patchState({index:next,checkedCurrent:false});
+    renderApp();
+    return true;
   }
 
   function selectChoiceByIndex(index){
@@ -569,14 +714,27 @@ export function createTrainerView(deps){
     }
     if(key==="Enter"){
       const state=getState();
-      if(state.checkedCurrent) move(1);
-      else checkAnswer();
+      if(state.checkedCurrent) return move(1);
+      const checkBtn=$("checkBtn");
+      if(checkBtn&&checkBtn.disabled)return false;
+      checkAnswer();
       return true;
     }
     return false;
   }
 
-  function clearOrder(){orderState=[];renderOrderWidget();}
+  function clearOrder(){orderState=[];renderOrderWidget();syncActionButtons();}
 
-  return Object.freeze({renderExercise,setupExercise,currentAnswer,checkAnswer,move,clearOrder,resetCard,selectChoiceByIndex,handleShortcut});
+  els.answerInput.addEventListener("input",syncActionButtons);
+  els.exerciseView.addEventListener("click",function(){
+    window.setTimeout(syncActionButtons,0);
+  });
+  els.exerciseView.addEventListener("drop",function(){
+    window.setTimeout(syncActionButtons,0);
+  });
+
+  return Object.freeze({
+    renderExercise,setupExercise,currentAnswer,checkAnswer,skipCurrent,move,clearOrder,resetCard,
+    selectChoiceByIndex,handleShortcut,syncActionButtons
+  });
 }
