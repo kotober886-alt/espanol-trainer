@@ -1,11 +1,11 @@
 import { createCatalogView } from "./catalog.js";
-import { createStudyCardView } from "./study-card.js?v=20260923-backpack-achievements47";
-import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-achievements47";
+import { createStudyCardView } from "./study-card.js?v=20260923-backpack-achievements48";
+import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-achievements48";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
-import { createNavigation } from "./navigation.js?v=20260923-backpack-achievements47";
+import { createNavigation } from "./navigation.js?v=20260923-backpack-achievements48";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-achievements47";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-achievements48";
 import { bindPawsInteraction } from "./paws-interaction.js?v=cat-fix-clean-01";
 import { bindCatSpeechBubble } from "./cat-speech.js?v=20260923-cat-phrases44";
 import { load, save } from "../core/storage.js";
@@ -1105,6 +1105,9 @@ window.LegacyProgressAdapter = {
       sessionActive=true;
       checkedCurrent=false;
       foodPhase="practice";
+      if(backpackManager){
+        backpackManager.checkConditions("error-session-start",{timestamp:Date.now()});
+      }
 
       sessionController=window.TrainerSession.createSession({
         topicId:selectedTopic,
@@ -1545,7 +1548,16 @@ window.LegacyProgressAdapter = {
         setTrainingFavicon:function(value){if(window.DynamicFavicon)window.DynamicFavicon.setTraining(value);},
         colorArt:function(hex){return studyCardView.colorArt(hex);},
         safeVibrate,
-        playAudioStory:function(text,rate,source){speakText(text,rate,source);},
+        playAudioStory:function(text,rate,source){
+          if(backpackManager){
+            backpackManager.checkConditions("audio",{
+              itemId:"audio_story",
+              isWordCard:false,
+              timestamp:Date.now()
+            });
+          }
+          speakText(text,rate,source);
+        },
         getAudioRate:function(){return audioSettings.rate;},
         cycleAudioRate:cycleAudioRate,
         backpackManager:backpackManager

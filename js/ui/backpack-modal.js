@@ -1,4 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-achievements47";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-achievements48";
 import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
 
 function escapeHtml(value) {
@@ -130,7 +130,7 @@ export function createBackpackModal(options = {}) {
       '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
       '" type="button" aria-label="' + escapeHtml(ariaLabel) + '">' +
         '<span class="backpack-card-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements47" alt="" loading="lazy">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="" loading="lazy">' +
           (unlocked ? '<span class="backpack-card-spark" aria-hidden="true">✦</span>' : '<span class="backpack-lock" aria-hidden="true">🔒</span>') +
         '</span>' +
         '<span class="backpack-card-copy">' +
@@ -168,7 +168,7 @@ export function createBackpackModal(options = {}) {
       '<div class="backpack-detail-card">' +
         '<button class="backpack-detail-close" type="button" aria-label="Закрыть">×</button>' +
         '<div class="backpack-detail-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements47" alt="" aria-hidden="true">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="" aria-hidden="true">' +
           '<span class="backpack-detail-lock" aria-hidden="true">🔒</span>' +
         '</div>' +
         '<div class="backpack-detail-copy">' +
@@ -267,7 +267,7 @@ export function createBackpackModal(options = {}) {
         '<div class="loot-kicker">¡Nuevo Trofeo Desbloqueado!</div>' +
         '<div class="loot-visual">' +
           '<span class="loot-halo" aria-hidden="true"></span>' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements47" alt="' + escapeHtml(item.titleRu) + '">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="' + escapeHtml(item.titleRu) + '">' +
         '</div>' +
         '<h2>' + escapeHtml(item.title) + '</h2>' +
         '<p>' + escapeHtml(item.titleRu) + '</p>' +

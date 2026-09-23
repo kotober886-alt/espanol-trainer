@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-achievements47";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-achievements47";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-achievements48";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-achievements48";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
@@ -135,6 +135,7 @@ export function createBackpackManager(options = {}) {
   let errorStreak = 0;
   let lastAudioWordId = "";
   let sameWordAudioPlays = 0;
+  let lastStudyWordKey = "";
   const navVisits = {
     home: [],
     words: [],
@@ -319,6 +320,11 @@ export function createBackpackManager(options = {}) {
     if (!wordId) return;
     const topicId = String(data && data.topicId || "").trim();
     const key = (topicId || "unknown") + ":" + wordId;
+    if (key !== lastStudyWordKey) {
+      lastStudyWordKey = key;
+      lastAudioWordId = "";
+      sameWordAudioPlays = 0;
+    }
     if (state.meta.learnedWordIds.indexOf(key) < 0) {
       state.meta.learnedWordIds.push(key);
       saveState();
@@ -353,6 +359,10 @@ export function createBackpackManager(options = {}) {
   }
 
   function checkErrorAnswer(data) {
+    if (data && data.correct === false && !state.meta.hadErrors) {
+      state.meta.hadErrors = true;
+      saveState();
+    }
     const inErrors = Boolean(data && (data.mode === "mistakes" || data.sessionRound === "mistakes"));
     if (!inErrors) return;
     if (data.correct) {
