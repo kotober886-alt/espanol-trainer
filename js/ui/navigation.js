@@ -70,7 +70,7 @@ export function createNavigation(options = {}) {
     eachControl(function (button, name) {
       button.addEventListener("click", function () {
         setActive(name);
-        if (typeof options.onNavigate === "function") {
+        if (typeof options.onNavigate === "function" && String(button.id || "").indexOf("headerNav") !== 0) {
           options.onNavigate(name, { timestamp: Date.now(), sourceId: button.id || "" });
         }
         const action = actions[name];
