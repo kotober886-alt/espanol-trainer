@@ -3,7 +3,7 @@ const REQUIRED_TAPS = 5;
 const FRAME_MS = 90;
 const IDLE_BLINK_MS = 5000;
 const WIN_HOLD_MS = 2500;
-const CACHE_VERSION = "20260923-petting-mascot41";
+const CACHE_VERSION = "cat-fix-clean-01";
 
 const FRAME_PATHS = [
   "assets/images/mascot/cat_idle_1.webp",

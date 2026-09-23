@@ -6,7 +6,7 @@ import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
 import { createBackpackManager } from "../backpack-manager.js?v=20260923-sardine-secret40";
-import { bindPawsInteraction } from "./paws-interaction.js?v=20260923-petting-mascot41";
+import { bindPawsInteraction } from "./paws-interaction.js?v=cat-fix-clean-01";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
