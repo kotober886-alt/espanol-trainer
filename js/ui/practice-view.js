@@ -1,14 +1,5 @@
 import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-juice20";
 
-// Load Blitz styles once when this module is evaluated, not during view rendering.
-if(!document.getElementById("blitz-css")){
-  const link=document.createElement("link");
-  link.id="blitz-css";
-  link.rel="stylesheet";
-  link.href="css/blitz.css?v=20260923-blitz-banner-seamless27";
-  document.head.appendChild(link);
-}
-
 /**
  * Practice catalog enhancements: Blitz entry banner + lifecycle.
  */
@@ -50,17 +41,18 @@ export function createPracticeView(options={}){
     banner.id="blitzBanner";
     banner.className="blitz-banner";
     banner.type="button";
+    banner.setAttribute("style","min-height:140px;position:relative;overflow:hidden;border-radius:20px;display:flex;align-items:center;background:linear-gradient(135deg,#f59e0b 0%,#d97706 35%,#7c3aed 80%,#5b21b6 100%);padding:16px 20px;cursor:pointer;");
     banner.innerHTML=
-      '<span class="blitz-banner-content">'+
-        '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+
+      '<span class="blitz-banner-content" style="max-width:60%;position:relative;z-index:2;">'+
+        '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+ 
         '<span class="blitz-banner-copy">'+
           '<strong>Блиц на 60 секунд</strong>'+ 
           '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+ 
           '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+ 
         '</span>'+ 
       '</span>'+ 
-      '<span class="blitz-banner-visual" aria-hidden="true">'+
-        '<img src="assets/images/mascot/blitz_banner_v2.webp?v=20260923-blitz-banner-seamless27" alt="" onerror="this.parentElement.style.display=\'none\'">'+
+      '<span class="blitz-banner-visual" aria-hidden="true" style="position:absolute;right:0;top:0;bottom:0;width:45%;max-width:220px;z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:flex-end;">'+
+        '<img src="assets/images/mascot/blitz_banner_v2.webp?v=20260923-blitz-banner-seamless27" alt="" style="width:100%;height:100%;object-fit:cover;object-position:right center;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);mask-image:linear-gradient(to right,transparent 0%,black 35%);" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
 
