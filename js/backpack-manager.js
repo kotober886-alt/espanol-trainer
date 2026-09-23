@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-achievements46";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-achievements46";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-achievements47";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-achievements47";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
@@ -299,7 +299,6 @@ export function createBackpackManager(options = {}) {
 
     const dayStreak = recordActivityDay(data.timestamp);
     if (dayStreak >= 3) unlockItem("item_keychain");
-    if (dayStreak >= 7) unlockItem("gafas_sol");
 
     const topicCount = recordCompletedTopic(data.topicId);
     if (topicCount >= 5) unlockItem("item_compass");
@@ -407,7 +406,6 @@ export function createBackpackManager(options = {}) {
     if (state.meta.perfectSessionsCount >= 5) unlockItem("abanico_flamenco", { silent: true });
     if (state.meta.learnedWordIds.length >= 50) unlockItem("boina_artista", { silent: true });
     if (state.meta.totalAudioPlays >= 30) unlockItem("guitarra_espanola", { silent: true });
-    if (consecutiveDays(state.meta.activityDays) >= 7) unlockItem("gafas_sol", { silent: true });
     if (state.meta.completedTopics.some(isFoodTopic)) unlockItem("paellera_diminuta", { silent: true });
     checkErrorMilestones();
   }
