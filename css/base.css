@@ -1554,19 +1554,18 @@
 /* Blitz mode */
 .blitz-banner {
   width:100%;
-  display:block;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   margin:0 0 20px;
-  padding:18px 20px;
-  min-height:156px;
+  min-height:100px;
+  padding:14px 16px;
   border:0;
   border-radius:20px;
   text-align:left;
   color:#fff;
-  background-color:#7147cc;
-  background-image:url('../assets/images/mascot/blitz_banner.webp?v=20260923-blitz-banner-final24');
-  background-size:cover;
-  background-position:right center;
-  background-repeat:no-repeat;
+  background-color:#7958df;
+  background-image:none;
   box-shadow:0 16px 36px rgba(91,72,190,.18);
   cursor:pointer;
   overflow:hidden;
@@ -1576,8 +1575,8 @@
   content:"";
   position:absolute;
   inset:0;
-  z-index:1;
-  background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.22) 36%,rgba(0,0,0,0) 70%);
+  z-index:0;
+  background:linear-gradient(125deg,#ff8a2a 0%,#f5ad28 35%,#7958df 100%);
   pointer-events:none;
 }
 .blitz-banner:hover { transform:translateY(-1px); box-shadow:0 20px 42px rgba(91,72,190,.23); }
@@ -1589,44 +1588,69 @@
   display:grid;
   grid-template-columns:auto minmax(0,1fr);
   align-items:center;
-  gap:16px;
+  gap:12px;
   width:100%;
-  max-width:64%;
+  max-width:58%;
   min-width:0;
+  padding-right:8px;
 }
 .blitz-banner-icon {
   display:grid;
   place-items:center;
-  width:54px;
-  height:54px;
-  border-radius:18px;
+  width:48px;
+  height:48px;
+  flex:0 0 auto;
+  border-radius:15px;
   background:rgba(255,255,255,.18);
-  font-size:30px;
+  font-size:26px;
 }
 .blitz-banner-copy {
   position:relative;
   z-index:2;
   display:grid;
-  gap:5px;
+  gap:4px;
   min-width:0;
-  text-shadow:0 2px 8px rgba(0,0,0,.3);
+  overflow-wrap:anywhere;
+  word-break:normal;
+  text-shadow:0 2px 8px rgba(0,0,0,.24);
 }
-.blitz-banner-copy strong { font-size:21px; letter-spacing:-.02em; }
-.blitz-banner-copy span { color:rgba(255,255,255,.94); font-size:14px; line-height:1.35; }
+.blitz-banner-copy strong { font-size:19px; line-height:1.15; letter-spacing:-.02em; }
+.blitz-banner-copy span { color:rgba(255,255,255,.94); font-size:13px; line-height:1.35; }
 .blitz-banner-copy b { color:#fff; }
 .blitz-banner-cta {
   position:relative;
   z-index:2;
   justify-self:start;
-  margin-top:4px;
-  padding:10px 13px;
+  margin-top:3px;
+  padding:8px 11px;
   border-radius:999px;
   background:#fff;
   color:#5d48bc;
-  font-size:13px;
+  font-size:12px;
   font-weight:900;
   white-space:nowrap;
   text-shadow:none;
+}
+.blitz-banner-visual {
+  position:absolute;
+  right:0;
+  bottom:0;
+  width:38%;
+  max-width:130px;
+  height:100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-end;
+  z-index:1;
+  pointer-events:none;
+}
+.blitz-banner-visual img {
+  width:100%;
+  height:auto;
+  max-height:100%;
+  object-fit:contain;
+  object-position:right bottom;
+  display:block;
 }
 
 body.blitz-active { overflow:hidden; }
@@ -1909,13 +1933,12 @@ body.blitz-active { overflow:hidden; }
 .blitz-game-over-actions .btn { min-height:48px; }
 
 @media (max-width:640px) {
-  .blitz-banner {
-    padding:16px;
-    background-position:right center;
-  }
-  .blitz-banner-content { max-width:72%; gap:12px; }
-  .blitz-banner-icon { width:48px; height:48px; border-radius:15px; font-size:26px; }
-  .blitz-banner-copy strong { font-size:18px; }
+  .blitz-banner { min-height:100px; padding:14px 16px; }
+  .blitz-banner-content { max-width:58%; gap:10px; padding-right:6px; }
+  .blitz-banner-icon { width:44px; height:44px; border-radius:14px; font-size:24px; }
+  .blitz-banner-copy strong { font-size:17px; }
+  .blitz-banner-copy span { font-size:12px; }
+  .blitz-banner-visual { width:38%; max-width:130px; }
   .blitz-banner-cta { display:none; }
   .blitz-screen {
     padding:

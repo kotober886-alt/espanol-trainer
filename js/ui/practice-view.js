@@ -49,6 +49,9 @@ export function createPracticeView(options={}){
           '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+
           '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+
         '</span>'+
+      '</span>'+
+      '<span class="blitz-banner-visual" aria-hidden="true">'+
+        '<img src="assets/images/mascot/blitz_mascot.webp?v=20260923-blitz-banner-fix25" alt="" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
 
