@@ -43,6 +43,83 @@
   let reactionTimer=0;
   let clockTimer=0;
   let paintToken=0;
+  let logoClickCount=0;
+  let logoClickTimer=0;
+  let logoBounceTimer=0;
+
+  const logo=mascot.closest(".mascot-slot") || mascot;
+
+  function playLogoBounce(){
+    if(logoBounceTimer) window.clearTimeout(logoBounceTimer);
+    logo.classList.remove("logo-bounce");
+    void logo.offsetWidth;
+    logo.classList.add("logo-bounce");
+    logoBounceTimer=window.setTimeout(function(){
+      logoBounceTimer=0;
+      logo.classList.remove("logo-bounce");
+    },150);
+  }
+
+  function resetLogoClickSeries(){
+    if(logoClickTimer){
+      window.clearTimeout(logoClickTimer);
+      logoClickTimer=0;
+    }
+    logoClickCount=0;
+  }
+
+  function unlockLogoEasterEgg(){
+    resetLogoClickSeries();
+    window.dispatchEvent(new CustomEvent("cat-easter-egg-unlocked",{
+      detail:{item:"cepillo_de_oro"}
+    }));
+  }
+
+  function registerLogoClick(){
+    playLogoBounce();
+
+    try{
+      if(navigator.vibrate) navigator.vibrate(12);
+    }catch(error){}
+
+    if(logoClickTimer) window.clearTimeout(logoClickTimer);
+    logoClickCount+=1;
+
+    if(logoClickCount>=10){
+      unlockLogoEasterEgg();
+    }else{
+      logoClickTimer=window.setTimeout(resetLogoClickSeries,1500);
+    }
+
+    const homeButton=document.getElementById("headerNavHome");
+    if(homeButton && !homeButton.classList.contains("is-active")){
+      homeButton.click();
+    }
+  }
+
+  function handleLogoKeydown(event){
+    if(event.key!=="Enter" && event.key!==" ") return;
+    event.preventDefault();
+    logo.click();
+  }
+
+  logo.setAttribute("role","button");
+  logo.setAttribute("tabindex","0");
+  logo.setAttribute("aria-label","Перейти на главную");
+  logo.addEventListener("click",registerLogoClick);
+  logo.addEventListener("keydown",handleLogoKeydown);
+
+  if(window.PointerEvent){
+    logo.addEventListener("pointerdown",playLogoBounce,{passive:true});
+  }else{
+    logo.addEventListener("touchstart",playLogoBounce,{passive:true});
+  }
+
+  window.addEventListener("cat-easter-egg-unlocked",function(event){
+    if(event && event.detail && event.detail.item==="cepillo_de_oro"){
+      console.log("🎉 Пасхалка кота найдена!");
+    }
+  });
 
   function normalizeMood(value){
     const mood=String(value||"").toLowerCase();
