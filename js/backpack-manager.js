@@ -1,5 +1,5 @@
 import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-sardine-secret40";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-mistake-workout38";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-hidden-titles45";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";

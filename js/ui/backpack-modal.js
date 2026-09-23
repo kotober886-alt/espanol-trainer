@@ -10,6 +10,22 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+const LOCKED_TITLE = "???";
+const LOCKED_TRANSLATION = "Неизвестный трофей";
+const SECRET_LOCKED_HINT = "Секретная пасхалка. Никаких подсказок — пробуй неожиданное и исследуй каждый уголок!";
+
+function isSecretItem(item) {
+  return Boolean(item && item.category === "secrets");
+}
+
+function lockedHint(item) {
+  if (isSecretItem(item)) {
+    const rumor = String(item && item.rumor || "").trim();
+    return rumor || SECRET_LOCKED_HINT;
+  }
+  return String(item && (item.conditionText || item.condition) || "Продолжай тренироваться, чтобы узнать условие.");
+}
+
 export function createBackpackModal(options = {}) {
   const button = options.button || document.getElementById("backpackBtn");
   const getItems = typeof options.getItems === "function" ? options.getItems : function () { return []; };
@@ -19,6 +35,7 @@ export function createBackpackModal(options = {}) {
   let lootOverlay = null;
   let lootQueue = [];
   let showingLoot = false;
+  let detailOverlay = null;
 
   function categoryMeta(id) {
     return BACKPACK_CATEGORIES.find(function (item) { return item.id === id; }) || { id: id, title: id };
@@ -62,9 +79,16 @@ export function createBackpackModal(options = {}) {
 
     dialog.querySelector("[data-backpack-content]").addEventListener("click", function (event) {
       const card = event.target.closest("[data-backpack-item]");
-      if (!card || card.dataset.unlocked !== "true") return;
+      if (!card) return;
       const item = getItems().find(function (entry) { return entry.id === card.dataset.backpackItem; });
-      if (item) AudioManager.playBackpackItem(item.id, item.title);
+      if (!item) return;
+
+      if (card.dataset.unlocked === "true") {
+        AudioManager.playBackpackItem(item.id, item.title);
+        return;
+      }
+
+      showLockedDetails(item);
     });
 
     document.body.appendChild(dialog);
@@ -83,20 +107,79 @@ export function createBackpackModal(options = {}) {
 
   function renderCard(item) {
     const unlocked = Boolean(item.unlocked);
-    const unlockedLabel = unlocked ? "Разблокировано. Нажми, чтобы услышать название по-испански." : item.conditionText;
+    const title = unlocked ? item.title : LOCKED_TITLE;
+    const translation = unlocked ? item.titleRu : LOCKED_TRANSLATION;
+    const hint = unlocked ? "Нажми для озвучки" : lockedHint(item);
+    const ariaLabel = unlocked
+      ? String(item.titleRu || item.title || "") + ". Разблокировано. Нажми, чтобы услышать название по-испански."
+      : LOCKED_TRANSLATION + ". " + (isSecretItem(item) ? "Секретная пасхалка. Открой подробности." : "Условие получения: " + hint);
+
     return '<button class="backpack-card ' + (unlocked ? 'is-unlocked' : 'is-locked') +
       '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
-      '" type="button" aria-label="' + escapeHtml(item.titleRu + ". " + unlockedLabel) + '">' +
+      '" type="button" aria-label="' + escapeHtml(ariaLabel) + '">' +
         '<span class="backpack-card-visual">' +
           '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack33" alt="" loading="lazy">' +
           (unlocked ? '<span class="backpack-card-spark" aria-hidden="true">✦</span>' : '<span class="backpack-lock" aria-hidden="true">🔒</span>') +
         '</span>' +
         '<span class="backpack-card-copy">' +
-          '<strong>' + escapeHtml(item.title) + '</strong>' +
-          '<span>' + escapeHtml(item.titleRu) + '</span>' +
-          (unlocked ? '<small>Нажми для озвучки</small>' : '<small>' + escapeHtml(item.conditionText) + '</small>') +
+          '<strong>' + escapeHtml(title) + '</strong>' +
+          '<span>' + escapeHtml(translation) + '</span>' +
+          '<small>' + escapeHtml(hint) + '</small>' +
         '</span>' +
       '</button>';
+  }
+
+  function closeLockedDetails() {
+    if (!detailOverlay) return;
+    const overlay = detailOverlay;
+    detailOverlay = null;
+    overlay.classList.remove("is-visible");
+    window.setTimeout(function () {
+      overlay.remove();
+    }, 160);
+  }
+
+  function showLockedDetails(item) {
+    closeLockedDetails();
+
+    const secret = isSecretItem(item);
+    const rumor = secret ? String(item.rumor || "").trim() : "";
+    const hint = lockedHint(item);
+
+    detailOverlay = document.createElement("div");
+    detailOverlay.className = "backpack-detail-overlay";
+    detailOverlay.setAttribute("role", "dialog");
+    detailOverlay.setAttribute("aria-modal", "true");
+    detailOverlay.setAttribute("aria-label", LOCKED_TRANSLATION);
+    detailOverlay.innerHTML =
+      '<div class="backpack-detail-card">' +
+        '<button class="backpack-detail-close" type="button" aria-label="Закрыть">×</button>' +
+        '<div class="backpack-detail-visual">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack33" alt="" aria-hidden="true">' +
+          '<span class="backpack-detail-lock" aria-hidden="true">🔒</span>' +
+        '</div>' +
+        '<div class="backpack-detail-copy">' +
+          '<span class="backpack-detail-kicker">' + escapeHtml(secret ? "Секретная пасхалка" : "Заблокированный трофей") + '</span>' +
+          '<h3>' + LOCKED_TITLE + '</h3>' +
+          '<p class="backpack-detail-translation">' + LOCKED_TRANSLATION + '</p>' +
+          (secret
+            ? '<div class="backpack-secret-hint"><strong>' + escapeHtml(rumor ? "Слух" : "Тайна") + '</strong><p>' + escapeHtml(hint) + '</p></div>'
+            : '<div class="backpack-condition"><strong>Способ получения</strong><p>' + escapeHtml(hint) + '</p></div>') +
+        '</div>' +
+      '</div>';
+
+    detailOverlay.querySelector(".backpack-detail-close").addEventListener("click", closeLockedDetails);
+    detailOverlay.addEventListener("click", function (event) {
+      if (event.target === detailOverlay) closeLockedDetails();
+    });
+    document.body.appendChild(detailOverlay);
+    requestAnimationFrame(function () {
+      if (detailOverlay) detailOverlay.classList.add("is-visible");
+    });
+    window.setTimeout(function () {
+      const closeButton = detailOverlay && detailOverlay.querySelector(".backpack-detail-close");
+      if (closeButton) closeButton.focus();
+    }, 180);
   }
 
   function render() {
