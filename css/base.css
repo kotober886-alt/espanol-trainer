@@ -1555,30 +1555,29 @@
 .blitz-banner {
   width:100%;
   display:block;
-  align-items:center;
-  gap:16px;
   margin:0 0 20px;
   padding:18px 20px;
   border:0;
-  border-radius:22px;
+  border-radius:20px;
   text-align:left;
   color:#fff;
-  background:linear-gradient(125deg,#ff8a2a 0%,#f5ad28 35%,#7958df 100%);
+  background-color:#7a58df;
+  background-image:url('../assets/images/mascot/blitz_banner.webp?v=20260923-blitz-banner-final24');
+  background-size:cover;
+  background-position:right center;
+  background-repeat:no-repeat;
   box-shadow:0 16px 36px rgba(91,72,190,.18);
   cursor:pointer;
   overflow:hidden;
   position:relative;
 }
-.blitz-banner::after {
+.blitz-banner::before {
   content:"";
   position:absolute;
-  width:180px;
-  height:180px;
-  right:-70px;
-  top:-90px;
-  border-radius:50%;
-  background:rgba(255,255,255,.13);
+  inset:0;
+  z-index:1;
   pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.18) 38%,rgba(0,0,0,.04) 58%,transparent 72%);
 }
 .blitz-banner:hover { transform:translateY(-1px); box-shadow:0 20px 42px rgba(91,72,190,.23); }
 .blitz-banner:active { transform:translateY(0) scale(.995); }
@@ -1593,6 +1592,7 @@
   width:100%;
   max-width:68%;
   min-width:0;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
 }
 .blitz-banner-icon {
   display:grid;
@@ -1600,8 +1600,9 @@
   width:54px;
   height:54px;
   border-radius:18px;
-  background:rgba(255,255,255,.18);
+  background:rgba(255,255,255,.2);
   font-size:30px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 .blitz-banner-copy {
   position:relative;
@@ -1611,7 +1612,7 @@
   min-width:0;
 }
 .blitz-banner-copy strong { font-size:21px; letter-spacing:-.02em; }
-.blitz-banner-copy span { color:rgba(255,255,255,.9); font-size:14px; line-height:1.35; }
+.blitz-banner-copy span { color:rgba(255,255,255,.96); font-size:14px; line-height:1.35; }
 .blitz-banner-copy b { color:#fff; }
 .blitz-banner-cta {
   position:relative;
@@ -1625,43 +1626,8 @@
   font-size:13px;
   font-weight:900;
   white-space:nowrap;
+  text-shadow:none;
 }
-.blitz-banner-cover {
-  position:absolute;
-  z-index:1;
-  inset:0 0 0 auto;
-  width:36%;
-  overflow:hidden;
-  pointer-events:none;
-  opacity:.28;
-  background:linear-gradient(115deg,rgba(255,255,255,.06),rgba(255,255,255,.24),rgba(255,255,255,.06));
-  transition:opacity .28s ease;
-}
-.blitz-banner-cover img {
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  opacity:0;
-  transition:opacity .28s ease;
-}
-.blitz-banner-cover.is-loaded { opacity:1; }
-.blitz-banner-cover.is-loaded img { opacity:1; }
-.blitz-banner-cat {
-  position:absolute;
-  right:-6px;
-  bottom:-8px;
-  height:110%;
-  width:auto;
-  max-width:none;
-  pointer-events:none;
-  z-index:1;
-  opacity:1;
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));
-  transition:opacity .22s ease;
-}
-.blitz-banner-cover.is-loaded + .blitz-banner-cat { opacity:0; }
 
 body.blitz-active { overflow:hidden; }
 .blitz-screen {
@@ -1944,10 +1910,10 @@ body.blitz-active { overflow:hidden; }
 
 @media (max-width:640px) {
   .blitz-banner {
-    grid-template-columns:auto minmax(0,1fr);
-    gap:12px;
     padding:16px;
+    background-position:right center;
   }
+  .blitz-banner-content { max-width:72%; gap:12px; }
   .blitz-banner-icon { width:48px; height:48px; border-radius:15px; font-size:26px; }
   .blitz-banner-copy strong { font-size:18px; }
   .blitz-banner-cta { display:none; }
@@ -1958,7 +1924,6 @@ body.blitz-active { overflow:hidden; }
       max(14px,env(safe-area-inset-bottom))
       max(10px,env(safe-area-inset-left));
   }
-  .blitz-banner-cover { width:38%; }
   .blitz-topbar { grid-template-columns:auto 1fr auto; gap:8px; padding-right:44px; }
   .blitz-sound-toggle {
     top:max(12px,env(safe-area-inset-top));
@@ -1985,9 +1950,6 @@ body.blitz-active { overflow:hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .blitz-banner,
-  .blitz-banner-cover,
-  .blitz-banner-cover img,
-  .blitz-banner-cat,
   .blitz-answer,
   .blitz-time-track span { transition:none !important; }
   .blitz-clock.is-urgent,
