@@ -319,20 +319,6 @@ export const BACKPACK_ITEMS = [
     unlockedAt: null
   },
   {
-    id: "gafas_sol",
-    title: "Gafas de Sol Guay",
-    translation: "Крутые солнечные очки",
-    titleRu: "Крутые солнечные очки",
-    category: "lifestyle",
-    asset: "assets/images/backpack/gafas_sol.webp",
-    image: "assets/images/backpack/gafas_sol.webp",
-    condition: "Удержать серию занятий (стрик) 7 дней подряд",
-    conditionText: "Удержать серию занятий (стрик) 7 дней подряд",
-    rumor: "Их носят только те, кто держит темп изо дня в день и не сбавляет обороты целую неделю.",
-    unlocked: false,
-    unlockedAt: null
-  },
-  {
     id: "ovillo_fugitivo",
     title: "El Ovillo Fugitivo",
     translation: "Сбежавший клубок",
@@ -391,7 +377,6 @@ export const BACKPACK_CATEGORIES = [
   { id: "spain", title: "Испания" },
   { id: "stories", title: "Аудио-истории" },
   { id: "learning", title: "Учёба и звук" },
-  { id: "lifestyle", title: "Стиль жизни" },
   { id: "blitz", title: "Блиц" },
   { id: "imposter", title: "Спаси кота от ошибки" },
   { id: "errors", title: "Сладкая реабилитация" },
