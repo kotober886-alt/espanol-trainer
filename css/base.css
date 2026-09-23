@@ -1538,6 +1538,8 @@
   object-position:center;
   border-radius:18px;
   image-rendering:-webkit-optimize-contrast;
+  transform:translateZ(0);
+  backface-visibility:hidden;
 }
 .audio-story-cover,
 .story-quiz-cover {
