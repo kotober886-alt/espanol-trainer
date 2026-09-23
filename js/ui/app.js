@@ -1,11 +1,11 @@
 import { createCatalogView } from "./catalog.js";
-import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
+import { createStudyCardView } from "./study-card.js?v=20260923-backpack-achievements46";
 import { createTrainerView } from "./trainer-view.js?v=20260923-training-actions39";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
-import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
+import { createNavigation } from "./navigation.js?v=20260923-backpack-achievements46";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-hidden-titles45";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-achievements46";
 import { bindPawsInteraction } from "./paws-interaction.js?v=cat-fix-clean-01";
 import { bindCatSpeechBubble } from "./cat-speech.js?v=20260923-cat-phrases44";
 import { load, save } from "../core/storage.js";
@@ -921,6 +921,9 @@ window.LegacyProgressAdapter = {
       mistakeExerciseSnapshot=collectMistakeExercises();
       const count=mistakeExerciseSnapshot.length;
       const empty=count===0;
+      if(backpackManager){
+        backpackManager.checkConditions("error-list",{count:count});
+      }
 
       els.mistakesEmpty.hidden=!empty;
       els.mistakesContent.hidden=empty;
@@ -974,6 +977,9 @@ window.LegacyProgressAdapter = {
       foodPhase="practice";
       sessionActive=true;
       sessionRound="main";
+      if(backpackManager){
+        backpackManager.checkConditions("error-session-start",{timestamp:Date.now()});
+      }
       primarySessionResult=null;
       checkedCurrent=false;
       sessionSize=queueItems.length;
@@ -1407,6 +1413,13 @@ window.LegacyProgressAdapter = {
       const item=queue[index];
       const text=item&&(item.audio||item.audioText);
       if(!text) return;
+      if(backpackManager){
+        backpackManager.checkConditions("audio",{
+          itemId:String(item.id||""),
+          isWordCard:false,
+          timestamp:Date.now()
+        });
+      }
       speakText(text,rate,source);
     }
 
@@ -1414,6 +1427,14 @@ window.LegacyProgressAdapter = {
       const words=studyCardView.currentWords();
       const word=words[wordIndex];
       if(!word) return;
+      if(backpackManager){
+        backpackManager.checkConditions("audio",{
+          wordId:String(word.id||word.word||wordIndex),
+          topicId:selectedTopic,
+          isWordCard:true,
+          timestamp:Date.now()
+        });
+      }
       const parts=[word.word+"."].concat((word.examples || []).map(function(example){return example[0];}));
       speakText(parts.join(" "),audioSettings.rate,els.studyListen);
     }
@@ -1512,6 +1533,7 @@ window.LegacyProgressAdapter = {
         cityArt:function(id){return typeof window.cityArt==="function"?window.cityArt(id):"";},
         onStartPractice:startFoodPractice,
         onStudyAction:speakStudy,
+        onWordViewed:function(data){backpackManager.checkConditions("study",data);},
         safeVibrate
       });
       trainerView=createTrainerView({
@@ -1549,7 +1571,13 @@ window.LegacyProgressAdapter = {
         onWords:function(){showCatalog("learn");},
         onPractice:function(){showCatalog("practice");},
         onMistakes:showMistakes,
-        onMore:function(){els.moreDialog.showModal();}
+        onMore:function(){els.moreDialog.showModal();},
+        onNavigate:function(section,meta){
+          backpackManager.checkConditions("navigation",{
+            section:section,
+            timestamp:meta&&meta.timestamp?meta.timestamp:Date.now()
+          });
+        }
       });
       navigationView.bind();
     }
