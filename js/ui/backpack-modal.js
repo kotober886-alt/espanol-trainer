@@ -1,4 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-achievements48";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-lock-silhouette49";
 import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
 
 function escapeHtml(value) {
@@ -13,6 +13,74 @@ function escapeHtml(value) {
 const LOCKED_TITLE = "???";
 const LOCKED_TRANSLATION = "Неизвестный трофей";
 const SECRET_LOCKED_HINT = "Секретная пасхалка. Никаких подсказок — пробуй неожиданное и исследуй каждый уголок!";
+const BACKPACK_RENDER_VERSION = "20260923-backpack-lock-silhouette49";
+const LOCK_ICON_URL = "assets/images/backpack/lock.svg?v=" + BACKPACK_RENDER_VERSION;
+
+function itemImageUrl(item) {
+  return String(item && item.image || "") + "?v=" + BACKPACK_RENDER_VERSION;
+}
+
+function lockedVisualMarkup(item, detail) {
+  const silhouetteClass = detail ? "backpack-silhouette backpack-detail-silhouette" : "backpack-silhouette";
+  const lockClass = detail ? "backpack-detail-lock" : "backpack-lock";
+  return '<canvas class="' + silhouetteClass + '" data-silhouette-src="' +
+    escapeHtml(itemImageUrl(item)) + '" aria-hidden="true"></canvas>' +
+    '<span class="' + lockClass + '" aria-hidden="true"><img src="' +
+    escapeHtml(LOCK_ICON_URL) + '" alt=""></span>';
+}
+
+function paintLockedSilhouette(canvas) {
+  if (!canvas || canvas.dataset.silhouetteReady === "1") return;
+  canvas.dataset.silhouetteReady = "1";
+  const source = new Image();
+  source.decoding = "async";
+  source.onload = function () {
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return;
+    context.clearRect(0, 0, size, size);
+    const naturalWidth = Math.max(1, source.naturalWidth || source.width || size);
+    const naturalHeight = Math.max(1, source.naturalHeight || source.height || size);
+    const scale = Math.min(size / naturalWidth, size / naturalHeight);
+    const width = Math.max(1, Math.round(naturalWidth * scale));
+    const height = Math.max(1, Math.round(naturalHeight * scale));
+    context.drawImage(source, Math.round((size - width) / 2), Math.round((size - height) / 2), width, height);
+
+    const pixels = context.getImageData(0, 0, size, size);
+    const data = pixels.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const red = data[i], green = data[i + 1], blue = data[i + 2], alpha = data[i + 3];
+      if (alpha < 6) continue;
+      const chromaGreen =
+        green > 175 &&
+        green - red > 92 &&
+        green - blue > 82 &&
+        green > red * 1.42 &&
+        green > blue * 1.42;
+      if (chromaGreen) {
+        data[i + 3] = 0;
+        continue;
+      }
+      const luminance = (red * 0.2126) + (green * 0.7152) + (blue * 0.0722);
+      const gray = Math.max(82, Math.min(142, Math.round(92 + luminance * 0.18)));
+      data[i] = gray;
+      data[i + 1] = gray;
+      data[i + 2] = gray + 6;
+      data[i + 3] = Math.min(205, Math.round(alpha * 0.72));
+    }
+    context.putImageData(pixels, 0, 0);
+    canvas.classList.add("is-ready");
+  };
+  source.onerror = function () { canvas.classList.add("is-error"); };
+  source.src = canvas.dataset.silhouetteSrc || "";
+}
+
+function hydrateLockedSilhouettes(root) {
+  if (!root || !root.querySelectorAll) return;
+  root.querySelectorAll("canvas[data-silhouette-src]").forEach(paintLockedSilhouette);
+}
 
 function isSecretItem(item) {
   return Boolean(item && item.category === "secrets");
@@ -130,8 +198,10 @@ export function createBackpackModal(options = {}) {
       '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
       '" type="button" aria-label="' + escapeHtml(ariaLabel) + '">' +
         '<span class="backpack-card-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="" loading="lazy">' +
-          (unlocked ? '<span class="backpack-card-spark" aria-hidden="true">✦</span>' : '<span class="backpack-lock" aria-hidden="true">🔒</span>') +
+          (unlocked
+            ? '<img class="backpack-item-image" src="' + escapeHtml(itemImageUrl(item)) + '" alt="" loading="lazy">' +
+              '<span class="backpack-card-spark" aria-hidden="true">✦</span>'
+            : lockedVisualMarkup(item, false)) +
         '</span>' +
         '<span class="backpack-card-copy">' +
           '<strong>' + escapeHtml(title) + '</strong>' +
@@ -168,8 +238,7 @@ export function createBackpackModal(options = {}) {
       '<div class="backpack-detail-card">' +
         '<button class="backpack-detail-close" type="button" aria-label="Закрыть">×</button>' +
         '<div class="backpack-detail-visual">' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="" aria-hidden="true">' +
-          '<span class="backpack-detail-lock" aria-hidden="true">🔒</span>' +
+          lockedVisualMarkup(item, true) +
         '</div>' +
         '<div class="backpack-detail-copy">' +
           '<span class="backpack-detail-kicker">' + escapeHtml(secret ? "Секретная пасхалка" : "Заблокированный трофей") + '</span>' +
@@ -187,6 +256,7 @@ export function createBackpackModal(options = {}) {
       if (event.target === detailOverlay) closeLockedDetails();
     });
     document.body.appendChild(detailOverlay);
+    hydrateLockedSilhouettes(detailOverlay);
     requestAnimationFrame(function () {
       if (detailOverlay) detailOverlay.classList.add("is-visible");
     });
@@ -217,6 +287,7 @@ export function createBackpackModal(options = {}) {
         '<div class="backpack-grid">' + entries.map(renderCard).join("") + '</div>' +
       '</section>';
     }).join("");
+    hydrateLockedSilhouettes(content);
   }
 
   function updateBadge() {
@@ -267,7 +338,7 @@ export function createBackpackModal(options = {}) {
         '<div class="loot-kicker">¡Nuevo Trofeo Desbloqueado!</div>' +
         '<div class="loot-visual">' +
           '<span class="loot-halo" aria-hidden="true"></span>' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-achievements48" alt="' + escapeHtml(item.titleRu) + '">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-lock-silhouette49" alt="' + escapeHtml(item.titleRu) + '">' +
         '</div>' +
         '<h2>' + escapeHtml(item.title) + '</h2>' +
         '<p>' + escapeHtml(item.titleRu) + '</p>' +
