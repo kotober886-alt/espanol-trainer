@@ -1,7 +1,8 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-audio-manager37";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-audio-manager37";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-mistake-workout38";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-mistake-workout38";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
+export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
 
 const STORY_REWARDS = {
   audio_story_cafe_1: { itemId: "item_churros", perfect: true },
@@ -34,8 +35,7 @@ function defaultState() {
     meta: {
       activityDays: [],
       completedTopics: [],
-      imposterFound: 0,
-      resolvedErrorIds: []
+      imposterFound: 0
     }
   };
 }
@@ -51,8 +51,7 @@ function normalizeState(value) {
     meta: {
       activityDays: Array.isArray(meta.activityDays) ? meta.activityDays.filter(Boolean).slice(-90) : [],
       completedTopics: Array.isArray(meta.completedTopics) ? Array.from(new Set(meta.completedTopics.filter(Boolean))) : [],
-      imposterFound: Math.max(0, Number(meta.imposterFound) || 0),
-      resolvedErrorIds: Array.isArray(meta.resolvedErrorIds) ? Array.from(new Set(meta.resolvedErrorIds.filter(Boolean))) : []
+      imposterFound: Math.max(0, Number(meta.imposterFound) || 0)
     }
   };
 }
@@ -88,15 +87,37 @@ function consecutiveDays(days) {
 }
 
 export function createBackpackManager(options = {}) {
-  let state = normalizeState(safeParse(localStorage.getItem(BACKPACK_STORAGE_KEY), defaultState()));
+  const storedBackpack = safeParse(localStorage.getItem(BACKPACK_STORAGE_KEY), defaultState());
+
+  try {
+    if (localStorage.getItem(RESOLVED_ERRORS_STORAGE_KEY) === null) {
+      const legacyResolved = storedBackpack && storedBackpack.meta && Array.isArray(storedBackpack.meta.resolvedErrorIds)
+        ? storedBackpack.meta.resolvedErrorIds.length
+        : 0;
+      if (legacyResolved > 0) {
+        localStorage.setItem(RESOLVED_ERRORS_STORAGE_KEY, String(legacyResolved));
+      }
+    }
+  } catch (error) {}
+
+  let state = normalizeState(storedBackpack);
   let items = [];
 
   function mergeItems() {
+    const resolvedTotal = readResolvedErrorsTotal();
+
     items = BACKPACK_ITEMS.map(function (item) {
       const saved = state.unlocks[item.id] || {};
+      const errorReward = ERROR_REWARDS.find(function (reward) {
+        return reward.itemId === item.id;
+      });
+      const unlocked = errorReward
+        ? resolvedTotal >= errorReward.count
+        : Boolean(saved.unlocked);
+
       return Object.assign({}, item, {
-        unlocked: Boolean(saved.unlocked),
-        unlockedAt: saved.unlockedAt == null ? null : Number(saved.unlockedAt)
+        unlocked: unlocked,
+        unlockedAt: unlocked && saved.unlockedAt != null ? Number(saved.unlockedAt) : null
       });
     });
   }
@@ -137,33 +158,26 @@ export function createBackpackManager(options = {}) {
     return true;
   }
 
-  function checkErrorMilestones() {
-    const resolvedCount = state.meta.resolvedErrorIds.length;
-    ERROR_REWARDS.forEach(function (reward) {
-      if (resolvedCount >= reward.count) unlockItem(reward.itemId);
-    });
-    return resolvedCount;
+  function readResolvedErrorsTotal() {
+    try {
+      const value = Number.parseInt(localStorage.getItem(RESOLVED_ERRORS_STORAGE_KEY) || "0", 10);
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    } catch (error) {
+      return 0;
+    }
   }
 
-  function recordResolvedError(data) {
-    if (!data || !data.correct) return checkErrorMilestones();
+  function checkErrorMilestones(resolvedTotal) {
+    const provided = Number(resolvedTotal);
+    const total = Number.isFinite(provided) && provided >= 0
+      ? Math.floor(provided)
+      : readResolvedErrorsTotal();
 
-    const inMistakes = data.mode === "mistakes" ||
-      data.mode === "mistake-review" ||
-      data.sessionRound === "mistakes";
+    ERROR_REWARDS.forEach(function (reward) {
+      if (total >= reward.count) unlockItem(reward.itemId);
+    });
 
-    if (!inMistakes) return checkErrorMilestones();
-
-    const item = data.item || {};
-    const id = String(item.originalId || item.reviewOf || item.id || "").trim();
-    if (!id) return checkErrorMilestones();
-
-    if (state.meta.resolvedErrorIds.indexOf(id) < 0) {
-      state.meta.resolvedErrorIds.push(id);
-      saveState();
-    }
-
-    return checkErrorMilestones();
+    return total;
   }
 
   function recordActivityDay(timestamp) {
@@ -242,8 +256,9 @@ export function createBackpackManager(options = {}) {
 
   function checkConditions(type, data = {}) {
     if (type === "answer") {
-      recordResolvedError(data);
       if (data.correct) checkTimeRewards(data.timestamp);
+    } else if (type === "errors") {
+      checkErrorMilestones(data.resolvedTotal);
     } else if (type === "practice") {
       checkPractice(data);
     } else if (type === "story" || type === "stories") {
@@ -269,8 +284,7 @@ export function createBackpackManager(options = {}) {
         activityDays: state.meta.activityDays.slice(),
         completedTopics: state.meta.completedTopics.slice(),
         imposterFound: state.meta.imposterFound,
-        resolvedErrorIds: state.meta.resolvedErrorIds.slice(),
-        resolvedErrors: state.meta.resolvedErrorIds.length
+        resolvedErrors: readResolvedErrorsTotal()
       }
     };
   }
@@ -279,6 +293,7 @@ export function createBackpackManager(options = {}) {
     unlockItem("item_gold_comb");
   });
 
+  saveState();
   ui.refresh();
 
   return Object.freeze({

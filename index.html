@@ -14,7 +14,7 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260923-logo-easter32">
+  <link rel="stylesheet" href="css/base.css?v=20260923-mistake-workout38">
   <link rel="stylesheet" href="css/imposter.css?v=20260923-imposter30">
   <link rel="stylesheet" href="css/backpack.css?v=20260923-backpack-resolved36">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
@@ -22,7 +22,7 @@
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260923-audio-manager37";
+      const CURRENT_BUILD="20260923-mistake-workout38";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -148,7 +148,10 @@
             <h2>Ошибки</h2>
             <p>Здесь собраны слова и фразы, в которых уже были ошибки.</p>
           </div>
-          <div class="mistakes-count" id="mistakesCount" hidden>0 ошибок</div>
+          <div class="mistakes-head-actions">
+            <div class="mistakes-count" id="mistakesCount" hidden>0 ошибок</div>
+            <button class="btn btn-primary mistakes-start" id="mistakesStartBtn" type="button" disabled>Отработать все ошибки</button>
+          </div>
         </div>
 
         <div class="mistakes-empty" id="mistakesEmpty">
@@ -160,7 +163,6 @@
 
         <div class="mistakes-content" id="mistakesContent" hidden>
           <div class="mistakes-list" id="mistakesList"></div>
-          <button class="btn btn-primary mistakes-start" id="mistakesStartBtn" type="button">Разобрать ошибки (0)</button>
         </div>
       </div>
     </section>
@@ -546,6 +548,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260923-logo-easter32"></script>
-  <script type="module" src="./js/ui/app.js?v=20260923-audio-manager37"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-mistake-workout38"></script>
 </body>
 </html>

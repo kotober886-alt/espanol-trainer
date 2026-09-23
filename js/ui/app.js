@@ -1,11 +1,11 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-resolved36";
+import { createTrainerView } from "./trainer-view.js?v=20260923-mistake-workout38";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260923-audio-manager37";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-mistake-workout38";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -16,10 +16,11 @@ import { load, save } from "../core/storage.js";
     getMistakes,
     recordAnswer,
     recordSkip,
+    resolveMistake,
     recordSessionResult,
     getMascotState,
     getProgressReaction
-  } from "../core/progress.js";
+  } from "../core/progress.js?v=20260923-mistake-workout38";
   import {
     checkAnswer as checkAnswerCore,
     normalizeExact,
@@ -30,7 +31,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js?v=20260923-imposter30";
+  } from "../core/session.js?v=20260923-mistake-workout38";
   import {
     registerTopic,
     getTopic,
@@ -679,7 +680,7 @@ window.LegacyProgressAdapter = {
       let items=allExercises().filter(function(x){ return selectedTopic==="all" ? true : x.topic===selectedTopic; });
       if(isVocabularyTopic() && foodCategory!=="all") items=items.filter(function(x){return x.foodCat===foodCategory;});
       if(selectedMode==="mistakes"){
-        items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0; });
+        items=items.filter(function(x){ const row=stats[x.id] || stats[x.originalId]; return row && row.wrong>0 && row.activeError!==false; });
       } else if(selectedMode==="all"&&selectedFormats.size){
         items=items.filter(function(item){
           return selectedFormatList().some(function(format){return exerciseMatchesPracticeFormat(item,format);});
@@ -923,7 +924,8 @@ window.LegacyProgressAdapter = {
       els.mistakesContent.hidden=empty;
       els.mistakesCount.hidden=empty;
       els.mistakesCount.textContent=mistakeCountLabel(count);
-      els.mistakesStartBtn.textContent="Разобрать ошибки ("+count+")";
+      els.mistakesStartBtn.textContent=count ? "Отработать все ошибки ("+count+")" : "Отработать все ошибки";
+      els.mistakesStartBtn.disabled=empty;
       if(navigationView) navigationView.setBadge("mistakes",count);
 
       els.mistakesList.innerHTML=mistakeExerciseSnapshot.map(function(item,index){
@@ -932,7 +934,10 @@ window.LegacyProgressAdapter = {
         return '<article class="mistake-item">'+
           '<div class="mistake-index">'+(index+1)+'</div>'+
           '<div class="mistake-copy"><strong lang="es">'+escapeHtml(display.es)+'</strong><span>'+escapeHtml(display.ru)+'</span></div>'+
-          '<span class="mistake-topic">'+escapeHtml(topic.title)+'</span>'+
+          '<div class="mistake-actions">'+
+            '<span class="mistake-topic">'+escapeHtml(topic.title)+'</span>'+
+            '<button class="btn btn-soft mistake-repeat" data-mistake-repeat="'+index+'" type="button">Отработать</button>'+
+          '</div>'+
         '</article>';
       }).join("");
     }
@@ -955,9 +960,9 @@ window.LegacyProgressAdapter = {
       window.scrollTo({top:0,behavior:"smooth"});
     }
 
-    function startSavedMistakes(){
-      const items=mistakeExerciseSnapshot.slice();
-      if(!items.length){
+    function startMistakeItems(items){
+      const queueItems=Array.isArray(items)?items.filter(Boolean):[];
+      if(!queueItems.length){
         showMistakes();
         return;
       }
@@ -969,18 +974,27 @@ window.LegacyProgressAdapter = {
       sessionRound="main";
       primarySessionResult=null;
       checkedCurrent=false;
-      sessionSize=items.length;
+      sessionSize=queueItems.length;
 
       sessionController=window.TrainerSession.createSession({
         topicId:"all",
         mode:"mistakes",
-        size:items.length,
-        pool:items
+        size:queueItems.length,
+        pool:queueItems
       });
 
       syncSessionProjection();
       showWorkspace();
       render();
+    }
+
+    function startSavedMistakes(){
+      startMistakeItems(mistakeExerciseSnapshot.slice());
+    }
+
+    function startSingleMistake(index){
+      const item=mistakeExerciseSnapshot[Number(index)];
+      if(item) startMistakeItems([item]);
     }
 
     function practicePoolForDialog(){
@@ -1641,6 +1655,11 @@ window.LegacyProgressAdapter = {
     });
     $("moreAddBtn").addEventListener("click",function(){els.moreDialog.close();openDialog();});
     els.mistakesStartBtn.addEventListener("click",startSavedMistakes);
+    els.mistakesList.addEventListener("click",function(event){
+      const button=event.target.closest("[data-mistake-repeat]");
+      if(!button) return;
+      startSingleMistake(button.dataset.mistakeRepeat);
+    });
     els.mistakesWordsBtn.addEventListener("click",function(){showCatalog("learn");});
     els.topicSearch.addEventListener("input",function(){topicSearch=els.topicSearch.value;renderTopics();});
     els.wordSearch.addEventListener("input",function(){studySearch=els.wordSearch.value;wordIndex=0;studyCardView.render();});
@@ -1828,6 +1847,7 @@ window.LegacyProgressAdapter = {
     getMistakes,
     recordAnswer: recordAnswerWithReaction,
     recordSkip: recordSkipWithReaction,
+    resolveMistake,
     recordSessionResult,
     getMascotState,
     getProgressReaction

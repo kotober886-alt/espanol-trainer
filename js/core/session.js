@@ -166,7 +166,7 @@ export function buildExercisePool({
   if (mode === "mistakes") {
     items = items.filter(function (item) {
       const row = stats[item.id] || stats[item.originalId];
-      return row && Number(row.wrong) > 0;
+      return row && Number(row.wrong) > 0 && row.activeError !== false;
     });
   } else {
     const activeFormats = normalizeFormats(formats);

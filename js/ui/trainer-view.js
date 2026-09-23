@@ -14,6 +14,20 @@ export function createTrainerView(deps){
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
   let audioStoryState={};
   let imposterState={solved:false,selectedIndex:null,elapsedMs:null};
+  const RESOLVED_ERRORS_STORAGE_KEY="gato_resolved_errors_total";
+
+  function incrementResolvedErrorsTotal(){
+    let current=0;
+    try{
+      current=Number.parseInt(localStorage.getItem(RESOLVED_ERRORS_STORAGE_KEY)||"0",10);
+      if(!Number.isFinite(current)||current<0) current=0;
+      current+=1;
+      localStorage.setItem(RESOLVED_ERRORS_STORAGE_KEY,String(current));
+    }catch(error){
+      current=Math.max(1,current+1);
+    }
+    return current;
+  }
 
   function resetCard(){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
@@ -460,12 +474,26 @@ export function createTrainerView(deps){
     if(typeof safeVibrate==="function") safeVibrate(exact?20:[30,40,30]);
     els.answerText.textContent=result.displayAnswer;markAnswers(item);
     let scheduled=false;
+    let mistakeResolved=false;
+    const isMistakePractice=state.selectedMode==="mistakes"||state.sessionRound==="mistakes";
     if(!state.checkedCurrent){
       if(state.sessionActive&&state.sessionController){
         const record=state.sessionController.recordResult({correct:exact,answerResult:result});
         scheduled=false;
         if(record.counted&&progress){
           const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:exact,firstAttempt:true});
+
+          if(exact&&isMistakePractice&&typeof progress.resolveMistake==="function"){
+            const resolution=progress.resolveMistake({exerciseId:item.id,originalId:item.originalId||null});
+            if(resolution&&resolution.resolved){
+              mistakeResolved=true;
+              const resolvedTotal=incrementResolvedErrorsTotal();
+              if(backpackManager){
+                backpackManager.checkConditions("errors",{resolvedTotal:resolvedTotal});
+              }
+            }
+          }
+
           patchState({stats:progress.getStats(),streak:p.streak});
           setTrainingFavicon(p.streak);
         }
@@ -488,8 +516,18 @@ export function createTrainerView(deps){
       }
       patchState({checkedCurrent:true});renderStats();
     }
-    els.feedback.textContent=result.feedback+(exact?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
-    els.feedback.className=exact?"feedback good":(near?"feedback near":"feedback bad");
+
+    if(mistakeResolved){
+      els.feedback.textContent="Ошибка побеждена! 🎉";
+      els.feedback.className="feedback good mistake-resolved-feedback";
+    }else{
+      els.feedback.textContent=result.feedback+(exact?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
+      els.feedback.className=exact?"feedback good":(near?"feedback near":"feedback bad");
+    }
+
+    if(isMistakePractice&&!exact){
+      els.answerBox.classList.add("open");
+    }
   }
 
   function move(delta){

@@ -85,6 +85,7 @@ export function recordAnswer({
     tries: (Number(previous.tries) || 0) + 1,
     correct: (Number(previous.correct) || 0) + (correct ? 1 : 0),
     wrong: (Number(previous.wrong) || 0) + (correct ? 0 : 1),
+    activeError: correct ? previous.activeError : true,
     lastCorrect: Boolean(correct),
     lastAnsweredAt: new Date().toISOString()
   };
@@ -119,6 +120,40 @@ export function recordSkip({ exerciseId, originalId = null, topic = null, firstA
     correct: false,
     firstAttempt
   });
+}
+
+export function resolveMistake({ exerciseId, originalId = null } = {}) {
+  const statsId = originalId || exerciseId;
+  if (!statsId) {
+    return { resolved: false, id: null, reason: "missing-id" };
+  }
+
+  const state = load();
+  const previous = state.progress.stats[statsId];
+
+  if (!previous || (Number(previous.wrong) || 0) <= 0 || previous.activeError === false) {
+    return {
+      resolved: false,
+      id: statsId,
+      row: previous ? { ...previous } : null,
+      reason: "not-active"
+    };
+  }
+
+  const row = {
+    ...previous,
+    activeError: false,
+    resolvedAt: new Date().toISOString()
+  };
+
+  state.progress.stats[statsId] = row;
+  save(state);
+
+  return {
+    resolved: true,
+    id: statsId,
+    row: { ...row }
+  };
 }
 
 export function recordSessionResult({ answered = null, correct = null, wrong = null, accuracy = null } = {}) {
@@ -184,6 +219,7 @@ export function getMistakes({ topicId = null, exercises = [] } = {}) {
   return Object.entries(state.progress.stats)
     .filter(function ([id, row]) {
       if ((Number(row.wrong) || 0) <= 0) return false;
+      if (row.activeError === false) return false;
       if (!topicId) return true;
       return row.topic === topicId || exerciseIds.has(id);
     })
