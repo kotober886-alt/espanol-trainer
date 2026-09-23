@@ -2105,3 +2105,66 @@ body.blitz-active { overflow:hidden; }
     justify-self:center;
   }
 }
+
+
+/* Sardine secret: five quick pets on the home mascot. */
+.home-hero-mascot {
+  position: relative;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.home-hero-mascot img {
+  transform-origin: 50% 78%;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), filter .2s ease;
+  will-change: transform;
+}
+.home-hero-mascot.is-petted img {
+  transform: scale(1.06,.94);
+}
+.home-hero-mascot.is-purring {
+  animation: homeMascotPurr .11s ease-in-out 0s 7;
+  transform-origin: 50% 75%;
+}
+.home-mascot-heart {
+  position: absolute;
+  z-index: 4;
+  left: var(--heart-left, 50%);
+  top: 44%;
+  pointer-events: none;
+  color: #ff7eac;
+  font-size: clamp(15px,2vw,22px);
+  line-height: 1;
+  opacity: 0;
+  filter: drop-shadow(0 2px 4px rgba(82,29,67,.22));
+  animation: homeMascotHeartFloat .9s cubic-bezier(.2,.76,.34,1) var(--heart-delay,0ms) forwards;
+}
+.home-mascot-heart.is-burst {
+  color: #ff96bb;
+  font-size: clamp(17px,2.2vw,25px);
+}
+@keyframes homeMascotHeartFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%,8px) scale(.62) rotate(0deg);
+  }
+  16% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--heart-drift,0px)),-88px) scale(1.18) rotate(var(--heart-rotate,0deg));
+  }
+}
+@keyframes homeMascotPurr {
+  0%,100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-1.5px) rotate(-.45deg); }
+  50% { transform: translateX(1.5px) rotate(.45deg); }
+  75% { transform: translateX(-1px) rotate(-.3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-mascot img { transition: none; }
+  .home-hero-mascot.is-purring { animation: none; }
+  .home-mascot-heart { animation-duration: .01ms; }
+}

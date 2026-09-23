@@ -200,6 +200,19 @@ export const BACKPACK_ITEMS = [
     unlockedAt: null
   },
   {
+    id: "item_sardine",
+    title: "La Sardina Plateada",
+    translation: "Серебряная сардинка",
+    description: "Кот так растроган твоей заботой, что поделился своей любимой сардинкой!",
+    condition: "Почеши кота 5 раз подряд",
+    category: "secrets",
+    image: "assets/images/backpack/item_sardine.webp",
+    titleRu: "Серебряная сардинка",
+    conditionText: "Почеши кота 5 раз подряд",
+    unlocked: false,
+    unlockedAt: null
+  },
+  {
     id: "item_gold_comb",
     title: "Cepillo de Oro",
     titleRu: "Золотая расческа",
