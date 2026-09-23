@@ -5,7 +5,7 @@ import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-resolved36";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-audio-manager37";
 import { load, save } from "../core/storage.js";
   import {
     getStats,

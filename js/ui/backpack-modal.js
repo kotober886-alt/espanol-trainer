@@ -1,4 +1,5 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-resolved36";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-audio-manager37";
+import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
 
 function escapeHtml(value) {
   return String(value == null ? "" : value)
@@ -7,16 +8,6 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
-
-function speakSpanish(text) {
-  if (!text || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "es-ES";
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  window.speechSynthesis.speak(utterance);
 }
 
 export function createBackpackModal(options = {}) {
@@ -73,7 +64,7 @@ export function createBackpackModal(options = {}) {
       const card = event.target.closest("[data-backpack-item]");
       if (!card || card.dataset.unlocked !== "true") return;
       const item = getItems().find(function (entry) { return entry.id === card.dataset.backpackItem; });
-      if (item) speakSpanish(item.title);
+      if (item) AudioManager.playBackpackItem(item.id, item.title);
     });
 
     document.body.appendChild(dialog);

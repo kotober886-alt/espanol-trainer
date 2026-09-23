@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-resolved36";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-resolved36";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-audio-manager37";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-audio-manager37";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 
