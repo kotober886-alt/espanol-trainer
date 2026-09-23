@@ -1,11 +1,11 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260923-backpack33";
+import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-resolved36";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260923-imposter-localization34";
+import { createBackpackManager } from "../backpack-manager.js?v=20260923-backpack-resolved36";
 import { load, save } from "../core/storage.js";
   import {
     getStats,

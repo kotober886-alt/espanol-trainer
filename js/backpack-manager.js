@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-imposter-localization34";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-imposter-localization34";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-resolved36";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-resolved36";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 
@@ -34,7 +34,8 @@ function defaultState() {
     meta: {
       activityDays: [],
       completedTopics: [],
-      imposterFound: 0
+      imposterFound: 0,
+      resolvedErrorIds: []
     }
   };
 }
@@ -50,7 +51,8 @@ function normalizeState(value) {
     meta: {
       activityDays: Array.isArray(meta.activityDays) ? meta.activityDays.filter(Boolean).slice(-90) : [],
       completedTopics: Array.isArray(meta.completedTopics) ? Array.from(new Set(meta.completedTopics.filter(Boolean))) : [],
-      imposterFound: Math.max(0, Number(meta.imposterFound) || 0)
+      imposterFound: Math.max(0, Number(meta.imposterFound) || 0),
+      resolvedErrorIds: Array.isArray(meta.resolvedErrorIds) ? Array.from(new Set(meta.resolvedErrorIds.filter(Boolean))) : []
     }
   };
 }
@@ -83,18 +85,6 @@ function consecutiveDays(days) {
     else break;
   }
   return count;
-}
-
-function totalErrorsFromTrainerStorage() {
-  try {
-    const trainer = safeParse(localStorage.getItem("espanol_trainer_v3"), {});
-    const stats = trainer && trainer.progress && trainer.progress.stats ? trainer.progress.stats : {};
-    return Object.values(stats).reduce(function (sum, row) {
-      return sum + Math.max(0, Number(row && row.wrong) || 0);
-    }, 0);
-  } catch (error) {
-    return 0;
-  }
 }
 
 export function createBackpackManager(options = {}) {
@@ -148,11 +138,32 @@ export function createBackpackManager(options = {}) {
   }
 
   function checkErrorMilestones() {
-    const totalErrors = totalErrorsFromTrainerStorage();
+    const resolvedCount = state.meta.resolvedErrorIds.length;
     ERROR_REWARDS.forEach(function (reward) {
-      if (totalErrors >= reward.count) unlockItem(reward.itemId);
+      if (resolvedCount >= reward.count) unlockItem(reward.itemId);
     });
-    return totalErrors;
+    return resolvedCount;
+  }
+
+  function recordResolvedError(data) {
+    if (!data || !data.correct) return checkErrorMilestones();
+
+    const inMistakes = data.mode === "mistakes" ||
+      data.mode === "mistake-review" ||
+      data.sessionRound === "mistakes";
+
+    if (!inMistakes) return checkErrorMilestones();
+
+    const item = data.item || {};
+    const id = String(item.originalId || item.reviewOf || item.id || "").trim();
+    if (!id) return checkErrorMilestones();
+
+    if (state.meta.resolvedErrorIds.indexOf(id) < 0) {
+      state.meta.resolvedErrorIds.push(id);
+      saveState();
+    }
+
+    return checkErrorMilestones();
   }
 
   function recordActivityDay(timestamp) {
@@ -227,12 +238,11 @@ export function createBackpackManager(options = {}) {
     const topicCount = recordCompletedTopic(data.topicId);
     if (topicCount >= 5) unlockItem("item_compass");
 
-    checkErrorMilestones();
   }
 
   function checkConditions(type, data = {}) {
     if (type === "answer") {
-      checkErrorMilestones();
+      recordResolvedError(data);
       if (data.correct) checkTimeRewards(data.timestamp);
     } else if (type === "practice") {
       checkPractice(data);
@@ -258,7 +268,9 @@ export function createBackpackManager(options = {}) {
       meta: {
         activityDays: state.meta.activityDays.slice(),
         completedTopics: state.meta.completedTopics.slice(),
-        imposterFound: state.meta.imposterFound
+        imposterFound: state.meta.imposterFound,
+        resolvedErrorIds: state.meta.resolvedErrorIds.slice(),
+        resolvedErrors: state.meta.resolvedErrorIds.length
       }
     };
   }

@@ -478,7 +478,7 @@ export function createTrainerView(deps){
         patchState({stats:progress.getStats(),streak:p.streak});if(!exact)scheduled=scheduleReview(item);
       }
       if(backpackManager){
-        backpackManager.checkConditions("answer",{correct:Boolean(exact),item:item});
+        backpackManager.checkConditions("answer",{correct:Boolean(exact),item:item,mode:state.selectedMode,sessionRound:state.sessionRound,timestamp:Date.now()});
         if(item.type==="audio_story_quiz"){
           backpackManager.checkConditions("story",{item:item,correct:Boolean(exact),completed:true});
         }
@@ -503,7 +503,7 @@ export function createTrainerView(deps){
           const p=progress.recordSkip({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,firstAttempt:true});
           patchState({stats:progress.getStats(),streak:p.streak});
         }
-        if(backpackManager) backpackManager.checkConditions("answer",{correct:false,item:item,skipped:true});
+        if(backpackManager) backpackManager.checkConditions("answer",{correct:false,item:item,skipped:true,mode:state.selectedMode,sessionRound:state.sessionRound,timestamp:Date.now()});
         syncSession();renderStats();
       }
       if(delta>0){

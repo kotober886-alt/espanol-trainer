@@ -135,7 +135,7 @@ export const BACKPACK_ITEMS = [
     titleRu: "Печенька-рыбка",
     image: "assets/images/backpack/item_fish_cookie.webp",
     category: "errors",
-    conditionText: "Накопи 10 ошибок",
+    conditionText: "Отработай 10 ошибок",
     unlocked: false,
     unlockedAt: null
   },
@@ -145,7 +145,7 @@ export const BACKPACK_ITEMS = [
     titleRu: "Какао с маршмеллоу",
     image: "assets/images/backpack/item_cacao.webp",
     category: "errors",
-    conditionText: "Накопи 25 ошибок",
+    conditionText: "Отработай 25 ошибок",
     unlocked: false,
     unlockedAt: null
   },
@@ -155,7 +155,7 @@ export const BACKPACK_ITEMS = [
     titleRu: "Ведро мороженого",
     image: "assets/images/backpack/item_icecream.webp",
     category: "errors",
-    conditionText: "Накопи 50 ошибок",
+    conditionText: "Отработай 50 ошибок",
     unlocked: false,
     unlockedAt: null
   },
@@ -165,7 +165,7 @@ export const BACKPACK_ITEMS = [
     titleRu: "Праздничный торт",
     image: "assets/images/backpack/item_cake.webp",
     category: "errors",
-    conditionText: "Накопи 70 ошибок",
+    conditionText: "Отработай 70 ошибок",
     unlocked: false,
     unlockedAt: null
   },
@@ -175,7 +175,7 @@ export const BACKPACK_ITEMS = [
     titleRu: "Овершейк",
     image: "assets/images/backpack/item_milkshake.webp",
     category: "errors",
-    conditionText: "Накопи 100 ошибок",
+    conditionText: "Отработай 100 ошибок",
     unlocked: false,
     unlockedAt: null
   },
