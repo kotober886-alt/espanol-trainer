@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260923-backpack-achievements46";
-import { createTrainerView } from "./trainer-view.js?v=20260923-training-actions39";
+import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-achievements46";
 import { createResultsView } from "./results-view.js?v=20260923-backpack33";
 import { createNavigation } from "./navigation.js?v=20260923-backpack-achievements46";
 import { createPracticeView } from "./practice-view.js?v=20260923-backpack33";
