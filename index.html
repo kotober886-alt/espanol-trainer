@@ -14,13 +14,13 @@
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260923-force-new-banner26">
+  <link rel="stylesheet" href="css/base.css?v=20260923-blitz-banner-seamless27">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260923-force-new-banner26";
+      const CURRENT_BUILD="20260923-blitz-banner-seamless27";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -31,8 +31,9 @@
             .then(function(remote){
               remote=String(remote||"").trim();
               if(remote && remote!==CURRENT_BUILD){
+                // Record the newer build, but never hard-reload here.
+                // A forced reload from pageshow can loop indefinitely while CDN/browser caches serve stale HTML.
                 localStorage.setItem(KEY,remote);
-                location.reload();
               }
             }).catch(function(){});
         });
@@ -301,7 +302,7 @@
 
         <div class="session-result" id="sessionResult" hidden>
           <div class="result-visual">
-            <img class="result-mascot" id="resultMascot" src="assets/images/mascot/victory.webp?v=20260923-force-new-banner26" alt="Рыжий кот-победитель с секундомером" onerror="this.style.display='none'" hidden>
+            <img class="result-mascot" id="resultMascot" src="assets/images/mascot/victory.webp?v=20260923-blitz-banner-seamless27" alt="Рыжий кот-победитель с секундомером" onerror="this.style.display='none'" hidden>
           </div>
           <h2>Занятие готово</h2>
           <p id="resultMessage">Хорошая работа — короткая практика тоже считается.</p>
@@ -541,6 +542,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260922-mascot-priority5"></script>
-  <script type="module" src="./js/ui/app.js?v=20260923-force-new-banner26"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-blitz-banner-seamless27"></script>
 </body>
 </html>
