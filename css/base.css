@@ -498,13 +498,13 @@
     .home-view { width:min(1040px,100%); margin:0 auto; }
     .home-view[hidden],.layout[hidden],.session-result[hidden] { display:none; }
     .home-hero {
-      display:grid; grid-template-columns:minmax(150px,210px) minmax(0,1fr) minmax(250px,.65fr); gap:22px;
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(150px,210px) minmax(250px,.65fr); gap:22px;
       align-items:center; padding:clamp(22px,4.2vw,46px); border-radius:32px; color:white;
       background:linear-gradient(135deg,#17153b 0%,#45388d 68%,#6253d9 100%); box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .home-hero-mascot { display:flex; align-items:center; justify-content:center; min-width:150px; min-height:210px; }
-    .home-hero-mascot img {
+    .cat-mascot-container { display:flex; align-items:center; justify-content:center; min-width:150px; min-height:210px; }
+    .cat-mascot-container img {
       display:block; width:210px; max-width:100%; height:210px; object-fit:contain;
       filter:drop-shadow(0 12px 20px rgba(11,8,45,.18));
     }
@@ -879,8 +879,8 @@
       .study-dots { display:none; }
       .study-picker-grid { grid-template-columns:minmax(0,1fr); }
       .home-hero { grid-template-columns:1fr; gap:14px; padding:22px 18px; border-radius:23px; text-align:center; }
-      .home-hero-mascot { min-width:0; min-height:170px; }
-      .home-hero-mascot img { width:min(170px,52vw); height:min(170px,52vw); }
+      .cat-mascot-container { min-width:0; min-height:170px; }
+      .cat-mascot-container img { width:min(170px,52vw); height:min(170px,52vw); }
       .home-hero h2 { margin-inline:auto; font-size:32px; }
       .home-hero p { margin-inline:auto; }
       .home-stats { margin-top:4px; }
@@ -2108,24 +2108,39 @@ body.blitz-active { overflow:hidden; }
 
 
 /* Sardine secret: five quick pets on the home mascot. */
-.home-hero-mascot {
+.cat-mascot-container {
   position: relative;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
-.home-hero-mascot img {
+.cat-mascot-container img {
   transform-origin: 50% 78%;
-  transition: transform .16s cubic-bezier(.34,1.56,.64,1), filter .2s ease;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), opacity .14s ease, filter .2s ease;
   will-change: transform;
 }
-.home-hero-mascot.is-petted img {
+.cat-mascot-container.is-petted img {
   transform: scale(1.06,.94);
 }
-.home-hero-mascot.is-purring {
+.cat-mascot-container.is-purring {
   animation: homeMascotPurr .11s ease-in-out 0s 7;
   transform-origin: 50% 75%;
+}
+.cat-mascot-container {
+  outline: none;
+}
+.cat-mascot-container:focus-visible {
+  outline: 3px solid rgba(255,255,255,.88);
+  outline-offset: 5px;
+  border-radius: 28px;
+}
+.cat-mascot-container img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.cat-mascot-container.is-returning img {
+  opacity: .18;
 }
 .home-mascot-heart {
   position: absolute;
@@ -2164,7 +2179,7 @@ body.blitz-active { overflow:hidden; }
   75% { transform: translateX(-1px) rotate(-.3deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .home-hero-mascot img { transition: none; }
-  .home-hero-mascot.is-purring { animation: none; }
+  .cat-mascot-container img { transition: none; }
+  .cat-mascot-container.is-purring { animation: none; }
   .home-mascot-heart { animation-duration: .01ms; }
 }

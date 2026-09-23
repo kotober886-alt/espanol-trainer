@@ -12,9 +12,13 @@
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-v2.png?v=20260921-icon2" sizes="180x180">
   <link rel="apple-touch-icon-precomposed" href="assets/icons/apple-touch-icon-v2.png?v=20260921-icon2" sizes="180x180">
   <link rel="manifest" href="manifest.webmanifest?v=20260921-icon1">
+  <link rel="preload" as="image" type="image/webp" href="assets/images/mascot/cat_idle_1.webp?v=20260923-petting-mascot41">
+  <link rel="preload" as="image" type="image/webp" href="assets/images/mascot/cat_petting_2.webp?v=20260923-petting-mascot41">
+  <link rel="preload" as="image" type="image/webp" href="assets/images/mascot/cat_petting_3.webp?v=20260923-petting-mascot41">
+  <link rel="preload" as="image" type="image/webp" href="assets/images/mascot/cat_petting_4.webp?v=20260923-petting-mascot41">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260923-sardine-secret40">
+  <link rel="stylesheet" href="css/base.css?v=20260923-petting-mascot41">
   <link rel="stylesheet" href="css/imposter.css?v=20260923-imposter30">
   <link rel="stylesheet" href="css/backpack.css?v=20260923-backpack-resolved36">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
@@ -77,12 +81,12 @@
 
     <section class="home-view" id="homeView">
       <div class="home-hero">
-        <div class="home-hero-mascot" aria-hidden="true">
-          <img src="assets/picture-labels/hero-mascot-v2.webp?v=20260920-hero3" alt="">
-        </div>
         <div class="home-hero-copy">
           <h2>Твой тренажер испанского на каждый день</h2>
           <p>Тут можно учить слова и делать разные упражнения, слушать аудирование и решать задачи для закрепления знаний</p>
+        </div>
+        <div id="cat-mascot-container" class="cat-mascot-container" role="button" tabindex="0" aria-label="Погладить кота">
+          <img id="cat-mascot" src="assets/images/mascot/cat_idle_1.webp?v=20260923-petting-mascot41" alt="Рыжий кот-маскот" draggable="false">
         </div>
         <div class="home-stats" aria-label="Статистика обучения">
           <div class="home-stat">
@@ -548,6 +552,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260923-logo-easter32"></script>
-  <script type="module" src="./js/ui/app.js?v=20260923-sardine-secret40"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-petting-mascot41"></script>
 </body>
 </html>
