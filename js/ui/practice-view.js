@@ -37,6 +37,10 @@ export function createPracticeView(options={}){
 
   function ensureBanner(){
     if(banner || !host) return banner;
+    const desktop=window.matchMedia && window.matchMedia("(min-width: 769px)").matches;
+    const titleSize=desktop ? "20px" : "18px";
+    const visualWidth=desktop ? "35%" : "45%";
+    const visualMaxWidth=desktop ? "260px" : "220px";
     banner=document.createElement("button");
     banner.id="blitzBanner";
     banner.className="blitz-banner";
@@ -46,12 +50,11 @@ export function createPracticeView(options={}){
       '<span class="blitz-banner-content" style="max-width:60%;position:relative;z-index:2;">'+
         '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+ 
         '<span class="blitz-banner-copy">'+
-          '<strong>Блиц на 60 секунд</strong>'+ 
+          '<strong style="font-size:'+titleSize+';line-height:1.2;">Блиц на 60 секунд</strong>'+ 
           '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+ 
-          '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+ 
         '</span>'+ 
       '</span>'+ 
-      '<span class="blitz-banner-visual" aria-hidden="true" style="position:absolute;right:0;top:0;bottom:0;width:45%;max-width:220px;z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:flex-end;">'+
+      '<span class="blitz-banner-visual" aria-hidden="true" style="position:absolute;right:0;top:0;bottom:0;width:'+visualWidth+';max-width:'+visualMaxWidth+';z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:flex-end;">'+
         '<img src="assets/images/mascot/blitz_banner_v2.webp?v=20260923-blitz-banner-seamless27" alt="" style="width:100%;height:100%;object-fit:cover;object-position:right center;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);mask-image:linear-gradient(to right,transparent 0%,black 35%);" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
