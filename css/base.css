@@ -1557,11 +1557,12 @@
   display:block;
   margin:0 0 20px;
   padding:18px 20px;
+  min-height:156px;
   border:0;
   border-radius:20px;
   text-align:left;
   color:#fff;
-  background-color:#7a58df;
+  background-color:#7147cc;
   background-image:url('../assets/images/mascot/blitz_banner.webp?v=20260923-blitz-banner-final24');
   background-size:cover;
   background-position:right center;
@@ -1576,8 +1577,8 @@
   position:absolute;
   inset:0;
   z-index:1;
+  background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.22) 36%,rgba(0,0,0,0) 70%);
   pointer-events:none;
-  background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.18) 38%,rgba(0,0,0,.04) 58%,transparent 72%);
 }
 .blitz-banner:hover { transform:translateY(-1px); box-shadow:0 20px 42px rgba(91,72,190,.23); }
 .blitz-banner:active { transform:translateY(0) scale(.995); }
@@ -1590,9 +1591,8 @@
   align-items:center;
   gap:16px;
   width:100%;
-  max-width:68%;
+  max-width:64%;
   min-width:0;
-  text-shadow:0 2px 8px rgba(0,0,0,.3);
 }
 .blitz-banner-icon {
   display:grid;
@@ -1600,9 +1600,8 @@
   width:54px;
   height:54px;
   border-radius:18px;
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.18);
   font-size:30px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 .blitz-banner-copy {
   position:relative;
@@ -1610,9 +1609,10 @@
   display:grid;
   gap:5px;
   min-width:0;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
 }
 .blitz-banner-copy strong { font-size:21px; letter-spacing:-.02em; }
-.blitz-banner-copy span { color:rgba(255,255,255,.96); font-size:14px; line-height:1.35; }
+.blitz-banner-copy span { color:rgba(255,255,255,.94); font-size:14px; line-height:1.35; }
 .blitz-banner-copy b { color:#fff; }
 .blitz-banner-cta {
   position:relative;
