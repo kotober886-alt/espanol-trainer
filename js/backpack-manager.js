@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-lock-silhouette49";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-lock-silhouette49";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-registry50";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-registry50";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
@@ -18,6 +18,21 @@ const ERROR_REWARDS = [
   { count: 70, itemId: "item_cake" },
   { count: 100, itemId: "item_milkshake" }
 ];
+
+const LEGACY_ITEM_ID_ALIASES = {
+  item_abanico: ["abanico_flamenco"],
+  item_boina: ["boina_artista"],
+  item_paellera: ["paellera_diminuta"],
+  item_guitarra: ["guitarra_espanola"],
+  item_melomano: ["melomano"],
+  item_caja_carton: ["caja_carton"],
+  item_raton_mecanico: ["raton_mecanico"],
+  item_fenix: ["fenix"],
+  item_cojin_siesta: ["cojin_siesta"],
+  item_ovillo_fugitivo: ["ovillo_fugitivo"],
+  item_cafe_medianoche: ["cafe_medianoche"],
+  item_sardina: ["item_sardine"]
+};
 
 const NAV_SECRET_TABS = ["home", "words", "practice", "mistakes"];
 const NAV_SECRET_WINDOW_MS = 20000;
@@ -156,7 +171,11 @@ export function createBackpackManager(options = {}) {
     const resolvedTotal = readResolvedErrorsTotal();
 
     items = BACKPACK_ITEMS.map(function (item) {
-      const saved = state.unlocks[item.id] || {};
+      const legacyIds = LEGACY_ITEM_ID_ALIASES[item.id] || [];
+      const legacySaved = legacyIds
+        .map(function (legacyId) { return state.unlocks[legacyId]; })
+        .find(function (entry) { return entry && entry.unlocked; });
+      const saved = state.unlocks[item.id] || legacySaved || {};
       const errorReward = ERROR_REWARDS.find(function (reward) {
         return reward.itemId === item.id;
       });
@@ -251,8 +270,8 @@ export function createBackpackManager(options = {}) {
 
   function checkCompletionTimeRewards(timestamp) {
     const hour = new Date(timestamp || Date.now()).getHours();
-    if (hour >= 14 && hour < 16) unlockItem("cojin_siesta");
-    if (hour >= 0 && hour < 5) unlockItem("cafe_medianoche");
+    if (hour >= 14 && hour < 16) unlockItem("item_cojin_siesta");
+    if (hour >= 0 && hour < 5) unlockItem("item_cafe_medianoche");
   }
 
   function checkStory(data) {
@@ -262,7 +281,7 @@ export function createBackpackManager(options = {}) {
       unlockItem(reward.itemId);
     }
     if (data && data.completed && isFoodRestaurantStory(item)) {
-      unlockItem("paellera_diminuta");
+      unlockItem("item_paellera");
     }
   }
 
@@ -303,14 +322,14 @@ export function createBackpackManager(options = {}) {
 
     const topicCount = recordCompletedTopic(data.topicId);
     if (topicCount >= 5) unlockItem("item_compass");
-    if (isFoodTopic(data.topicId)) unlockItem("paellera_diminuta");
+    if (isFoodTopic(data.topicId)) unlockItem("item_paellera");
 
     const perfect = wrong === 0 && correct === answered;
     state.meta.perfectSessionsCount = perfect
       ? Math.max(0, Number(state.meta.perfectSessionsCount) || 0) + 1
       : 0;
     saveState();
-    if (state.meta.perfectSessionsCount >= 5) unlockItem("abanico_flamenco");
+    if (state.meta.perfectSessionsCount >= 5) unlockItem("item_abanico");
 
     checkCompletionTimeRewards(data.timestamp);
   }
@@ -329,13 +348,13 @@ export function createBackpackManager(options = {}) {
       state.meta.learnedWordIds.push(key);
       saveState();
     }
-    if (state.meta.learnedWordIds.length >= 50) unlockItem("boina_artista");
+    if (state.meta.learnedWordIds.length >= 50) unlockItem("item_boina");
   }
 
   function checkAudio(data) {
     state.meta.totalAudioPlays = Math.max(0, Number(state.meta.totalAudioPlays) || 0) + 1;
     saveState();
-    if (state.meta.totalAudioPlays >= 30) unlockItem("guitarra_espanola");
+    if (state.meta.totalAudioPlays >= 30) unlockItem("item_guitarra");
 
     const wordId = data && data.isWordCard ? String(data.wordId || "").trim() : "";
     if (!wordId) {
@@ -350,7 +369,7 @@ export function createBackpackManager(options = {}) {
       sameWordAudioPlays = 1;
     }
 
-    if (sameWordAudioPlays >= 5) unlockItem("melomano");
+    if (sameWordAudioPlays >= 5) unlockItem("item_melomano");
   }
 
   function startErrorSession() {
@@ -367,7 +386,7 @@ export function createBackpackManager(options = {}) {
     if (!inErrors) return;
     if (data.correct) {
       errorStreak += 1;
-      if (errorStreak >= 5) unlockItem("fenix");
+      if (errorStreak >= 5) unlockItem("item_fenix");
     } else {
       errorStreak = 0;
     }
@@ -377,7 +396,7 @@ export function createBackpackManager(options = {}) {
     checkErrorMilestones(data && data.resolvedTotal);
     if (!data || !data.resolved) return;
     resolvedErrorsInSession += 1;
-    if (resolvedErrorsInSession >= 15) unlockItem("raton_mecanico");
+    if (resolvedErrorsInSession >= 15) unlockItem("item_raton_mecanico");
   }
 
   function checkErrorList(data) {
@@ -389,7 +408,7 @@ export function createBackpackManager(options = {}) {
       }
       return;
     }
-    if (state.meta.hadErrors) unlockItem("caja_carton");
+    if (state.meta.hadErrors) unlockItem("item_caja_carton");
   }
 
   function checkNavigation(data) {
@@ -407,16 +426,16 @@ export function createBackpackManager(options = {}) {
       return navVisits[tab].length >= 2;
     });
     if (unlocked) {
-      unlockItem("ovillo_fugitivo");
+      unlockItem("item_ovillo_fugitivo");
       NAV_SECRET_TABS.forEach(function (tab) { navVisits[tab] = []; });
     }
   }
 
   function reconcilePersistentRewards() {
-    if (state.meta.perfectSessionsCount >= 5) unlockItem("abanico_flamenco", { silent: true });
-    if (state.meta.learnedWordIds.length >= 50) unlockItem("boina_artista", { silent: true });
-    if (state.meta.totalAudioPlays >= 30) unlockItem("guitarra_espanola", { silent: true });
-    if (state.meta.completedTopics.some(isFoodTopic)) unlockItem("paellera_diminuta", { silent: true });
+    if (state.meta.perfectSessionsCount >= 5) unlockItem("item_abanico", { silent: true });
+    if (state.meta.learnedWordIds.length >= 50) unlockItem("item_boina", { silent: true });
+    if (state.meta.totalAudioPlays >= 30) unlockItem("item_guitarra", { silent: true });
+    if (state.meta.completedTopics.some(isFoodTopic)) unlockItem("item_paellera", { silent: true });
     checkErrorMilestones();
   }
 

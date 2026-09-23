@@ -1,4 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-lock-silhouette49";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-registry50";
 import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
 
 function escapeHtml(value) {
@@ -12,8 +12,7 @@ function escapeHtml(value) {
 
 const LOCKED_TITLE = "???";
 const LOCKED_TRANSLATION = "Неизвестный трофей";
-const SECRET_LOCKED_HINT = "Секретная пасхалка. Никаких подсказок — пробуй неожиданное и исследуй каждый уголок!";
-const BACKPACK_RENDER_VERSION = "20260923-backpack-lock-silhouette49";
+const BACKPACK_RENDER_VERSION = "20260923-backpack-registry50";
 const LOCK_ICON_URL = "assets/images/backpack/lock.svg?v=" + BACKPACK_RENDER_VERSION;
 
 function itemImageUrl(item) {
@@ -32,15 +31,19 @@ function lockedVisualMarkup(item, detail) {
 function paintLockedSilhouette(canvas) {
   if (!canvas || canvas.dataset.silhouetteReady === "1") return;
   canvas.dataset.silhouetteReady = "1";
+
   const source = new Image();
   source.decoding = "async";
   source.onload = function () {
     const size = 256;
     canvas.width = size;
     canvas.height = size;
+
     const context = canvas.getContext("2d", { willReadFrequently: true });
     if (!context) return;
+
     context.clearRect(0, 0, size, size);
+
     const naturalWidth = Math.max(1, source.naturalWidth || source.width || size);
     const naturalHeight = Math.max(1, source.naturalHeight || source.height || size);
     const scale = Math.min(size / naturalWidth, size / naturalHeight);
@@ -50,30 +53,113 @@ function paintLockedSilhouette(canvas) {
 
     const pixels = context.getImageData(0, 0, size, size);
     const data = pixels.data;
-    for (let i = 0; i < data.length; i += 4) {
-      const red = data[i], green = data[i + 1], blue = data[i + 2], alpha = data[i + 3];
-      if (alpha < 6) continue;
+    const total = size * size;
+    const visited = new Uint8Array(total);
+    const queue = new Int32Array(total);
+    let head = 0;
+    let tail = 0;
+
+    const borderSamples = [];
+    function sample(x, y) {
+      const offset = (y * size + x) * 4;
+      const alpha = data[offset + 3];
+      if (alpha < 20) return;
+      borderSamples.push([data[offset], data[offset + 1], data[offset + 2]]);
+    }
+
+    for (let i = 0; i < size; i += 4) {
+      sample(i, 0);
+      sample(i, size - 1);
+      sample(0, i);
+      sample(size - 1, i);
+    }
+
+    let background = null;
+    if (borderSamples.length >= 6) {
+      background = borderSamples.reduce(function (sum, rgb) {
+        sum[0] += rgb[0];
+        sum[1] += rgb[1];
+        sum[2] += rgb[2];
+        return sum;
+      }, [0, 0, 0]).map(function (value) {
+        return value / borderSamples.length;
+      });
+    }
+
+    function isBackground(index) {
+      const offset = index * 4;
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const alpha = data[offset + 3];
+
+      if (alpha < 10) return true;
+
       const chromaGreen =
-        green > 175 &&
-        green - red > 92 &&
-        green - blue > 82 &&
-        green > red * 1.42 &&
-        green > blue * 1.42;
-      if (chromaGreen) {
-        data[i + 3] = 0;
+        green > 105 &&
+        green - red > 34 &&
+        green - blue > 30 &&
+        green > red * 1.16 &&
+        green > blue * 1.16;
+
+      if (chromaGreen) return true;
+      if (!background) return false;
+
+      const dr = red - background[0];
+      const dg = green - background[1];
+      const db = blue - background[2];
+      return (dr * dr + dg * dg + db * db) < 3600;
+    }
+
+    function push(index) {
+      if (index < 0 || index >= total || visited[index] || !isBackground(index)) return;
+      visited[index] = 1;
+      queue[tail++] = index;
+    }
+
+    for (let x = 0; x < size; x += 1) {
+      push(x);
+      push((size - 1) * size + x);
+    }
+    for (let y = 0; y < size; y += 1) {
+      push(y * size);
+      push(y * size + size - 1);
+    }
+
+    while (head < tail) {
+      const index = queue[head++];
+      const x = index % size;
+      const y = Math.floor(index / size);
+      if (x > 0) push(index - 1);
+      if (x < size - 1) push(index + 1);
+      if (y > 0) push(index - size);
+      if (y < size - 1) push(index + size);
+    }
+
+    for (let index = 0; index < total; index += 1) {
+      const offset = index * 4;
+      if (visited[index]) {
+        data[offset + 3] = 0;
         continue;
       }
-      const luminance = (red * 0.2126) + (green * 0.7152) + (blue * 0.0722);
-      const gray = Math.max(82, Math.min(142, Math.round(92 + luminance * 0.18)));
-      data[i] = gray;
-      data[i + 1] = gray;
-      data[i + 2] = gray + 6;
-      data[i + 3] = Math.min(205, Math.round(alpha * 0.72));
+
+      const alpha = data[offset + 3];
+      if (alpha < 8) continue;
+
+      data[offset] = 43;
+      data[offset + 1] = 38;
+      data[offset + 2] = 72;
+      data[offset + 3] = Math.min(230, Math.max(95, Math.round(alpha * 0.82)));
     }
+
     context.putImageData(pixels, 0, 0);
     canvas.classList.add("is-ready");
   };
-  source.onerror = function () { canvas.classList.add("is-error"); };
+
+  source.onerror = function () {
+    canvas.classList.add("is-error");
+  };
+
   source.src = canvas.dataset.silhouetteSrc || "";
 }
 
@@ -86,24 +172,12 @@ function isSecretItem(item) {
   return Boolean(item && item.category === "secrets");
 }
 
-function secretHint(item) {
-  return String(item && item.secretHint || "").trim() || SECRET_LOCKED_HINT;
-}
-
 function ordinaryRumor(item) {
   return String(item && item.rumor || "").trim();
 }
 
 function ordinaryCondition(item) {
-  return String(item && (item.conditionText || item.condition) || "").trim() ||
-    "Продолжай тренироваться, чтобы узнать условие.";
-}
-
-function lockedHint(item) {
-  if (isSecretItem(item)) return secretHint(item);
-  const rumor = ordinaryRumor(item);
-  const condition = ordinaryCondition(item);
-  return rumor ? "Слух: " + rumor + " · Как получить: " + condition : condition;
+  return String(item && item.conditionText || "").trim();
 }
 
 export function createBackpackModal(options = {}) {
@@ -187,12 +261,15 @@ export function createBackpackModal(options = {}) {
 
   function renderCard(item) {
     const unlocked = Boolean(item.unlocked);
+    const secret = isSecretItem(item);
     const title = unlocked ? item.title : LOCKED_TITLE;
     const translation = unlocked ? item.titleRu : LOCKED_TRANSLATION;
-    const hint = unlocked ? "Нажми для озвучки" : lockedHint(item);
+    const hint = unlocked
+      ? "Нажми для озвучки"
+      : (secret ? "Тайная пасхалка" : ordinaryCondition(item));
     const ariaLabel = unlocked
       ? String(item.titleRu || item.title || "") + ". Разблокировано. Нажми, чтобы услышать название по-испански."
-      : LOCKED_TRANSLATION + ". " + (isSecretItem(item) ? "Секретная пасхалка. Открой подробности." : "Условие получения: " + hint);
+      : LOCKED_TRANSLATION + ". " + (secret ? "Тайная пасхалка." : "Условие: " + hint);
 
     return '<button class="backpack-card ' + (unlocked ? 'is-unlocked' : 'is-locked') +
       '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
@@ -225,9 +302,8 @@ export function createBackpackModal(options = {}) {
     closeLockedDetails();
 
     const secret = isSecretItem(item);
-    const rumor = secret ? "" : ordinaryRumor(item);
-    const condition = secret ? "" : ordinaryCondition(item);
-    const hint = secret ? secretHint(item) : lockedHint(item);
+    const rumor = ordinaryRumor(item);
+    const condition = ordinaryCondition(item);
 
     detailOverlay = document.createElement("div");
     detailOverlay.className = "backpack-detail-overlay";
@@ -241,13 +317,13 @@ export function createBackpackModal(options = {}) {
           lockedVisualMarkup(item, true) +
         '</div>' +
         '<div class="backpack-detail-copy">' +
-          '<span class="backpack-detail-kicker">' + escapeHtml(secret ? "Секретная пасхалка" : "Заблокированный трофей") + '</span>' +
+          '<span class="backpack-detail-kicker">Заблокированный трофей</span>' +
           '<h3>' + LOCKED_TITLE + '</h3>' +
           '<p class="backpack-detail-translation">' + LOCKED_TRANSLATION + '</p>' +
+          (rumor ? '<p class="backpack-rumor-text">' + escapeHtml(rumor) + '</p>' : '') +
           (secret
-            ? '<div class="backpack-secret-hint"><strong>Таинственная подсказка</strong><p>' + escapeHtml(hint) + '</p></div>'
-            : (rumor ? '<div class="backpack-secret-hint backpack-rumor"><strong>Слух</strong><p>' + escapeHtml(rumor) + '</p></div>' : '') +
-              '<div class="backpack-condition"><strong>Способ получения</strong><p>' + escapeHtml(condition) + '</p></div>') +
+            ? '<span class="backpack-secret-badge">Тайная пасхалка</span>'
+            : '<span class="backpack-condition-badge">' + escapeHtml(condition) + '</span>') +
         '</div>' +
       '</div>';
 
@@ -338,7 +414,7 @@ export function createBackpackModal(options = {}) {
         '<div class="loot-kicker">¡Nuevo Trofeo Desbloqueado!</div>' +
         '<div class="loot-visual">' +
           '<span class="loot-halo" aria-hidden="true"></span>' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-lock-silhouette49" alt="' + escapeHtml(item.titleRu) + '">' +
+          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-registry50" alt="' + escapeHtml(item.titleRu) + '">' +
         '</div>' +
         '<h2>' + escapeHtml(item.title) + '</h2>' +
         '<p>' + escapeHtml(item.titleRu) + '</p>' +
