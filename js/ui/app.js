@@ -4,7 +4,7 @@ import { createTrainerView } from "./trainer-view.js?v=20260923-imposter30";
 import { createResultsView } from "./results-view.js?v=20260923-blitz-mode18";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-blitz-banner-hq29";
-import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter30";
+import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
