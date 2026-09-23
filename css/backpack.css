@@ -129,6 +129,7 @@
   gap:12px;
 }
 .backpack-card {
+  position:relative;
   min-width:0;
   padding:12px;
   border:1px solid #e7e2f4;
@@ -146,7 +147,7 @@
   border-color:rgba(245,158,11,.45);
   box-shadow:0 14px 32px rgba(245,158,11,.16),0 0 0 1px rgba(245,158,11,.08);
 }
-.backpack-card.is-locked { cursor:default; background:#f4f2f8; }
+.backpack-card.is-locked { cursor:help; background:#f4f2f8; }
 .backpack-card-visual {
   position:relative;
   display:grid;
@@ -164,7 +165,7 @@
   display:block;
 }
 .backpack-card.is-locked .backpack-card-visual img {
-  filter:grayscale(1) brightness(.22) opacity(.34);
+  filter:brightness(0) saturate(0%) opacity(0.25);
 }
 .backpack-lock {
   position:absolute;
@@ -174,8 +175,10 @@
   width:36px;
   height:36px;
   border-radius:50%;
-  background:rgba(31,26,55,.82);
+  background:rgba(31,26,55,.58);
   font-size:18px;
+  opacity:.82;
+  backdrop-filter:blur(3px);
 }
 .backpack-card-spark {
   position:absolute;
@@ -208,6 +211,32 @@
   line-height:1.35;
 }
 .backpack-card.is-unlocked .backpack-card-copy small { color:#9b6a14; }
+
+.backpack-card.is-locked .backpack-card-copy small {
+  position:absolute;
+  z-index:12;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  margin:0;
+  padding:9px 10px;
+  border-radius:11px;
+  background:rgba(31,26,55,.92);
+  color:#fff;
+  box-shadow:0 8px 22px rgba(20,14,55,.24);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(5px);
+  pointer-events:none;
+  transition:opacity .16s ease,transform .16s ease,visibility .16s ease;
+}
+.backpack-card.is-locked:hover .backpack-card-copy small,
+.backpack-card.is-locked:focus .backpack-card-copy small,
+.backpack-card.is-locked:focus-visible .backpack-card-copy small {
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
 
 .loot-popup-overlay {
   position:fixed;
