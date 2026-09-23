@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-sardine-secret40";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-hidden-titles45";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-achievements46";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-achievements46";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
@@ -19,6 +19,9 @@ const ERROR_REWARDS = [
   { count: 100, itemId: "item_milkshake" }
 ];
 
+const NAV_SECRET_TABS = ["home", "words", "practice", "mistakes"];
+const NAV_SECRET_WINDOW_MS = 20000;
+
 function safeParse(raw, fallback) {
   try {
     const value = JSON.parse(raw);
@@ -30,12 +33,16 @@ function safeParse(raw, fallback) {
 
 function defaultState() {
   return {
-    version: 1,
+    version: 2,
     unlocks: {},
     meta: {
       activityDays: [],
       completedTopics: [],
-      imposterFound: 0
+      imposterFound: 0,
+      perfectSessionsCount: 0,
+      learnedWordIds: [],
+      totalAudioPlays: 0,
+      hadErrors: false
     }
   };
 }
@@ -46,12 +53,16 @@ function normalizeState(value) {
   const meta = input.meta && typeof input.meta === "object" ? input.meta : {};
 
   return {
-    version: 1,
+    version: 2,
     unlocks: input.unlocks && typeof input.unlocks === "object" ? input.unlocks : {},
     meta: {
       activityDays: Array.isArray(meta.activityDays) ? meta.activityDays.filter(Boolean).slice(-90) : [],
       completedTopics: Array.isArray(meta.completedTopics) ? Array.from(new Set(meta.completedTopics.filter(Boolean))) : [],
-      imposterFound: Math.max(0, Number(meta.imposterFound) || 0)
+      imposterFound: Math.max(0, Number(meta.imposterFound) || 0),
+      perfectSessionsCount: Math.max(0, Number(meta.perfectSessionsCount) || 0),
+      learnedWordIds: Array.isArray(meta.learnedWordIds) ? Array.from(new Set(meta.learnedWordIds.filter(Boolean))) : [],
+      totalAudioPlays: Math.max(0, Number(meta.totalAudioPlays) || 0),
+      hadErrors: Boolean(meta.hadErrors)
     }
   };
 }
@@ -86,6 +97,24 @@ function consecutiveDays(days) {
   return count;
 }
 
+function normalizedTopicKey(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function isFoodTopic(value) {
+  const key = normalizedTopicKey(value);
+  return key === "food" || key === "foods" || key === "restaurant" || key === "restaurants" || key === "tapas";
+}
+
+function isFoodRestaurantStory(item) {
+  if (!item || typeof item !== "object") return false;
+  if (isFoodTopic(item.topic)) return true;
+  const haystack = [
+    item.id, item.storyId, item.topic, item.title, item.q, item.skill
+  ].filter(Boolean).join(" ").toLowerCase();
+  return /food|foods|restaurant|restaurante|tapas|cafeter|café|cafe/.test(haystack);
+}
+
 export function createBackpackManager(options = {}) {
   const storedBackpack = safeParse(localStorage.getItem(BACKPACK_STORAGE_KEY), defaultState());
 
@@ -102,6 +131,25 @@ export function createBackpackManager(options = {}) {
 
   let state = normalizeState(storedBackpack);
   let items = [];
+  let resolvedErrorsInSession = 0;
+  let errorStreak = 0;
+  let lastAudioWordId = "";
+  let sameWordAudioPlays = 0;
+  const navVisits = {
+    home: [],
+    words: [],
+    practice: [],
+    mistakes: []
+  };
+
+  function readResolvedErrorsTotal() {
+    try {
+      const value = Number.parseInt(localStorage.getItem(RESOLVED_ERRORS_STORAGE_KEY) || "0", 10);
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    } catch (error) {
+      return 0;
+    }
+  }
 
   function mergeItems() {
     const resolvedTotal = readResolvedErrorsTotal();
@@ -142,7 +190,7 @@ export function createBackpackManager(options = {}) {
     localStorage.setItem(BACKPACK_STORAGE_KEY, JSON.stringify(state));
   }
 
-  function unlockItem(itemId) {
+  function unlockItem(itemId, options = {}) {
     const item = items.find(function (entry) { return entry.id === itemId; });
     if (!item || item.unlocked) return false;
 
@@ -150,21 +198,12 @@ export function createBackpackManager(options = {}) {
     item.unlockedAt = Date.now();
     saveState();
     ui.refresh();
-    ui.showUnlockPopup(Object.assign({}, item));
+    if (!options.silent) ui.showUnlockPopup(Object.assign({}, item));
 
     window.dispatchEvent(new CustomEvent("backpack:item-unlocked", {
       detail: { item: Object.assign({}, item) }
     }));
     return true;
-  }
-
-  function readResolvedErrorsTotal() {
-    try {
-      const value = Number.parseInt(localStorage.getItem(RESOLVED_ERRORS_STORAGE_KEY) || "0", 10);
-      return Number.isFinite(value) && value > 0 ? value : 0;
-    } catch (error) {
-      return 0;
-    }
   }
 
   function checkErrorMilestones(resolvedTotal) {
@@ -202,19 +241,28 @@ export function createBackpackManager(options = {}) {
     return state.meta.completedTopics.length;
   }
 
-  function checkTimeRewards(timestamp) {
+  function checkLegacyTimeRewards(timestamp) {
     const date = new Date(timestamp || Date.now());
     const hour = date.getHours();
     if (hour < 8) unlockItem("item_coffee");
     if (hour >= 23) unlockItem("item_soda");
   }
 
+  function checkCompletionTimeRewards(timestamp) {
+    const hour = new Date(timestamp || Date.now()).getHours();
+    if (hour >= 14 && hour < 16) unlockItem("cojin_siesta");
+    if (hour >= 0 && hour < 5) unlockItem("cafe_medianoche");
+  }
+
   function checkStory(data) {
     const item = data && data.item ? data.item : {};
     const reward = STORY_REWARDS[item.id];
-    if (!reward) return;
-    if (reward.perfect && !data.correct) return;
-    unlockItem(reward.itemId);
+    if (reward && (!reward.perfect || data.correct)) {
+      unlockItem(reward.itemId);
+    }
+    if (data && data.completed && isFoodRestaurantStory(item)) {
+      unlockItem("paellera_diminuta");
+    }
   }
 
   function checkBlitz(data) {
@@ -242,25 +290,146 @@ export function createBackpackManager(options = {}) {
 
   function checkPractice(data) {
     const summary = data && data.summary ? data.summary : {};
-    if ((Number(summary.answered) || 0) <= 0) return;
+    const answered = Math.max(0, Number(summary.answered) || 0);
+    const correct = Math.max(0, Number(summary.correct) || 0);
+    const wrong = Math.max(0, Number(summary.wrong) || 0);
+    if (answered <= 0) return;
 
     unlockItem("item_collar");
 
     const dayStreak = recordActivityDay(data.timestamp);
     if (dayStreak >= 3) unlockItem("item_keychain");
+    if (dayStreak >= 7) unlockItem("gafas_sol");
 
     const topicCount = recordCompletedTopic(data.topicId);
     if (topicCount >= 5) unlockItem("item_compass");
+    if (isFoodTopic(data.topicId)) unlockItem("paellera_diminuta");
 
+    const perfect = wrong === 0 && correct === answered;
+    state.meta.perfectSessionsCount = perfect
+      ? Math.max(0, Number(state.meta.perfectSessionsCount) || 0) + 1
+      : 0;
+    saveState();
+    if (state.meta.perfectSessionsCount >= 5) unlockItem("abanico_flamenco");
+
+    checkCompletionTimeRewards(data.timestamp);
+  }
+
+  function checkStudy(data) {
+    const wordId = String(data && data.wordId || "").trim();
+    if (!wordId) return;
+    const topicId = String(data && data.topicId || "").trim();
+    const key = (topicId || "unknown") + ":" + wordId;
+    if (state.meta.learnedWordIds.indexOf(key) < 0) {
+      state.meta.learnedWordIds.push(key);
+      saveState();
+    }
+    if (state.meta.learnedWordIds.length >= 50) unlockItem("boina_artista");
+  }
+
+  function checkAudio(data) {
+    state.meta.totalAudioPlays = Math.max(0, Number(state.meta.totalAudioPlays) || 0) + 1;
+    saveState();
+    if (state.meta.totalAudioPlays >= 30) unlockItem("guitarra_espanola");
+
+    const wordId = data && data.isWordCard ? String(data.wordId || "").trim() : "";
+    if (!wordId) {
+      lastAudioWordId = "";
+      sameWordAudioPlays = 0;
+      return;
+    }
+
+    if (wordId === lastAudioWordId) sameWordAudioPlays += 1;
+    else {
+      lastAudioWordId = wordId;
+      sameWordAudioPlays = 1;
+    }
+
+    if (sameWordAudioPlays >= 5) unlockItem("melomano");
+  }
+
+  function startErrorSession() {
+    resolvedErrorsInSession = 0;
+    errorStreak = 0;
+  }
+
+  function checkErrorAnswer(data) {
+    const inErrors = Boolean(data && (data.mode === "mistakes" || data.sessionRound === "mistakes"));
+    if (!inErrors) return;
+    if (data.correct) {
+      errorStreak += 1;
+      if (errorStreak >= 5) unlockItem("fenix");
+    } else {
+      errorStreak = 0;
+    }
+  }
+
+  function checkResolvedError(data) {
+    checkErrorMilestones(data && data.resolvedTotal);
+    if (!data || !data.resolved) return;
+    resolvedErrorsInSession += 1;
+    if (resolvedErrorsInSession >= 15) unlockItem("raton_mecanico");
+  }
+
+  function checkErrorList(data) {
+    const count = Math.max(0, Number(data && data.count) || 0);
+    if (count > 0) {
+      if (!state.meta.hadErrors) {
+        state.meta.hadErrors = true;
+        saveState();
+      }
+      return;
+    }
+    if (state.meta.hadErrors) unlockItem("caja_carton");
+  }
+
+  function checkNavigation(data) {
+    const section = String(data && data.section || "");
+    if (NAV_SECRET_TABS.indexOf(section) < 0) return;
+
+    const now = Number(data && data.timestamp) || Date.now();
+    const cutoff = now - NAV_SECRET_WINDOW_MS;
+    NAV_SECRET_TABS.forEach(function (tab) {
+      navVisits[tab] = navVisits[tab].filter(function (timestamp) { return timestamp >= cutoff; });
+    });
+    navVisits[section].push(now);
+
+    const unlocked = NAV_SECRET_TABS.every(function (tab) {
+      return navVisits[tab].length >= 2;
+    });
+    if (unlocked) {
+      unlockItem("ovillo_fugitivo");
+      NAV_SECRET_TABS.forEach(function (tab) { navVisits[tab] = []; });
+    }
+  }
+
+  function reconcilePersistentRewards() {
+    if (state.meta.perfectSessionsCount >= 5) unlockItem("abanico_flamenco", { silent: true });
+    if (state.meta.learnedWordIds.length >= 50) unlockItem("boina_artista", { silent: true });
+    if (state.meta.totalAudioPlays >= 30) unlockItem("guitarra_espanola", { silent: true });
+    if (consecutiveDays(state.meta.activityDays) >= 7) unlockItem("gafas_sol", { silent: true });
+    if (state.meta.completedTopics.some(isFoodTopic)) unlockItem("paellera_diminuta", { silent: true });
+    checkErrorMilestones();
   }
 
   function checkConditions(type, data = {}) {
     if (type === "answer") {
-      if (data.correct) checkTimeRewards(data.timestamp);
+      if (data.correct) checkLegacyTimeRewards(data.timestamp);
+      checkErrorAnswer(data);
     } else if (type === "errors") {
-      checkErrorMilestones(data.resolvedTotal);
+      checkResolvedError(data);
+    } else if (type === "error-session-start") {
+      startErrorSession();
+    } else if (type === "error-list") {
+      checkErrorList(data);
     } else if (type === "practice") {
       checkPractice(data);
+    } else if (type === "study") {
+      checkStudy(data);
+    } else if (type === "audio") {
+      checkAudio(data);
+    } else if (type === "navigation") {
+      checkNavigation(data);
     } else if (type === "story" || type === "stories") {
       checkStory(data);
     } else if (type === "blitz") {
@@ -284,7 +453,12 @@ export function createBackpackManager(options = {}) {
         activityDays: state.meta.activityDays.slice(),
         completedTopics: state.meta.completedTopics.slice(),
         imposterFound: state.meta.imposterFound,
-        resolvedErrors: readResolvedErrorsTotal()
+        resolvedErrors: readResolvedErrorsTotal(),
+        perfectSessionsCount: state.meta.perfectSessionsCount,
+        learnedWordsCount: state.meta.learnedWordIds.length,
+        totalAudioPlays: state.meta.totalAudioPlays,
+        resolvedErrorsInSession: resolvedErrorsInSession,
+        errorStreak: errorStreak
       }
     };
   }
@@ -293,6 +467,7 @@ export function createBackpackManager(options = {}) {
     unlockItem("item_gold_comb");
   });
 
+  reconcilePersistentRewards();
   saveState();
   ui.refresh();
 
