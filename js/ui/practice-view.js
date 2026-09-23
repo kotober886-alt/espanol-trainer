@@ -1,9 +1,19 @@
 import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-juice20";
 
+function ensureBlitzStyles(){
+  if(document.getElementById("blitz-css")) return;
+  const link=document.createElement("link");
+  link.id="blitz-css";
+  link.rel="stylesheet";
+  link.href="css/blitz.css?v=20260923-blitz-banner-seamless27";
+  document.head.appendChild(link);
+}
+
 /**
  * Practice catalog enhancements: Blitz entry banner + lifecycle.
  */
 export function createPracticeView(options={}){
+  ensureBlitzStyles();
   const host=options.host || document.getElementById("topicCatalog");
   const getSource=typeof options.getSource==="function" ? options.getSource : function(){return {};};
   const onReturn=typeof options.onReturn==="function" ? options.onReturn : function(){};
@@ -45,11 +55,11 @@ export function createPracticeView(options={}){
       '<span class="blitz-banner-content">'+
         '<span class="blitz-banner-icon" aria-hidden="true">⚡</span>'+
         '<span class="blitz-banner-copy">'+
-          '<strong>Блиц на 60 секунд</strong>'+
-          '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+
-          '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+
-        '</span>'+
-      '</span>'+
+          '<strong>Блиц на 60 секунд</strong>'+ 
+          '<span>Ответь на максимум карточек за минуту! Рекорд: <b data-blitz-high-score>0</b></span>'+ 
+          '<span class="blitz-banner-cta" aria-hidden="true">Играть →</span>'+ 
+        '</span>'+ 
+      '</span>'+ 
       '<span class="blitz-banner-visual" aria-hidden="true">'+
         '<img src="assets/images/mascot/blitz_banner_v2.webp?v=20260923-blitz-banner-seamless27" alt="" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
