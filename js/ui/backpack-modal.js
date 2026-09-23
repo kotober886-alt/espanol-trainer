@@ -1,4 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack33";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-imposter-localization34";
 
 function escapeHtml(value) {
   return String(value == null ? "" : value)

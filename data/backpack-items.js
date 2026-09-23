@@ -215,7 +215,7 @@ export const BACKPACK_CATEGORIES = [
   { id: "routine", title: "Ритуалы и прогресс" },
   { id: "stories", title: "Аудио-истории" },
   { id: "blitz", title: "Блиц" },
-  { id: "imposter", title: "Spot the Imposter" },
+  { id: "imposter", title: "Спаси кота от ошибки" },
   { id: "errors", title: "Сладкая реабилитация" },
   { id: "secrets", title: "Секретные пасхалки" }
 ];
