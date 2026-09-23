@@ -1,7 +1,7 @@
 import { createBlitzGame, BLITZ_HIGH_SCORE_KEY } from "../blitz/blitz-game.js?v=20260923-blitz-juice20";
 
-function ensureBlitzStyles(){
-  if(document.getElementById("blitz-css")) return;
+// Load Blitz styles once when this module is evaluated, not during view rendering.
+if(!document.getElementById("blitz-css")){
   const link=document.createElement("link");
   link.id="blitz-css";
   link.rel="stylesheet";
@@ -13,7 +13,6 @@ function ensureBlitzStyles(){
  * Practice catalog enhancements: Blitz entry banner + lifecycle.
  */
 export function createPracticeView(options={}){
-  ensureBlitzStyles();
   const host=options.host || document.getElementById("topicCatalog");
   const getSource=typeof options.getSource==="function" ? options.getSource : function(){return {};};
   const onReturn=typeof options.onReturn==="function" ? options.onReturn : function(){};
