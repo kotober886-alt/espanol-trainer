@@ -55,7 +55,7 @@ export function createPracticeView(options={}){
         '</span>'+ 
       '</span>'+ 
       '<span class="blitz-banner-visual" aria-hidden="true" style="position:absolute;right:0;top:0;bottom:0;width:'+visualWidth+';max-width:'+visualMaxWidth+';z-index:1;pointer-events:none;display:flex;align-items:center;justify-content:flex-end;">'+
-        '<img src="assets/images/mascot/blitz_banner_v2.webp?v=20260923-blitz-banner-seamless27" alt="" style="width:100%;height:100%;object-fit:cover;object-position:right center;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);mask-image:linear-gradient(to right,transparent 0%,black 35%);" onerror="this.parentElement.style.display=\'none\'">'+
+        '<img src="assets/images/mascot/blitz_banner_hq.webp?v=20260923-blitz-banner-hq29" alt="" style="width:100%;height:100%;object-fit:cover;object-position:right center;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;transform:translateZ(0);backface-visibility:hidden;mask-image:linear-gradient(to right,transparent 0%,black 35%);" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
 
