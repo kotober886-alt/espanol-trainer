@@ -18,7 +18,7 @@
   <link rel="preload" as="image" type="image/webp" href="assets/images/mascot/cat_petting_4.webp?v=cat-fix-clean-01">
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
-  <link rel="stylesheet" href="css/base.css?v=20260923-hero-speech-bubble43">
+  <link rel="stylesheet" href="css/base.css?v=20260923-cat-phrases44">
   <link rel="stylesheet" href="css/imposter.css?v=20260923-imposter30">
   <link rel="stylesheet" href="css/backpack.css?v=20260923-backpack-resolved36">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
@@ -85,10 +85,12 @@
           <div id="cat-mascot-container" class="cat-mascot-container" role="button" tabindex="0" aria-label="Погладить кота">
             <img id="cat-mascot" src="assets/images/mascot/cat_idle_1.webp?v=cat-fix-clean-01" alt="Рыжий кот-маскот" draggable="false">
           </div>
-          <div class="cat-speech-bubble" aria-label="Приветствие кота">
-            <strong>¡Hola! Готов к практике?</strong>
-            <span>Слова, грамматика и аудирование на сегодня</span>
-          </div>
+          <button class="cat-speech-bubble" id="catSpeechBubble" type="button" aria-label="Сменить фразу кота">
+            <span class="cat-speech-content">
+              <strong class="cat-speech-es" id="catSpeechEs">¡Hola! ¿Listo para aprender?</strong>
+              <span class="cat-speech-ru" id="catSpeechRu">Привет! Готов учиться?</span>
+            </span>
+          </button>
         </div>
         <div class="home-stats" aria-label="Статистика обучения">
           <div class="home-stat">
@@ -554,6 +556,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260923-logo-easter32"></script>
-  <script type="module" src="./js/ui/app.js?v=cat-fix-clean-01"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-cat-phrases44"></script>
 </body>
 </html>
