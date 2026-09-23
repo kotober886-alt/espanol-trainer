@@ -15,12 +15,13 @@
   <title>Español — личный тренажёр</title>
   <meta name="description" content="Личный тренажёр испанского: ввод ответа, скрытые подсказки, темы, ошибки и прогресс.">
   <link rel="stylesheet" href="css/base.css?v=20260923-highres-stories28">
+  <link rel="stylesheet" href="css/imposter.css?v=20260923-imposter30">
   <link rel="stylesheet" href="assets/generated-art.css?v=20260918-valid-raster2">
 </head>
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260923-highres-stories28";
+      const CURRENT_BUILD="20260923-imposter30";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -270,6 +271,7 @@
               <p class="picture-help" id="pictureHelp">Подпиши отмеченные предметы по-испански.</p>
               <div class="picture-stage" id="pictureStage"></div>
             </div>
+            <div class="imposter-widget" id="imposterWidget" hidden></div>
             <div class="form-grid" id="formGrid" hidden></div>
             <label class="answer-label" id="answerLabel" for="answerInput">Твой ответ</label>
             <input class="answer-input" id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Напиши ответ сама…">
@@ -542,6 +544,6 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260922-mascot-priority5"></script>
-  <script type="module" src="./js/ui/app.js?v=20260923-highres-stories28"></script>
+  <script type="module" src="./js/ui/app.js?v=20260923-imposter30"></script>
 </body>
 </html>

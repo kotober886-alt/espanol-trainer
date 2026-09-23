@@ -1,9 +1,10 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260922-ux-sync1";
-import { createTrainerView } from "./trainer-view.js?v=20260923-highres-stories28";
+import { createTrainerView } from "./trainer-view.js?v=20260923-imposter30";
 import { createResultsView } from "./results-view.js?v=20260923-blitz-mode18";
 import { createNavigation } from "./navigation.js?v=20260922-desktop-nav1";
 import { createPracticeView } from "./practice-view.js?v=20260923-blitz-banner-hq29";
+import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter30";
 import { load, save } from "../core/storage.js";
   import {
     getStats,
@@ -28,7 +29,7 @@ import { load, save } from "../core/storage.js";
     buildExercisePool,
     buildQueue as buildSessionQueue,
     createSession
-  } from "../core/session.js?v=20260922-new-tasks8";
+  } from "../core/session.js?v=20260923-imposter30";
   import {
     registerTopic,
     getTopic,
@@ -326,7 +327,7 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10, session
       matchWidget:$("matchWidget"), matchList:$("matchList"), matchBank:$("matchBank"),
       clozeWidget:$("clozeWidget"), clozePassage:$("clozePassage"), clozeBank:$("clozeBank"),
       sortWidget:$("sortWidget"), sortColumns:$("sortColumns"), sortBank:$("sortBank"),
-      pictureWidget:$("pictureWidget"), pictureHelp:$("pictureHelp"), pictureStage:$("pictureStage"),
+      pictureWidget:$("pictureWidget"), pictureHelp:$("pictureHelp"), pictureStage:$("pictureStage"), imposterWidget:$("imposterWidget"),
       feedback:$("feedback"), answerBox:$("answerBox"), answerText:$("answerText"), explanation:$("explanation"),
       exerciseView:$("exerciseView"), emptyView:$("emptyView"), emptyTitle:$("emptyTitle"), emptyText:$("emptyText"),
       doneStat:$("doneStat"), rightStat:$("rightStat"), streakStat:$("streakStat"), dialog:$("addDialog"),
@@ -476,7 +477,7 @@ window.LegacyProgressAdapter = {
     initCustomAuthoringAccess();
     function allExercises(){
       const base=window.TopicRegistryFacade ? window.TopicRegistryFacade.getAllExercises() : [];
-      return base.concat(custom);
+      return base.concat(IMPOSTER_TASKS,custom);
     }
     function blitzSource(){
       const topics=window.TopicRegistryFacade ? window.TopicRegistryFacade.getTopics() : [];
@@ -655,7 +656,7 @@ window.LegacyProgressAdapter = {
       if(format==="pictures") return type==="picture-label"||type==="color-prompt"||Boolean(item&&item.pictureScene)||Boolean(item&&Array.isArray(item.pictureLabels)&&item.pictureLabels.length);
       if(format==="phrase") return type==="order";
       if(format==="fill") return type==="fill-choice"||type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
-      if(format==="choice") return type==="choice"||type==="context-choice";
+      if(format==="choice") return type==="choice"||type==="context-choice"||type==="spot_the_imposter";
       return false;
     }
 

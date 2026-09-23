@@ -1,3 +1,5 @@
+import { renderImposterCard } from "./imposter-card.js?v=20260923-imposter30";
+
 /**
  * Active trainer view and exercise widgets.
  * Owns transient drag/drop/input state and AnswerEngine integration.
@@ -11,13 +13,15 @@ export function createTrainerView(deps){
   let orderPool=[],orderState=[],matchPool=[],matchState=[],clozePool=[],clozeState=[];
   let dragSelection=null,sortState={},sortSelection=null,sortPool=[];
   let audioStoryState={};
+  let imposterState={solved:false,selectedIndex:null};
 
   function resetCard(){
     orderPool=[];orderState=[];matchPool=[];matchState=[];clozePool=[];clozeState=[];
-    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};
-    const checkBtn=$("checkBtn"),showBtn=$("showBtn");
-    if(checkBtn)checkBtn.disabled=false;
+    dragSelection=null;sortState={};sortSelection=null;sortPool=[];audioStoryState={};imposterState={solved:false,selectedIndex:null};
+    const checkBtn=$("checkBtn"),showBtn=$("showBtn"),nextBtn=$("nextBtn");
+    if(checkBtn){checkBtn.disabled=false;checkBtn.hidden=false;}
     if(showBtn){showBtn.hidden=false;showBtn.textContent="Посмотреть ответ";}
+    if(nextBtn)nextBtn.hidden=false;
     els.answerInput.value="";els.answerInput.disabled=false;els.answerInput.hidden=false;
     els.answerLabel.hidden=false;els.answerLabel.textContent="Твой ответ";
     els.audioActions.hidden=true;els.choiceGrid.hidden=true;els.choiceGrid.className="choice-grid";els.choiceGrid.innerHTML="";
@@ -26,6 +30,7 @@ export function createTrainerView(deps){
     els.clozeWidget.hidden=true;els.clozePassage.innerHTML="";els.clozeBank.innerHTML="";
     els.sortWidget.hidden=true;els.sortColumns.innerHTML="";els.sortBank.innerHTML="";
     els.pictureWidget.hidden=true;els.pictureStage.innerHTML="";
+    els.imposterWidget.hidden=true;els.imposterWidget.innerHTML="";
     els.formGrid.hidden=true;els.formGrid.innerHTML="";
     els.feedback.textContent="";els.feedback.className="feedback";els.answerBox.classList.remove("open");
   }
@@ -240,6 +245,24 @@ export function createTrainerView(deps){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;
       const showBtn=$("showBtn");if(showBtn)showBtn.hidden=true;
       renderAudioStory(item);
+    }else if(type==="spot_the_imposter"){
+      els.answerInput.hidden=true;els.answerLabel.hidden=true;els.imposterWidget.hidden=false;
+      const checkBtn=$("checkBtn"),showBtn=$("showBtn"),nextBtn=$("nextBtn");
+      if(checkBtn)checkBtn.hidden=true;
+      if(showBtn)showBtn.hidden=true;
+      if(nextBtn)nextBtn.hidden=true;
+      renderImposterCard(els.imposterWidget,item,{
+        onSafeGuess:function(){
+          if(typeof safeVibrate==="function")safeVibrate([22,30,22]);
+          els.feedback.textContent="Тут всё верно, ищи дальше!";
+          els.feedback.className="feedback bad";
+        },
+        onSolved:function(payload){
+          imposterState={solved:true,selectedIndex:payload.index};
+          checkAnswer();
+        },
+        onNext:function(){move(1);}
+      });
     }else if(type==="color-prompt"){
       els.choiceGrid.hidden=false;els.choiceGrid.className="choice-grid color-prompt-grid";els.choiceGrid.innerHTML=colorArt(item.colorHex);
       els.answerLabel.textContent="Название цвета";els.answerInput.placeholder="Напиши цвет по-испански…";els.answerInput.focus();
@@ -294,6 +317,7 @@ export function createTrainerView(deps){
   }
 
   function currentAnswer(item){
+    if(item.type==="spot_the_imposter")return imposterState.solved?"__imposter_solved__":"";
     if(item.type==="audio_story_quiz"){
       if(!audioStoryComplete(item))return "";
       return (item.statements||[]).map((statement,index)=>audioStoryState[audioStoryKey(statement,index)]?"true":"false").join(" | ");
@@ -308,7 +332,10 @@ export function createTrainerView(deps){
   }
 
   function markAnswers(item){
-    if(item.type==="audio_story_quiz"){
+    if(item.type==="spot_the_imposter"){
+      const next=els.imposterWidget.querySelector("[data-imposter-next]");
+      if(next)next.focus();
+    }else if(item.type==="audio_story_quiz"){
       (item.statements||[]).forEach(function(statement,index){
         const key=audioStoryKey(statement,index),selected=audioStoryState[key],correct=selected===Boolean(statement.isTrue);
         const card=els.choiceGrid.querySelector('[data-story-statement="'+index+'"]');
@@ -408,11 +435,14 @@ export function createTrainerView(deps){
       const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.","fill-choice":"Сначала выбери слово для пропуска.",match:"Сначала заполни все соответствия.",
         "cloze-passage":"Сначала заполни все пропуски в тексте.","category-sort":"Сначала распредели все слова по колонкам.",
         "picture-label":"Сначала подпиши все отмеченные предметы.",
+        "spot_the_imposter":"Найди слово, в котором кот ошибся.",
         "audio_story_quiz":"Сначала отметь «Правда» или «Ложь» для каждого утверждения."};
       els.feedback.textContent=map[item.type]||"Сначала напиши или собери свой вариант.";els.feedback.className="feedback bad";
       if(!els.answerInput.hidden)els.answerInput.focus();return;
     }
-    const result=item.type==="audio_story_quiz"
+    const result=item.type==="spot_the_imposter"
+      ?{exact:imposterState.solved,near:false,displayAnswer:"Ошибка найдена",feedback:"Ошибка найдена — кот спасён!"}
+      :item.type==="audio_story_quiz"
       ?(function(){
         const statements=item.statements||[];
         const correctCount=statements.reduce((count,statement,index)=>

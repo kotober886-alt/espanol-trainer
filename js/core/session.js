@@ -20,7 +20,8 @@ const TEST_TYPES = new Set([
   "cloze-passage",
   "category-sort",
   "ser-estar-hay",
-  "audio_story_quiz"
+  "audio_story_quiz",
+  "spot_the_imposter"
 ]);
 
 const PRACTICE_FORMATS = new Set([
@@ -68,7 +69,7 @@ function exerciseMatchesFormat(item, format) {
   }
 
   if (format === "choice") {
-    return type === "choice" || type === "context-choice";
+    return type === "choice" || type === "context-choice" || type === "spot_the_imposter";
   }
 
   return false;
