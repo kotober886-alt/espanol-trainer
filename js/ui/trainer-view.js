@@ -625,7 +625,7 @@ export function createTrainerView(deps){
               mistakeResolved=true;
               const resolvedTotal=incrementResolvedErrorsTotal();
               if(backpackManager){
-                backpackManager.checkConditions("errors",{resolvedTotal:resolvedTotal});
+                backpackManager.checkConditions("errors",{resolvedTotal:resolvedTotal,resolved:true});
               }
             }
           }
