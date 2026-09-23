@@ -4,7 +4,7 @@
  */
 export function createStudyCardView(deps){
   const {els,$,escapeHtml,fold,getState,patchState,getStudyItems,getCategories,getTopic,
-    runtimeAssetUrl,withVersion,onStartPractice,onStudyAction,safeVibrate}=deps;
+    runtimeAssetUrl,withVersion,onStartPractice,onStudyAction,onWordViewed,safeVibrate}=deps;
 
   const SWIPE_THRESHOLD = 72;
   const SWIPE_AXIS_LOCK = 10;
@@ -324,6 +324,12 @@ export function createStudyCardView(deps){
       state=getState();
     }
     const word=words[state.wordIndex];
+    if(typeof onWordViewed==="function"){
+      onWordViewed({
+        wordId:String(word.id || word.word || state.wordIndex),
+        topicId:state.selectedTopic
+      });
+    }
 
     els.studyCard.hidden=false;els.studyNav.hidden=false;els.studySearchEmpty.hidden=true;
     els.studyView.hidden=false;els.exerciseView.hidden=true;els.emptyView.hidden=true;
