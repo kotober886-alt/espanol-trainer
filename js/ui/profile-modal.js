@@ -7,6 +7,9 @@
 #profile-modal { border:none; border-radius:20px; padding:24px; max-width:420px; width:90%; background:#fff; box-shadow:0 16px 40px rgba(0,0,0,.25); font-family:inherit; color:#2c3e50; position:relative; }
 #profile-modal::backdrop { background:rgba(15,23,42,.6); backdrop-filter:blur(4px); }
 #profile-modal .close-btn { position:absolute; top:14px; right:14px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; }
+#btn-profile { background:transparent; border:none; outline:none; box-shadow:none; cursor:pointer; font-size:1.3rem; padding:8px 10px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; transition:background .2s ease, transform .1s ease; line-height:1; }
+#btn-profile:hover { background:rgba(255,255,255,.4); }
+#btn-profile:active { transform:scale(.95); }
 .profile-key-box { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .profile-key-value { font-family:monospace; font-size:1.15rem; font-weight:bold; }
 .btn-primary-action { background:#6366f1; color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
