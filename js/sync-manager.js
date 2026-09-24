@@ -13,6 +13,7 @@ class SyncManager {
   constructor() {
     this.pending = null;
     if (!localStorage.getItem(PROFILE_KEY)) localStorage.setItem(PROFILE_KEY, generateProfileCode());
+    setTimeout(() => this.installHooks(), 0);
   }
 
   get profileCode() { return localStorage.getItem(PROFILE_KEY); }
@@ -32,6 +33,33 @@ class SyncManager {
   queueSave() {
     clearTimeout(this.pending);
     this.pending = setTimeout(() => this.saveToCloud(), 1500);
+  }
+
+  installHooks() {
+    window.addEventListener('gato-save-state', () => this.queueSave());
+    window.addEventListener('storage', () => this.queueSave());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') this.queueSave();
+    });
+
+    const tryPatch = () => {
+      const manager = window.BackpackManager || window.backpackManager;
+      if (manager && !manager.__syncPatched && typeof manager.unlockItem === 'function') {
+        const original = manager.unlockItem.bind(manager);
+        manager.unlockItem = (...args) => {
+          const result = original(...args);
+          this.queueSave();
+          return result;
+        };
+        manager.__syncPatched = true;
+      }
+    };
+
+    tryPatch();
+    setTimeout(tryPatch, 1000);
+    setTimeout(tryPatch, 3000);
+
+    if (localStorage.getItem(PROFILE_KEY)) this.queueSave();
   }
 
   async saveToCloud() {
