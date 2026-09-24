@@ -1,0 +1,12 @@
+/* Interactive finish mascot */
+#finish-mascot-container.result-mascot-container{position:relative;display:flex;justify-content:center;align-items:center;min-height:220px;margin:16px auto;}
+.result-mascot-image{cursor:pointer;user-select:none;transition:transform .2s ease;max-width:220px;height:auto;}
+.result-mascot-container .speech-bubble,.result-speech-bubble{position:absolute;top:-24px;left:50%;transform:translateX(-50%) translateY(8px);background:#fff;border-radius:18px;padding:12px 18px;box-shadow:0 8px 24px rgba(0,0,0,.12);font-weight:600;opacity:0;transition:opacity .2s,transform .2s;max-width:280px;text-align:center;z-index:2;}
+.result-speech-bubble:after{content:"";position:absolute;left:50%;bottom:-10px;border:10px solid transparent;border-top-color:#fff;transform:translateX(-50%);}
+.result-speech-bubble.is-visible{opacity:1;transform:translateX(-50%) translateY(0);}
+.result-speech-bubble.is-visible::after{display:block;}
+.mascot-bounce{animation:mascot-bounce .45s ease;}.mascot-wobble{animation:mascot-wobble .55s ease;}.mascot-tilt{animation:mascot-tilt .5s ease;}.mascot-shake{animation:mascot-shake .45s ease;}
+@keyframes mascot-bounce{50%{transform:scale(1.12) translateY(-10px)}}
+@keyframes mascot-wobble{25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}
+@keyframes mascot-tilt{50%{transform:rotate(-8deg)}}
+@keyframes mascot-shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
