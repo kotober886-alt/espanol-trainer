@@ -74,7 +74,7 @@ function playPurr(host) {
 
 function sardineUnlocked(backpackManager) {
   return backpackManager.getItems().some(function (item) {
-    return item.id === "item_sardine" && item.unlocked;
+    return item.id === "item_sardina" && item.unlocked;
   });
 }
 
@@ -206,7 +206,7 @@ export function bindPawsInteraction(options = {}) {
     });
 
     if (!sardineUnlocked(backpackManager)) {
-      backpackManager.unlockItem("item_sardine");
+      backpackManager.unlockItem("item_sardina");
     }
   }
 

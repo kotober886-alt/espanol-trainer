@@ -1,5 +1,5 @@
-import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260923-backpack-registry50";
-import { createBackpackModal } from "./ui/backpack-modal.js?v=20260923-backpack-registry50";
+import { BACKPACK_ITEMS } from "../data/backpack-items.js?v=20260924-backpack-detail51";
+import { createBackpackModal } from "./ui/backpack-modal.js?v=20260924-backpack-detail51";
 
 export const BACKPACK_STORAGE_KEY = "gato_backpack_state";
 export const RESOLVED_ERRORS_STORAGE_KEY = "gato_resolved_errors_total";
@@ -52,6 +52,7 @@ function defaultState() {
     unlocks: {},
     meta: {
       activityDays: [],
+      practiceSessionDays: [],
       completedTopics: [],
       imposterFound: 0,
       perfectSessionsCount: 0,
@@ -72,6 +73,7 @@ function normalizeState(value) {
     unlocks: input.unlocks && typeof input.unlocks === "object" ? input.unlocks : {},
     meta: {
       activityDays: Array.isArray(meta.activityDays) ? meta.activityDays.filter(Boolean).slice(-90) : [],
+      practiceSessionDays: Array.isArray(meta.practiceSessionDays) ? meta.practiceSessionDays.filter(Boolean).slice(-90) : [],
       completedTopics: Array.isArray(meta.completedTopics) ? Array.from(new Set(meta.completedTopics.filter(Boolean))) : [],
       imposterFound: Math.max(0, Number(meta.imposterFound) || 0),
       perfectSessionsCount: Math.max(0, Number(meta.perfectSessionsCount) || 0),
@@ -280,9 +282,6 @@ export function createBackpackManager(options = {}) {
     if (reward && (!reward.perfect || data.correct)) {
       unlockItem(reward.itemId);
     }
-    if (data && data.completed && isFoodRestaurantStory(item)) {
-      unlockItem("item_paellera");
-    }
   }
 
   function checkBlitz(data) {
@@ -320,9 +319,17 @@ export function createBackpackManager(options = {}) {
     const dayStreak = recordActivityDay(data.timestamp);
     if (dayStreak >= 3) unlockItem("item_keychain");
 
+    const practiceDay = localDayKey(data.timestamp);
+    state.meta.practiceSessionDays.push(practiceDay);
+    state.meta.practiceSessionDays = state.meta.practiceSessionDays.slice(-90);
+    const dailyPracticeCount = state.meta.practiceSessionDays.filter(function (day) {
+      return day === practiceDay;
+    }).length;
+    saveState();
+    if (dailyPracticeCount >= 3) unlockItem("item_paellera");
+
     const topicCount = recordCompletedTopic(data.topicId);
     if (topicCount >= 5) unlockItem("item_compass");
-    if (isFoodTopic(data.topicId)) unlockItem("item_paellera");
 
     const perfect = wrong === 0 && correct === answered;
     state.meta.perfectSessionsCount = perfect
@@ -435,7 +442,15 @@ export function createBackpackManager(options = {}) {
     if (state.meta.perfectSessionsCount >= 5) unlockItem("item_abanico", { silent: true });
     if (state.meta.learnedWordIds.length >= 50) unlockItem("item_boina", { silent: true });
     if (state.meta.totalAudioPlays >= 30) unlockItem("item_guitarra", { silent: true });
-    if (state.meta.completedTopics.some(isFoodTopic)) unlockItem("item_paellera", { silent: true });
+
+    const practiceCounts = state.meta.practiceSessionDays.reduce(function (counts, day) {
+      counts[day] = (counts[day] || 0) + 1;
+      return counts;
+    }, {});
+    if (Object.values(practiceCounts).some(function (count) { return count >= 3; })) {
+      unlockItem("item_paellera", { silent: true });
+    }
+
     checkErrorMilestones();
   }
 

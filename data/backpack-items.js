@@ -5,10 +5,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Ошейник с бубенчиком",
     "image": "assets/images/backpack/item_collar.webp",
     "category": "routine",
-    "rumor": "Звонкий звон для первого шага.",
-    "conditionText": "Пройти 1-ю тренировку",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Звонкий колокольчик для первых шагов.",
+    "conditionText": "Пройти 1-ю тренировку"
   },
   {
     "id": "item_keychain",
@@ -17,9 +15,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_keychain.webp",
     "category": "routine",
     "rumor": "Маленький талисман на долгую память.",
-    "conditionText": "3 дня серии подряд",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "3 дня серии подряд"
   },
   {
     "id": "item_compass",
@@ -27,10 +23,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Магический компас",
     "image": "assets/images/backpack/item_compass.webp",
     "category": "routine",
-    "rumor": "Указывает верную дорогу исследователям.",
-    "conditionText": "Пройти 5 разных тем",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Указывает дорогу любознательным исследователям.",
+    "conditionText": "Пройти 5 разных тем"
   },
   {
     "id": "item_churros",
@@ -39,9 +33,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_churros.webp",
     "category": "stories",
     "rumor": "Традиционное сладкое угощение к завтраку.",
-    "conditionText": "История кафе без ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "История кафе без ошибок"
   },
   {
     "id": "item_picnic",
@@ -49,10 +41,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Корзинка для пикника",
     "image": "assets/images/backpack/item_picnic.webp",
     "category": "stories",
-    "rumor": "Уютный отдых под сенью деревьев.",
-    "conditionText": "Пройти историю «Парк»",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Уютный отдых под сенью парка.",
+    "conditionText": "Пройти историю «Парк»"
   },
   {
     "id": "item_hotel_key",
@@ -61,9 +51,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_hotel_key.webp",
     "category": "stories",
     "rumor": "Открывает двери к новым путешествиям.",
-    "conditionText": "Пройти историю «Отель»",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Пройти историю «Отель»"
   },
   {
     "id": "item_metro_ticket",
@@ -72,9 +60,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_metro_ticket.webp",
     "category": "stories",
     "rumor": "Пропуск в подземные лабиринты города.",
-    "conditionText": "Пройти историю «Город»",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Пройти историю «Город»"
   },
   {
     "id": "item_abanico",
@@ -83,9 +69,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/abanico_flamenco.webp",
     "category": "stories",
     "rumor": "Плавные движения требуют безупречной точности.",
-    "conditionText": "5 тренировок без ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "5 идеальных тренировок подряд"
   },
   {
     "id": "item_boina",
@@ -94,9 +78,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/boina_artista.webp",
     "category": "stories",
     "rumor": "Богатая палитра для ума мастера.",
-    "conditionText": "Выучить 50 новых слов",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Выучить 50 новых слов"
   },
   {
     "id": "item_paellera",
@@ -104,10 +86,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Мини-сковорода для паэльи",
     "image": "assets/images/backpack/paellera_diminuta.webp",
     "category": "stories",
-    "rumor": "Ароматный рецепт традиционной кухни Валенсии.",
-    "conditionText": "Пройти тему «Ресторан»",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Сытный обед для неутомимого аппетита.",
+    "conditionText": "Пройти 3 тренировки за день"
   },
   {
     "id": "item_guitarra",
@@ -116,9 +96,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/guitarra_espanola.webp",
     "category": "stories",
     "rumor": "Мелодия для тех, кто чутко слушает.",
-    "conditionText": "30 прослушиваний карточек",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "30 прослушиваний карточек"
   },
   {
     "id": "item_sneakers",
@@ -127,9 +105,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_sneakers.webp",
     "category": "blitz",
     "rumor": "Стремительный бег наперегонки с секундами.",
-    "conditionText": "10+ очков в блице",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "10+ очков в блице"
   },
   {
     "id": "item_gold_watch",
@@ -138,9 +114,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_gold_watch.webp",
     "category": "blitz",
     "rumor": "Драгоценные секунды под полным контролем.",
-    "conditionText": "20+ очков в блице",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "20+ очков в блице"
   },
   {
     "id": "item_scout_badge",
@@ -148,10 +122,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Нашивка скаута",
     "image": "assets/images/backpack/item_scout_badge.webp",
     "category": "blitz",
-    "rumor": "Знак мастерства и безупречной концентрации.",
-    "conditionText": "60 сек без ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Знак мастерства и концентрации.",
+    "conditionText": "60 сек без ошибок"
   },
   {
     "id": "item_magnifier",
@@ -159,10 +131,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Лупа детектива",
     "image": "assets/images/backpack/item_magnifier.webp",
     "category": "imposter",
-    "rumor": "Ни одна неточность не останется незамеченной.",
-    "conditionText": "Найти 1-ю ошибку",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Ни одна неточность не скроется от глаз.",
+    "conditionText": "Найти 1-ю ошибку"
   },
   {
     "id": "item_detective_hat",
@@ -170,10 +140,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Шляпа детектива",
     "image": "assets/images/backpack/item_detective_hat.webp",
     "category": "imposter",
-    "rumor": "Атрибут настоящего гроссмейстера расследований.",
-    "conditionText": "Найти 10 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Атрибут настоящего мастера расследований.",
+    "conditionText": "Найти 10 ошибок"
   },
   {
     "id": "item_feather_toy",
@@ -181,10 +149,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Игривая дразнилка",
     "image": "assets/images/backpack/item_feather_toy.webp",
     "category": "imposter",
-    "rumor": "Быстрая реакция ловких кошачьих когтей.",
-    "conditionText": "Найти ошибку быстрее 3 сек",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Молниеносная реакция ловких кошачьих когтей.",
+    "conditionText": "Найти ошибку быстрее 3 сек"
   },
   {
     "id": "item_melomano",
@@ -192,10 +158,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Кошачий диджей",
     "image": "assets/images/backpack/melomano.webp",
     "category": "imposter",
-    "rumor": "Внимание к тончайшим нюансам звучания.",
-    "conditionText": "5 прослушиваний одного слова",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Внимание к тончайшим звукам речи.",
+    "conditionText": "5 прослушиваний одного слова"
   },
   {
     "id": "item_fish_cookie",
@@ -203,10 +167,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Печенька-рыбка",
     "image": "assets/images/backpack/item_fish_cookie.webp",
     "category": "errors",
-    "rumor": "Маленькая вкусная награда за старания.",
-    "conditionText": "Отработать 10 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Маленькая вкусная награда за первые шаги.",
+    "conditionText": "Отработать 10 ошибок"
   },
   {
     "id": "item_cacao",
@@ -215,9 +177,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_cacao.webp",
     "category": "errors",
     "rumor": "Тёплое согревающее утешение после промахов.",
-    "conditionText": "Отработать 25 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Отработать 25 ошибок"
   },
   {
     "id": "item_icecream",
@@ -226,9 +186,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_icecream.webp",
     "category": "errors",
     "rumor": "Сладкое лекарство от любых огорчений.",
-    "conditionText": "Отработать 50 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Отработать 50 ошибок"
   },
   {
     "id": "item_cake",
@@ -237,9 +195,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_cake.webp",
     "category": "errors",
     "rumor": "Большой праздник стойкости и упорства.",
-    "conditionText": "Отработать 70 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Отработать 70 ошибок"
   },
   {
     "id": "item_milkshake",
@@ -248,9 +204,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_milkshake.webp",
     "category": "errors",
     "rumor": "Грандиозный десерт для закалённых героев.",
-    "conditionText": "Отработать 100 ошибок",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Отработать 100 ошибок"
   },
   {
     "id": "item_caja_carton",
@@ -259,9 +213,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/caja_carton.webp",
     "category": "errors",
     "rumor": "Уютный покой, когда вокруг чисто.",
-    "conditionText": "Полностью очистить ошибки",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Полностью очистить ошибки"
   },
   {
     "id": "item_raton_mecanico",
@@ -270,9 +222,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/raton_mecanico.webp",
     "category": "errors",
     "rumor": "Азартная погоня за ускользающей добычей.",
-    "conditionText": "15 ошибок за сессию",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "15 ошибок за сессию"
   },
   {
     "id": "item_fenix",
@@ -280,10 +230,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Перо Феникса",
     "image": "assets/images/backpack/fenix.webp",
     "category": "errors",
-    "rumor": "Гордый взлёт после былых осечек.",
-    "conditionText": "5 исправлений без промаха",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Чистый взлёт после былых осечек.",
+    "conditionText": "5 исправлений без промаха"
   },
   {
     "id": "item_coffee",
@@ -291,10 +239,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Кофе с молоком",
     "image": "assets/images/backpack/item_coffee.webp",
     "category": "secrets",
-    "rumor": "Бодрый напиток для самых ранних пташек.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Бодрый напиток для ранних пташек.",
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_soda",
@@ -303,9 +249,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_soda.webp",
     "category": "secrets",
     "rumor": "Шипящая свежесть под звёздным небом.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_gold_comb",
@@ -314,9 +258,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/item_gold_comb.webp",
     "category": "secrets",
     "rumor": "Особая нежность для любимого кота.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_sardina",
@@ -324,10 +266,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Серебряная сардина",
     "image": "assets/images/backpack/sardina_plateada.webp",
     "category": "secrets",
-    "rumor": "Главное кошачье сокровище в банке.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Главное сокровище в жестяной банке.",
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_cojin_siesta",
@@ -336,9 +276,7 @@ export const BACKPACK_ITEMS = [
     "image": "assets/images/backpack/cojin_siesta.webp",
     "category": "secrets",
     "rumor": "Сладкий отдых в полуденный зной.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_ovillo_fugitivo",
@@ -346,10 +284,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Сбежавший клубок",
     "image": "assets/images/backpack/ovillo_fugitivo.webp",
     "category": "secrets",
-    "rumor": "Быстрые лапки путают следы.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Быстрые лапки путают следы между вкладками.",
+    "conditionText": "Тайная пасхалка"
   },
   {
     "id": "item_cafe_medianoche",
@@ -357,10 +293,8 @@ export const BACKPACK_ITEMS = [
     "titleRu": "Полуночный кофе",
     "image": "assets/images/backpack/cafe_medianoche.webp",
     "category": "secrets",
-    "rumor": "Ночные мысли звучат отчётливее.",
-    "conditionText": "Тайная пасхалка",
-    "unlocked": false,
-    "unlockedAt": null
+    "rumor": "Ночные мысли звучат отчётливее всего.",
+    "conditionText": "Тайная пасхалка"
   }
 ];
 

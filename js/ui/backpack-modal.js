@@ -1,5 +1,4 @@
-import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260923-backpack-registry50";
-import { AudioManager } from "../audio-manager.js?v=20260923-audio-manager37";
+import { BACKPACK_CATEGORIES } from "../../data/backpack-items.js?v=20260924-backpack-detail51";
 
 function escapeHtml(value) {
   return String(value == null ? "" : value)
@@ -12,16 +11,35 @@ function escapeHtml(value) {
 
 const LOCKED_TITLE = "???";
 const LOCKED_TRANSLATION = "Неизвестный трофей";
-const BACKPACK_RENDER_VERSION = "20260923-backpack-registry50";
+const BACKPACK_RENDER_VERSION = "20260924-backpack-detail51";
 const LOCK_ICON_URL = "assets/images/backpack/lock.svg?v=" + BACKPACK_RENDER_VERSION;
 
 function itemImageUrl(item) {
-  return String(item && item.image || "") + "?v=" + BACKPACK_RENDER_VERSION;
+  const path = String(item && item.image || "");
+  if (!path) return "";
+  return path + (path.indexOf("?") >= 0 ? "&" : "?") + "v=" + BACKPACK_RENDER_VERSION;
+}
+
+function formatUnlockedDate(value) {
+  const timestamp = Number(value);
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return "";
+  try {
+    return new Intl.DateTimeFormat("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }).format(new Date(timestamp));
+  } catch (error) {
+    return "";
+  }
 }
 
 function lockedVisualMarkup(item, detail) {
-  const silhouetteClass = detail ? "backpack-silhouette backpack-detail-silhouette" : "backpack-silhouette";
+  const silhouetteClass = detail
+    ? "backpack-silhouette backpack-detail-silhouette"
+    : "backpack-silhouette";
   const lockClass = detail ? "backpack-detail-lock" : "backpack-lock";
+
   return '<canvas class="' + silhouetteClass + '" data-silhouette-src="' +
     escapeHtml(itemImageUrl(item)) + '" aria-hidden="true"></canvas>' +
     '<span class="' + lockClass + '" aria-hidden="true"><img src="' +
@@ -34,6 +52,7 @@ function paintLockedSilhouette(canvas) {
 
   const source = new Image();
   source.decoding = "async";
+
   source.onload = function () {
     const size = 256;
     canvas.width = size;
@@ -49,7 +68,13 @@ function paintLockedSilhouette(canvas) {
     const scale = Math.min(size / naturalWidth, size / naturalHeight);
     const width = Math.max(1, Math.round(naturalWidth * scale));
     const height = Math.max(1, Math.round(naturalHeight * scale));
-    context.drawImage(source, Math.round((size - width) / 2), Math.round((size - height) / 2), width, height);
+    context.drawImage(
+      source,
+      Math.round((size - width) / 2),
+      Math.round((size - height) / 2),
+      width,
+      height
+    );
 
     const pixels = context.getImageData(0, 0, size, size);
     const data = pixels.data;
@@ -62,12 +87,11 @@ function paintLockedSilhouette(canvas) {
     const borderSamples = [];
     function sample(x, y) {
       const offset = (y * size + x) * 4;
-      const alpha = data[offset + 3];
-      if (alpha < 20) return;
+      if (data[offset + 3] < 20) return;
       borderSamples.push([data[offset], data[offset + 1], data[offset + 2]]);
     }
 
-    for (let i = 0; i < size; i += 4) {
+    for (let i = 0; i < size; i += 3) {
       sample(i, 0);
       sample(i, size - 1);
       sample(0, i);
@@ -96,11 +120,11 @@ function paintLockedSilhouette(canvas) {
       if (alpha < 10) return true;
 
       const chromaGreen =
-        green > 105 &&
-        green - red > 34 &&
-        green - blue > 30 &&
-        green > red * 1.16 &&
-        green > blue * 1.16;
+        green > 100 &&
+        green - red > 28 &&
+        green - blue > 26 &&
+        green > red * 1.12 &&
+        green > blue * 1.12;
 
       if (chromaGreen) return true;
       if (!background) return false;
@@ -108,7 +132,7 @@ function paintLockedSilhouette(canvas) {
       const dr = red - background[0];
       const dg = green - background[1];
       const db = blue - background[2];
-      return (dr * dr + dg * dg + db * db) < 3600;
+      return (dr * dr + dg * dg + db * db) < 10000;
     }
 
     function push(index) {
@@ -138,18 +162,16 @@ function paintLockedSilhouette(canvas) {
 
     for (let index = 0; index < total; index += 1) {
       const offset = index * 4;
-      if (visited[index]) {
+      if (visited[index] || data[offset + 3] < 8) {
         data[offset + 3] = 0;
         continue;
       }
 
       const alpha = data[offset + 3];
-      if (alpha < 8) continue;
-
-      data[offset] = 43;
-      data[offset + 1] = 38;
+      data[offset] = 45;
+      data[offset + 1] = 39;
       data[offset + 2] = 72;
-      data[offset + 3] = Math.min(230, Math.max(95, Math.round(alpha * 0.82)));
+      data[offset + 3] = Math.min(235, Math.max(105, Math.round(alpha * 0.88)));
     }
 
     context.putImageData(pixels, 0, 0);
@@ -182,7 +204,9 @@ function ordinaryCondition(item) {
 
 export function createBackpackModal(options = {}) {
   const button = options.button || document.getElementById("backpackBtn");
-  const getItems = typeof options.getItems === "function" ? options.getItems : function () { return []; };
+  const getItems = typeof options.getItems === "function"
+    ? options.getItems
+    : function () { return []; };
 
   let dialog = null;
   let currentFilter = "all";
@@ -192,7 +216,19 @@ export function createBackpackModal(options = {}) {
   let detailOverlay = null;
 
   function categoryMeta(id) {
-    return BACKPACK_CATEGORIES.find(function (item) { return item.id === id; }) || { id: id, title: id };
+    return BACKPACK_CATEGORIES.find(function (item) {
+      return item.id === id;
+    }) || { id: id, title: id };
+  }
+
+  function closeItemDetails() {
+    if (!detailOverlay) return;
+    const overlay = detailOverlay;
+    detailOverlay = null;
+    overlay.classList.remove("is-visible");
+    window.setTimeout(function () {
+      overlay.remove();
+    }, 160);
   }
 
   function ensureDialog() {
@@ -220,6 +256,8 @@ export function createBackpackModal(options = {}) {
       dialog.close();
     });
 
+    dialog.addEventListener("close", closeItemDetails);
+
     dialog.addEventListener("click", function (event) {
       if (event.target === dialog) dialog.close();
     });
@@ -234,15 +272,11 @@ export function createBackpackModal(options = {}) {
     dialog.querySelector("[data-backpack-content]").addEventListener("click", function (event) {
       const card = event.target.closest("[data-backpack-item]");
       if (!card) return;
-      const item = getItems().find(function (entry) { return entry.id === card.dataset.backpackItem; });
+      const item = getItems().find(function (entry) {
+        return entry.id === card.dataset.backpackItem;
+      });
       if (!item) return;
-
-      if (card.dataset.unlocked === "true") {
-        AudioManager.playBackpackItem(item.id, item.title);
-        return;
-      }
-
-      showLockedDetails(item);
+      showItemDetails(item);
     });
 
     document.body.appendChild(dialog);
@@ -265,14 +299,15 @@ export function createBackpackModal(options = {}) {
     const title = unlocked ? item.title : LOCKED_TITLE;
     const translation = unlocked ? item.titleRu : LOCKED_TRANSLATION;
     const hint = unlocked
-      ? "Нажми для озвучки"
-      : (secret ? "Тайная пасхалка" : ordinaryCondition(item));
+      ? "Открыть трофей"
+      : (secret ? "Тайная пасхалка" : "Открыть подсказку");
     const ariaLabel = unlocked
-      ? String(item.titleRu || item.title || "") + ". Разблокировано. Нажми, чтобы услышать название по-испански."
-      : LOCKED_TRANSLATION + ". " + (secret ? "Тайная пасхалка." : "Условие: " + hint);
+      ? String(item.titleRu || item.title || "") + ". Получено. Открыть подробности."
+      : LOCKED_TRANSLATION + ". Открыть подсказку.";
 
     return '<button class="backpack-card ' + (unlocked ? 'is-unlocked' : 'is-locked') +
-      '" data-backpack-item="' + escapeHtml(item.id) + '" data-unlocked="' + String(unlocked) +
+      '" data-backpack-item="' + escapeHtml(item.id) +
+      '" data-unlocked="' + String(unlocked) +
       '" type="button" aria-label="' + escapeHtml(ariaLabel) + '">' +
         '<span class="backpack-card-visual">' +
           (unlocked
@@ -288,54 +323,64 @@ export function createBackpackModal(options = {}) {
       '</button>';
   }
 
-  function closeLockedDetails() {
-    if (!detailOverlay) return;
-    const overlay = detailOverlay;
-    detailOverlay = null;
-    overlay.classList.remove("is-visible");
-    window.setTimeout(function () {
-      overlay.remove();
-    }, 160);
-  }
+  function showItemDetails(item) {
+    closeItemDetails();
 
-  function showLockedDetails(item) {
-    closeLockedDetails();
-
+    const unlocked = Boolean(item && item.unlocked);
     const secret = isSecretItem(item);
     const rumor = ordinaryRumor(item);
     const condition = ordinaryCondition(item);
+    const receivedDate = formatUnlockedDate(item && item.unlockedAt);
+    const title = unlocked ? String(item.title || "") : LOCKED_TITLE;
+    const translation = unlocked ? String(item.titleRu || "") : LOCKED_TRANSLATION;
 
     detailOverlay = document.createElement("div");
     detailOverlay.className = "backpack-detail-overlay";
     detailOverlay.setAttribute("role", "dialog");
     detailOverlay.setAttribute("aria-modal", "true");
-    detailOverlay.setAttribute("aria-label", LOCKED_TRANSLATION);
+    detailOverlay.setAttribute("aria-label", unlocked ? translation : LOCKED_TRANSLATION);
+
     detailOverlay.innerHTML =
-      '<div class="backpack-detail-card">' +
+      '<div class="backpack-detail-card ' + (unlocked ? 'is-unlocked' : 'is-locked') + '">' +
         '<button class="backpack-detail-close" type="button" aria-label="Закрыть">×</button>' +
         '<div class="backpack-detail-visual">' +
-          lockedVisualMarkup(item, true) +
+          (unlocked
+            ? '<img class="backpack-detail-image" src="' + escapeHtml(itemImageUrl(item)) + '" alt="' + escapeHtml(translation) + '">'
+            : lockedVisualMarkup(item, true)) +
         '</div>' +
         '<div class="backpack-detail-copy">' +
-          '<span class="backpack-detail-kicker">Заблокированный трофей</span>' +
-          '<h3>' + LOCKED_TITLE + '</h3>' +
-          '<p class="backpack-detail-translation">' + LOCKED_TRANSLATION + '</p>' +
-          (rumor ? '<p class="backpack-rumor-text">' + escapeHtml(rumor) + '</p>' : '') +
-          (secret
-            ? '<span class="backpack-secret-badge">Тайная пасхалка</span>'
-            : '<span class="backpack-condition-badge">' + escapeHtml(condition) + '</span>') +
+          '<span class="backpack-detail-kicker">' + (unlocked ? 'Трофей получен' : 'Заблокированный трофей') + '</span>' +
+          '<h3>' + escapeHtml(title) + '</h3>' +
+          '<p class="backpack-detail-translation">' + escapeHtml(translation) + '</p>' +
+          (rumor
+            ? '<div class="backpack-detail-block backpack-rumor-block">' +
+                '<span class="backpack-detail-label">' + (unlocked ? 'Легенда' : 'Слух') + '</span>' +
+                '<p class="backpack-rumor-text">' + escapeHtml(rumor) + '</p>' +
+              '</div>'
+            : '') +
+          (unlocked
+            ? '<span class="backpack-received-badge">Получено' + (receivedDate ? ' · ' + escapeHtml(receivedDate) : '') + '</span>'
+            : (secret
+              ? '<span class="backpack-secret-badge">Тайная пасхалка</span>'
+              : '<div class="backpack-detail-block backpack-condition-block">' +
+                  '<span class="backpack-detail-label">Условие</span>' +
+                  '<span class="backpack-condition-badge">' + escapeHtml(condition) + '</span>' +
+                '</div>')) +
         '</div>' +
       '</div>';
 
-    detailOverlay.querySelector(".backpack-detail-close").addEventListener("click", closeLockedDetails);
+    detailOverlay.querySelector(".backpack-detail-close").addEventListener("click", closeItemDetails);
     detailOverlay.addEventListener("click", function (event) {
-      if (event.target === detailOverlay) closeLockedDetails();
+      if (event.target === detailOverlay) closeItemDetails();
     });
-    document.body.appendChild(detailOverlay);
+
+    ensureDialog().appendChild(detailOverlay);
     hydrateLockedSilhouettes(detailOverlay);
+
     requestAnimationFrame(function () {
       if (detailOverlay) detailOverlay.classList.add("is-visible");
     });
+
     window.setTimeout(function () {
       const closeButton = detailOverlay && detailOverlay.querySelector(".backpack-detail-close");
       if (closeButton) closeButton.focus();
@@ -349,12 +394,20 @@ export function createBackpackModal(options = {}) {
 
     const categories = currentFilter === "all"
       ? BACKPACK_CATEGORIES
-      : BACKPACK_CATEGORIES.filter(function (category) { return category.id === currentFilter; });
+      : BACKPACK_CATEGORIES.filter(function (category) {
+          return category.id === currentFilter;
+        });
 
     content.innerHTML = categories.map(function (category) {
-      const entries = items.filter(function (item) { return item.category === category.id; });
+      const entries = items.filter(function (item) {
+        return item.category === category.id;
+      });
       if (!entries.length) return "";
-      const unlockedCount = entries.filter(function (item) { return item.unlocked; }).length;
+
+      const unlockedCount = entries.filter(function (item) {
+        return item.unlocked;
+      }).length;
+
       return '<section class="backpack-section">' +
         '<div class="backpack-section-head">' +
           '<h3>' + escapeHtml(categoryMeta(category.id).title) + '</h3>' +
@@ -363,21 +416,29 @@ export function createBackpackModal(options = {}) {
         '<div class="backpack-grid">' + entries.map(renderCard).join("") + '</div>' +
       '</section>';
     }).join("");
+
     hydrateLockedSilhouettes(content);
   }
 
   function updateBadge() {
     if (!button) return;
     const items = getItems();
-    const unlocked = items.filter(function (item) { return item.unlocked; }).length;
+    const unlocked = items.filter(function (item) {
+      return item.unlocked;
+    }).length;
+
     let countNode = button.querySelector("[data-backpack-count]");
     if (!countNode) {
       countNode = document.createElement("span");
       countNode.dataset.backpackCount = "";
       button.appendChild(countNode);
     }
+
     countNode.textContent = unlocked + "/" + items.length;
-    button.setAttribute("aria-label", "Открыть Mochila del Gato. Собрано " + unlocked + " из " + items.length + " трофеев.");
+    button.setAttribute(
+      "aria-label",
+      "Открыть Mochila del Gato. Собрано " + unlocked + " из " + items.length + " трофеев."
+    );
   }
 
   function open() {
@@ -414,7 +475,7 @@ export function createBackpackModal(options = {}) {
         '<div class="loot-kicker">¡Nuevo Trofeo Desbloqueado!</div>' +
         '<div class="loot-visual">' +
           '<span class="loot-halo" aria-hidden="true"></span>' +
-          '<img src="' + escapeHtml(item.image) + '?v=20260923-backpack-registry50" alt="' + escapeHtml(item.titleRu) + '">' +
+          '<img src="' + escapeHtml(itemImageUrl(item)) + '" alt="' + escapeHtml(item.titleRu) + '">' +
         '</div>' +
         '<h2>' + escapeHtml(item.title) + '</h2>' +
         '<p>' + escapeHtml(item.titleRu) + '</p>' +
@@ -428,9 +489,11 @@ export function createBackpackModal(options = {}) {
 
     document.body.appendChild(lootOverlay);
     document.body.classList.add("backpack-popup-open");
+
     requestAnimationFrame(function () {
       if (lootOverlay) lootOverlay.classList.add("is-visible");
     });
+
     window.setTimeout(function () {
       const saveButton = lootOverlay && lootOverlay.querySelector(".loot-save");
       if (saveButton) saveButton.focus();
