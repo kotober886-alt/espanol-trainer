@@ -178,7 +178,7 @@ function injectStyles() {
     .cd-feedback.ok{color:#187052}.cd-feedback.no{color:#a53643}
     .cd-correct-answer{margin:0 0 18px;padding:14px 16px;border-radius:15px;background:#fff0f2;color:#8f2e3a;font-size:16px}.cd-correct-answer strong{display:block;margin-top:3px;font-size:clamp(25px,4vw,34px);color:#a53643}
     .cd-actions{display:flex;justify-content:center;gap:10px}
-    .cd-results{text-align:center;width:min(590px,100%)}.cd-results-icon{font-size:58px}.cd-results h2{margin:12px 0 6px;font-size:clamp(31px,5vw,46px)}.cd-results>p{margin:0;color:#6d6a86}
+    .cd-card[data-phase="results"]{min-height:0}.cd-card[data-phase="results"] .cd-stage{place-items:start center;padding:26px 30px 32px}.cd-results{text-align:center;width:min(590px,100%)}.cd-results-icon{font-size:58px}.cd-results h2{margin:12px 0 6px;font-size:clamp(31px,5vw,46px)}.cd-results>p{margin:0;color:#6d6a86}
     .cd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.cd-stat{padding:14px 10px;border-radius:15px;background:#f7f5fc;color:#77718d;font-size:11px;font-weight:750}.cd-stat b{display:block;color:#17153b;font-size:23px}
     .cd-result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
     @keyframes cd-success{0%{transform:scale(1)}45%{transform:scale(1.02)}100%{transform:scale(1)}}
@@ -279,12 +279,12 @@ function setLocked(value) {
   document.body.classList.toggle("conjugation-open", value);
 }
 
-function renderShell(inner) {
+function renderShell(inner, phase) {
   const clean = session ? session.clean.size : 0;
   const total = session ? session.size : 0;
   const progress = total ? Math.min(100, clean / total * 100) : 0;
   game.innerHTML =
-    '<div class="cd-card">' +
+    '<div class="cd-card" data-phase="' + escapeHtml(phase || "task") + '">' +
       '<header class="cd-head"><div><b>⌨️ Проспрягай</b><span>Освоено ' + clean + ' из ' + total + '</span></div>' +
       '<button class="cd-close" type="button" data-cd-close aria-label="Закрыть">×</button></header>' +
       '<div class="cd-progress"><i style="width:' + progress + '%"></i></div>' +
@@ -395,10 +395,11 @@ function insertAccent(symbol) {
 function renderResults() {
   if (!session) return;
   const seconds = Math.max(1, Math.round((Date.now() - session.startedAt) / 1000));
+  const title = session.errors <= 1 ? "Отличная работа!" : "Раунд завершён!";
   renderShell(
     '<div class="cd-results">' +
       '<div class="cd-results-icon" aria-hidden="true">⌨️</div>' +
-      '<h2>Раунд пройден чисто</h2>' +
+      '<h2>' + title + '</h2>' +
       '<p>Все ' + session.size + ' форм в итоге введены правильно.</p>' +
       '<div class="cd-stats">' +
         '<div class="cd-stat"><b>' + session.size + '</b>форм</div>' +
@@ -407,7 +408,8 @@ function renderResults() {
       '</div>' +
       '<div class="cd-result-actions"><button class="cd-secondary" type="button" data-cd-exit>К практике</button>' +
       '<button class="cd-primary" type="button" data-cd-restart>Ещё раз</button></div>' +
-    '</div>'
+    '</div>',
+    "results"
   );
   const bar = game.querySelector(".cd-progress i");
   if (bar) bar.style.width = "100%";
@@ -526,7 +528,7 @@ function init() {
 }
 
 window.ConjugationDrill = Object.freeze({
-  version: "20260925-conjugation-drill1",
+  version: "20260925-results-layout-fix1",
   start,
   close,
   collectPool

@@ -1,7 +1,7 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260923-backpack-lock-silhouette49";
 import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-lock-silhouette49";
-import { createResultsView } from "./results-view.js?v=20260923-backpack33";
+import { createResultsView } from "./results-view.js?v=20260925-results-layout-fix1";
 import { createNavigation } from "./navigation.js?v=20260923-backpack-lock-silhouette49";
 import { createPracticeView } from "./practice-view.js?v=20260925-photoflash-banner-scope";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
@@ -350,7 +350,7 @@ let uiSettings = read(STORAGE.ui, { lastTopic: "verbs", sessionSize: 10, session
       catalogTitle:$("catalogTitle"), catalogText:$("catalogText"), continueTopic:$("continueTopic"),
       homeDoneStat:$("homeDoneStat"), homeAccuracyStat:$("homeAccuracyStat"), homeStreakStat:$("homeStreakStat"),
       sessionDialog:$("sessionDialog"), sessionTopicLabel:$("sessionTopicLabel"), sessionAvailableCount:$("sessionAvailableCount"), sessionResult:$("sessionResult"),
-      resultTotal:$("resultTotal"), resultCorrect:$("resultCorrect"), resultWrong:$("resultWrong"), resultMessage:$("resultMessage"),
+      resultTitle:$("resultTitle"), resultTotal:$("resultTotal"), resultCorrect:$("resultCorrect"), resultWrong:$("resultWrong"), resultMessage:$("resultMessage"),
       resultIcon:$("resultIcon"), resultMascot:$("resultMascot"),
       learnTab:$("learnTab"), practiceTab:$("practiceTab"), topicTabs:$("topicTabs"), moreDialog:$("moreDialog"),
       wordSearch:$("wordSearch"), studySearchEmpty:$("studySearchEmpty"), studyNav:$("studyNav"),
