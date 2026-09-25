@@ -1,18 +1,95 @@
 (function(){
   "use strict";
   const COUNTS=[10,15,20], TIMES={flash:3000,spelling:5000,meaning:4000}, ARTICLE=/^(el|la|los|las|un|una|unos|unas)\s+/i;
+  const FALLBACK_WORDS=[
+    {id:"fallback_agua",word:"el agua",translation:"вода"},
+    {id:"fallback_casa",word:"la casa",translation:"дом"},
+    {id:"fallback_gato",word:"el gato",translation:"кот"},
+    {id:"fallback_perro",word:"el perro",translation:"собака"},
+    {id:"fallback_pan",word:"el pan",translation:"хлеб"},
+    {id:"fallback_leche",word:"la leche",translation:"молоко"},
+    {id:"fallback_queso",word:"el queso",translation:"сыр"},
+    {id:"fallback_mesa",word:"la mesa",translation:"стол"},
+    {id:"fallback_silla",word:"la silla",translation:"стул"},
+    {id:"fallback_puerta",word:"la puerta",translation:"дверь"},
+    {id:"fallback_ventana",word:"la ventana",translation:"окно"},
+    {id:"fallback_libro",word:"el libro",translation:"книга"},
+    {id:"fallback_calle",word:"la calle",translation:"улица"},
+    {id:"fallback_coche",word:"el coche",translation:"машина"},
+    {id:"fallback_comida",word:"la comida",translation:"еда"},
+    {id:"fallback_cafe",word:"el café",translation:"кофе"},
+    {id:"fallback_escuela",word:"la escuela",translation:"школа"},
+    {id:"fallback_trabajo",word:"el trabajo",translation:"работа"},
+    {id:"fallback_tiempo",word:"el tiempo",translation:"время"},
+    {id:"fallback_familia",word:"la familia",translation:"семья"}
+  ];
   let chooser,game,banner,session,current,phaseTimer=0,transitionTimer=0,lastCount=10;
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
   const key=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," ");
   function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-  function wordItem(x,topicId,i){if(!x||typeof x!=="object")return null;const word=String(x.word||x.base||"").trim();const tr=String(x.tr||(Array.isArray(x.ru)?x.ru[0]:"")||"").trim();return word&&tr?{id:String(x.id||topicId+"_"+i),topicId:String(topicId||x.topicId||""),word,translation:tr}:null;}
-  function normalizePool(pool){
-    if(!Array.isArray(pool)){
-      const f=window.TopicRegistryFacade;if(!f||typeof f.getTopics!=="function")return[];pool=[];
-      f.getTopics().forEach(t=>{if(!t||t.id==="__mixed"||!Array.isArray(t.studyItems))return;t.studyItems.forEach((x,i)=>pool.push(Object.assign({topicId:t.id},x)));});
-    }
-    const out=[],seen=new Set();pool.forEach((x,i)=>{const w=wordItem(x,x&&x.topicId,i);if(!w)return;const k=key(w.word)+"|"+key(w.translation);if(seen.has(k))return;seen.add(k);out.push(w);});return out;
+  function wordItem(x,topicId,i){
+    if(!x||typeof x!=="object")return null;
+    const word=String(x.word||x.term||x.es||x.spain||x.base||"").trim();
+    const ru=Array.isArray(x.ru)?x.ru[0]:x.ru;
+    const translation=String(x.translation||x.tr||ru||x.meaning||x.russian||"").trim();
+    const details=String(x.transcription||x.details||x.note||"").trim();
+    return word&&translation?{
+      id:String(x.id||topicId+"_"+i),
+      topicId:String(topicId||x.topicId||x.topic||""),
+      word,
+      translation,
+      details
+    }:null;
   }
+  function flattenSource(source,target,topicId){
+    if(!source)return;
+    if(Array.isArray(source)){
+      source.forEach((item,index)=>{
+        if(item&&typeof item==="object"&&(Array.isArray(item.studyItems)||Array.isArray(item.words)||Array.isArray(item.vocabulary))){
+          const nested=item.studyItems||item.words||item.vocabulary;
+          flattenSource(nested,target,item.id||item.topicId||topicId||"");
+        }else target.push(Object.assign({topicId:topicId||""},item||{}));
+      });
+      return;
+    }
+    if(typeof source.getTopics==="function"){
+      try{flattenSource(source.getTopics(),target,topicId);}catch(error){console.warn("[Photoflash] getTopics() failed",error);}
+      return;
+    }
+    if(Array.isArray(source.topics)){flattenSource(source.topics,target,topicId);return;}
+    if(Array.isArray(source.studyItems)||Array.isArray(source.words)||Array.isArray(source.vocabulary)){
+      flattenSource(source.studyItems||source.words||source.vocabulary,target,source.id||source.topicId||topicId||"");
+      return;
+    }
+    if(typeof source==="object")target.push(Object.assign({topicId:topicId||""},source));
+  }
+  function collectRawPool(){
+    const raw=[];
+    const sources=[
+      window.TopicRegistryFacade,
+      window.TopicRegistry,
+      window.WORDS,
+      window.VOCABULARY,
+      window.topics,
+      window.TOPICS
+    ];
+    sources.forEach(source=>flattenSource(source,raw,""));
+    return raw;
+  }
+  function normalizePool(pool){
+    const raw=Array.isArray(pool)?pool:collectRawPool();
+    const out=[],seen=new Set();
+    raw.forEach((x,i)=>{
+      const w=wordItem(x,x&&x.topicId,i);
+      if(!w)return;
+      const k=key(w.word)+"|"+key(w.translation);
+      if(seen.has(k))return;
+      seen.add(k);
+      out.push(w);
+    });
+    return out;
+  }
+  function fallbackPool(){return normalizePool(FALLBACK_WORDS);}
   function pickWords(pool,count){const src=normalizePool(pool);return shuffle(src).slice(0,Math.min(count,src.length));}
   function splitArticle(word){const m=String(word).match(ARTICLE);return m?{p:m[0],c:String(word).slice(m[0].length)}:{p:"",c:String(word)};}
   function replaceAt(s,i,n,r){return s.slice(0,i)+r+s.slice(i+n);}
@@ -39,10 +116,52 @@
   function meaning(){clearTimers();const opts=meaningOptions(current.item);frame('<div class="pf-question"><em>Смысл · 4 сек</em><h2>Какой перевод?</h2><strong lang="es">'+esc(current.item.word)+'</strong><div class="pf-options">'+opts.map(x=>'<button data-pf-meaning="'+esc(x)+'">'+esc(x)+'</button>').join("")+'</div><div class="pf-feedback" data-pf-feedback></div></div>',"meaning","Смысл");timer(TIMES.meaning,()=>resolveMeaning(null,true));}
   function resolveMeaning(choice,timeout){if(current.meaningResolved)return;current.meaningResolved=true;clearTimeout(phaseTimer);const ok=!timeout&&choice===current.item.translation;if(!ok){current.failed=true;session.errors++;}game.querySelectorAll("[data-pf-meaning]").forEach(b=>{b.disabled=true;if(b.dataset.pfMeaning===current.item.translation)b.classList.add("good");if(!ok&&choice&&b.dataset.pfMeaning===choice)b.classList.add("bad");});const f=game.querySelector("[data-pf-feedback]");f.textContent=ok?"Верно!":(timeout?"Время! ":"")+"Правильно: "+current.item.translation;f.className="pf-feedback "+(ok?"ok":"no");transitionTimer=setTimeout(finishAttempt,ok?330:600);}
   function finishAttempt(){clearTimers();session.attempts++;if(current.failed){session.retries++;session.queue.splice(Math.min(2,session.queue.length),0,{item:current.item,failed:false,spellingResolved:false,meaningResolved:false});}else session.completed.add(current.item.id+"|"+current.item.word);current=null;next();}
-  function next(){if(!session.queue.length)return results();current=session.queue.shift();current.failed=false;current.spellingResolved=current.meaningResolved=false;flash();}
+  function next(){
+    if(!session||!Array.isArray(session.queue)){
+      console.error("[Photoflash] Queue is unavailable!");
+      return;
+    }
+    if(!session.queue.length){
+      if(session.attempts===0&&session.completed.size===0){
+        console.error("[Photoflash] Words pool is empty!");
+        alert("Не удалось загрузить слова для спринта. Проверьте выбор темы.");
+        close();
+        return;
+      }
+      return results();
+    }
+    current=session.queue.shift();
+    current.failed=false;
+    current.spellingResolved=current.meaningResolved=false;
+    flash();
+  }
   function results(){clearTimers();const secs=Math.max(1,Math.round((Date.now()-session.startedAt)/1000));frame('<div class="pf-results"><div>📸</div><em>Спринт завершён</em><h2>'+session.total+' слов — чисто!</h2><p>Все слова сданы без ошибок в финальной попытке.</p><section><span><b>'+session.total+'</b>слов</span><span><b>'+session.retries+'</b>повторов</span><span><b>'+session.errors+'</b>ошибок / таймаутов</span><span><b>'+secs+'с</b>время</span></section><footer><button class="pf-secondary" data-pf-exit>К словам</button><button class="pf-primary" data-pf-restart>Ещё раз</button></footer></div>',"results","Готово");const t=game.querySelector("[data-pf-timer]"),o=game.querySelector("[data-pf-overall]");if(t)t.style.width="100%";if(o)o.style.width="100%";window.dispatchEvent(new CustomEvent("photoflash:finish",{detail:{count:session.total,retries:session.retries,errors:session.errors,seconds:secs}}));}
   function close(){clearTimers();current=session=null;game.hidden=true;lock(false);syncBanner();window.dispatchEvent(new CustomEvent("photoflash:close"));}
-  function start(count,pool){if(Array.isArray(count)){pool=count;count=lastCount;}count=COUNTS.includes(Number(count))?Number(count):10;const source=normalizePool(pool);if(!source.length){alert("Не удалось получить слова из словаря. Обнови страницу и попробуй ещё раз.");return false;}const picked=pickWords(source,count);lastCount=picked.length;if(chooser.open)chooser.close();session={source,total:picked.length,queue:picked.map(item=>({item,failed:false,spellingResolved:false,meaningResolved:false})),completed:new Set(),attempts:0,retries:0,errors:0,startedAt:Date.now()};game.hidden=false;lock(true);syncBanner();window.dispatchEvent(new CustomEvent("photoflash:start",{detail:{count:picked.length}}));next();return true;}
+  function start(count,pool){
+    if(Array.isArray(count)){pool=count;count=lastCount;}
+    count=COUNTS.includes(Number(count))?Number(count):10;
+    let source=normalizePool(pool);
+    if(!source.length){
+      console.warn("[Photoflash] TopicRegistry is not ready; using fallback vocabulary.");
+      source=fallbackPool();
+    }
+    const picked=pickWords(source,count);
+    const queue=picked.map(item=>({item,failed:false,spellingResolved:false,meaningResolved:false}));
+    if(!queue||queue.length===0){
+      console.error("[Photoflash] Words pool is empty!");
+      alert("Не удалось загрузить слова для спринта. Проверьте выбор темы.");
+      return false;
+    }
+    lastCount=queue.length;
+    if(chooser.open)chooser.close();
+    session={source,total:queue.length,queue,completed:new Set(),attempts:0,retries:0,errors:0,startedAt:Date.now()};
+    game.hidden=false;
+    lock(true);
+    syncBanner();
+    window.dispatchEvent(new CustomEvent("photoflash:start",{detail:{count:queue.length}}));
+    next();
+    return true;
+  }
   function openChooser(){chooser.querySelectorAll("[data-pf-count]").forEach(b=>b.classList.toggle("active",Number(b.dataset.pfCount)===lastCount));chooser.querySelector("[data-pf-selected]").value=String(COUNTS.includes(lastCount)?lastCount:10);chooser.showModal();}
   function styles(){if(document.getElementById("pfStyles"))return;const s=document.createElement("style");s.id="pfStyles";s.textContent=[
     '.photoflash-open{overflow:hidden!important}.photoflash-banner{grid-column:1/-1;position:relative;overflow:visible;display:block;min-height:156px;padding:22px 210px 22px 26px;border:1px solid rgba(255,255,255,.95);border-radius:26px;background:linear-gradient(135deg,#3d348b 0%,#6c5ce7 55%,#ff7675 85%,#f0932b 100%);color:#fff;box-shadow:0 18px 45px rgba(35,28,89,.18);cursor:pointer}.photoflash-banner[hidden]{display:none!important}.photoflash-banner-copy{position:relative;min-width:0;z-index:2}.photoflash-badge,.pf-card em{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:850;font-style:normal}.photoflash-banner h2{margin:0;font-size:clamp(25px,3.3vw,38px);letter-spacing:-.04em}.photoflash-banner p{max-width:690px;margin:8px 0 16px;color:rgba(255,255,255,.88);font-size:14px}.photoflash-banner-cta{min-height:43px;padding:10px 15px;border:0;border-radius:13px;background:#ffd447;color:#292044;font-weight:900}.photoflash-banner-art{position:absolute;right:20px;bottom:-10px;width:180px;height:180px;display:flex;align-items:flex-end;justify-content:center;z-index:1;pointer-events:none}.photoflash-banner-art img{display:block;height:180px;max-height:180px;width:auto;object-fit:contain;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}',
@@ -57,6 +176,6 @@
   function syncBanner(){if(banner)banner.hidden=!wordsActive()||!!(game&&!game.hidden);}
   function observe(){const nodes=[document.getElementById("headerNavWords"),document.getElementById("navWords"),document.getElementById("trainerLayout")].filter(Boolean),o=new MutationObserver(syncBanner);nodes.forEach(n=>o.observe(n,{attributes:true,attributeFilter:["class","hidden"]}));["headerNavWords","headerNavHome","headerNavPractice","headerNavMistakes","navWords","navHome","navPractice","navMistakes","learnWordsBtn","chooseTopicBtn","mistakesWordsBtn"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("click",()=>setTimeout(syncBanner,0));});}
   function init(){styles();ui();bind();observe();syncBanner();}
-  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260925-photoflash",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
+  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260925-photoflash-pool-fix",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
