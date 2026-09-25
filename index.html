@@ -26,7 +26,7 @@
 <body>
   <script data-build-version-check>
     (function(){
-      const CURRENT_BUILD="20260924-backpack-detail51";
+      const CURRENT_BUILD="20260925-photoflash";
       const KEY="espanol_trainer_build_version";
       try{
         const seen=localStorage.getItem(KEY);
@@ -175,7 +175,7 @@
       </div>
     </section>
 
-    <div class="layout" id="trainerLayout" hidden>
+    <div class="layout" id="trainerLayout" hidden>\n      <section class="photoflash-banner" id="photoflashBanner" hidden role="button" tabindex="0" aria-label="Открыть режим Фотовспышка">\n        <div class="photoflash-banner-copy">\n          <span class="photoflash-badge">⚡ Новый режим</span>\n          <h2>Фотовспышка</h2>\n          <p>Учим новые слова в быстром спринте: вспышка, правописание, смысл</p>\n          <button class="photoflash-banner-cta" type="button">Начать спринт</button>\n        </div>\n        <div class="photoflash-banner-art" aria-hidden="true">\n          <img src="assets/mascot/cat-camera.png" alt="Кот с камерой" style="max-height: 120px;">\n        </div>\n      </section>
       <aside class="sidebar" id="topicCatalog">
         <div class="stats">
           <div class="stat"><strong id="doneStat">0</strong><span>решено</span></div>
@@ -556,7 +556,7 @@
     })();
   </script>
   <script src="js/ui/mascot.js?v=20260923-logo-easter32"></script>
-  <script type="module" src="./js/ui/app.js?v=20260924-backpack-detail51"></script>
+  <script type="module" src="./js/ui/app.js?v=20260924-backpack-detail51"></script>\n  <script src="js/modes/blitz.js?v=20260925-photoflash" defer></script>
   <script src="js/view-preserver.js?v=20260924-preserve1" defer></script>
 <script src="js/profile-loader.js?v=20260924-profile-sync1" defer></script>
 <script src="js/profile-loader.js?v=20260924-profile-sync1" defer></script>
