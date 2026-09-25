@@ -21,7 +21,9 @@
     [["b","v"],["v","b"],["c","s"],["s","c"]].forEach(([a,b])=>{const i=lower.indexOf(a);if(i>=0)add(replaceAt(c,i,1,b));});
     let i=lower.indexOf("ll");if(i>=0)add(replaceAt(c,i,2,"l"));i=lower.indexOf("rr");if(i>=0)add(replaceAt(c,i,2,"r"));i=lower.indexOf("l");if(i>=0&&lower.slice(i,i+2)!=="ll")add(replaceAt(c,i,1,"ll"));i=lower.indexOf("r");if(i>=0&&lower.slice(i,i+2)!=="rr")add(replaceAt(c,i,1,"rr"));
     const map={a:"á",e:"é",i:"í",o:"ó",u:"ú",n:"ñ","á":"a","é":"e","í":"i","ó":"o","ú":"u","ñ":"n"};Array.from(c).forEach((ch,j)=>{const l=ch.toLowerCase();if(map[l])add(replaceAt(c,j,1,ch===l?map[l]:map[l].toUpperCase()));});
-    if(out.length<2&&c.length>3){const a=Array.from(c);for(let j=1;j<a.length-1&&out.length<2;j++){if(/^[a-záéíóúñ]$/i.test(a[j])&&a[j]!==a[j+1]){const b=a.slice();[b[j],b[j+1]]=[b[j+1],b[j]];add(b.join(""));}}}
+    if(out.length<2&&c.length>1){const a=Array.from(c);for(let j=0;j<a.length-1&&out.length<2;j++){if(/^[a-záéíóúñ]$/i.test(a[j])&&/^[a-záéíóúñ]$/i.test(a[j+1])&&a[j]!==a[j+1]){const b=a.slice();[b[j],b[j+1]]=[b[j+1],b[j]];add(b.join(""));}}}
+    if(out.length<2&&c.length>1){const at=Math.max(0,Math.floor(c.length/2));add(c.slice(0,at)+c.slice(at+1));}
+    if(out.length<2&&c.length===1)add(c+c);
     return shuffle(out).slice(0,3);
   }
   function spellingOptions(item){return shuffle([item.word].concat(mutations(item.word)));}
