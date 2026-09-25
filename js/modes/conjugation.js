@@ -129,7 +129,7 @@ function injectStyles() {
   style.id = "conjugationDrillStyles";
   style.textContent = `
     .conjugation-open{overflow:hidden!important}
-    .conjugation-entry{width:100%;margin:14px 0 2px;padding:17px 18px;border:1px solid #ded8f2;border-radius:20px;background:linear-gradient(135deg,#f7f4ff 0%,#fff 62%,#fff6dd 100%);color:#17153b;text-align:left;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 12px 30px rgba(66,54,126,.08);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+    .conjugation-entry{width:100%;margin:18px 0 24px;padding:17px 18px;border:1px solid #ded8f2;border-radius:20px;background:linear-gradient(135deg,#f7f4ff 0%,#fff 62%,#fff6dd 100%);color:#17153b;text-align:left;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 12px 30px rgba(66,54,126,.08);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
     .conjugation-entry:hover{transform:translateY(-1px);border-color:#bdb1eb;box-shadow:0 16px 34px rgba(66,54,126,.12)}
     .conjugation-entry:active{transform:scale(.99)}
     .conjugation-entry[hidden]{display:none!important}
@@ -528,7 +528,7 @@ function init() {
 }
 
 window.ConjugationDrill = Object.freeze({
-  version: "20260925-results-layout-fix1",
+  version: "20260925-conjugation-spacing1",
   start,
   close,
   collectPool
