@@ -60,6 +60,8 @@ export function createPracticeView(options={}){
         '<img src="assets/images/mascot/blitz_banner_hq.webp?v=20260923-blitz-banner-hq29" alt="" style="width:100%;height:100%;object-fit:cover;object-position:right center;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 35%);image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;transform:translateZ(0);backface-visibility:hidden;mask-image:linear-gradient(to right,transparent 0%,black 35%);" onerror="this.parentElement.style.display=\'none\'">'+
       '</span>';
     banner.setAttribute("aria-label","Блиц на 60 секунд. Ответь на максимум карточек за минуту.");
+    banner.hidden=true;
+    banner.style.display="none";
 
     const catalogHead=host.querySelector(".catalog-head");
     if(catalogHead && catalogHead.nextSibling) host.insertBefore(banner,catalogHead.nextSibling);
@@ -76,10 +78,13 @@ export function createPracticeView(options={}){
     if(!node) return;
     updateHighScore();
     node.hidden=false;
+    node.style.display="flex";
   }
 
   function hide(){
-    if(banner) banner.hidden=true;
+    if(!banner) return;
+    banner.hidden=true;
+    banner.style.display="none";
   }
 
   function closeGame(){
