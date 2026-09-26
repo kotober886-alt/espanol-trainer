@@ -1,7 +1,7 @@
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-verb-wheel-spanish1";
+const VERSION = "20260926-verb-wheel-hotfix1";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos"];
 const REGULAR_ENDINGS = {
   ar: ["o", "as", "a", "amos", "áis", "an"],
@@ -102,8 +102,8 @@ function injectStyles() {
     .verb-wheel-fab:active{transform:scale(1.05)}
     .verb-wheel-fab[hidden]{display:none!important}
     .verb-wheel-fab-icon{font-size:20px;line-height:1}
-    .verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;transition:opacity .18s ease}
-    .verb-wheel-overlay[hidden]{display:none!important}
+    .verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;visibility:visible;pointer-events:auto;transition:opacity .18s ease}
+    .verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
     .verb-wheel-sheet{width:min(760px,100%);max-height:min(78vh,760px);display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}
     .verb-wheel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px 12px}
     .verb-wheel-title{min-width:0}
@@ -152,6 +152,11 @@ function ensureUi() {
     overlay.id = "verbWheelOverlay";
     overlay.className = "verb-wheel-overlay";
     overlay.hidden = true;
+    overlay.style.display = "none";
+    overlay.style.pointerEvents = "none";
+    overlay.style.visibility = "hidden";
+    overlay.setAttribute("aria-hidden", "true");
+    if ("inert" in overlay) overlay.inert = true;
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
     overlay.setAttribute("aria-labelledby", "verbWheelTitle");
@@ -176,6 +181,16 @@ function ensureUi() {
   }
 }
 
+function setOverlayOpen(isOpen) {
+  if (!overlay) return;
+  overlay.hidden = !isOpen;
+  overlay.style.display = isOpen ? "flex" : "none";
+  overlay.style.pointerEvents = isOpen ? "auto" : "none";
+  overlay.style.visibility = isOpen ? "visible" : "hidden";
+  overlay.setAttribute("aria-hidden", isOpen ? "false" : "true");
+  if ("inert" in overlay) overlay.inert = !isOpen;
+}
+
 function currentGameVerb() {
   const title = document.querySelector('.cd-game:not([hidden]) .cd-question h2[lang="es"]');
   return normalize(title && title.textContent);
@@ -189,8 +204,9 @@ function gameIsActive() {
 function syncFab() {
   if (!fab) return;
   const active = gameIsActive();
-  fab.hidden = !active || Boolean(overlay && !overlay.hidden);
-  if (!active && overlay && !overlay.hidden) closeSheet();
+  const shouldHideFab = !active || Boolean(overlay && !overlay.hidden);
+  if (fab.hidden !== shouldHideFab) fab.hidden = shouldHideFab;
+  if (!active && overlay && !overlay.hidden) closeSheet(false);
 }
 
 function selectedVerb() {
@@ -243,20 +259,20 @@ function openSheet() {
   if (search) search.value = "";
   renderChips("");
   renderForms();
-  overlay.hidden = false;
-  fab.hidden = true;
+  setOverlayOpen(true);
+  if (!fab.hidden) fab.hidden = true;
   document.documentElement.classList.add("verb-wheel-sheet-open");
   document.body.classList.add("verb-wheel-sheet-open");
   window.setTimeout(function () { if (search) search.focus(); }, 30);
 }
 
-function closeSheet() {
+function closeSheet(restoreFocus = true) {
   if (!overlay || overlay.hidden) return;
-  overlay.hidden = true;
+  setOverlayOpen(false);
   document.documentElement.classList.remove("verb-wheel-sheet-open");
   document.body.classList.remove("verb-wheel-sheet-open");
   syncFab();
-  if (fab && !fab.hidden) fab.focus({preventScroll:true});
+  if (restoreFocus && fab && !fab.hidden) fab.focus({preventScroll:true});
 }
 
 function bindUi() {
@@ -280,8 +296,24 @@ function bindUi() {
 }
 
 function observeGame() {
-  observer = new MutationObserver(syncFab);
-  observer.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:["hidden"]});
+  function attachToGame() {
+    const game = document.querySelector(".cd-game");
+    if (!game) return false;
+    if (observer) observer.disconnect();
+    observer = new MutationObserver(syncFab);
+    observer.observe(game, {attributes:true, attributeFilter:["hidden"]});
+    return true;
+  }
+
+  if (!attachToGame()) {
+    observer = new MutationObserver(function () {
+      if (attachToGame()) syncFab();
+    });
+    observer.observe(document.body, {subtree:true, childList:true});
+  }
+
+  window.addEventListener("conjugation:start", syncFab);
+  window.addEventListener("conjugation:close", syncFab);
 }
 
 function init() {
@@ -302,5 +334,14 @@ window.VerbWheel = Object.freeze({
   verbs: function () { return verbs.slice(); }
 });
 
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
-else init();
+function safeInit() {
+  try {
+    init();
+  } catch (error) {
+    console.error("[VerbWheel] initialization failed", error);
+    if (overlay) setOverlayOpen(false);
+  }
+}
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", safeInit, {once:true});
+else safeInit();
