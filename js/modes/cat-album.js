@@ -2,7 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "cat_album_unlocked";
-  const BUILD = "20260927-cat-album-code2";
+  const BUILD = "20260927-cat-album-code3";
 
   const CARDS = Object.freeze([
     { id:"cat_01", title:"La Siesta", desc:"Сладкий сон в гамаке", file:"assets/cards/cat_01.webp" },
@@ -22,7 +22,6 @@
     { id:"cat_15", title:"Don Gato de la Mancha", desc:"Храбрый кот против ветряных мельниц", file:"assets/cards/cat_15.webp" },
     { id:"cat_16", title:"El Abanico", desc:"Озорной взгляд из-за испанского веера", file:"assets/cards/cat_16.webp" },
     { id:"cat_17", title:"Luciérnagas", desc:"Тихая ночь у костра и светлячки", file:"assets/cards/cat_17.webp" },
-    { id:"cat_18", title:"La Foto Secreta", desc:"Секретный кадр из приключений котика", file:"assets/cards/cat_18.webp" }
   ]);
 
   let albumDialog = null;
