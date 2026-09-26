@@ -1,4 +1,4 @@
-const VERSION = "20260926-verb-wheel-fab-safe";
+const VERSION = "20260926-verb-wheel-compact-sheet1";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
 let verbs = [];
@@ -54,15 +54,15 @@ function injectStyles() {
     ".verb-wheel-fab:active{transform:scale(1.05)}",
     ".verb-wheel-fab[hidden]{display:none!important}",
     ".verb-wheel-fab-icon{font-size:20px;line-height:1}",
-    ".verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;visibility:visible;pointer-events:auto}",
+    ".verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.4);opacity:1;visibility:visible;pointer-events:auto}",
     ".verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
-    ".verb-wheel-sheet{width:min(760px,100%);height:min(620px,calc(100dvh - env(safe-area-inset-top)));display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}",
-    ".verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px 10px}",
+    ".verb-wheel-sheet{width:100%;max-width:500px;height:auto;max-height:50vh;margin:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:visible;border-radius:20px 20px 0 0;background:#fff;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
+    ".verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 10px}",
     ".verb-wheel-title{min-width:0}",
     ".verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}",
     ".verb-wheel-title p{margin:4px 0 0;color:#8a7770;font-size:12px;font-weight:700}",
     ".verb-wheel-close{width:40px;height:40px;flex:0 0 40px;border:0;border-radius:12px;background:#fff2e7;color:#9b3d33;font:inherit;font-size:26px;line-height:1;cursor:pointer}",
-    ".verb-wheel-current{flex:0 0 auto;padding:0 20px calc(18px + env(safe-area-inset-bottom))}",
+    ".verb-wheel-current{flex:0 0 auto;padding:0}",
     ".verb-wheel-combobox{position:relative;z-index:4;margin-bottom:10px}",
     ".verb-wheel-field{display:flex;align-items:stretch;min-height:46px;border:1px solid #e8d8ca;border-radius:14px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 7px 18px rgba(123,76,43,.07);overflow:hidden}",
     ".verb-wheel-field:focus-within{border-color:#f39c12;box-shadow:0 0 0 3px rgba(243,156,18,.14)}",
@@ -85,7 +85,7 @@ function injectStyles() {
     ".verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
     ".verb-wheel-sheet-open{overflow:hidden!important}",
     "@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}",
-    "@media(max-width:520px){.verb-wheel-sheet{height:calc(100dvh - env(safe-area-inset-top));max-height:none}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 76px));min-height:47px;padding:0 14px}}",
+    "@media(max-width:520px){.verb-wheel-head{padding-bottom:8px}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 76px));min-height:47px;padding:0 14px}}",
     "@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-field{min-height:42px}.verb-wheel-input{font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}",
     "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}"
   ].join("\n");
