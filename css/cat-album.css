@@ -1,0 +1,320 @@
+.cat-album-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .68);
+  color: inherit;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform .15s ease, background .2s ease;
+}
+
+.cat-album-button:hover { background: rgba(255, 255, 255, .92); }
+.cat-album-button:active { transform: scale(.96); }
+
+.cat-album-button-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.cat-album-button-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #fff;
+  color: #6253d9;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+#catAlbumDialog {
+  position: relative;
+  width: calc(100vw - 24px);
+  max-width: 1180px;
+  height: calc(100vh - 24px);
+  max-height: 920px;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  background: #fff;
+  color: #17153b;
+  box-shadow: 0 30px 90px rgba(20, 17, 46, .36);
+  overflow: hidden;
+}
+
+#catAlbumDialog::backdrop {
+  background: rgba(20, 17, 46, .64);
+  backdrop-filter: blur(7px);
+}
+
+.cat-album-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #fffaf2 0, #fff 28%);
+}
+
+.cat-album-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid #eee8df;
+}
+
+.cat-album-head-copy h2 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 38px);
+  letter-spacing: -.04em;
+}
+
+.cat-album-head-copy p {
+  margin: 5px 0 0;
+  color: #716b80;
+  font-weight: 750;
+}
+
+.cat-album-close,
+.cat-album-detail-close {
+  border: 0;
+  background: #f2eff7;
+  color: #514b68;
+  cursor: pointer;
+}
+
+.cat-album-close {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  font-size: 28px;
+}
+
+.cat-album-grid {
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 20px;
+  padding: 22px;
+  align-content: start;
+}
+
+.cat-album-item { min-width: 0; }
+
+.cat-album-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cat-album-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 11px 16px rgba(38, 31, 54, .15));
+  transition: transform .18s ease;
+}
+
+.cat-album-photo:hover img {
+  transform: translateY(-3px) rotate(-1deg);
+}
+
+.cat-album-copy {
+  padding: 4px 8px 0;
+  text-align: center;
+}
+
+.cat-album-copy strong {
+  display: block;
+  font-size: 15px;
+}
+
+.cat-album-copy span {
+  display: block;
+  margin-top: 3px;
+  color: #7d768a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.cat-album-photo-locked {
+  cursor: default;
+  background: linear-gradient(145deg, #e6e4e9, #c9c6cf);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .48);
+}
+
+.cat-album-locked {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 16px;
+  color: #625d6d;
+  text-align: center;
+}
+
+.cat-album-lock {
+  font-size: 34px;
+  filter: grayscale(1);
+}
+
+.cat-album-locked b { font-size: 13px; }
+
+.cat-album-locked small {
+  max-width: 150px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.cat-album-detail {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(21, 18, 36, .78);
+  backdrop-filter: blur(8px);
+}
+
+.cat-album-detail[hidden] { display: none !important; }
+
+.cat-album-detail-card {
+  position: relative;
+  width: min(520px, 92vw);
+  max-height: 92vh;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .36);
+}
+
+.cat-album-detail-card img {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+}
+
+.cat-album-detail-card h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.cat-album-detail-card p {
+  margin: 0;
+  color: #716b80;
+  text-align: center;
+}
+
+.cat-album-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 24px;
+}
+
+.pf-result-camera { font-size: 58px; }
+
+.pf-reward-card {
+  width: min(230px, 58vw);
+  margin: 0 auto 10px;
+  animation: pfRewardPop .58s cubic-bezier(.2, .9, .2, 1.15) both;
+  transform: rotate(-2.5deg);
+}
+
+.pf-reward-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 285px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 20px rgba(38, 31, 54, .2));
+}
+
+.pf-reward-copy {
+  width: min(520px, 100%);
+  margin: 12px auto 4px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.pf-reward-copy.is-new {
+  background: #fff4c9;
+  color: #6e5010;
+}
+
+.pf-reward-copy.is-owned {
+  background: #f1efff;
+  color: #5446b5;
+}
+
+.pf-results footer { flex-wrap: wrap; }
+
+.pf-album-action {
+  border-color: #d9d2ff;
+  background: #f7f5ff;
+  color: #5446b5;
+}
+
+@keyframes pfRewardPop {
+  0% { opacity: 0; transform: translateY(20px) scale(.82) rotate(-8deg); }
+  70% { opacity: 1; transform: translateY(-4px) scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(-2.5deg); }
+}
+
+@media (max-width: 700px) {
+  #catAlbumDialog {
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .cat-album-head { padding: 16px; }
+
+  .cat-album-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+    padding: 14px;
+  }
+
+  .cat-album-copy { padding-inline: 2px; }
+
+  .cat-album-button {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .cat-album-button-label {
+    font-size: 12px;
+  }
+}
