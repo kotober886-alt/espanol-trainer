@@ -2,7 +2,7 @@ import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-conjugation-shared-catalog";
+const VERSION = "20260926-conjugation-accent-tolerant";
 const COUNTS = [10, 15, 20];
 const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
 const VERB_FILTER_KEY = "conjugation_verb_filter";
@@ -44,6 +44,28 @@ function escapeHtml(value) {
 
 function normalize(value) {
   return String(value ?? "").trim().toLowerCase();
+}
+
+function normalizeAccentless(value) {
+  return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function highlightDiacritics(value) {
+  return Array.from(String(value ?? "")).map(function (char) {
+    const hasDiacritic = /[\u0300-\u036f]/.test(char.normalize("NFD"));
+    return hasDiacritic
+      ? '<mark class="cd-diacritic">' + escapeHtml(char) + '</mark>'
+      : escapeHtml(char);
+  }).join("");
+}
+
+function diacriticCharacters(value) {
+  const chars = [];
+  Array.from(String(value ?? "")).forEach(function (char) {
+    if (!/[\u0300-\u036f]/.test(char.normalize("NFD"))) return;
+    if (!chars.includes(char)) chars.push(char);
+  });
+  return chars;
 }
 
 function readVerbFilter() {
@@ -249,12 +271,12 @@ function injectStyles() {
     .cd-answer{width:100%;min-height:58px;padding:13px 16px;border:2px solid #ddd8e8;border-radius:16px;background:#fff;color:#17153b;font:inherit;font-size:20px;font-weight:800;text-align:center;outline:none;transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}
     .cd-answer:focus{border-color:#6555d9;box-shadow:0 0 0 4px rgba(101,85,217,.12)}
     .cd-answer.is-correct{border-color:#54b987;background:#eaf8f1;box-shadow:0 0 0 4px rgba(84,185,135,.12)}
-    .cd-answer.is-wrong{border-color:#e57d8b;background:#fff0f2;box-shadow:0 0 0 4px rgba(229,125,139,.11)}
+    .cd-answer.is-wrong{border-color:#e57d8b;background:#fff0f2;box-shadow:0 0 0 4px rgba(229,125,139,.11)}\n    .cd-answer.is-accent-warning{border-color:#e0ad35;background:#fff9df;box-shadow:0 0 0 4px rgba(224,173,53,.13)}
     .cd-accents{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 18px}
     .cd-accent{min-width:42px;height:38px;border:1px solid #ddd8e8;border-radius:11px;background:#f8f6fc;color:#443d62;font:inherit;font-weight:900;cursor:pointer}
     .cd-accent:hover{background:#f0edff;border-color:#bcb2e7}
     .cd-feedback{min-height:34px;margin:0 0 15px;font-weight:850}
-    .cd-feedback.ok{color:#187052}.cd-feedback.no{color:#a53643}
+    .cd-feedback.ok{color:#187052}.cd-feedback.no{color:#a53643}\n    .cd-feedback.warn{display:inline-block;min-height:0;padding:10px 12px;border:1px solid #efd27b;border-radius:12px;background:#fff8d9;color:#7a5600;line-height:1.4}\n    .cd-diacritic{padding:0 2px;border-radius:4px;background:#ffd96b;color:#654600;font-weight:950}
     .cd-correct-answer{margin:0 0 18px;padding:14px 16px;border-radius:15px;background:#fff0f2;color:#8f2e3a;font-size:16px}.cd-correct-answer strong{display:block;margin-top:3px;font-size:clamp(25px,4vw,34px);color:#a53643}
     .cd-actions{display:flex;justify-content:center;gap:10px}
     .cd-card[data-phase="results"]{min-height:0}.cd-card[data-phase="results"] .cd-stage{place-items:start center;padding:26px 30px 32px}.cd-results{text-align:center;width:min(590px,100%)}.cd-results-icon{font-size:58px}.cd-results h2{margin:12px 0 6px;font-size:clamp(31px,5vw,46px)}.cd-results>p{margin:0;color:#6d6a86}
@@ -443,7 +465,9 @@ function checkCurrent() {
   if (!typed) return;
 
   const task = session.current;
-  const correct = typed === normalize(task.answer);
+  const target = normalize(task.answer);
+  const exactCorrect = typed === target;
+  const accentCorrect = !exactCorrect && normalizeAccentless(input.value) === normalizeAccentless(task.answer);
   session.attempts += 1;
   input.disabled = true;
   if (check) check.disabled = true;
@@ -451,7 +475,7 @@ function checkCurrent() {
   const question = game.querySelector("[data-cd-question]");
   const feedback = game.querySelector("[data-cd-feedback]");
 
-  if (correct) {
+  if (exactCorrect) {
     session.clean.add(task.key);
     input.classList.add("is-correct");
     if (question) question.classList.add("is-success");
@@ -460,6 +484,24 @@ function checkCurrent() {
       feedback.className = "cd-feedback ok";
     }
     transitionTimer = window.setTimeout(nextTask, 400);
+    return;
+  }
+
+  if (accentCorrect) {
+    session.clean.add(task.key);
+    input.classList.add("is-accent-warning");
+    if (feedback) {
+      const accents = diacriticCharacters(task.answer);
+      const note = accents.length
+        ? "обрати внимание на " + accents.map(escapeHtml).join(", ")
+        : "в эталоне акцент не нужен";
+      feedback.innerHTML =
+        'Почти идеально! Засчитано, но проверь диакритику: <strong lang="es">' +
+        highlightDiacritics(task.answer) +
+        "</strong> — " + note + ".";
+      feedback.className = "cd-feedback warn";
+    }
+    transitionTimer = window.setTimeout(nextTask, 1400);
     return;
   }
 
@@ -474,7 +516,7 @@ function checkCurrent() {
   }
 
   const wrap = game.querySelector("[data-cd-correct-wrap]");
-  if (wrap) wrap.innerHTML = '<div class="cd-correct-answer">Правильно:<strong lang="es">' + escapeHtml(task.answer) + '</strong></div>';
+  if (wrap) wrap.innerHTML = '<div class="cd-correct-answer">Правильно:<strong lang="es">' + escapeHtml(task.answer) + "</strong></div>";
   if (check) check.hidden = true;
   const next = game.querySelector("[data-cd-next]");
   if (next) {

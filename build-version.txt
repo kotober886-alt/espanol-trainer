@@ -1,1 +1,1 @@
-20260926-verb-combobox-sync
+20260926-accent-tolerant-fab-safe

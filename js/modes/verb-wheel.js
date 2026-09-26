@@ -1,4 +1,4 @@
-const VERSION = "20260926-verb-wheel-combobox-sync";
+const VERSION = "20260926-verb-wheel-fab-safe";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
 let verbs = [];
@@ -49,7 +49,7 @@ function injectStyles() {
   const style = document.createElement("style");
   style.id = "verbWheelStyles";
   style.textContent = [
-    ".verb-wheel-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));z-index:10035;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 17px;border:0;border-radius:999px;background:linear-gradient(135deg,#e63946 0%,#f77f00 100%);color:#fff;font:inherit;font-size:14px;font-weight:900;letter-spacing:.01em;cursor:pointer;box-shadow:0 6px 18px rgba(230,57,70,.4);transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:manipulation}",
+    ".verb-wheel-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(86px,calc(env(safe-area-inset-bottom) + 78px));z-index:10035;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 17px;border:0;border-radius:999px;background:linear-gradient(135deg,#e63946 0%,#f77f00 100%);color:#fff;font:inherit;font-size:14px;font-weight:900;letter-spacing:.01em;cursor:pointer;box-shadow:0 6px 18px rgba(230,57,70,.4);transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:manipulation}",
     ".verb-wheel-fab:hover,.verb-wheel-fab:focus-visible{transform:scale(1.05);box-shadow:0 9px 23px rgba(230,57,70,.46);outline:none}",
     ".verb-wheel-fab:active{transform:scale(1.05)}",
     ".verb-wheel-fab[hidden]{display:none!important}",
@@ -85,7 +85,7 @@ function injectStyles() {
     ".verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
     ".verb-wheel-sheet-open{overflow:hidden!important}",
     "@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}",
-    "@media(max-width:520px){.verb-wheel-sheet{height:calc(100dvh - env(safe-area-inset-top));max-height:none}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px));min-height:47px;padding:0 14px}}",
+    "@media(max-width:520px){.verb-wheel-sheet{height:calc(100dvh - env(safe-area-inset-top));max-height:none}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 76px));min-height:47px;padding:0 14px}}",
     "@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-field{min-height:42px}.verb-wheel-input{font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}",
     "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}"
   ].join("\n");
@@ -238,7 +238,9 @@ function syncFab() {
   if (!fab) return;
   const active = gameIsActive();
   const sheetOpen = Boolean(overlay && !overlay.hidden);
-  const shouldShow = active && !sheetOpen;
+  const game = document.querySelector(".cd-game");
+  const nextButtonVisible = Boolean(game && game.querySelector("[data-cd-next]:not([hidden])"));
+  const shouldShow = active && !sheetOpen && !nextButtonVisible;
 
   fab.hidden = !shouldShow;
   fab.style.display = shouldShow ? "inline-flex" : "none";
@@ -400,7 +402,7 @@ function observeGame() {
     if (!game) return false;
     if (observer) observer.disconnect();
     observer = new MutationObserver(function () { syncFab(); });
-    observer.observe(game, {attributes:true, attributeFilter:["hidden"]});
+    observer.observe(game, {attributes:true, attributeFilter:["hidden"], childList:true, subtree:true});
     return true;
   }
 
