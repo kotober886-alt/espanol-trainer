@@ -448,7 +448,7 @@
       ?window.CatFlashRewards.finishRound(session.errors)
       :null;
     const rewardVisual=reward
-      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20260927-cat-album-code1" alt="'+esc(reward.title)+'"></div>'
+      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20260927-cat-album-code2" alt="'+esc(reward.title)+'"></div>'
       :'<div class="pf-result-camera">📸</div>';
     const rewardCopy=reward
       ?'<div class="pf-reward-copy '+(reward.isNewReward?'is-new':'is-owned')+'">'+
@@ -619,6 +619,6 @@
   function syncBanner(){if(banner)banner.hidden=!wordsActive()||!!(game&&!game.hidden);}
   function observe(){const nodes=[document.getElementById("headerNavWords"),document.getElementById("navWords"),document.getElementById("trainerLayout")].filter(Boolean),o=new MutationObserver(syncBanner);nodes.forEach(n=>o.observe(n,{attributes:true,attributeFilter:["class","hidden"]}));["headerNavWords","headerNavHome","headerNavPractice","headerNavMistakes","navWords","navHome","navPractice","navMistakes","learnWordsBtn","chooseTopicBtn","mistakesWordsBtn"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("click",()=>setTimeout(syncBanner,0));});}
   function init(){styles();ui();bind();observe();syncBanner();}
-  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260927-cat-album-code1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
+  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260927-cat-album-code2",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
