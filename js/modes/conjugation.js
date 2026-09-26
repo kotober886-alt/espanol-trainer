@@ -2,8 +2,11 @@ import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
+const VERSION = "20260926-conjugation-filter1";
 const COUNTS = [10, 15, 20];
 const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
+const VERB_FILTER_KEY = "conjugation_verb_filter";
+const VERB_FILTERS = new Set(["regular", "irregular", "all"]);
 const IRREGULAR_IDS = new Set([
   "ser", "estar", "ir", "tener", "hacer", "poder", "querer", "decir",
   "saber", "salir", "volver", "pedir", "venir", "poner", "traer", "ver",
@@ -16,6 +19,7 @@ let game = null;
 let session = null;
 let transitionTimer = 0;
 let lastCount = 10;
+let lastFilter = "regular";
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -25,6 +29,24 @@ function escapeHtml(value) {
 
 function normalize(value) {
   return String(value ?? "").trim().toLowerCase();
+}
+
+function readVerbFilter() {
+  try {
+    const saved = localStorage.getItem(VERB_FILTER_KEY);
+    return VERB_FILTERS.has(saved) ? saved : "regular";
+  } catch (error) {
+    return "regular";
+  }
+}
+
+function saveVerbFilter(value) {
+  const filter = VERB_FILTERS.has(value) ? value : "regular";
+  lastFilter = filter;
+  try {
+    localStorage.setItem(VERB_FILTER_KEY, filter);
+  } catch (error) {}
+  return filter;
 }
 
 function shuffle(items) {
@@ -94,7 +116,7 @@ function collectPool() {
           translation,
           pronoun,
           answer,
-          irregular: isIrregular(item)
+          isIrregular: isIrregular(item)
         });
       });
     });
@@ -103,24 +125,15 @@ function collectPool() {
   return tasks;
 }
 
-function buildRound(count) {
-  const pool = collectPool();
-  const irregular = shuffle(pool.filter(function (task) { return task.irregular; }));
-  const regular = shuffle(pool.filter(function (task) { return !task.irregular; }));
-  const wantedIrregular = Math.min(irregular.length, Math.ceil(count * 0.45));
-  const picked = irregular.slice(0, wantedIrregular);
-  const used = new Set(picked.map(function (task) { return task.key; }));
-
-  shuffle(regular.concat(irregular.slice(wantedIrregular))).some(function (task) {
-    if (picked.length >= count) return true;
-    if (!used.has(task.key)) {
-      used.add(task.key);
-      picked.push(task);
-    }
-    return picked.length >= count;
+function buildRound(count, filter) {
+  const selectedFilter = VERB_FILTERS.has(filter) ? filter : "regular";
+  const pool = collectPool().filter(function (task) {
+    if (selectedFilter === "regular") return !task.isIrregular;
+    if (selectedFilter === "irregular") return task.isIrregular;
+    return true;
   });
 
-  return shuffle(picked.slice(0, count));
+  return shuffle(pool).slice(0, count);
 }
 
 function injectStyles() {
@@ -151,6 +164,14 @@ function injectStyles() {
     .cd-count{min-height:76px;border:2px solid #e4e0ee;border-radius:16px;background:#fff;color:#17153b;cursor:pointer;font-weight:800}
     .cd-count b{display:block;font-size:25px}.cd-count span{display:block;color:#77718d;font-size:11px}
     .cd-count.active{border-color:#6555d9;background:#f1efff;color:#4c3fc3}
+    .cd-filter-label{display:block;margin:20px 0 9px;color:#514b68;font-size:12px;font-weight:850}
+    .cd-filters{display:grid;gap:9px}
+    .cd-filter{width:100%;padding:12px 13px;border:2px solid #e4e0ee;border-radius:15px;background:#fff;color:#17153b;text-align:left;cursor:pointer;font:inherit;transition:border-color .15s ease,background .15s ease,transform .15s ease}
+    .cd-filter:hover{transform:translateY(-1px);border-color:#c7bdef}
+    .cd-filter strong{display:block;font-size:14px;line-height:1.25}
+    .cd-filter span{display:block;margin-top:3px;color:#77718d;font-size:11px;line-height:1.35}
+    .cd-filter.active{border-color:#6555d9;background:#f1efff}
+    .cd-filter.active strong{color:#4c3fc3}
     .cd-dialog-actions{display:flex;justify-content:flex-end;margin-top:18px}
     .cd-primary,.cd-secondary{min-height:48px;padding:12px 18px;border-radius:14px;font:inherit;font-weight:900;cursor:pointer}
     .cd-primary{border:0;background:#6555d9;color:#fff}.cd-primary:disabled{opacity:.45;cursor:default}
@@ -222,8 +243,15 @@ function ensureUi() {
     chooser.innerHTML =
       '<div class="cd-dialog-inner">' +
         '<div class="cd-dialog-head"><div><b>⌨️ Ручной ввод</b><h2>Проспрягай</h2>' +
-        '<p>Выбери длину раунда. Ошибочные формы вернутся через пару заданий, пока не введёшь их чисто.</p></div>' +
+        '<p>Выбери тип глаголов и длину раунда. Ошибочные формы вернутся через пару заданий, пока не введёшь их чисто.</p></div>' +
         '<button class="cd-close" type="button" data-cd-dialog-close aria-label="Закрыть">×</button></div>' +
+        '<span class="cd-filter-label">Какие глаголы?</span>' +
+        '<div class="cd-filters" role="radiogroup" aria-label="Тип глаголов">' +
+          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="regular"><strong>🟢 Только правильные</strong><span>Базовые окончания -ar, -er, -ir без сюрпризов</span></button>' +
+          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="irregular"><strong>⚡ Только неправильные</strong><span>Ключевые исключения и отклонения (ser, ir, tener...)</span></button>' +
+          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="all"><strong>🔀 Микс</strong><span>Случайная смесь всех типов</span></button>' +
+        '</div>' +
+        '<input type="hidden" data-cd-filter-selected value="regular">' +
         '<span class="cd-count-label">Сколько форм?</span>' +
         '<div class="cd-counts">' + COUNTS.map(function (count) {
           return '<button class="cd-count' + (count === lastCount ? ' active' : '') + '" type="button" data-cd-count="' + count + '"><b>' + count + '</b><span>форм</span></button>';
@@ -267,6 +295,13 @@ function openChooser() {
     alert("Не удалось загрузить формы глаголов. Попробуй обновить страницу.");
     return;
   }
+  lastFilter = readVerbFilter();
+  chooser.querySelector("[data-cd-filter-selected]").value = lastFilter;
+  chooser.querySelectorAll("[data-cd-filter]").forEach(function (button) {
+    const active = button.dataset.cdFilter === lastFilter;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-checked", active ? "true" : "false");
+  });
   chooser.querySelector("[data-cd-selected]").value = String(lastCount);
   chooser.querySelectorAll("[data-cd-count]").forEach(function (button) {
     button.classList.toggle("active", Number(button.dataset.cdCount) === lastCount);
@@ -416,12 +451,13 @@ function renderResults() {
   window.dispatchEvent(new CustomEvent("conjugation:finish", {detail:{count:session.size, errors:session.errors, attempts:session.attempts, seconds}}));
 }
 
-function start(count) {
+function start(count, filter) {
   ensureUi();
   const size = COUNTS.includes(Number(count)) ? Number(count) : 10;
-  const queue = buildRound(size);
+  const selectedFilter = saveVerbFilter(VERB_FILTERS.has(filter) ? filter : lastFilter);
+  const queue = buildRound(size, selectedFilter);
   if (queue.length < size) {
-    alert("Недостаточно форм глаголов для этого раунда.");
+    alert("Недостаточно форм глаголов для этого фильтра и длины раунда.");
     return false;
   }
 
@@ -436,12 +472,13 @@ function start(count) {
     attempts: 0,
     errors: 0,
     awaitingNext: false,
+    filter: selectedFilter,
     startedAt: Date.now()
   };
   game.hidden = false;
   setLocked(true);
   syncEntry();
-  window.dispatchEvent(new CustomEvent("conjugation:start", {detail:{count:size}}));
+  window.dispatchEvent(new CustomEvent("conjugation:start", {detail:{count:size, filter:selectedFilter}}));
   nextTask();
   return true;
 }
@@ -458,6 +495,19 @@ function close() {
 
 function bindUi() {
   chooser.addEventListener("click", function (event) {
+    const filterButton = event.target.closest("[data-cd-filter]");
+    if (filterButton) {
+      const filter = VERB_FILTERS.has(filterButton.dataset.cdFilter) ? filterButton.dataset.cdFilter : "regular";
+      chooser.querySelector("[data-cd-filter-selected]").value = filter;
+      chooser.querySelectorAll("[data-cd-filter]").forEach(function (button) {
+        const active = button === filterButton;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-checked", active ? "true" : "false");
+      });
+      saveVerbFilter(filter);
+      return;
+    }
+
     const countButton = event.target.closest("[data-cd-count]");
     if (countButton) {
       const count = Number(countButton.dataset.cdCount);
@@ -472,7 +522,10 @@ function bindUi() {
       return;
     }
     if (event.target.closest("[data-cd-start]")) {
-      start(Number(chooser.querySelector("[data-cd-selected]").value));
+      start(
+        Number(chooser.querySelector("[data-cd-selected]").value),
+        chooser.querySelector("[data-cd-filter-selected]").value
+      );
     }
   });
 
@@ -488,7 +541,7 @@ function bindUi() {
     if (event.target.closest("[data-cd-check]")) return checkCurrent();
     if (event.target.closest("[data-cd-next]")) return nextTask();
     if (event.target.closest("[data-cd-close],[data-cd-exit]")) return close();
-    if (event.target.closest("[data-cd-restart]")) return start(lastCount);
+    if (event.target.closest("[data-cd-restart]")) return start(lastCount, session && session.filter ? session.filter : lastFilter);
   });
 
   game.addEventListener("keydown", function (event) {
@@ -519,6 +572,7 @@ function observePractice() {
 }
 
 function init() {
+  lastFilter = readVerbFilter();
   injectStyles();
   ensureEntry();
   ensureUi();
@@ -528,7 +582,7 @@ function init() {
 }
 
 window.ConjugationDrill = Object.freeze({
-  version: "20260925-conjugation-spacing1",
+  version: VERSION,
   start,
   close,
   collectPool
