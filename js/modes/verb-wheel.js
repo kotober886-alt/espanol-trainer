@@ -1,64 +1,14 @@
-const VERSION = "20260926-verb-wheel-40";
-const VERB_FILTER_KEY = "conjugation_verb_filter";
-const FACES = ["yo", "tú", "él", "nosotros", "vosotros", "ellos"];
+const VERSION = "20260926-verb-wheel-combobox-sync";
+const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
-const VERB_GROUPS = Object.freeze([
-  { id: "exceptions", label: "⭐ Топ исключений" },
-  { id: "yo-special", label: "⚡ Глаголы на -GO и особые в YO" },
-  { id: "stem-change", label: "🔄 Чередование в корне (дифтонги e->ie, o->ue, e->i)" },
-  { id: "regular", label: "🟢 Базовые правильные (-ar, -er, -ir)" }
-]);
-
-const VERBS = Object.freeze([
-  { id: "ser", group: "exceptions", infinitive: "ser", translation: "быть, являться", forms: ["soy", "eres", "es", "somos", "sois", "son"] },
-  { id: "estar", group: "exceptions", infinitive: "estar", translation: "находиться, состояние", forms: ["estoy", "estás", "está", "estamos", "estáis", "están"] },
-  { id: "ir", group: "exceptions", infinitive: "ir", translation: "идти, ехать", forms: ["voy", "vas", "va", "vamos", "vais", "van"] },
-  { id: "haber", group: "exceptions", infinitive: "haber", translation: "иметься, быть", forms: ["he", "has", "ha/hay", "hemos", "habéis", "han"] },
-  { id: "saber", group: "exceptions", infinitive: "saber", translation: "знать, уметь", forms: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"] },
-  { id: "ver", group: "exceptions", infinitive: "ver", translation: "видеть", forms: ["veo", "ves", "ve", "vemos", "veis", "ven"] },
-  { id: "dar", group: "exceptions", infinitive: "dar", translation: "давать", forms: ["doy", "das", "da", "damos", "dais", "dan"] },
-
-  { id: "tener", group: "yo-special", infinitive: "tener", translation: "иметь", forms: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"] },
-  { id: "hacer", group: "yo-special", infinitive: "hacer", translation: "делать", forms: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"] },
-  { id: "poner", group: "yo-special", infinitive: "poner", translation: "класть, ставить", forms: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"] },
-  { id: "salir", group: "yo-special", infinitive: "salir", translation: "выходить", forms: ["salgo", "sales", "sale", "salimos", "salís", "salen"] },
-  { id: "venir", group: "yo-special", infinitive: "venir", translation: "приходить", forms: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"] },
-  { id: "decir", group: "yo-special", infinitive: "decir", translation: "говорить, сказать", forms: ["digo", "dices", "dice", "decimos", "decís", "dicen"] },
-  { id: "traer", group: "yo-special", infinitive: "traer", translation: "приносить", forms: ["traigo", "traes", "trae", "traemos", "traéis", "traen"] },
-  { id: "oír", group: "yo-special", infinitive: "oír", translation: "слышать", forms: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"] },
-  { id: "conocer", group: "yo-special", infinitive: "conocer", translation: "знать, быть знакомым", forms: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"] },
-
-  { id: "poder", group: "stem-change", infinitive: "poder", translation: "мочь", forms: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"] },
-  { id: "querer", group: "stem-change", infinitive: "querer", translation: "хотеть, любить", forms: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"] },
-  { id: "pedir", group: "stem-change", infinitive: "pedir", translation: "просить, заказывать", forms: ["pido", "pides", "pide", "pedimos", "pedís", "piden"] },
-  { id: "sentir", group: "stem-change", infinitive: "sentir", translation: "чувствовать", forms: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"] },
-  { id: "pensar", group: "stem-change", infinitive: "pensar", translation: "думать", forms: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"] },
-  { id: "empezar", group: "stem-change", infinitive: "empezar", translation: "начинать", forms: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"] },
-  { id: "entender", group: "stem-change", infinitive: "entender", translation: "понимать", forms: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"] },
-  { id: "volver", group: "stem-change", infinitive: "volver", translation: "возвращаться", forms: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"] },
-  { id: "dormir", group: "stem-change", infinitive: "dormir", translation: "спать", forms: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"] },
-  { id: "recordar", group: "stem-change", infinitive: "recordar", translation: "помнить", forms: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"] },
-  { id: "encontrar", group: "stem-change", infinitive: "encontrar", translation: "находить", forms: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"] },
-  { id: "servir", group: "stem-change", infinitive: "servir", translation: "служить, подходить", forms: ["sirvo", "sirves", "sirve", "servimos", "servís", "sirven"] },
-  { id: "jugar", group: "stem-change", infinitive: "jugar", translation: "играть", forms: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"] },
-
-  { id: "hablar", group: "regular", infinitive: "hablar", translation: "говорить", forms: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"] },
-  { id: "tomar", group: "regular", infinitive: "tomar", translation: "брать, пить", forms: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"] },
-  { id: "trabajar", group: "regular", infinitive: "trabajar", translation: "работать", forms: ["trabajo", "trabajas", "trabaja", "trabajamos", "trabajáis", "trabajan"] },
-  { id: "comprar", group: "regular", infinitive: "comprar", translation: "покупать", forms: ["compro", "compras", "compra", "compramos", "compráis", "compran"] },
-  { id: "escuchar", group: "regular", infinitive: "escuchar", translation: "слушать", forms: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"] },
-  { id: "comer", group: "regular", infinitive: "comer", translation: "есть", forms: ["como", "comes", "come", "comemos", "coméis", "comen"] },
-  { id: "beber", group: "regular", infinitive: "beber", translation: "пить", forms: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"] },
-  { id: "aprender", group: "regular", infinitive: "aprender", translation: "учить", forms: ["aprendo", "aprendes", "aprende", "aprendemos", "aprendéis", "aprenden"] },
-  { id: "vivir", group: "regular", infinitive: "vivir", translation: "жить", forms: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"] },
-  { id: "escribir", group: "regular", infinitive: "escribir", translation: "писать", forms: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"] },
-  { id: "abrir", group: "regular", infinitive: "abrir", translation: "открывать", forms: ["abro", "abres", "abre", "abrimos", "abrís", "abren"] }
-]);
-
-let selectedId = "tener";
+let verbs = [];
+let groups = [];
+let selectedId = "";
 let fab = null;
 let overlay = null;
-let select = null;
+let input = null;
+let toggle = null;
+let menu = null;
 let forms = null;
 let observer = null;
 
@@ -68,55 +18,77 @@ function escapeHtml(value) {
   });
 }
 
-function normalize(value) {
-  return String(value ?? "").trim().toLocaleLowerCase("es");
+function norm(value) {
+  return (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
-function readVerbFilter() {
-  try {
-    return localStorage.getItem(VERB_FILTER_KEY) || "regular";
-  } catch (error) {
-    return "regular";
+function api() {
+  return window.ConjugationDrill || null;
+}
+
+function refreshCatalog() {
+  const drill = api();
+  verbs = drill && typeof drill.catalog === "function" ? drill.catalog() : [];
+  groups = drill && typeof drill.groups === "function" ? drill.groups() : [];
+  if (!verbs.some(function (verb) { return verb.id === selectedId; })) {
+    selectedId = verbs.length ? verbs[0].id : "";
   }
 }
 
 function selectedVerb() {
-  return VERBS.find(function (verb) { return verb.id === selectedId; }) || VERBS.find(function (verb) { return verb.id === "tener"; }) || VERBS[0];
+  return verbs.find(function (verb) { return verb.id === selectedId; }) || verbs[0] || null;
+}
+
+function verbLabel(verb) {
+  if (!verb) return "";
+  return verb.infinitive + (verb.translation ? " — " + verb.translation : "");
 }
 
 function injectStyles() {
   if (document.getElementById("verbWheelStyles")) return;
   const style = document.createElement("style");
   style.id = "verbWheelStyles";
-  style.textContent = '\n' +
-    '.verb-wheel-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));z-index:10035;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 17px;border:0;border-radius:999px;background:linear-gradient(135deg,#e63946 0%,#f77f00 100%);color:#fff;font:inherit;font-size:14px;font-weight:900;letter-spacing:.01em;cursor:pointer;box-shadow:0 6px 18px rgba(230,57,70,.4);transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:manipulation}\n' +
-    '.verb-wheel-fab:hover,.verb-wheel-fab:focus-visible{transform:scale(1.05);box-shadow:0 9px 23px rgba(230,57,70,.46);outline:none}\n' +
-    '.verb-wheel-fab:active{transform:scale(1.05)}\n' +
-    '.verb-wheel-fab[hidden]{display:none!important}\n' +
-    '.verb-wheel-fab-icon{font-size:20px;line-height:1}\n' +
-    '.verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;visibility:visible;pointer-events:auto}\n' +
-    '.verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}\n' +
-    '.verb-wheel-sheet{width:min(760px,100%);max-height:calc(100dvh - env(safe-area-inset-top));display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}\n' +
-    '.verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px 10px}\n' +
-    '.verb-wheel-title{min-width:0}\n' +
-    '.verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}\n' +
-    '.verb-wheel-title p{margin:4px 0 0;color:#8a7770;font-size:12px;font-weight:700}\n' +
-    '.verb-wheel-close{width:40px;height:40px;flex:0 0 40px;border:0;border-radius:12px;background:#fff2e7;color:#9b3d33;font:inherit;font-size:26px;line-height:1;cursor:pointer}\n' +
-    '.verb-wheel-current{flex:0 0 auto;padding:0 20px calc(18px + env(safe-area-inset-bottom))}\n' +
-    '.verb-wheel-select-wrap{position:relative;margin-bottom:10px}\n' +
-    '.verb-wheel-select-wrap::after{content:"▾";position:absolute;right:15px;top:50%;transform:translateY(-52%);color:#b13f31;font-size:18px;font-weight:900;pointer-events:none}\n' +
-    '.verb-wheel-select{width:100%;height:46px;padding:0 44px 0 14px;border:1px solid #e8d8ca;border-radius:14px;background:linear-gradient(145deg,#fff9f2,#fff);color:#2d2927;font:inherit;font-size:14px;font-weight:850;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;box-shadow:0 7px 18px rgba(123,76,43,.07)}\n' +
-    '.verb-wheel-select:focus{border-color:#f39c12;box-shadow:0 0 0 3px rgba(243,156,18,.14)}\n' +
-    '.verb-wheel-current-card{padding:11px;border:1px solid #f0dccb;border-radius:18px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 9px 24px rgba(123,76,43,.08)}\n' +
-    '.verb-wheel-forms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}\n' +
-    '.verb-wheel-form{min-width:0;padding:9px 8px;border:1px solid #f1e7d0;border-radius:12px;background:#fff}\n' +
-    '.verb-wheel-person{display:block;margin-bottom:3px;color:rgba(45,52,54,.54);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n' +
-    '.verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n' +
-    '.verb-wheel-sheet-open{overflow:hidden!important}\n' +
-    '@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}\n' +
-    '@media(max-width:520px){.verb-wheel-sheet{max-height:calc(100dvh - env(safe-area-inset-top))}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-select{height:44px;font-size:13px}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px));min-height:47px;padding:0 14px}}\n' +
-    '@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-select{height:42px;font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}\n' +
-    '@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}\n';
+  style.textContent = [
+    ".verb-wheel-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));z-index:10035;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 17px;border:0;border-radius:999px;background:linear-gradient(135deg,#e63946 0%,#f77f00 100%);color:#fff;font:inherit;font-size:14px;font-weight:900;letter-spacing:.01em;cursor:pointer;box-shadow:0 6px 18px rgba(230,57,70,.4);transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:manipulation}",
+    ".verb-wheel-fab:hover,.verb-wheel-fab:focus-visible{transform:scale(1.05);box-shadow:0 9px 23px rgba(230,57,70,.46);outline:none}",
+    ".verb-wheel-fab:active{transform:scale(1.05)}",
+    ".verb-wheel-fab[hidden]{display:none!important}",
+    ".verb-wheel-fab-icon{font-size:20px;line-height:1}",
+    ".verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;visibility:visible;pointer-events:auto}",
+    ".verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
+    ".verb-wheel-sheet{width:min(760px,100%);height:min(620px,calc(100dvh - env(safe-area-inset-top)));display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}",
+    ".verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px 10px}",
+    ".verb-wheel-title{min-width:0}",
+    ".verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}",
+    ".verb-wheel-title p{margin:4px 0 0;color:#8a7770;font-size:12px;font-weight:700}",
+    ".verb-wheel-close{width:40px;height:40px;flex:0 0 40px;border:0;border-radius:12px;background:#fff2e7;color:#9b3d33;font:inherit;font-size:26px;line-height:1;cursor:pointer}",
+    ".verb-wheel-current{flex:0 0 auto;padding:0 20px calc(18px + env(safe-area-inset-bottom))}",
+    ".verb-wheel-combobox{position:relative;z-index:4;margin-bottom:10px}",
+    ".verb-wheel-field{display:flex;align-items:stretch;min-height:46px;border:1px solid #e8d8ca;border-radius:14px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 7px 18px rgba(123,76,43,.07);overflow:hidden}",
+    ".verb-wheel-field:focus-within{border-color:#f39c12;box-shadow:0 0 0 3px rgba(243,156,18,.14)}",
+    ".verb-wheel-input{min-width:0;flex:1;border:0;outline:0;background:transparent;padding:0 10px 0 14px;color:#2d2927;font:inherit;font-size:14px;font-weight:850}",
+    ".verb-wheel-input::placeholder{color:#a58e84;font-weight:700}",
+    ".verb-wheel-toggle{width:46px;flex:0 0 46px;border:0;border-left:1px solid rgba(232,216,202,.75);background:transparent;color:#b13f31;font:inherit;font-size:18px;font-weight:900;cursor:pointer}",
+    ".verb-wheel-toggle.is-open{transform:rotate(180deg)}",
+    ".verb-wheel-menu{position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:8;max-height:min(340px,calc(100dvh - 210px));overflow:auto;padding:7px;border:1px solid #ead9ca;border-radius:15px;background:#fff;box-shadow:0 18px 45px rgba(76,48,34,.2);overscroll-behavior:contain}",
+    ".verb-wheel-menu[hidden]{display:none!important}",
+    ".verb-wheel-group+.verb-wheel-group{margin-top:6px;padding-top:6px;border-top:1px solid #f1e5db}",
+    ".verb-wheel-group-title{padding:7px 9px 5px;color:#8b5d4a;font-size:11px;font-weight:900;line-height:1.3}",
+    ".verb-wheel-option{display:block;width:100%;padding:9px 10px;border:0;border-radius:10px;background:transparent;color:#332b27;text-align:left;font:inherit;font-size:13px;font-weight:750;line-height:1.25;cursor:pointer}",
+    ".verb-wheel-option:hover,.verb-wheel-option:focus-visible{background:#fff2e7;outline:none}",
+    ".verb-wheel-option[aria-selected=true]{background:#fff6df;color:#9b3d33}",
+    ".verb-wheel-empty{padding:18px 12px;color:#8a7770;text-align:center;font-size:13px;font-weight:750}",
+    ".verb-wheel-current-card{padding:11px;border:1px solid #f0dccb;border-radius:18px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 9px 24px rgba(123,76,43,.08)}",
+    ".verb-wheel-forms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}",
+    ".verb-wheel-form{min-width:0;padding:9px 8px;border:1px solid #f1e7d0;border-radius:12px;background:#fff}",
+    ".verb-wheel-person{display:block;margin-bottom:3px;color:rgba(45,52,54,.54);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+    ".verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+    ".verb-wheel-sheet-open{overflow:hidden!important}",
+    "@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}",
+    "@media(max-width:520px){.verb-wheel-sheet{height:calc(100dvh - env(safe-area-inset-top));max-height:none}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px));min-height:47px;padding:0 14px}}",
+    "@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-field{min-height:42px}.verb-wheel-input{font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}",
+    "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}"
+  ].join("\n");
   document.head.appendChild(style);
 }
 
@@ -154,8 +126,12 @@ function ensureUi() {
           '<button class="verb-wheel-close" type="button" data-verb-wheel-close aria-label="Закрыть">×</button>' +
         '</header>' +
         '<div class="verb-wheel-current">' +
-          '<div class="verb-wheel-select-wrap">' +
-            '<select class="verb-wheel-select" data-verb-wheel-select aria-label="Выбрать глагол"></select>' +
+          '<div class="verb-wheel-combobox" data-verb-wheel-combobox>' +
+            '<div class="verb-wheel-field">' +
+              '<input class="verb-wheel-input" data-verb-wheel-input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="verbWheelMenu" placeholder="Найти глагол или перевод...">' +
+              '<button class="verb-wheel-toggle" data-verb-wheel-toggle type="button" aria-label="Открыть список глаголов" aria-expanded="false">▾</button>' +
+            '</div>' +
+            '<div class="verb-wheel-menu" id="verbWheelMenu" data-verb-wheel-menu role="listbox" hidden></div>' +
           '</div>' +
           '<section class="verb-wheel-current-card" aria-live="polite">' +
             '<div class="verb-wheel-forms" data-verb-wheel-forms></div>' +
@@ -164,7 +140,9 @@ function ensureUi() {
       '</section>';
 
     document.body.appendChild(overlay);
-    select = overlay.querySelector("[data-verb-wheel-select]");
+    input = overlay.querySelector("[data-verb-wheel-input]");
+    toggle = overlay.querySelector("[data-verb-wheel-toggle]");
+    menu = overlay.querySelector("[data-verb-wheel-menu]");
     forms = overlay.querySelector("[data-verb-wheel-forms]");
   }
 }
@@ -179,52 +157,14 @@ function setOverlayOpen(isOpen) {
   if ("inert" in overlay) overlay.inert = !isOpen;
 }
 
-function currentGameVerb() {
-  const title = document.querySelector('.cd-game:not([hidden]) .cd-question h2[lang="es"]');
-  return normalize(title && title.textContent);
-}
-
-function gameIsActive() {
-  const game = document.querySelector(".cd-game");
-  return Boolean(game && !game.hidden);
-}
-
-function syncFab(filterOverride) {
-  if (!fab) return;
-  const active = gameIsActive();
-  const filter = filterOverride || readVerbFilter();
-  const regularOnly = filter === "regular";
-  const sheetOpen = Boolean(overlay && !overlay.hidden);
-  const shouldShow = active && !regularOnly && !sheetOpen;
-
-  fab.hidden = !shouldShow;
-  fab.style.display = shouldShow ? "inline-flex" : "none";
-  fab.setAttribute("aria-hidden", shouldShow ? "false" : "true");
-
-  if (!active && overlay && !overlay.hidden) closeSheet(false);
-}
-
-function renderSelect() {
-  if (!select) return;
-
-  select.innerHTML = VERB_GROUPS.map(function (group) {
-    const options = VERBS.filter(function (verb) {
-      return verb.group === group.id;
-    }).map(function (verb) {
-      return '<option value="' + escapeHtml(verb.id) + '">' +
-        escapeHtml(verb.infinitive + " — " + verb.translation) +
-      '</option>';
-    }).join("");
-
-    return '<optgroup label="' + escapeHtml(group.label) + '">' + options + '</optgroup>';
-  }).join("");
-  select.value = selectedId;
-}
-
 function renderCurrent() {
   const verb = selectedVerb();
-  if (!verb || !forms) return;
+  if (!verb || !forms) {
+    if (forms) forms.innerHTML = "";
+    return;
+  }
 
+  input.value = verbLabel(verb);
   forms.innerHTML = verb.forms.map(function (form, index) {
     return '<article class="verb-wheel-form">' +
       '<span class="verb-wheel-person">' + escapeHtml(FACES[index]) + '</span>' +
@@ -233,21 +173,103 @@ function renderCurrent() {
   }).join("");
 }
 
+function renderMenu(query) {
+  if (!menu) return;
+  const needle = norm(query);
+  let matched = 0;
+
+  const html = groups.map(function (group) {
+    const items = verbs.filter(function (verb) {
+      if (verb.group !== group.id) return false;
+      if (!needle) return true;
+      return norm(verb.infinitive).includes(needle) || norm(verb.translation).includes(needle);
+    }).sort(function (a, b) {
+      return a.infinitive.localeCompare(b.infinitive, "es", {sensitivity:"base"});
+    });
+
+    if (!items.length) return "";
+    matched += items.length;
+
+    return '<section class="verb-wheel-group" role="group" aria-label="' + escapeHtml(group.label) + '">' +
+      '<div class="verb-wheel-group-title">' + escapeHtml(group.label) + '</div>' +
+      items.map(function (verb) {
+        return '<button class="verb-wheel-option" type="button" role="option" data-verb-wheel-option="' + escapeHtml(verb.id) + '" aria-selected="' + (verb.id === selectedId ? "true" : "false") + '">' +
+          escapeHtml(verbLabel(verb)) +
+        '</button>';
+      }).join("") +
+    '</section>';
+  }).join("");
+
+  menu.innerHTML = matched ? html : '<div class="verb-wheel-empty">Ничего не найдено</div>';
+}
+
+function setMenuOpen(isOpen, query) {
+  if (!menu || !input || !toggle) return;
+  menu.hidden = !isOpen;
+  input.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  toggle.classList.toggle("is-open", isOpen);
+  if (isOpen) renderMenu(query == null ? "" : query);
+}
+
+function closeMenu(restoreSelected) {
+  if (!menu || menu.hidden) return;
+  setMenuOpen(false);
+  if (restoreSelected !== false) {
+    const verb = selectedVerb();
+    if (verb) input.value = verbLabel(verb);
+  }
+}
+
 function selectVerb(id) {
-  if (!VERBS.some(function (verb) { return verb.id === id; })) return;
-  selectedId = id;
-  if (select) select.value = selectedId;
+  const verb = verbs.find(function (item) { return item.id === id; });
+  if (!verb) return;
+  selectedId = verb.id;
   renderCurrent();
+  closeMenu(false);
+}
+
+function gameIsActive() {
+  const game = document.querySelector(".cd-game");
+  return Boolean(game && !game.hidden);
+}
+
+function syncFab() {
+  if (!fab) return;
+  const active = gameIsActive();
+  const sheetOpen = Boolean(overlay && !overlay.hidden);
+  const shouldShow = active && !sheetOpen;
+
+  fab.hidden = !shouldShow;
+  fab.style.display = shouldShow ? "inline-flex" : "none";
+  fab.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+
+  if (!active && overlay && !overlay.hidden) closeSheet(false);
+}
+
+function currentGameVerb() {
+  const drill = api();
+  const fromState = drill && typeof drill.currentVerb === "function" ? drill.currentVerb() : "";
+  if (fromState) return norm(fromState);
+  const title = document.querySelector('.cd-game:not([hidden]) .cd-question h2[lang="es"]');
+  return norm(title && title.textContent);
 }
 
 function openSheet() {
   ensureUi();
-  const current = currentGameVerb();
-  if (VERBS.some(function (verb) { return verb.id === current; })) selectedId = current;
-  else if (!VERBS.some(function (verb) { return verb.id === selectedId; })) selectedId = "tener";
+  refreshCatalog();
+  if (!verbs.length) {
+    alert("Не удалось загрузить базу глаголов. Попробуй обновить страницу.");
+    return;
+  }
 
-  renderSelect();
+  const current = currentGameVerb();
+  const currentMatch = verbs.find(function (verb) { return norm(verb.infinitive) === current; });
+  if (currentMatch) selectedId = currentMatch.id;
+  else if (!selectedVerb()) selectedId = verbs[0].id;
+
   renderCurrent();
+  setMenuOpen(false);
   setOverlayOpen(true);
   fab.hidden = true;
   fab.style.display = "none";
@@ -257,11 +279,16 @@ function openSheet() {
 
 function closeSheet(restoreFocus = true) {
   if (!overlay || overlay.hidden) return;
+  closeMenu(true);
   setOverlayOpen(false);
   document.documentElement.classList.remove("verb-wheel-sheet-open");
   document.body.classList.remove("verb-wheel-sheet-open");
   syncFab();
   if (restoreFocus && fab && !fab.hidden) fab.focus({preventScroll:true});
+}
+
+function firstMenuOption() {
+  return menu ? menu.querySelector("[data-verb-wheel-option]") : null;
 }
 
 function bindUi() {
@@ -273,14 +300,93 @@ function bindUi() {
       return;
     }
 
+    const option = event.target.closest("[data-verb-wheel-option]");
+    if (option) {
+      selectVerb(option.dataset.verbWheelOption);
+      return;
+    }
+
+    if (!event.target.closest("[data-verb-wheel-combobox]")) closeMenu(true);
   });
 
-  select.addEventListener("change", function () {
-    selectVerb(select.value);
+  input.addEventListener("click", function () {
+    const opening = menu.hidden;
+    if (opening) {
+      setMenuOpen(true, "");
+      window.requestAnimationFrame(function () { input.select(); });
+    } else {
+      closeMenu(true);
+    }
+  });
+
+  input.addEventListener("input", function () {
+    setMenuOpen(true, input.value);
+  });
+
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      if (!menu.hidden) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeMenu(true);
+      }
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (menu.hidden) setMenuOpen(true, input.value === verbLabel(selectedVerb()) ? "" : input.value);
+      const first = firstMenuOption();
+      if (first) first.focus();
+      return;
+    }
+
+    if (event.key === "Enter" && !menu.hidden) {
+      const first = firstMenuOption();
+      if (first) {
+        event.preventDefault();
+        selectVerb(first.dataset.verbWheelOption);
+      }
+    }
+  });
+
+  toggle.addEventListener("click", function () {
+    const opening = menu.hidden;
+    if (opening) {
+      setMenuOpen(true, "");
+      input.focus({preventScroll:true});
+      window.requestAnimationFrame(function () { input.select(); });
+    } else {
+      closeMenu(true);
+    }
+  });
+
+  menu.addEventListener("keydown", function (event) {
+    const options = Array.from(menu.querySelectorAll("[data-verb-wheel-option]"));
+    const index = options.indexOf(document.activeElement);
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu(true);
+      input.focus({preventScroll:true});
+      return;
+    }
+    if (event.key === "Enter" && index >= 0) {
+      event.preventDefault();
+      selectVerb(options[index].dataset.verbWheelOption);
+      input.focus({preventScroll:true});
+      return;
+    }
+    if ((event.key === "ArrowDown" || event.key === "ArrowUp") && options.length) {
+      event.preventDefault();
+      const delta = event.key === "ArrowDown" ? 1 : -1;
+      const nextIndex = index < 0 ? 0 : (index + delta + options.length) % options.length;
+      options[nextIndex].focus();
+    }
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && overlay && !overlay.hidden) {
+    if (event.key === "Escape" && overlay && !overlay.hidden && menu.hidden) {
       event.preventDefault();
       event.stopPropagation();
       closeSheet();
@@ -305,19 +411,16 @@ function observeGame() {
     observer.observe(document.body, {subtree:true, childList:true});
   }
 
-  window.addEventListener("conjugation:start", function (event) {
-    syncFab(event && event.detail && event.detail.filter ? event.detail.filter : null);
-  });
-  window.addEventListener("conjugation:close", function () { syncFab(); });
+  window.addEventListener("conjugation:start", syncFab);
+  window.addEventListener("conjugation:close", syncFab);
 }
 
 function init() {
-  if (VERBS.length !== 40) throw new Error("Verb wheel must contain exactly 40 verbs");
   injectStyles();
   ensureUi();
+  refreshCatalog();
   bindUi();
   observeGame();
-  renderSelect();
   renderCurrent();
   syncFab();
 }
@@ -326,7 +429,10 @@ window.VerbWheel = Object.freeze({
   version: VERSION,
   open: openSheet,
   close: closeSheet,
-  verbs: function () { return VERBS.map(function (verb) { return Object.assign({}, verb, {forms:verb.forms.slice()}); }); }
+  verbs: function () {
+    refreshCatalog();
+    return verbs.map(function (verb) { return Object.assign({}, verb, {forms:verb.forms.slice()}); });
+  }
 });
 
 function safeInit() {

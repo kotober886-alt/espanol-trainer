@@ -2,15 +2,30 @@ import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-conjugation-filter-visible2";
+const VERSION = "20260926-conjugation-shared-catalog";
 const COUNTS = [10, 15, 20];
 const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
 const VERB_FILTER_KEY = "conjugation_verb_filter";
 const VERB_FILTERS = new Set(["regular", "irregular", "all"]);
-const IRREGULAR_IDS = new Set([
-  "ser", "estar", "ir", "tener", "hacer", "poder", "querer", "decir",
-  "saber", "salir", "volver", "pedir", "venir", "poner", "traer", "ver",
-  "elegir", "encontrar", "costar", "dormir", "recordar", "empezar"
+const PRONOUN_ORDER = Object.freeze([
+  "yo",
+  "tú",
+  "él / ella / usted",
+  "nosotros / nosotras",
+  "vosotros / vosotras",
+  "ellos / ellas / ustedes"
+]);
+const VERB_GROUPS = Object.freeze([
+  { id: "exceptions", label: "⭐ Топ исключений" },
+  { id: "yo-special", label: "⚡ Глаголы на -GO и особые в YO" },
+  { id: "stem-change", label: "🔄 Чередование в корне (e->ie, o->ue, e->i)" },
+  { id: "regular", label: "🟢 Правильные (-ar, -er, -ir)" }
+]);
+const TOP_EXCEPTION_IDS = new Set(["ser", "estar", "ir", "saber", "ver"]);
+const YO_SPECIAL_IDS = new Set(["decir", "hacer", "poner", "salir", "tener", "traer", "venir"]);
+const STEM_CHANGE_IDS = new Set([
+  "almorzar", "cerrar", "costar", "dormir", "elegir", "empezar", "encontrar",
+  "pedir", "poder", "probar", "querer", "recordar", "volver"
 ]);
 
 let entry = null;
@@ -81,19 +96,19 @@ function sourceTopics() {
   return [registeredVerbs || verbsTopic, registeredPresent || presentTopic].filter(Boolean);
 }
 
-function isIrregular(item) {
-  const id = String(item && (item.id || item.base || item.word) || "").toLowerCase();
+function verbGroupFor(item) {
+  const id = String(item && (item.id || item.base || item.word) || "").trim().toLowerCase();
   const label = String(item && item.gender || "").toLowerCase();
-  return IRREGULAR_IDS.has(id) ||
-    label.includes("неправиль") ||
-    label.includes("→") ||
-    label.includes("черед") ||
-    label.includes("отклон");
+
+  if (TOP_EXCEPTION_IDS.has(id)) return "exceptions";
+  if (YO_SPECIAL_IDS.has(id)) return "yo-special";
+  if (STEM_CHANGE_IDS.has(id) || /(?:e|o)\s*→\s*(?:ie|ue|i)/i.test(label)) return "stem-change";
+  if (label.includes("неправиль") || label.includes("черед") || label.includes("отклон")) return "exceptions";
+  return "regular";
 }
 
-function collectPool() {
-  const tasks = [];
-  const seen = new Set();
+function collectVerbs() {
+  const records = new Map();
 
   sourceTopics().forEach(function (topic) {
     (topic.studyItems || []).forEach(function (item) {
@@ -101,23 +116,65 @@ function collectPool() {
       if (!infinitive || infinitive.endsWith("se") || !/(ar|er|ir)$/.test(infinitive)) return;
 
       const translation = String(item.tr || (Array.isArray(item.ru) ? item.ru[0] : "") || "").trim();
+      let verb = records.get(infinitive);
+      if (!verb) {
+        const group = verbGroupFor(item);
+        verb = {
+          id: infinitive,
+          infinitive,
+          translation,
+          group,
+          isIrregular: group !== "regular",
+          forms: Array(PRONOUN_ORDER.length).fill("")
+        };
+        records.set(infinitive, verb);
+      } else {
+        if (!verb.translation && translation) verb.translation = translation;
+        const candidateGroup = verbGroupFor(item);
+        if (verb.group === "regular" && candidateGroup !== "regular") {
+          verb.group = candidateGroup;
+          verb.isIrregular = true;
+        }
+      }
+
       rowsFor(item).forEach(function (row) {
         if (!Array.isArray(row) || row.length < 2) return;
         const pronoun = canonicalPronoun(row[0]);
+        const index = PRONOUN_ORDER.indexOf(pronoun);
         const answer = String(row[1] || "").trim();
-        if (!pronoun || !answer) return;
+        if (index < 0 || !answer || verb.forms[index]) return;
+        verb.forms[index] = answer;
+      });
+    });
+  });
 
-        const key = infinitive + "|" + pronoun;
-        if (seen.has(key)) return;
-        seen.add(key);
-        tasks.push({
-          key,
-          infinitive,
-          translation,
-          pronoun,
-          answer,
-          isIrregular: isIrregular(item)
-        });
+  return Array.from(records.values()).filter(function (verb) {
+    return verb.forms.length === PRONOUN_ORDER.length && verb.forms.every(Boolean);
+  });
+}
+
+function getConjugationVerbCatalog() {
+  return collectVerbs().map(function (verb) {
+    return Object.assign({}, verb, {forms:verb.forms.slice()});
+  });
+}
+
+function getCurrentConjugationVerb() {
+  return session && session.current ? session.current.infinitive : "";
+}
+
+function collectPool() {
+  const tasks = [];
+
+  collectVerbs().forEach(function (verb) {
+    PRONOUN_ORDER.forEach(function (pronoun, index) {
+      tasks.push({
+        key: verb.infinitive + "|" + pronoun,
+        infinitive: verb.infinitive,
+        translation: verb.translation,
+        pronoun,
+        answer: verb.forms[index],
+        isIrregular: verb.isIrregular
       });
     });
   });
@@ -595,7 +652,10 @@ window.ConjugationDrill = Object.freeze({
   version: VERSION,
   start,
   close,
-  collectPool
+  collectPool,
+  catalog: getConjugationVerbCatalog,
+  groups: function () { return VERB_GROUPS.map(function (group) { return Object.assign({}, group); }); },
+  currentVerb: getCurrentConjugationVerb
 });
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
