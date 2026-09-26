@@ -1,4 +1,4 @@
-const VERSION = "20260926-verb-wheel-compact-sheet1";
+const VERSION = "20260926-bottom-sheet-fix";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
 let verbs = [];
@@ -54,9 +54,9 @@ function injectStyles() {
     ".verb-wheel-fab:active{transform:scale(1.05)}",
     ".verb-wheel-fab[hidden]{display:none!important}",
     ".verb-wheel-fab-icon{font-size:20px;line-height:1}",
-    ".verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.4);opacity:1;visibility:visible;pointer-events:auto}",
-    ".verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
-    ".verb-wheel-sheet{width:100%;max-width:500px;height:auto;max-height:50vh;margin:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:visible;border-radius:20px 20px 0 0;background:#fff;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
+    ".vw-backdrop{position:fixed!important;inset:0!important;background:rgba(0,0,0,.45)!important;z-index:99999!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:center!important;opacity:1;visibility:visible;pointer-events:auto}",
+    ".vw-backdrop[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
+    ".vw-card{width:100%!important;max-width:480px!important;height:auto!important;max-height:55vh!important;margin:0!important;background:#ffffff!important;border-radius:20px 20px 0 0!important;padding:16px 16px calc(20px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:visible!important;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
     ".verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 10px}",
     ".verb-wheel-title{min-width:0}",
     ".verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}",
@@ -87,7 +87,7 @@ function injectStyles() {
     "@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}",
     "@media(max-width:520px){.verb-wheel-head{padding-bottom:8px}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 76px));min-height:47px;padding:0 14px}}",
     "@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-field{min-height:42px}.verb-wheel-input{font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}",
-    "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}"
+    "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.vw-card{transition:none;animation:none}}"
   ].join("\n");
   document.head.appendChild(style);
 }
@@ -108,7 +108,7 @@ function ensureUi() {
   if (!overlay) {
     overlay = document.createElement("div");
     overlay.id = "verbWheelOverlay";
-    overlay.className = "verb-wheel-overlay";
+    overlay.className = "vw-backdrop";
     overlay.hidden = true;
     overlay.style.display = "none";
     overlay.style.pointerEvents = "none";
@@ -120,7 +120,7 @@ function ensureUi() {
     if ("inert" in overlay) overlay.inert = true;
 
     overlay.innerHTML =
-      '<section class="verb-wheel-sheet">' +
+      '<div class="vw-card">' +
         '<header class="verb-wheel-head">' +
           '<div class="verb-wheel-title"><h2 id="verbWheelTitle">La Rueda • Шпаргалка форм</h2><p>Presente de Indicativo</p></div>' +
           '<button class="verb-wheel-close" type="button" data-verb-wheel-close aria-label="Закрыть">×</button>' +
@@ -137,7 +137,7 @@ function ensureUi() {
             '<div class="verb-wheel-forms" data-verb-wheel-forms></div>' +
           '</section>' +
         '</div>' +
-      '</section>';
+      '</div>';
 
     document.body.appendChild(overlay);
     input = overlay.querySelector("[data-verb-wheel-input]");
