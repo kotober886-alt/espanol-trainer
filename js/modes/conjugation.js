@@ -2,7 +2,7 @@ import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-conjugation-filter1";
+const VERSION = "20260926-conjugation-filter-visible2";
 const COUNTS = [10, 15, 20];
 const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
 const VERB_FILTER_KEY = "conjugation_verb_filter";
@@ -151,7 +151,7 @@ function injectStyles() {
     .conjugation-entry-copy strong{font-size:17px;line-height:1.15}
     .conjugation-entry-copy span{color:#6f6a83;font-size:12px;line-height:1.4}
     .conjugation-entry-arrow{margin-left:auto;color:#6555d9;font-size:20px;font-weight:900}
-    .cd-dialog{width:min(500px,calc(100vw - 28px));border:0;border-radius:24px;padding:0;color:#17153b;box-shadow:0 28px 80px rgba(23,21,59,.28)}
+    .cd-dialog{width:min(500px,calc(100vw - 28px));max-height:calc(100dvh - 28px);overflow:auto;border:0;border-radius:24px;padding:0;color:#17153b;box-shadow:0 28px 80px rgba(23,21,59,.28)}
     .cd-dialog::backdrop{background:rgba(20,17,46,.54);backdrop-filter:blur(5px)}
     .cd-dialog-inner{padding:24px}
     .cd-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
@@ -164,9 +164,10 @@ function injectStyles() {
     .cd-count{min-height:76px;border:2px solid #e4e0ee;border-radius:16px;background:#fff;color:#17153b;cursor:pointer;font-weight:800}
     .cd-count b{display:block;font-size:25px}.cd-count span{display:block;color:#77718d;font-size:11px}
     .cd-count.active{border-color:#6555d9;background:#f1efff;color:#4c3fc3}
-    .cd-filter-label{display:block;margin:20px 0 9px;color:#514b68;font-size:12px;font-weight:850}
-    .cd-filters{display:grid;gap:9px}
-    .cd-filter{width:100%;padding:12px 13px;border:2px solid #e4e0ee;border-radius:15px;background:#fff;color:#17153b;text-align:left;cursor:pointer;font:inherit;transition:border-color .15s ease,background .15s ease,transform .15s ease}
+    .cd-filter-section{display:block!important;visibility:visible!important;opacity:1!important;margin-top:20px}
+    .cd-filter-label{display:block!important;visibility:visible!important;opacity:1!important;margin:0 0 9px;color:#514b68;font-size:12px;font-weight:850}
+    .cd-filters{display:grid!important;visibility:visible!important;opacity:1!important;grid-template-columns:1fr;gap:9px}
+    .cd-filter{display:block!important;visibility:visible!important;opacity:1!important;width:100%;min-height:62px;padding:12px 13px;border:2px solid #e4e0ee;border-radius:15px;background:#fff;color:#17153b;text-align:left;cursor:pointer;font:inherit;line-height:1.2;transition:border-color .15s ease,background .15s ease,transform .15s ease}
     .cd-filter:hover{transform:translateY(-1px);border-color:#c7bdef}
     .cd-filter strong{display:block;font-size:14px;line-height:1.25}
     .cd-filter span{display:block;margin-top:3px;color:#77718d;font-size:11px;line-height:1.35}
@@ -239,19 +240,23 @@ function ensureEntry() {
 function ensureUi() {
   if (!chooser) {
     chooser = document.createElement("dialog");
+    chooser.id = "conjugationSetupDialog";
     chooser.className = "cd-dialog";
+    chooser.setAttribute("aria-labelledby", "conjugationSetupTitle");
     chooser.innerHTML =
       '<div class="cd-dialog-inner">' +
-        '<div class="cd-dialog-head"><div><b>⌨️ Ручной ввод</b><h2>Проспрягай</h2>' +
+        '<div class="cd-dialog-head"><div><b>⌨️ Ручной ввод</b><h2 id="conjugationSetupTitle">Проспрягай</h2>' +
         '<p>Выбери тип глаголов и длину раунда. Ошибочные формы вернутся через пару заданий, пока не введёшь их чисто.</p></div>' +
         '<button class="cd-close" type="button" data-cd-dialog-close aria-label="Закрыть">×</button></div>' +
-        '<span class="cd-filter-label">Какие глаголы?</span>' +
-        '<div class="cd-filters" role="radiogroup" aria-label="Тип глаголов">' +
-          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="regular"><strong>🟢 Только правильные</strong><span>Базовые окончания -ar, -er, -ir без сюрпризов</span></button>' +
-          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="irregular"><strong>⚡ Только неправильные</strong><span>Ключевые исключения и отклонения (ser, ir, tener...)</span></button>' +
-          '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="all"><strong>🔀 Микс</strong><span>Случайная смесь всех типов</span></button>' +
-        '</div>' +
-        '<input type="hidden" data-cd-filter-selected value="regular">' +
+        '<section class="cd-filter-section" id="conjugationVerbFilter" data-cd-filter-container aria-labelledby="conjugationVerbFilterLabel">' +
+          '<span class="cd-filter-label" id="conjugationVerbFilterLabel">Какие глаголы?</span>' +
+          '<div class="cd-filters" role="radiogroup" aria-label="Тип глаголов">' +
+            '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="regular"><strong>🟢 Только правильные</strong><span>Базовые окончания -ar, -er, -ir без сюрпризов</span></button>' +
+            '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="irregular"><strong>⚡ Только неправильные</strong><span>Ключевые исключения и отклонения (ser, ir, tener...)</span></button>' +
+            '<button class="cd-filter" type="button" role="radio" aria-checked="false" data-cd-filter="all"><strong>🔀 Микс</strong><span>Случайная смесь всех типов</span></button>' +
+          '</div>' +
+          '<input type="hidden" data-cd-filter-selected value="regular">' +
+        '</section>' +
         '<span class="cd-count-label">Сколько форм?</span>' +
         '<div class="cd-counts">' + COUNTS.map(function (count) {
           return '<button class="cd-count' + (count === lastCount ? ' active' : '') + '" type="button" data-cd-count="' + count + '"><b>' + count + '</b><span>форм</span></button>';
@@ -296,6 +301,11 @@ function openChooser() {
     return;
   }
   lastFilter = readVerbFilter();
+  const filterContainer = chooser.querySelector("[data-cd-filter-container]");
+  if (filterContainer) {
+    filterContainer.hidden = false;
+    filterContainer.setAttribute("aria-hidden", "false");
+  }
   chooser.querySelector("[data-cd-filter-selected]").value = lastFilter;
   chooser.querySelectorAll("[data-cd-filter]").forEach(function (button) {
     const active = button.dataset.cdFilter === lastFilter;
