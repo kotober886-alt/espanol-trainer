@@ -1,4 +1,4 @@
-const VERSION = "20260926-verb-wheel-15slots1";
+const VERSION = "20260926-verb-wheel-dropdown1";
 const VERB_FILTER_KEY = "conjugation_verb_filter";
 const FACES = ["yo", "tú", "él", "nosotros", "vosotros", "ellos"];
 
@@ -23,11 +23,8 @@ const VERBS = Object.freeze([
 let selectedId = "tener";
 let fab = null;
 let overlay = null;
-let search = null;
-let chips = null;
+let select = null;
 let forms = null;
-let currentTitle = null;
-let picker = null;
 let observer = null;
 
 function escapeHtml(value) {
@@ -64,34 +61,26 @@ function injectStyles() {
     '.verb-wheel-fab-icon{font-size:20px;line-height:1}\n' +
     '.verb-wheel-overlay{position:fixed;inset:0;z-index:10040;display:flex;align-items:flex-end;justify-content:center;background:rgba(34,24,28,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:1;visibility:visible;pointer-events:auto}\n' +
     '.verb-wheel-overlay[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}\n' +
-    '.verb-wheel-sheet{width:min(760px,100%);max-height:min(88dvh,780px);display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}\n' +
+    '.verb-wheel-sheet{width:min(760px,100%);max-height:calc(100dvh - env(safe-area-inset-top));display:flex;flex-direction:column;overflow:hidden;border-top:4px solid #f39c12;border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -18px 55px rgba(45,33,29,.22);animation:verb-wheel-rise .22s ease-out}\n' +
     '.verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px 10px}\n' +
     '.verb-wheel-title{min-width:0}\n' +
     '.verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}\n' +
     '.verb-wheel-title p{margin:4px 0 0;color:#8a7770;font-size:12px;font-weight:700}\n' +
     '.verb-wheel-close{width:40px;height:40px;flex:0 0 40px;border:0;border-radius:12px;background:#fff2e7;color:#9b3d33;font:inherit;font-size:26px;line-height:1;cursor:pointer}\n' +
-    '.verb-wheel-current{flex:0 0 auto;padding:0 20px 14px}\n' +
-    '.verb-wheel-current-card{padding:14px;border:1px solid #f0dccb;border-radius:18px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 9px 24px rgba(123,76,43,.08)}\n' +
-    '.verb-wheel-current-title{display:flex;align-items:baseline;gap:7px;min-width:0;margin:0 0 11px;padding:0 2px}\n' +
-    '.verb-wheel-current-title strong{color:#b13f31;font-size:clamp(24px,5vw,34px);line-height:1;text-transform:uppercase;letter-spacing:-.035em}\n' +
-    '.verb-wheel-current-title span{min-width:0;color:#6f625d;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n' +
+    '.verb-wheel-current{flex:0 0 auto;padding:0 20px calc(18px + env(safe-area-inset-bottom))}\n' +
+    '.verb-wheel-select-wrap{position:relative;margin-bottom:10px}\n' +
+    '.verb-wheel-select-wrap::after{content:"▾";position:absolute;right:15px;top:50%;transform:translateY(-52%);color:#b13f31;font-size:18px;font-weight:900;pointer-events:none}\n' +
+    '.verb-wheel-select{width:100%;height:46px;padding:0 44px 0 14px;border:1px solid #e8d8ca;border-radius:14px;background:linear-gradient(145deg,#fff9f2,#fff);color:#2d2927;font:inherit;font-size:14px;font-weight:850;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;box-shadow:0 7px 18px rgba(123,76,43,.07)}\n' +
+    '.verb-wheel-select:focus{border-color:#f39c12;box-shadow:0 0 0 3px rgba(243,156,18,.14)}\n' +
+    '.verb-wheel-current-card{padding:11px;border:1px solid #f0dccb;border-radius:18px;background:linear-gradient(145deg,#fff9f2,#fff);box-shadow:0 9px 24px rgba(123,76,43,.08)}\n' +
     '.verb-wheel-forms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}\n' +
     '.verb-wheel-form{min-width:0;padding:9px 8px;border:1px solid #f1e7d0;border-radius:12px;background:#fff}\n' +
     '.verb-wheel-person{display:block;margin-bottom:3px;color:rgba(45,52,54,.54);font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n' +
     '.verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n' +
-    '.verb-wheel-picker{min-height:0;flex:1 1 auto;overflow:auto;padding:13px 20px calc(22px + env(safe-area-inset-bottom));border-top:1px solid #f1e8e2;background:#fffdfb;overscroll-behavior:contain}\n' +
-    '.verb-wheel-picker-label{display:block;margin:0 0 8px;color:#7d6d66;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}\n' +
-    '.verb-wheel-search-wrap{margin-bottom:10px}\n' +
-    '.verb-wheel-search{width:100%;height:42px;padding:0 13px;border:1px solid #eadfd8;border-radius:13px;background:#fff;color:#2d3436;font:inherit;font-size:14px;outline:none}\n' +
-    '.verb-wheel-search:focus{border-color:#f39c12;box-shadow:0 0 0 3px rgba(243,156,18,.13)}\n' +
-    '.verb-wheel-chips{display:flex;flex-wrap:wrap;gap:8px}\n' +
-    '.verb-wheel-chip{min-height:34px;padding:7px 11px;border:1px solid #e9ecef;border-radius:999px;background:#f8f9fa;color:#2d3436;font:inherit;font-size:12px;font-weight:900;text-transform:uppercase;cursor:pointer}\n' +
-    '.verb-wheel-chip.active{border-color:transparent;background:linear-gradient(135deg,#e63946,#f77f00);color:#fff;box-shadow:0 5px 13px rgba(230,57,70,.22)}\n' +
-    '.verb-wheel-empty{padding:12px 4px;color:#8a7770;font-size:13px;text-align:center}\n' +
     '.verb-wheel-sheet-open{overflow:hidden!important}\n' +
     '@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}\n' +
-    '@media(max-width:520px){.verb-wheel-sheet{max-height:88dvh}.verb-wheel-head{padding:13px 14px 8px}.verb-wheel-current{padding:0 14px 11px}.verb-wheel-current-card{padding:11px}.verb-wheel-current-title{margin-bottom:9px}.verb-wheel-current-title strong{font-size:25px}.verb-wheel-current-title span{font-size:12px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-picker{padding:11px 14px calc(18px + env(safe-area-inset-bottom))}.verb-wheel-fab{right:14px;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px));min-height:47px;padding:0 14px}}\n' +
-    '@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-current-title strong{font-size:22px}.verb-wheel-current-title span{font-size:11px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}\n' +
+    '@media(max-width:520px){.verb-wheel-sheet{max-height:calc(100dvh - env(safe-area-inset-top))}.verb-wheel-head{padding:12px 14px 8px}.verb-wheel-current{padding:0 14px calc(14px + env(safe-area-inset-bottom))}.verb-wheel-select{height:44px;font-size:13px}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px));min-height:47px;padding:0 14px}}\n' +
+    '@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-select{height:42px;font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}\n' +
     '@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.verb-wheel-sheet{transition:none;animation:none}}\n';
   document.head.appendChild(style);
 }
@@ -130,24 +119,18 @@ function ensureUi() {
           '<button class="verb-wheel-close" type="button" data-verb-wheel-close aria-label="Закрыть">×</button>' +
         '</header>' +
         '<div class="verb-wheel-current">' +
+          '<div class="verb-wheel-select-wrap">' +
+            '<select class="verb-wheel-select" data-verb-wheel-select aria-label="Выбрать глагол"></select>' +
+          '</div>' +
           '<section class="verb-wheel-current-card" aria-live="polite">' +
-            '<div class="verb-wheel-current-title" data-verb-wheel-current></div>' +
             '<div class="verb-wheel-forms" data-verb-wheel-forms></div>' +
           '</section>' +
-        '</div>' +
-        '<div class="verb-wheel-picker" data-verb-wheel-picker>' +
-          '<span class="verb-wheel-picker-label">Другой глагол</span>' +
-          '<div class="verb-wheel-search-wrap"><input class="verb-wheel-search" data-verb-wheel-search type="search" autocomplete="off" placeholder="🔍 Найти среди 15 глаголов..." aria-label="Найти глагол"></div>' +
-          '<div class="verb-wheel-chips" data-verb-wheel-chips role="listbox" aria-label="Глаголы"></div>' +
         '</div>' +
       '</section>';
 
     document.body.appendChild(overlay);
-    search = overlay.querySelector("[data-verb-wheel-search]");
-    chips = overlay.querySelector("[data-verb-wheel-chips]");
+    select = overlay.querySelector("[data-verb-wheel-select]");
     forms = overlay.querySelector("[data-verb-wheel-forms]");
-    currentTitle = overlay.querySelector("[data-verb-wheel-current]");
-    picker = overlay.querySelector("[data-verb-wheel-picker]");
   }
 }
 
@@ -186,13 +169,23 @@ function syncFab(filterOverride) {
   if (!active && overlay && !overlay.hidden) closeSheet(false);
 }
 
+function renderSelect() {
+  if (!select) return;
+  const sorted = VERBS.slice().sort(function (a, b) {
+    return a.infinitive.localeCompare(b.infinitive, "es");
+  });
+
+  select.innerHTML = sorted.map(function (verb) {
+    return '<option value="' + escapeHtml(verb.id) + '">' +
+      escapeHtml(verb.infinitive + " — " + verb.translation) +
+    '</option>';
+  }).join("");
+  select.value = selectedId;
+}
+
 function renderCurrent() {
   const verb = selectedVerb();
-  if (!verb || !forms || !currentTitle) return;
-
-  currentTitle.innerHTML =
-    '<strong lang="es">' + escapeHtml(verb.infinitive) + '</strong>' +
-    '<span>— ' + escapeHtml(verb.translation) + '</span>';
+  if (!verb || !forms) return;
 
   forms.innerHTML = verb.forms.map(function (form, index) {
     return '<article class="verb-wheel-form">' +
@@ -202,29 +195,11 @@ function renderCurrent() {
   }).join("");
 }
 
-function renderChips(filter) {
-  if (!chips) return;
-  const term = normalize(filter);
-  const filtered = VERBS.filter(function (verb) {
-    return !term || normalize(verb.infinitive).includes(term) || normalize(verb.translation).includes(term);
-  });
-
-  if (!filtered.length) {
-    chips.innerHTML = '<div class="verb-wheel-empty">Ничего не нашлось среди 15 глаголов.</div>';
-    return;
-  }
-
-  chips.innerHTML = filtered.map(function (verb) {
-    const active = verb.id === selectedId;
-    return '<button class="verb-wheel-chip' + (active ? ' active' : '') + '" type="button" role="option" aria-selected="' + (active ? 'true' : 'false') + '" data-verb-id="' + escapeHtml(verb.id) + '">' + escapeHtml(verb.infinitive) + '</button>';
-  }).join("");
-}
-
 function selectVerb(id) {
   if (!VERBS.some(function (verb) { return verb.id === id; })) return;
   selectedId = id;
+  if (select) select.value = selectedId;
   renderCurrent();
-  renderChips(search ? search.value : "");
 }
 
 function openSheet() {
@@ -233,10 +208,8 @@ function openSheet() {
   if (VERBS.some(function (verb) { return verb.id === current; })) selectedId = current;
   else if (!VERBS.some(function (verb) { return verb.id === selectedId; })) selectedId = "tener";
 
-  if (search) search.value = "";
-  if (picker) picker.scrollTop = 0;
+  renderSelect();
   renderCurrent();
-  renderChips("");
   setOverlayOpen(true);
   fab.hidden = true;
   fab.style.display = "none";
@@ -262,12 +235,10 @@ function bindUi() {
       return;
     }
 
-    const chip = event.target.closest("[data-verb-id]");
-    if (chip) selectVerb(chip.dataset.verbId);
   });
 
-  search.addEventListener("input", function () {
-    renderChips(search.value);
+  select.addEventListener("change", function () {
+    selectVerb(select.value);
   });
 
   document.addEventListener("keydown", function (event) {
@@ -308,8 +279,8 @@ function init() {
   ensureUi();
   bindUi();
   observeGame();
+  renderSelect();
   renderCurrent();
-  renderChips("");
   syncFab();
 }
 
