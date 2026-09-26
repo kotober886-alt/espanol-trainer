@@ -2,7 +2,7 @@ import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-header-cheatsheet";
+const VERSION = "20260926-cheatsheet-button";
 const COUNTS = [10, 15, 20];
 const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
 const VERB_FILTER_KEY = "conjugation_verb_filter";
@@ -289,7 +289,7 @@ function injectStyles() {
     @keyframes cd-error{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
     .cd-question.is-success{animation:cd-success .34s ease}.cd-question.is-error{animation:cd-error .28s ease}
     @media(max-width:720px){.cd-game{padding:0}.cd-card{min-height:100vh;border-radius:0}.cd-stage{padding:26px 18px 34px}.cd-stats{grid-template-columns:1fr 1fr 1fr}}
-    @media(max-width:440px){.cd-dialog-inner{padding:20px}.cd-head{padding:14px 14px 12px;gap:8px}.cd-head-actions{gap:6px}.cd-cheatsheet{min-height:40px;padding:0 9px;font-size:11px}.cd-close{width:40px;height:40px;flex-basis:40px}.cd-counts{gap:7px}.cd-question h2{font-size:42px}.cd-pronoun{font-size:15px}.cd-answer{font-size:18px}.cd-stats{grid-template-columns:1fr}.conjugation-entry{padding:15px}}
+    @media(max-width:440px){.cd-dialog-inner{padding:20px}.cd-head{padding:14px 14px 12px;gap:8px}.cd-cheatsheet{padding:0 10px;font-size:12px}.cd-close{width:40px;height:40px;flex-basis:40px}.cd-head .cd-close{width:36px;height:36px;flex-basis:36px}.cd-counts{gap:7px}.cd-question h2{font-size:42px}.cd-pronoun{font-size:15px}.cd-answer{font-size:18px}.cd-stats{grid-template-columns:1fr}.conjugation-entry{padding:15px}}
   `;
   document.head.appendChild(style);
 }
@@ -412,7 +412,7 @@ function renderShell(inner, phase) {
   const progress = total ? Math.min(100, clean / total * 100) : 0;
   const currentPhase = phase || "task";
   const cheatsheetButton = currentPhase === "task"
-    ? '<button class="cd-cheatsheet" type="button" data-cd-cheatsheet aria-label="Открыть шпаргалку спряжений"><span aria-hidden="true">🪭</span><span>Шпаргалка</span></button>'
+    ? '<button class="cd-cheatsheet" type="button" data-cd-cheatsheet aria-label="Открыть шпаргалку спряжений"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>Шпаргалка</span></button>'
     : "";
   game.innerHTML =
     '<div class="cd-card" data-phase="' + escapeHtml(currentPhase) + '">' +
