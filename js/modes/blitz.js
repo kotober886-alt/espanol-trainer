@@ -444,11 +444,37 @@
     const secs=Math.max(1,Math.round((Date.now()-session.startedAt)/1000));
     const advanced=session.difficulty==="advanced";
     const title=session.errors<=1?"Отличная работа!":"Раунд завершён!";
-    frame('<div class="pf-results"><div>📸</div><em>Спринт завершён</em><h2>'+title+'</h2><p>'+(advanced?'Обычный круг и экзамен вслепую пройдены чисто.':'Все слова сданы без ошибок в финальной попытке.')+'</p><section><span><b>'+session.total+'</b>слов</span><span><b>'+session.retries+'</b>повторов</span><span><b>'+session.errors+'</b>ошибок / таймаутов</span><span><b>'+secs+'с</b>время</span></section><footer><button class="pf-secondary" data-pf-exit>К словам</button><button class="pf-primary" data-pf-restart>Ещё раз</button></footer></div>',"results","Готово");
+    const reward=(window.CatAlbum&&typeof window.CatAlbum.awardPhotoflash==="function")
+      ?window.CatAlbum.awardPhotoflash(session.errors)
+      :null;
+    const rewardVisual=reward
+      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20260926-cat-album1" alt="'+esc(reward.title)+'"></div>'
+      :'<div class="pf-result-camera">📸</div>';
+    const rewardCopy=reward
+      ?'<div class="pf-reward-copy '+(reward.isNewReward?'is-new':'is-owned')+'">'+
+        (reward.isNewReward
+          ?'🎉 Новое фото в коллекцию: <strong lang="es">'+esc(reward.title)+'</strong>!'
+          :'📖 <strong lang="es">'+esc(reward.title)+'</strong> — Уже в альбоме!')+
+        '</div>'
+      :'';
+    const albumAction=reward
+      ?'<button class="pf-secondary pf-album-action" data-pf-album>📖 В альбом</button>'
+      :'';
+    frame('<div class="pf-results">'+rewardVisual+'<em>Спринт завершён</em><h2>'+title+'</h2><p>'+
+      (advanced?'Обычный круг и экзамен вслепую завершены.':'Все слова сданы в финальной попытке.')+
+      '</p>'+rewardCopy+'<section><span><b>'+session.total+'</b>слов</span><span><b>'+session.retries+'</b>повторов</span><span><b>'+session.errors+'</b>ошибок / таймаутов</span><span><b>'+secs+'с</b>время</span></section><footer><button class="pf-secondary" data-pf-exit>К словам</button>'+albumAction+'<button class="pf-primary" data-pf-restart>Ещё раз</button></footer></div>',"results","Готово");
     const t=game.querySelector("[data-pf-timer]"),o=game.querySelector("[data-pf-overall]");
     if(t)t.style.width="100%";
     if(o)o.style.width="100%";
-    window.dispatchEvent(new CustomEvent("photoflash:finish",{detail:{count:session.total,retries:session.retries,errors:session.errors,seconds:secs,difficulty:session.difficulty}}));
+    window.dispatchEvent(new CustomEvent("photoflash:finish",{detail:{
+      count:session.total,
+      retries:session.retries,
+      errors:session.errors,
+      seconds:secs,
+      difficulty:session.difficulty,
+      rewardId:reward&&reward.id||null,
+      isNewReward:!!(reward&&reward.isNewReward)
+    }}));
   }
   function close(){
     clearTimers();
@@ -526,6 +552,7 @@
     '.pf-dialog{width:min(520px,calc(100vw - 28px));border:0;border-radius:24px;padding:0;color:#17153b;box-shadow:0 28px 80px rgba(23,21,59,.28)}.pf-dialog::backdrop{background:rgba(20,17,46,.54);backdrop-filter:blur(5px)}.pf-dialog>div{padding:24px}.pf-dialog header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0}.pf-dialog h2{margin:3px 0 4px;font-size:27px}.pf-dialog p{margin:0;color:#6d6a86}.pf-close,.pf-head>button{width:42px;height:42px;border:0;border-radius:12px;background:#f2f0f8;color:#514b68;font-size:27px}.pf-topic-field{display:grid;gap:7px;margin:20px 0 4px;text-align:left}.pf-topic-field span{color:#514b68;font-size:12px;font-weight:850}.pf-topic-field select{width:100%;min-height:48px;padding:10px 12px;border:2px solid #e5e1ef;border-radius:14px;background:#fff;color:#17153b;font:inherit;font-weight:750}.pf-topic-field select:focus{outline:none;border-color:#6253d9}.pf-difficulty{display:grid;gap:8px;margin:16px 0 4px;text-align:left}.pf-difficulty>span{color:#514b68;font-size:12px;font-weight:850}.pf-levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-level{padding:12px;border:2px solid #e5e1ef;border-radius:16px;background:#fff;color:#17153b;text-align:left;cursor:pointer}.pf-level strong{display:block;margin-bottom:4px;font-size:14px}.pf-level small{display:block;color:#77718d;font-size:11px;line-height:1.35}.pf-level.active{border-color:#6253d9;background:#f1efff}.pf-level.active small{color:#5a4cc8}.pf-counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 18px}.pf-counts button{min-height:74px;border:2px solid #e5e1ef;border-radius:16px;background:#fff;font-weight:850}.pf-counts button b{display:block;font-size:25px}.pf-counts button span{display:block;color:#7a748f;font-size:11px}.pf-counts button.active{border-color:#6253d9;background:#f1efff;color:#4b3dbe}.pf-actions{display:flex;justify-content:flex-end}',
     '.pf-game{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 20% 10%,rgba(255,212,71,.23),transparent 25rem),linear-gradient(145deg,#f7f5fc,#efebff)}.pf-game[hidden]{display:none!important}.pf-card{width:min(760px,100%);min-height:min(650px,calc(100vh - 36px));display:flex;flex-direction:column;overflow:hidden;border-radius:30px;background:#fff;box-shadow:0 24px 75px rgba(35,28,89,.17)}.pf-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px 14px;margin:0}.pf-head b{display:block;color:#6253d9;font-size:12px;text-transform:uppercase;letter-spacing:.09em}.pf-head span{display:block;color:#77718d;font-size:12px;font-weight:750}.pf-overall{height:6px;margin:0 20px 10px;overflow:hidden;border-radius:999px;background:#eeeaf7}.pf-overall i{display:block;width:0;height:100%;background:linear-gradient(90deg,#6253d9,#ff786c);transition:width .3s}.pf-timer{height:8px;overflow:hidden;background:#f0edf7}.pf-timer i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#ffd447,#ff786c)}.pf-stage{flex:1;display:grid;place-items:center;padding:clamp(28px,6vw,60px);text-align:center}.pf-stage em{background:#f1efff;color:#5a4cc8}.pf-primary,.pf-secondary{min-height:48px;padding:12px 18px;border-radius:14px;font-weight:900}.pf-primary{border:0;background:#6253d9;color:#fff}.pf-secondary{border:1px solid #e2deec;background:#fff;color:#514b68}',
     '.pf-card[data-phase="results"]{min-height:0}.pf-card[data-phase="results"] .pf-stage{place-items:start center;padding:26px 30px 32px}.pf-results{width:min(620px,100%)}.pf-flash h2{margin:20px 0 8px;font-size:clamp(46px,8vw,82px);line-height:1;letter-spacing:-.055em}.pf-flash p{margin:0 0 26px;color:#6d6a86;font-size:clamp(21px,3vw,30px);font-weight:750}.pf-question{width:min(620px,100%)}.pf-question h2{margin:16px 0 7px;font-size:clamp(30px,5vw,46px);letter-spacing:-.04em}.pf-question>p{margin:0 0 22px;color:#77718d;font-size:17px;font-weight:700}.pf-question>strong{display:block;margin:8px 0 24px;color:#4a4088;font-size:clamp(28px,4.5vw,42px)}.pf-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-options button{min-height:64px;padding:13px 15px;border:2px solid #e6e2ef;border-radius:16px;background:#fff;color:#17153b;font-weight:850;overflow-wrap:anywhere}.pf-options button.good{border-color:#62bd92;background:#eaf8f1;color:#176d4e}.pf-options button.bad{border-color:#e88f9b;background:#fff0f2;color:#a53643}.pf-options button:disabled{opacity:1}.pf-feedback{min-height:28px;margin-top:16px;font-weight:850}.pf-feedback.ok{color:#187052}.pf-feedback.no{color:#a53643}.pf-results>div:first-child{font-size:58px}.pf-results h2{margin:14px 0 6px;font-size:clamp(30px,5vw,46px)}.pf-results>p{color:#6d6a86}.pf-results section{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:20px 0}.pf-results section span{padding:13px 8px;border-radius:14px;background:#f7f5fc;color:#77718d;font-size:11px;font-weight:750}.pf-results section b{display:block;color:#17153b;font-size:22px}.pf-results footer{display:flex;justify-content:center;gap:10px;margin-top:24px}',
+    '.pf-result-camera{font-size:58px}.pf-reward-card{width:min(230px,58vw);margin:0 auto 10px;animation:pfRewardPop .58s cubic-bezier(.2,.9,.2,1.15) both;transform:rotate(-2.5deg)}.pf-reward-card img{display:block;width:100%;height:auto;max-height:285px;object-fit:contain;filter:drop-shadow(0 14px 20px rgba(38,31,54,.2))}.pf-reward-copy{width:min(520px,100%);margin:12px auto 4px;padding:11px 14px;border-radius:14px;font-weight:850;line-height:1.35}.pf-reward-copy.is-new{background:#fff4c9;color:#6e5010}.pf-reward-copy.is-owned{background:#f1efff;color:#5446b5}.pf-results footer{flex-wrap:wrap}.pf-album-action{border-color:#d9d2ff;background:#f7f5ff;color:#5446b5}@keyframes pfRewardPop{0%{opacity:0;transform:translateY(20px) scale(.82) rotate(-8deg)}70%{opacity:1;transform:translateY(-4px) scale(1.04) rotate(1deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(-2.5deg)}}',
     '@media(max-width:720px){.photoflash-banner{min-height:154px;padding:18px 170px 18px 18px}.photoflash-banner-art{right:12px;bottom:-8px;width:160px;height:160px}.photoflash-banner-art img{height:160px;max-height:160px}.pf-game{padding:0}.pf-card{min-height:100vh;border-radius:0}.pf-stage{padding:28px 18px 34px}.pf-results section{grid-template-columns:repeat(2,1fr)}}@media(max-width:460px){.photoflash-banner{min-height:176px;padding:18px 118px 18px 18px}.photoflash-banner-art{right:4px;bottom:-8px;width:132px;height:150px}.photoflash-banner-art img{height:150px;max-height:150px}.photoflash-banner p{font-size:13px}.pf-dialog>div{padding:20px}}'
   ].join("");document.head.appendChild(s);}
   function ui(){
@@ -572,6 +599,10 @@
     game.addEventListener("click",e=>{
       if(e.target.closest("[data-pf-close],[data-pf-exit]"))return close();
       if(e.target.closest("[data-pf-ready]"))return spelling();
+      if(e.target.closest("[data-pf-album]")){
+        if(window.CatAlbum&&typeof window.CatAlbum.open==="function")window.CatAlbum.open();
+        return;
+      }
       const s=e.target.closest("[data-pf-spelling]");
       if(s)return resolveSpelling(s.dataset.pfSpelling,false);
       const m=e.target.closest("[data-pf-meaning]");
@@ -589,6 +620,6 @@
   function syncBanner(){if(banner)banner.hidden=!wordsActive()||!!(game&&!game.hidden);}
   function observe(){const nodes=[document.getElementById("headerNavWords"),document.getElementById("navWords"),document.getElementById("trainerLayout")].filter(Boolean),o=new MutationObserver(syncBanner);nodes.forEach(n=>o.observe(n,{attributes:true,attributeFilter:["class","hidden"]}));["headerNavWords","headerNavHome","headerNavPractice","headerNavMistakes","navWords","navHome","navPractice","navMistakes","learnWordsBtn","chooseTopicBtn","mistakesWordsBtn"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("click",()=>setTimeout(syncBanner,0));});}
   function init(){styles();ui();bind();observe();syncBanner();}
-  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260925-results-layout-fix1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
+  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260926-cat-album1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
