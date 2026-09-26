@@ -260,9 +260,11 @@ function injectStyles() {
     .cd-game[hidden]{display:none!important}
     .cd-card{width:min(760px,100%);min-height:min(650px,calc(100vh - 36px));display:flex;flex-direction:column;overflow:hidden;border-radius:30px;background:#fff;box-shadow:0 24px 75px rgba(35,28,89,.17)}
     .cd-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 14px}
-    .cd-head-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto}
-    .cd-cheatsheet{min-height:42px;padding:0 12px;border:1px solid #ead8c9;border-radius:12px;background:#fff7ee;color:#8f4735;font:inherit;font-size:12px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;cursor:pointer;box-shadow:0 4px 12px rgba(143,71,53,.08);transition:background .15s ease,border-color .15s ease,transform .15s ease}
-    .cd-cheatsheet:hover,.cd-cheatsheet:focus-visible{background:#fff0df;border-color:#e4bea1;outline:none}.cd-cheatsheet:active{transform:scale(.97)}
+    .cd-head-actions{display:flex;align-items:center;justify-content:flex-end;gap:0;flex:0 0 auto}
+    .cd-head .cd-close{width:36px;height:36px;flex:0 0 36px}
+    .cd-cheatsheet{height:36px;margin-right:8px;padding:0 12px;border:1px solid rgba(99,102,241,.16);border-radius:12px;background:rgba(99,102,241,.08);color:#4f46e5;font:inherit;font-size:13px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;cursor:pointer;transition:all .2s ease}
+    .cd-cheatsheet svg{width:16px;height:16px;flex:0 0 16px}
+    .cd-cheatsheet:hover,.cd-cheatsheet:focus-visible{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.3);outline:none}.cd-cheatsheet:active{transform:scale(.97)}
     .cd-head b{display:block;color:#6555d9;font-size:12px;text-transform:uppercase;letter-spacing:.09em}.cd-head span{display:block;color:#77718d;font-size:12px;font-weight:750}
     .cd-progress{height:7px;margin:0 20px;overflow:hidden;border-radius:999px;background:#eeeaf7}.cd-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#6555d9,#ec7f68);transition:width .3s ease}
     .cd-stage{flex:1;display:grid;place-items:center;padding:clamp(28px,6vw,58px)}
