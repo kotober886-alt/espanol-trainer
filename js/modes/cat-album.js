@@ -2,7 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "cat_album_unlocked";
-  const BUILD = "20260927-cat-album-code1";
+  const BUILD = "20260927-cat-album-code2";
 
   const CARDS = Object.freeze([
     { id:"cat_01", title:"La Siesta", desc:"Сладкий сон в гамаке", file:"assets/cards/cat_01.webp" },
