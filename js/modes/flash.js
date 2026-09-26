@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "20260927-cat-album-code1";
+  const BUILD = "20260927-cat-album-code2";
   const MAX_ERRORS_FOR_REWARD = 2;
 
   function finishRound(totalErrors) {
