@@ -1,1 +1,1 @@
-20260926-bottom-sheet-fix
+20260926-force-compact-sheet

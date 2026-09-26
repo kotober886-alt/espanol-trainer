@@ -1,4 +1,4 @@
-const VERSION = "20260926-bottom-sheet-fix";
+const VERSION = "20260926-force-compact-sheet";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
 let verbs = [];
@@ -54,9 +54,9 @@ function injectStyles() {
     ".verb-wheel-fab:active{transform:scale(1.05)}",
     ".verb-wheel-fab[hidden]{display:none!important}",
     ".verb-wheel-fab-icon{font-size:20px;line-height:1}",
-    ".vw-backdrop{position:fixed!important;inset:0!important;background:rgba(0,0,0,.45)!important;z-index:99999!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:center!important;opacity:1;visibility:visible;pointer-events:auto}",
+    ".vw-backdrop{position:fixed!important;inset:0!important;background:rgba(0,0,0,.5)!important;z-index:99999!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:center!important;opacity:1;visibility:visible;pointer-events:auto}",
     ".vw-backdrop[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
-    ".vw-card{width:100%!important;max-width:480px!important;height:auto!important;max-height:55vh!important;margin:0!important;background:#ffffff!important;border-radius:20px 20px 0 0!important;padding:16px 16px calc(20px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:visible!important;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
+    ".vw-card{width:100%!important;max-width:480px!important;height:auto!important;min-height:unset!important;max-height:50vh!important;margin:0!important;display:block!important;position:relative!important;top:auto!important;bottom:0!important;flex:0 0 auto!important;background:#ffffff!important;border-radius:20px 20px 0 0!important;padding:16px 16px calc(20px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:visible!important;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
     ".verb-wheel-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 10px}",
     ".verb-wheel-title{min-width:0}",
     ".verb-wheel-title h2{margin:0;color:#241d1c;font-size:clamp(20px,4vw,27px);line-height:1.15;letter-spacing:-.02em}",
@@ -147,12 +147,58 @@ function ensureUi() {
   }
 }
 
+function forceCompactLayout() {
+  if (!overlay) return;
+
+  const overlayElement = overlay;
+  const cardElement = overlayElement.querySelector(".vw-card");
+  if (!cardElement) return;
+
+  // Inline !important is intentional here: the app has global modal rules
+  // that can otherwise stretch this bottom sheet to almost the full viewport.
+  cardElement.style.setProperty("height", "auto", "important");
+  cardElement.style.setProperty("min-height", "unset", "important");
+  cardElement.style.setProperty("max-height", "50vh", "important");
+  cardElement.style.setProperty("top", "auto", "important");
+  cardElement.style.setProperty("bottom", "0", "important");
+  cardElement.style.setProperty("position", "relative", "important");
+  cardElement.style.setProperty("flex", "0 0 auto", "important");
+  cardElement.style.setProperty("display", "block", "important");
+
+  overlayElement.style.setProperty("position", "fixed", "important");
+  overlayElement.style.setProperty("inset", "0", "important");
+  overlayElement.style.setProperty("z-index", "99999", "important");
+  overlayElement.style.setProperty("display", "flex", "important");
+  overlayElement.style.setProperty("flex-direction", "column", "important");
+  overlayElement.style.setProperty("justify-content", "flex-end", "important");
+  overlayElement.style.setProperty("align-items", "center", "important");
+  overlayElement.style.setProperty("background", "rgba(0,0,0,0.5)", "important");
+
+  // Neutralize any inherited/global stretching on the sheet's inner wrappers.
+  cardElement.querySelectorAll(
+    ".verb-wheel-head, .verb-wheel-current, .verb-wheel-combobox, .verb-wheel-current-card, .verb-wheel-forms"
+  ).forEach(function (element) {
+    element.style.setProperty("height", "auto", "important");
+    element.style.setProperty("min-height", "0", "important");
+    element.style.setProperty("flex-grow", "0", "important");
+    element.style.setProperty("flex-shrink", "0", "important");
+  });
+}
+
 function setOverlayOpen(isOpen) {
   if (!overlay) return;
   overlay.hidden = !isOpen;
-  overlay.style.display = isOpen ? "flex" : "none";
-  overlay.style.pointerEvents = isOpen ? "auto" : "none";
-  overlay.style.visibility = isOpen ? "visible" : "hidden";
+
+  if (isOpen) {
+    forceCompactLayout();
+    overlay.style.setProperty("pointer-events", "auto", "important");
+    overlay.style.setProperty("visibility", "visible", "important");
+  } else {
+    overlay.style.setProperty("display", "none", "important");
+    overlay.style.setProperty("pointer-events", "none", "important");
+    overlay.style.setProperty("visibility", "hidden", "important");
+  }
+
   overlay.setAttribute("aria-hidden", isOpen ? "false" : "true");
   if ("inert" in overlay) overlay.inert = !isOpen;
 }
