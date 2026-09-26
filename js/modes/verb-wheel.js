@@ -1,16 +1,14 @@
-const VERSION = "20260926-force-compact-sheet";
+const VERSION = "20260926-header-cheatsheet";
 const FACES = ["yo", "tú", "él / ella", "nosotros", "vosotros", "ellos / ellas"];
 
 let verbs = [];
 let groups = [];
 let selectedId = "";
-let fab = null;
 let overlay = null;
 let input = null;
 let toggle = null;
 let menu = null;
 let forms = null;
-let observer = null;
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -49,11 +47,6 @@ function injectStyles() {
   const style = document.createElement("style");
   style.id = "verbWheelStyles";
   style.textContent = [
-    ".verb-wheel-fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(86px,calc(env(safe-area-inset-bottom) + 78px));z-index:10035;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 17px;border:0;border-radius:999px;background:linear-gradient(135deg,#e63946 0%,#f77f00 100%);color:#fff;font:inherit;font-size:14px;font-weight:900;letter-spacing:.01em;cursor:pointer;box-shadow:0 6px 18px rgba(230,57,70,.4);transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:manipulation}",
-    ".verb-wheel-fab:hover,.verb-wheel-fab:focus-visible{transform:scale(1.05);box-shadow:0 9px 23px rgba(230,57,70,.46);outline:none}",
-    ".verb-wheel-fab:active{transform:scale(1.05)}",
-    ".verb-wheel-fab[hidden]{display:none!important}",
-    ".verb-wheel-fab-icon{font-size:20px;line-height:1}",
     ".vw-backdrop{position:fixed!important;inset:0!important;background:rgba(0,0,0,.5)!important;z-index:99999!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:center!important;opacity:1;visibility:visible;pointer-events:auto}",
     ".vw-backdrop[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}",
     ".vw-card{width:100%!important;max-width:480px!important;height:auto!important;min-height:unset!important;max-height:50vh!important;margin:0!important;display:block!important;position:relative!important;top:auto!important;bottom:0!important;flex:0 0 auto!important;background:#ffffff!important;border-radius:20px 20px 0 0!important;padding:16px 16px calc(20px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;overflow:visible!important;box-shadow:0 -8px 24px rgba(0,0,0,.15);animation:verb-wheel-rise .22s ease-out}",
@@ -85,26 +78,14 @@ function injectStyles() {
     ".verb-wheel-value{display:block;color:#292421;font-size:15px;font-weight:900;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
     ".verb-wheel-sheet-open{overflow:hidden!important}",
     "@keyframes verb-wheel-rise{from{transform:translateY(28px);opacity:.65}to{transform:translateY(0);opacity:1}}",
-    "@media(max-width:520px){.verb-wheel-head{padding-bottom:8px}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}.verb-wheel-fab{right:14px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 76px));min-height:47px;padding:0 14px}}",
+    "@media(max-width:520px){.verb-wheel-head{padding-bottom:8px}.verb-wheel-field{min-height:44px}.verb-wheel-input{font-size:13px}.verb-wheel-menu{max-height:min(330px,calc(100dvh - 205px))}.verb-wheel-current-card{padding:10px}.verb-wheel-forms{gap:6px}.verb-wheel-form{padding:7px 6px}.verb-wheel-person{font-size:9px}.verb-wheel-value{font-size:13px}}",
     "@media(max-width:370px){.verb-wheel-title h2{font-size:18px}.verb-wheel-field{min-height:42px}.verb-wheel-input{font-size:12px}.verb-wheel-value{font-size:12px}.verb-wheel-form{padding:7px 4px}}",
-    "@media(prefers-reduced-motion:reduce){.verb-wheel-fab,.vw-card{transition:none;animation:none}}"
+    "@media(prefers-reduced-motion:reduce){.vw-card{transition:none;animation:none}}"
   ].join("\n");
   document.head.appendChild(style);
 }
 
 function ensureUi() {
-  if (!fab) {
-    fab = document.createElement("button");
-    fab.type = "button";
-    fab.className = "verb-wheel-fab";
-    fab.hidden = true;
-    fab.style.display = "none";
-    fab.setAttribute("aria-haspopup", "dialog");
-    fab.setAttribute("aria-controls", "verbWheelOverlay");
-    fab.innerHTML = '<span class="verb-wheel-fab-icon" aria-hidden="true">🪭</span><span>Шпаргалка</span>';
-    document.body.appendChild(fab);
-  }
-
   if (!overlay) {
     overlay = document.createElement("div");
     overlay.id = "verbWheelOverlay";
@@ -275,26 +256,6 @@ function selectVerb(id) {
   closeMenu(false);
 }
 
-function gameIsActive() {
-  const game = document.querySelector(".cd-game");
-  return Boolean(game && !game.hidden);
-}
-
-function syncFab() {
-  if (!fab) return;
-  const active = gameIsActive();
-  const sheetOpen = Boolean(overlay && !overlay.hidden);
-  const game = document.querySelector(".cd-game");
-  const nextButtonVisible = Boolean(game && game.querySelector("[data-cd-next]:not([hidden])"));
-  const shouldShow = active && !sheetOpen && !nextButtonVisible;
-
-  fab.hidden = !shouldShow;
-  fab.style.display = shouldShow ? "inline-flex" : "none";
-  fab.setAttribute("aria-hidden", shouldShow ? "false" : "true");
-
-  if (!active && overlay && !overlay.hidden) closeSheet(false);
-}
-
 function currentGameVerb() {
   const drill = api();
   const fromState = drill && typeof drill.currentVerb === "function" ? drill.currentVerb() : "";
@@ -319,8 +280,6 @@ function openSheet() {
   renderCurrent();
   setMenuOpen(false);
   setOverlayOpen(true);
-  fab.hidden = true;
-  fab.style.display = "none";
   document.documentElement.classList.add("verb-wheel-sheet-open");
   document.body.classList.add("verb-wheel-sheet-open");
 }
@@ -331,8 +290,10 @@ function closeSheet(restoreFocus = true) {
   setOverlayOpen(false);
   document.documentElement.classList.remove("verb-wheel-sheet-open");
   document.body.classList.remove("verb-wheel-sheet-open");
-  syncFab();
-  if (restoreFocus && fab && !fab.hidden) fab.focus({preventScroll:true});
+  if (restoreFocus) {
+    const trigger = document.querySelector(".cd-game:not([hidden]) [data-cd-cheatsheet]");
+    if (trigger) trigger.focus({preventScroll:true});
+  }
 }
 
 function firstMenuOption() {
@@ -340,8 +301,6 @@ function firstMenuOption() {
 }
 
 function bindUi() {
-  fab.addEventListener("click", openSheet);
-
   overlay.addEventListener("click", function (event) {
     if (event.target === overlay || event.target.closest("[data-verb-wheel-close]")) {
       closeSheet();
@@ -442,25 +401,11 @@ function bindUi() {
   }, true);
 }
 
-function observeGame() {
-  function attachToGame() {
-    const game = document.querySelector(".cd-game");
-    if (!game) return false;
-    if (observer) observer.disconnect();
-    observer = new MutationObserver(function () { syncFab(); });
-    observer.observe(game, {attributes:true, attributeFilter:["hidden"], childList:true, subtree:true});
-    return true;
-  }
-
-  if (!attachToGame()) {
-    observer = new MutationObserver(function () {
-      if (attachToGame()) syncFab();
-    });
-    observer.observe(document.body, {subtree:true, childList:true});
-  }
-
-  window.addEventListener("conjugation:start", syncFab);
-  window.addEventListener("conjugation:close", syncFab);
+function bindConjugationEvents() {
+  window.addEventListener("verb-wheel:open", openSheet);
+  window.addEventListener("conjugation:close", function () {
+    if (overlay && !overlay.hidden) closeSheet(false);
+  });
 }
 
 function init() {
@@ -468,9 +413,8 @@ function init() {
   ensureUi();
   refreshCatalog();
   bindUi();
-  observeGame();
+  bindConjugationEvents();
   renderCurrent();
-  syncFab();
 }
 
 window.VerbWheel = Object.freeze({
