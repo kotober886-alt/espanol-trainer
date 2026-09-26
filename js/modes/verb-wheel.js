@@ -1,23 +1,58 @@
-const VERSION = "20260926-verb-wheel-dropdown1";
+const VERSION = "20260926-verb-wheel-40";
 const VERB_FILTER_KEY = "conjugation_verb_filter";
 const FACES = ["yo", "tú", "él", "nosotros", "vosotros", "ellos"];
 
+const VERB_GROUPS = Object.freeze([
+  { id: "exceptions", label: "⭐ Топ исключений" },
+  { id: "yo-special", label: "⚡ Глаголы на -GO и особые в YO" },
+  { id: "stem-change", label: "🔄 Чередование в корне (дифтонги e->ie, o->ue, e->i)" },
+  { id: "regular", label: "🟢 Базовые правильные (-ar, -er, -ir)" }
+]);
+
 const VERBS = Object.freeze([
-  { id: "ser", infinitive: "ser", translation: "быть", forms: ["soy", "eres", "es", "somos", "sois", "son"] },
-  { id: "estar", infinitive: "estar", translation: "быть, находиться", forms: ["estoy", "estás", "está", "estamos", "estáis", "están"] },
-  { id: "ir", infinitive: "ir", translation: "идти, ехать", forms: ["voy", "vas", "va", "vamos", "vais", "van"] },
-  { id: "tener", infinitive: "tener", translation: "иметь", forms: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"] },
-  { id: "hacer", infinitive: "hacer", translation: "делать", forms: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"] },
-  { id: "poder", infinitive: "poder", translation: "мочь", forms: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"] },
-  { id: "querer", infinitive: "querer", translation: "хотеть", forms: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"] },
-  { id: "decir", infinitive: "decir", translation: "говорить, сказать", forms: ["digo", "dices", "dice", "decimos", "decís", "dicen"] },
-  { id: "saber", infinitive: "saber", translation: "знать", forms: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"] },
-  { id: "poner", infinitive: "poner", translation: "класть, ставить", forms: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"] },
-  { id: "salir", infinitive: "salir", translation: "выходить", forms: ["salgo", "sales", "sale", "salimos", "salís", "salen"] },
-  { id: "venir", infinitive: "venir", translation: "приходить", forms: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"] },
-  { id: "ver", infinitive: "ver", translation: "видеть", forms: ["veo", "ves", "ve", "vemos", "veis", "ven"] },
-  { id: "dar", infinitive: "dar", translation: "давать", forms: ["doy", "das", "da", "damos", "dais", "dan"] },
-  { id: "pedir", infinitive: "pedir", translation: "просить, заказывать", forms: ["pido", "pides", "pide", "pedimos", "pedís", "piden"] }
+  { id: "ser", group: "exceptions", infinitive: "ser", translation: "быть, являться", forms: ["soy", "eres", "es", "somos", "sois", "son"] },
+  { id: "estar", group: "exceptions", infinitive: "estar", translation: "находиться, состояние", forms: ["estoy", "estás", "está", "estamos", "estáis", "están"] },
+  { id: "ir", group: "exceptions", infinitive: "ir", translation: "идти, ехать", forms: ["voy", "vas", "va", "vamos", "vais", "van"] },
+  { id: "haber", group: "exceptions", infinitive: "haber", translation: "иметься, быть", forms: ["he", "has", "ha/hay", "hemos", "habéis", "han"] },
+  { id: "saber", group: "exceptions", infinitive: "saber", translation: "знать, уметь", forms: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"] },
+  { id: "ver", group: "exceptions", infinitive: "ver", translation: "видеть", forms: ["veo", "ves", "ve", "vemos", "veis", "ven"] },
+  { id: "dar", group: "exceptions", infinitive: "dar", translation: "давать", forms: ["doy", "das", "da", "damos", "dais", "dan"] },
+
+  { id: "tener", group: "yo-special", infinitive: "tener", translation: "иметь", forms: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"] },
+  { id: "hacer", group: "yo-special", infinitive: "hacer", translation: "делать", forms: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"] },
+  { id: "poner", group: "yo-special", infinitive: "poner", translation: "класть, ставить", forms: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"] },
+  { id: "salir", group: "yo-special", infinitive: "salir", translation: "выходить", forms: ["salgo", "sales", "sale", "salimos", "salís", "salen"] },
+  { id: "venir", group: "yo-special", infinitive: "venir", translation: "приходить", forms: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"] },
+  { id: "decir", group: "yo-special", infinitive: "decir", translation: "говорить, сказать", forms: ["digo", "dices", "dice", "decimos", "decís", "dicen"] },
+  { id: "traer", group: "yo-special", infinitive: "traer", translation: "приносить", forms: ["traigo", "traes", "trae", "traemos", "traéis", "traen"] },
+  { id: "oír", group: "yo-special", infinitive: "oír", translation: "слышать", forms: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"] },
+  { id: "conocer", group: "yo-special", infinitive: "conocer", translation: "знать, быть знакомым", forms: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"] },
+
+  { id: "poder", group: "stem-change", infinitive: "poder", translation: "мочь", forms: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"] },
+  { id: "querer", group: "stem-change", infinitive: "querer", translation: "хотеть, любить", forms: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"] },
+  { id: "pedir", group: "stem-change", infinitive: "pedir", translation: "просить, заказывать", forms: ["pido", "pides", "pide", "pedimos", "pedís", "piden"] },
+  { id: "sentir", group: "stem-change", infinitive: "sentir", translation: "чувствовать", forms: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"] },
+  { id: "pensar", group: "stem-change", infinitive: "pensar", translation: "думать", forms: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"] },
+  { id: "empezar", group: "stem-change", infinitive: "empezar", translation: "начинать", forms: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"] },
+  { id: "entender", group: "stem-change", infinitive: "entender", translation: "понимать", forms: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"] },
+  { id: "volver", group: "stem-change", infinitive: "volver", translation: "возвращаться", forms: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"] },
+  { id: "dormir", group: "stem-change", infinitive: "dormir", translation: "спать", forms: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"] },
+  { id: "recordar", group: "stem-change", infinitive: "recordar", translation: "помнить", forms: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"] },
+  { id: "encontrar", group: "stem-change", infinitive: "encontrar", translation: "находить", forms: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"] },
+  { id: "servir", group: "stem-change", infinitive: "servir", translation: "служить, подходить", forms: ["sirvo", "sirves", "sirve", "servimos", "servís", "sirven"] },
+  { id: "jugar", group: "stem-change", infinitive: "jugar", translation: "играть", forms: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"] },
+
+  { id: "hablar", group: "regular", infinitive: "hablar", translation: "говорить", forms: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"] },
+  { id: "tomar", group: "regular", infinitive: "tomar", translation: "брать, пить", forms: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"] },
+  { id: "trabajar", group: "regular", infinitive: "trabajar", translation: "работать", forms: ["trabajo", "trabajas", "trabaja", "trabajamos", "trabajáis", "trabajan"] },
+  { id: "comprar", group: "regular", infinitive: "comprar", translation: "покупать", forms: ["compro", "compras", "compra", "compramos", "compráis", "compran"] },
+  { id: "escuchar", group: "regular", infinitive: "escuchar", translation: "слушать", forms: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"] },
+  { id: "comer", group: "regular", infinitive: "comer", translation: "есть", forms: ["como", "comes", "come", "comemos", "coméis", "comen"] },
+  { id: "beber", group: "regular", infinitive: "beber", translation: "пить", forms: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"] },
+  { id: "aprender", group: "regular", infinitive: "aprender", translation: "учить", forms: ["aprendo", "aprendes", "aprende", "aprendemos", "aprendéis", "aprenden"] },
+  { id: "vivir", group: "regular", infinitive: "vivir", translation: "жить", forms: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"] },
+  { id: "escribir", group: "regular", infinitive: "escribir", translation: "писать", forms: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"] },
+  { id: "abrir", group: "regular", infinitive: "abrir", translation: "открывать", forms: ["abro", "abres", "abre", "abrimos", "abrís", "abren"] }
 ]);
 
 let selectedId = "tener";
@@ -46,7 +81,7 @@ function readVerbFilter() {
 }
 
 function selectedVerb() {
-  return VERBS.find(function (verb) { return verb.id === selectedId; }) || VERBS[3];
+  return VERBS.find(function (verb) { return verb.id === selectedId; }) || VERBS.find(function (verb) { return verb.id === "tener"; }) || VERBS[0];
 }
 
 function injectStyles() {
@@ -171,14 +206,17 @@ function syncFab(filterOverride) {
 
 function renderSelect() {
   if (!select) return;
-  const sorted = VERBS.slice().sort(function (a, b) {
-    return a.infinitive.localeCompare(b.infinitive, "es");
-  });
 
-  select.innerHTML = sorted.map(function (verb) {
-    return '<option value="' + escapeHtml(verb.id) + '">' +
-      escapeHtml(verb.infinitive + " — " + verb.translation) +
-    '</option>';
+  select.innerHTML = VERB_GROUPS.map(function (group) {
+    const options = VERBS.filter(function (verb) {
+      return verb.group === group.id;
+    }).map(function (verb) {
+      return '<option value="' + escapeHtml(verb.id) + '">' +
+        escapeHtml(verb.infinitive + " — " + verb.translation) +
+      '</option>';
+    }).join("");
+
+    return '<optgroup label="' + escapeHtml(group.label) + '">' + options + '</optgroup>';
   }).join("");
   select.value = selectedId;
 }
@@ -274,7 +312,7 @@ function observeGame() {
 }
 
 function init() {
-  if (VERBS.length !== 15) throw new Error("Verb wheel must contain exactly 15 verbs");
+  if (VERBS.length !== 40) throw new Error("Verb wheel must contain exactly 40 verbs");
   injectStyles();
   ensureUi();
   bindUi();
