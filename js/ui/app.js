@@ -1445,7 +1445,8 @@ window.LegacyProgressAdapter = {
       if(sessionActive && window.DynamicFavicon) window.DynamicFavicon.setTraining(streak);
       if(els.trainerLayout.classList.contains("catalog-view")) renderTopics();
       renderStats();
-      const activeTopic=topicById(selectedTopic);\n      els.topicName.textContent=(activeTopic.icon?activeTopic.icon+" ":"")+activeTopic.title;
+      const activeTopic=topicById(selectedTopic);
+      els.topicName.textContent=(activeTopic.icon?activeTopic.icon+" ":"")+activeTopic.title;
       els.sessionResult.hidden=true;
       const canStudy=isVocabularyTopic();
       els.topicTabs.hidden=selectedTopic==="all" || selectedTopic==="custom";
