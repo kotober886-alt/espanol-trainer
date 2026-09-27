@@ -51,7 +51,7 @@ import { load, save } from "../core/storage.js";
   import { prepositionsTopic } from "../topics/prepositions.js";
   import { connectorsTopic } from "../topics/connectors.js";
   import { pastTopic } from "../topics/past.js";
-  import { routineTopic } from "../topics/routine.js?v=20260923-highres-stories28";
+  import { routineTopic } from "../topics/routine.js?v=20260927-routine-context-sync1";
   import { calendarTopic } from "../topics/calendar.js";
   import { practicalTopic } from "../topics/practical.js?v=20260923-highres-stories28";
   import { cityTopic } from "../topics/city.js?v=20260923-highres-stories28";

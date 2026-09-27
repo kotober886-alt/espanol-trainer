@@ -58,7 +58,7 @@ const STUDY_ITEMS = [
         "Она встаёт рано."
       ]
     ],
-    "cloze": "Yo me ___ temprano.",
+    "cloze": "Yo me ___ después del despertador.",
     "clozeAnswers": [
       "levanto"
     ],
@@ -124,7 +124,7 @@ const STUDY_ITEMS = [
         "Она умывается перед сном."
       ]
     ],
-    "cloze": "Me ___ la cara.",
+    "cloze": "Me ___ la cara con agua fría.",
     "clozeAnswers": [
       "lavo"
     ],
@@ -156,7 +156,7 @@ const STUDY_ITEMS = [
         "Мы чистим зубы дважды в день."
       ]
     ],
-    "cloze": "Me ___ los dientes.",
+    "cloze": "Me ___ los dientes después del desayuno.",
     "clozeAnswers": [
       "cepillo"
     ],
@@ -220,7 +220,7 @@ const STUDY_ITEMS = [
         "Мы завтракаем в восемь."
       ]
     ],
-    "cloze": "Yo ___ a las ocho.",
+    "cloze": "Yo ___ café y tostadas.",
     "clozeAnswers": [
       "desayuno"
     ],
@@ -456,7 +456,7 @@ const EXERCISES = [
     "topic": "routine",
     "foodCat": "morning",
     "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Я встаю после будильника.»: Yo me ___ temprano.",
+    "q": "Вставь пропущенную часть по переводу «Я встаю после будильника.»: Yo me ___ después del despertador.",
     "a": [
       "levanto"
     ],
@@ -524,7 +524,7 @@ const EXERCISES = [
     "topic": "routine",
     "foodCat": "morning",
     "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Я умываюсь холодной водой.»: Me ___ la cara.",
+    "q": "Вставь пропущенную часть по переводу «Я умываюсь холодной водой.»: Me ___ la cara con agua fría.",
     "a": [
       "lavo"
     ],
@@ -557,7 +557,7 @@ const EXERCISES = [
     "topic": "routine",
     "foodCat": "morning",
     "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Я чищу зубы после завтрака.»: Me ___ los dientes.",
+    "q": "Вставь пропущенную часть по переводу «Я чищу зубы после завтрака.»: Me ___ los dientes después del desayuno.",
     "a": [
       "cepillo"
     ],
@@ -623,7 +623,7 @@ const EXERCISES = [
     "topic": "routine",
     "foodCat": "morning",
     "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Я завтракаю кофе и тостами.»: Yo ___ a las ocho.",
+    "q": "Вставь пропущенную часть по переводу «Я завтракаю кофе и тостами.»: Yo ___ café y tostadas.",
     "a": [
       "desayuno"
     ],
