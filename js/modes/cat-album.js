@@ -2,7 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "cat_album_unlocked";
-  const BUILD = "20260927-cat-album-code3";
+  const BUILD = "20260927-cat-album-integrity-fix1";
 
   const CARDS = Object.freeze([
     { id:"cat_01", title:"La Siesta", desc:"Сладкий сон в гамаке", file:"assets/cards/cat_01.webp" },
@@ -145,27 +145,32 @@
     grid.innerHTML = CARDS.map(card => {
       if (!unlocked.has(card.id)) {
         return (
-          '<article class="cat-album-item is-locked">' +
-            '<div class="cat-album-photo cat-album-photo-locked" aria-label="Фото пока закрыто">' +
+          '<article class="cat-card-slot is-locked">' +
+            '<div class="cat-card-frame cat-card-frame-locked" aria-label="Фото пока закрыто">' +
               '<div class="cat-album-locked">' +
                 '<span class="cat-album-lock" aria-hidden="true">🔒</span>' +
                 '<b>Фото пока скрыто</b>' +
                 '<small>Пройди Фотовспышку с ≤ 2 ошибками</small>' +
               '</div>' +
             '</div>' +
-            '<div class="cat-album-copy"><strong>???</strong><span>Новая история котика</span></div>' +
+            '<div class="cat-card-meta">' +
+              '<div class="cat-card-title">???</div>' +
+              '<div class="cat-card-desc">Новая история котика</div>' +
+            '</div>' +
           '</article>'
         );
       }
 
       return (
-        '<article class="cat-album-item is-unlocked">' +
-          '<button class="cat-album-photo" type="button" data-cat-card="' + esc(card.id) + '" aria-label="Открыть ' + esc(card.title) + '">' +
-            '<img src="' + esc(card.file) + '?v=' + BUILD + '" alt="' + esc(card.title) + '">' +
-          '</button>' +
-          '<div class="cat-album-copy">' +
-            '<strong lang="es">' + esc(card.title) + '</strong>' +
-            '<span>' + esc(card.desc) + '</span>' +
+        '<article class="cat-card-slot is-unlocked">' +
+          '<div class="cat-card-frame">' +
+            '<button class="cat-card-open" type="button" data-cat-card="' + esc(card.id) + '" aria-label="Открыть ' + esc(card.title) + '">' +
+              '<img src="' + esc(card.file) + '?v=' + BUILD + '" alt="' + esc(card.title) + '" loading="lazy" decoding="async">' +
+            '</button>' +
+          '</div>' +
+          '<div class="cat-card-meta">' +
+            '<div class="cat-card-title" lang="es">' + esc(card.title) + '</div>' +
+            '<div class="cat-card-desc">' + esc(card.desc) + '</div>' +
           '</div>' +
         '</article>'
       );
