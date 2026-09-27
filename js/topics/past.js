@@ -1894,7 +1894,7 @@ const EXERCISES = [
 export const pastTopic = {
   id: "past",
   title: "Прошедшее время",
-  icon: "↶",
+  icon: "⏳",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

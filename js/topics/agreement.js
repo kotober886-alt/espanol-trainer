@@ -1217,7 +1217,7 @@ const EXERCISES = [
 export const agreementTopic = {
   id: "agreement",
   title: "Артикли и согласование",
-  icon: "≋",
+  icon: "🧩",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

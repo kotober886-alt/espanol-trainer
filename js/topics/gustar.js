@@ -2656,7 +2656,7 @@ const EXERCISES = [
 export const gustarTopic = {
   id: "gustar",
   title: "Gustar и похожие",
-  icon: "♡",
+  icon: "❤️",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

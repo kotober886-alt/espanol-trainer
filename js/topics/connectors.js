@@ -3156,7 +3156,7 @@ const EXERCISES = [
 export const connectorsTopic = {
   id: "connectors",
   title: "Связки и конструкции",
-  icon: "⇄",
+  icon: "🔗",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

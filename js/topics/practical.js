@@ -1875,7 +1875,7 @@ const EXERCISES = [
 export const practicalTopic = {
   id: "practical",
   title: "Время, числа и цены",
-  icon: "#",
+  icon: "🏷️",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

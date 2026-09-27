@@ -2573,7 +2573,7 @@ const EXERCISES = [
 export const calendarTopic = {
   id: "calendar",
   title: "Дни и времена года",
-  icon: "☀",
+  icon: "☀️",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

@@ -1332,7 +1332,7 @@ const EXERCISES = [
 export const pronounsTopic = {
   id: "pronouns",
   title: "Местоимения",
-  icon: "◎",
+  icon: "👤",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

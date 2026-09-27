@@ -139,7 +139,7 @@ const EXERCISES = [
 export const mixedTopic = {
   id: "__mixed",
   title: "Смешанная практика",
-  icon: "✦",
+  icon: "🎲",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

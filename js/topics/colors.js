@@ -1380,7 +1380,7 @@ const EXERCISES = [
 export const colorsTopic = {
   id: "colors",
   title: "Цвета",
-  icon: "◩",
+  icon: "🎨",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

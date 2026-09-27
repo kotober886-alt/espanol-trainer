@@ -41,36 +41,36 @@ import { load, save } from "../core/storage.js";
     getAllExercises,
     hasTopic
   } from "../core/topic-registry.js";
-  import { verbsTopic } from "../topics/verbs.js";
-  import { presentTopic } from "../topics/present.js";
-  import { pronounsTopic } from "../topics/pronouns.js";
-  import { questionsTopic } from "../topics/questions.js";
-  import { constructionsTopic } from "../topics/constructions.js";
-  import { gustarTopic } from "../topics/gustar.js";
-  import { agreementTopic } from "../topics/agreement.js";
-  import { prepositionsTopic } from "../topics/prepositions.js";
-  import { connectorsTopic } from "../topics/connectors.js";
-  import { pastTopic } from "../topics/past.js";
-  import { routineTopic } from "../topics/routine.js?v=20260927-routine-context-sync1";
-  import { calendarTopic } from "../topics/calendar.js";
-  import { practicalTopic } from "../topics/practical.js?v=20260923-highres-stories28";
-  import { cityTopic } from "../topics/city.js?v=20260923-highres-stories28";
+  import { verbsTopic } from "../topics/verbs.js?v=20260927-topic-emoji1";
+  import { presentTopic } from "../topics/present.js?v=20260927-topic-emoji1";
+  import { pronounsTopic } from "../topics/pronouns.js?v=20260927-topic-emoji1";
+  import { questionsTopic } from "../topics/questions.js?v=20260927-topic-emoji1";
+  import { constructionsTopic } from "../topics/constructions.js?v=20260927-topic-emoji1";
+  import { gustarTopic } from "../topics/gustar.js?v=20260927-topic-emoji1";
+  import { agreementTopic } from "../topics/agreement.js?v=20260927-topic-emoji1";
+  import { prepositionsTopic } from "../topics/prepositions.js?v=20260927-topic-emoji1";
+  import { connectorsTopic } from "../topics/connectors.js?v=20260927-topic-emoji1";
+  import { pastTopic } from "../topics/past.js?v=20260927-topic-emoji1";
+  import { routineTopic } from "../topics/routine.js?v=20260927-topic-emoji1";
+  import { calendarTopic } from "../topics/calendar.js?v=20260927-topic-emoji1";
+  import { practicalTopic } from "../topics/practical.js?v=20260927-topic-emoji1";
+  import { cityTopic } from "../topics/city.js?v=20260927-topic-emoji1";
   import { homeTopic } from "../topics/home.js";
   import { choresTopic } from "../topics/chores.js";
-  import { colorsTopic } from "../topics/colors.js";
-  import { foodsTopic } from "../topics/foods.js?v=20260923-highres-stories28";
-  import { clothesTopic } from "../topics/clothes.js";
-  import { activitiesTopic } from "../topics/activities.js";
+  import { colorsTopic } from "../topics/colors.js?v=20260927-topic-emoji1";
+  import { foodsTopic } from "../topics/foods.js?v=20260927-topic-emoji1";
+  import { clothesTopic } from "../topics/clothes.js?v=20260927-topic-emoji1";
+  import { activitiesTopic } from "../topics/activities.js?v=20260927-topic-emoji1";
   import { animalsTopic } from "../topics/animals.js";
-  import { mixedTopic } from "../topics/mixed.js";
+  import { mixedTopic } from "../topics/mixed.js?v=20260927-topic-emoji1";
 
 
     const backpackManager = createBackpackManager();
     window.BackpackManager = backpackManager;
 
     const TOPICS = [
-      { id:"all", title:"Все темы", icon:"✦" },
-      { id:"custom", title:"Свои задания", icon:"＋" }
+      { id:"all", title:"Все темы", icon:"🌈" },
+      { id:"custom", title:"Свои задания", icon:"✍️" }
     ];
 
     const DAILY_LIFE_TOPIC_IDS = ["routine","calendar","practical","city","home","chores","colors","foods","clothes","activities","animals"];
@@ -1445,7 +1445,7 @@ window.LegacyProgressAdapter = {
       if(sessionActive && window.DynamicFavicon) window.DynamicFavicon.setTraining(streak);
       if(els.trainerLayout.classList.contains("catalog-view")) renderTopics();
       renderStats();
-      els.topicName.textContent=topicById(selectedTopic).title;
+      const activeTopic=topicById(selectedTopic);\n      els.topicName.textContent=(activeTopic.icon?activeTopic.icon+" ":"")+activeTopic.title;
       els.sessionResult.hidden=true;
       const canStudy=isVocabularyTopic();
       els.topicTabs.hidden=selectedTopic==="all" || selectedTopic==="custom";
@@ -1843,11 +1843,11 @@ window.LegacyProgressAdapter = {
   TOPICS.splice(
     0,
     TOPICS.length,
-    {id:"all",title:"Все темы",icon:"✦"},
+    {id:"all",title:"Все темы",icon:"🌈"},
     ...catalogTopics.map(function(topic){
       return {id:topic.id,title:topic.title,icon:topic.icon};
     }),
-    {id:"custom",title:"Свои задания",icon:"＋"}
+    {id:"custom",title:"Свои задания",icon:"✍️"}
   );
 
   const adapter = window.LegacyProgressAdapter;

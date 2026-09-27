@@ -1463,7 +1463,7 @@ const EXERCISES = [
 export const questionsTopic = {
   id: "questions",
   title: "Вопросы",
-  icon: "?",
+  icon: "❓",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

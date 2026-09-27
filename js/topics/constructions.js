@@ -1388,7 +1388,7 @@ const EXERCISES = [
 export const constructionsTopic = {
   id: "constructions",
   title: "Разговорные конструкции",
-  icon: "▣",
+  icon: "💬",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

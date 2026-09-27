@@ -1770,7 +1770,7 @@ const EXERCISES = [
 export const presentTopic = {
   id: "present",
   title: "Presente",
-  icon: "↻",
+  icon: "🔄",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

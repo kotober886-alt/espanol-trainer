@@ -9183,7 +9183,7 @@ const EXERCISES = [
 export const clothesTopic = {
   id: "clothes",
   title: "Одежда и аксессуары",
-  icon: "◇",
+  icon: "👕",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

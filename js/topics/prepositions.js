@@ -2011,7 +2011,7 @@ const EXERCISES = [
 export const prepositionsTopic = {
   id: "prepositions",
   title: "Предлоги",
-  icon: "⌁",
+  icon: "🧭",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

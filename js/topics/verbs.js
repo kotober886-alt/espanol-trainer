@@ -10793,7 +10793,7 @@ const EXERCISES = [
 export const verbsTopic = {
   id: "verbs",
   title: "Основные глаголы",
-  icon: "⚡",
+  icon: "⚡️",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

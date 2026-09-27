@@ -2501,7 +2501,7 @@ const EXERCISES = [
 export const cityTopic = {
   id: "city",
   title: "Город и район",
-  icon: "⌂",
+  icon: "🏙️",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

@@ -7596,7 +7596,7 @@ const EXERCISES = [
 export const foodsTopic = {
   id: "foods",
   title: "Продукты питания",
-  icon: "◉",
+  icon: "🍎",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };

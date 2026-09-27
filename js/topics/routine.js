@@ -1439,7 +1439,7 @@ const EXERCISES = [
 export const routineTopic = {
   id: "routine",
   title: "Распорядок дня",
-  icon: "◷",
+  icon: "⏰",
   studyItems: STUDY_ITEMS,
   exercises: EXERCISES
 };
