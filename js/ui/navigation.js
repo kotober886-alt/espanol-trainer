@@ -64,10 +64,15 @@ export function createNavigation(options = {}) {
   }
 
   function bind() {
-    if (bound) return;
+    if (bound) {
+      console.log("[Nav] bind() skipped: handlers already bound");
+      return;
+    }
     bound = true;
+    let boundCount = 0;
 
     eachControl(function (button, name) {
+      boundCount += 1;
       button.addEventListener("click", function () {
         setActive(name);
         if (typeof options.onNavigate === "function" && String(button.id || "").indexOf("headerNav") !== 0) {
@@ -76,6 +81,12 @@ export function createNavigation(options = {}) {
         const action = actions[name];
         if (typeof action === "function") action();
       });
+    });
+
+    console.log("[Nav] Navigation click handlers bound successfully", {
+      count: boundCount,
+      bottomNavPresent: Boolean(document.getElementById("bottomNav")),
+      backpackPresent: Boolean(document.getElementById("backpackBtn"))
     });
   }
 

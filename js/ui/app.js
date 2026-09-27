@@ -2,7 +2,7 @@ import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260923-backpack-lock-silhouette49";
 import { createTrainerView } from "./trainer-view.js?v=20260927-spanish-input-softchars1";
 import { createResultsView } from "./results-view.js?v=20260925-results-layout-fix1";
-import { createNavigation } from "./navigation.js?v=20260923-backpack-lock-silhouette49";
+import { createNavigation } from "./navigation.js?v=20260927-click-debug2";
 import { createPracticeView } from "./practice-view.js?v=20260925-photoflash-banner-scope";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
 import { createBackpackManager } from "../backpack-manager.js?v=20260924-backpack-detail51";
@@ -1777,7 +1777,11 @@ window.LegacyProgressAdapter = {
     });
 
     function initializeApp(){
-      if(initializeApp.done) return;
+      console.log("[App] Init start", { build: "20260927-click-debug2", readyState: document.readyState });
+      if(initializeApp.done){
+        console.log("[App] Init skipped: already initialized");
+        return;
+      }
       initializeApp.done=true;
       if(!catalogView) initializeViews();
       bindPawsInteraction({ backpackManager: backpackManager, safeVibrate: safeVibrate });
@@ -1799,6 +1803,10 @@ window.LegacyProgressAdapter = {
       renderStats();
       renderTopics();
       showHome();
+      console.log("[App] Init complete", {
+        bottomNav: Boolean(document.getElementById("bottomNav")),
+        backpackBtn: Boolean(document.getElementById("backpackBtn"))
+      });
     }
   
 
