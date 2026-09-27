@@ -1,6 +1,6 @@
 import { createCatalogView } from "./catalog.js";
 import { createStudyCardView } from "./study-card.js?v=20260923-backpack-lock-silhouette49";
-import { createTrainerView } from "./trainer-view.js?v=20260923-backpack-lock-silhouette49";
+import { createTrainerView } from "./trainer-view.js?v=20260927-spanish-input-softchars1";
 import { createResultsView } from "./results-view.js?v=20260925-results-layout-fix1";
 import { createNavigation } from "./navigation.js?v=20260923-backpack-lock-silhouette49";
 import { createPracticeView } from "./practice-view.js?v=20260925-photoflash-banner-scope";
@@ -28,7 +28,7 @@ import { load, save } from "../core/storage.js";
     normalizeExact,
     normalizeNear,
     splitAnswerVariants
-  } from "../core/answers.js";
+  } from "../core/answers.js?v=20260927-spanish-input-softchars1";
   import {
     buildExercisePool,
     buildQueue as buildSessionQueue,

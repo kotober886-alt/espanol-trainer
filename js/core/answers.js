@@ -1,3 +1,5 @@
+import { normalizeAnswer } from "./spanish-input.js?v=20260927-spanish-input-softchars1";
+
 /**
  * Pure answer-checking engine for Español Trainer.
  *
@@ -44,23 +46,11 @@ export function normalizeExact(value) {
 }
 
 /**
- * Lenient normalization used only for "near" answers.
- *
- * á/é/í/ó/ú/ü may be omitted, but ñ remains a distinct letter:
- * café -> cafe is near
- * año  -> ano is NOT near
+ * Forgiving normalization for typed answers.
+ * Accents, ñ and punctuation may be omitted without turning the answer into an error.
  */
 export function normalizeNear(value) {
-  return String(value == null ? "" : value)
-    .toLowerCase()
-    .replace(/ñ/g, "\uE000")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\uE000/g, "ñ")
-    .replace(/['’‘ʼ`´]+/g, "")
-    .replace(/[\p{P}\p{S}]+/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return normalizeAnswer(value);
 }
 
 /**
@@ -207,7 +197,7 @@ function comparePicturePart(userAnswer, acceptedAnswers) {
   return { exact: false, near: near };
 }
 
-function feedbackFor(item, exact, near) {
+function feedbackFor(item, exact, near, displayAnswer) {
   if (exact) {
     return item.sessionReview
       ? "Верно! Повторение закреплено."
@@ -215,7 +205,7 @@ function feedbackFor(item, exact, near) {
   }
 
   if (near) {
-    return "Почти верно — проверь ударение или написание.";
+    return "Правильно! Но обрати внимание на спецсимвол: " + displayAnswer;
   }
 
   return "Пока не совпало.";
@@ -230,16 +220,17 @@ function displayAnswerFor(item, acceptedAnswers) {
 }
 
 function resultFor(item, userAnswer, acceptedAnswers, exact, near) {
+  const displayAnswer = displayAnswerFor(item, acceptedAnswers);
   return {
-    // Near remains a separate, non-correct state so legacy progress semantics
-    // are preserved: only exact answers increment the correct streak.
-    correct: exact,
+    // A normalized match is correct for progress/lives, but remains "near"
+    // so the UI can show a gentle special-character reminder.
+    correct: exact || near,
     exact: exact,
     near: near,
     userAnswer: String(userAnswer == null ? "" : userAnswer),
     acceptedAnswers: acceptedAnswers.slice(),
-    displayAnswer: displayAnswerFor(item, acceptedAnswers),
-    feedback: feedbackFor(item, exact, near)
+    displayAnswer: displayAnswer,
+    feedback: feedbackFor(item, exact, near, displayAnswer)
   };
 }
 

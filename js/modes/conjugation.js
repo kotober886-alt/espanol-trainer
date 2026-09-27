@@ -1,10 +1,10 @@
+import { attachSpanishCharPanel, normalizeAnswer } from "../core/spanish-input.js?v=20260927-spanish-input-softchars1";
 import { getTopic } from "../core/topic-registry.js";
 import { verbsTopic } from "../topics/verbs.js";
 import { presentTopic } from "../topics/present.js";
 
-const VERSION = "20260926-cheatsheet-button";
+const VERSION = "20260927-spanish-input-softchars1";
 const COUNTS = [10, 15, 20];
-const ACCENTS = ["á", "é", "í", "ó", "ú", "ñ"];
 const VERB_FILTER_KEY = "conjugation_verb_filter";
 const VERB_FILTERS = new Set(["regular", "irregular", "all"]);
 const PRONOUN_ORDER = Object.freeze([
@@ -44,10 +44,6 @@ function escapeHtml(value) {
 
 function normalize(value) {
   return String(value ?? "").trim().toLowerCase();
-}
-
-function normalizeAccentless(value) {
-  return (value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function highlightDiacritics(value) {
@@ -436,9 +432,6 @@ function renderTask() {
       '<p class="cd-translation">' + escapeHtml(task.translation || "глагол") + '</p>' +
       '<div class="cd-pronoun">' + escapeHtml(task.pronoun) + '</div>' +
       '<input class="cd-answer" data-cd-input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Введи форму..." aria-label="Введи форму глагола">' +
-      '<div class="cd-accents" aria-label="Быстрые акценты">' + ACCENTS.map(function (symbol) {
-        return '<button class="cd-accent" type="button" data-cd-accent="' + symbol + '">[' + symbol + ']</button>';
-      }).join("") + '</div>' +
       '<div class="cd-feedback" data-cd-feedback role="status"></div>' +
       '<div data-cd-correct-wrap></div>' +
       '<div class="cd-actions"><button class="cd-primary" type="button" data-cd-check disabled>Проверить</button>' +
@@ -447,7 +440,10 @@ function renderTask() {
   );
 
   const input = game.querySelector("[data-cd-input]");
-  if (input) input.focus();
+  if (input) {
+    attachSpanishCharPanel(input);
+    input.focus();
+  }
 }
 
 function nextTask() {
@@ -477,7 +473,7 @@ function checkCurrent() {
   const task = session.current;
   const target = normalize(task.answer);
   const exactCorrect = typed === target;
-  const accentCorrect = !exactCorrect && normalizeAccentless(input.value) === normalizeAccentless(task.answer);
+  const accentCorrect = !exactCorrect && normalizeAnswer(input.value) === normalizeAnswer(task.answer);
   session.attempts += 1;
   input.disabled = true;
   if (check) check.disabled = true;
@@ -501,14 +497,10 @@ function checkCurrent() {
     session.clean.add(task.key);
     input.classList.add("is-accent-warning");
     if (feedback) {
-      const accents = diacriticCharacters(task.answer);
-      const note = accents.length
-        ? "обрати внимание на " + accents.map(escapeHtml).join(", ")
-        : "в эталоне акцент не нужен";
       feedback.innerHTML =
-        'Почти идеально! Засчитано, но проверь диакритику: <strong lang="es">' +
+        'Правильно! Но обрати внимание на спецсимвол: <strong lang="es">' +
         highlightDiacritics(task.answer) +
-        "</strong> — " + note + ".";
+        "</strong>";
       feedback.className = "cd-feedback warn";
     }
     transitionTimer = window.setTimeout(nextTask, 1400);
@@ -533,17 +525,6 @@ function checkCurrent() {
     next.hidden = false;
     next.focus();
   }
-}
-
-function insertAccent(symbol) {
-  const input = game.querySelector("[data-cd-input]");
-  if (!input || input.disabled) return;
-  const start = Number.isInteger(input.selectionStart) ? input.selectionStart : input.value.length;
-  const end = Number.isInteger(input.selectionEnd) ? input.selectionEnd : start;
-  if (typeof input.setRangeText === "function") input.setRangeText(symbol, start, end, "end");
-  else input.value = input.value.slice(0, start) + symbol + input.value.slice(end);
-  input.dispatchEvent(new Event("input", {bubbles:true}));
-  input.focus();
 }
 
 function renderResults() {
@@ -659,8 +640,6 @@ function bindUi() {
       window.dispatchEvent(new CustomEvent("verb-wheel:open"));
       return;
     }
-    const accent = event.target.closest("[data-cd-accent]");
-    if (accent) return insertAccent(accent.dataset.cdAccent);
     if (event.target.closest("[data-cd-check]")) return checkCurrent();
     if (event.target.closest("[data-cd-next]")) return nextTask();
     if (event.target.closest("[data-cd-close],[data-cd-exit]")) return close();

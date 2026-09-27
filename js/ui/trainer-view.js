@@ -1,4 +1,5 @@
 import { renderImposterCard } from "./imposter-card.js?v=20260923-backpack33";
+import { attachSpanishCharPanel } from "../core/spanish-input.js?v=20260927-spanish-input-softchars1";
 
 /**
  * Active trainer view and exercise widgets.
@@ -15,6 +16,10 @@ export function createTrainerView(deps){
   let audioStoryState={};
   let imposterState={solved:false,selectedIndex:null,elapsedMs:null};
   const RESOLVED_ERRORS_STORAGE_KEY="gato_resolved_errors_total";
+
+  // The main answer input powers text, audio dictation, context/fill-in,
+  // correction, dialogue and ser/estar/hay exercises.
+  attachSpanishCharPanel(els.answerInput);
 
   function incrementResolvedErrorsTotal(){
     let current=0;
@@ -314,6 +319,7 @@ export function createTrainerView(deps){
         '</div><div class="picture-fields">'+fields+'</div>';
       bindPictureImageFallback(els.pictureStage.querySelector(".picture-raster"),item.pictureScene);
       els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input){
+        attachSpanishCharPanel(input);
         input.addEventListener("input",syncActionButtons);
         input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();if(!$("checkBtn").disabled)checkAnswer();}});
       });
@@ -325,7 +331,10 @@ export function createTrainerView(deps){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.formGrid.hidden=false;
       els.formGrid.innerHTML=(item.formLabels||[]).map((label,i)=>'<div class="form-cell"><label for="formInput'+i+'">'+
         escapeHtml(label)+'</label><input id="formInput'+i+'" data-form-input="'+i+'" autocomplete="off" autocapitalize="none" spellcheck="false"></div>').join("");
-      els.formGrid.querySelectorAll("input").forEach(input=>input.addEventListener("input",syncActionButtons));
+      els.formGrid.querySelectorAll("input").forEach(function(input){
+        attachSpanishCharPanel(input);
+        input.addEventListener("input",syncActionButtons);
+      });
       const first=els.formGrid.querySelector("input");if(first)first.focus();
     }else{
       if(type==="audio"){els.answerLabel.textContent="Что ты услышала?";els.answerInput.placeholder="Запиши предложение…";}
@@ -528,8 +537,10 @@ export function createTrainerView(deps){
     }else if(item.type==="picture-label"){
       els.pictureStage.querySelectorAll("[data-picture-input]").forEach(function(input,i){
         const label=(item.pictureLabels||[])[i];
-        const exact=label&&(label.answers||[]).some(a=>normalizePictureAnswer(input.value,normalize)===normalizePictureAnswer(a,normalize));
-        const near=!exact&&label&&(label.answers||[]).some(a=>normalizePictureAnswer(input.value,fold)===normalizePictureAnswer(a,fold));
+        const strictNormalize=answerEngine.normalizeExact || normalize;
+        const softNormalize=answerEngine.normalizeNear || fold;
+        const exact=label&&(label.answers||[]).some(a=>normalizePictureAnswer(input.value,strictNormalize)===normalizePictureAnswer(a,strictNormalize));
+        const near=!exact&&label&&(label.answers||[]).some(a=>normalizePictureAnswer(input.value,softNormalize)===normalizePictureAnswer(a,softNormalize));
         input.classList.add(exact?"result-good":(near?"result-near":"result-bad"));
       });
     }
@@ -606,20 +617,21 @@ export function createTrainerView(deps){
         };
       })()
       :answerEngine.checkAnswer(item,value);
-    const exact=result.exact,near=result.near;
-    if(typeof safeVibrate==="function") safeVibrate(exact?20:[30,40,30]);
+    const exact=Boolean(result.exact),near=Boolean(result.near);
+    const correct=result.correct===undefined ? exact : Boolean(result.correct);
+    if(typeof safeVibrate==="function") safeVibrate(correct?20:[30,40,30]);
     els.answerText.textContent=result.displayAnswer;markAnswers(item);
     let scheduled=false;
     let mistakeResolved=false;
     const isMistakePractice=state.selectedMode==="mistakes"||state.sessionRound==="mistakes";
     if(!state.checkedCurrent){
       if(state.sessionActive&&state.sessionController){
-        const record=state.sessionController.recordResult({correct:exact,answerResult:result});
+        const record=state.sessionController.recordResult({correct:correct,answerResult:result});
         scheduled=false;
         if(record.counted&&progress){
-          const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:exact,firstAttempt:true});
+          const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:correct,firstAttempt:true});
 
-          if(exact&&isMistakePractice&&typeof progress.resolveMistake==="function"){
+          if(correct&&isMistakePractice&&typeof progress.resolveMistake==="function"){
             const resolution=progress.resolveMistake({exerciseId:item.id,originalId:item.originalId||null});
             if(resolution&&resolution.resolved){
               mistakeResolved=true;
@@ -638,13 +650,13 @@ export function createTrainerView(deps){
         els.progressLabel.textContent=(state.index+1)+" / "+state.queue.length;
         els.progressBar.style.width=((state.index+1)/Math.max(1,state.queue.length)*100)+"%";
       }else if(progress){
-        const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:exact,firstAttempt:true});
-        patchState({stats:progress.getStats(),streak:p.streak});if(!exact)scheduled=scheduleReview(item);
+        const p=progress.recordAnswer({exerciseId:item.id,originalId:item.originalId||null,topic:item.topic||null,correct:correct,firstAttempt:true});
+        patchState({stats:progress.getStats(),streak:p.streak});if(!correct)scheduled=scheduleReview(item);
       }
       if(backpackManager){
-        backpackManager.checkConditions("answer",{correct:Boolean(exact),item:item,mode:state.selectedMode,sessionRound:state.sessionRound,timestamp:Date.now()});
+        backpackManager.checkConditions("answer",{correct:Boolean(correct),item:item,mode:state.selectedMode,sessionRound:state.sessionRound,timestamp:Date.now()});
         if(item.type==="audio_story_quiz"){
-          backpackManager.checkConditions("story",{item:item,correct:Boolean(exact),completed:true});
+          backpackManager.checkConditions("story",{item:item,correct:Boolean(correct),completed:true});
         }
         if(item.type==="spot_the_imposter"&&exact){
           backpackManager.checkConditions("imposter",{item:item,correct:true,elapsedMs:imposterState.elapsedMs});
@@ -659,11 +671,11 @@ export function createTrainerView(deps){
       els.feedback.textContent="Ошибка побеждена! 🎉";
       els.feedback.className="feedback good mistake-resolved-feedback";
     }else{
-      els.feedback.textContent=result.feedback+(exact?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":(near?"":" Попробуй ещё раз или открой ответ сама.")));
+      els.feedback.textContent=result.feedback+(correct?"":(scheduled&&!state.sessionActive?" Это задание вернётся через несколько карточек.":" Попробуй ещё раз или открой ответ сама."));
       els.feedback.className=exact?"feedback good":(near?"feedback near":"feedback bad");
     }
 
-    if(!exact){
+    if(!correct){
       els.answerBox.classList.add("open");
     }
     const nextBtn=$("nextBtn");
