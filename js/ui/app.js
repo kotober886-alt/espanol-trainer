@@ -5,7 +5,7 @@ import { createResultsView } from "./results-view.js?v=20260925-results-layout-f
 import { createNavigation } from "./navigation.js?v=20260927-click-debug2";
 import { createPracticeView } from "./practice-view.js?v=20260925-photoflash-banner-scope";
 import { IMPOSTER_TASKS } from "../../data/imposter-tasks.js?v=20260923-imposter31";
-import { createBackpackManager } from "../backpack-manager.js?v=20260924-backpack-detail51";
+import { createBackpackManager } from "../backpack-manager.js?v=20260929-backpack-chroma-clean1";
 import { bindPawsInteraction } from "./paws-interaction.js?v=20260927-mascot-blink-racefix1";
 import { bindCatSpeechBubble } from "./cat-speech.js?v=20260923-cat-phrases44";
 import { load, save } from "../core/storage.js";

@@ -11,7 +11,7 @@ function escapeHtml(value) {
 
 const LOCKED_TITLE = "???";
 const LOCKED_TRANSLATION = "Неизвестный трофей";
-const BACKPACK_RENDER_VERSION = "20260924-backpack-detail51";
+const BACKPACK_RENDER_VERSION = "20260929-backpack-chroma-clean1";
 const LOCK_ICON_URL = "assets/images/backpack/lock.svg?v=" + BACKPACK_RENDER_VERSION;
 
 function itemImageUrl(item) {
