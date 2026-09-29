@@ -359,180 +359,6 @@ const STUDY_ITEMS = [
     }
   },
   {
-    "id": "debajo",
-    "cat": "compound",
-    "word": "debajo de",
-    "base": "debajo de",
-    "gender": "составной предлог",
-    "tr": "под",
-    "ru": [
-      "под"
-    ],
-    "answers": [
-      "debajo de"
-    ],
-    "art": null,
-    "examples": [
-      [
-        "El gato está debajo de la mesa.",
-        "Кот находится под столом."
-      ],
-      [
-        "Los zapatos están debajo de la cama.",
-        "Туфли находятся под кроватью."
-      ]
-    ],
-    "cloze": "El gato está ___ la mesa.",
-    "clozeAnswers": [
-      "debajo de"
-    ],
-    "meta": {
-      "categoryTitle": "Составные",
-      "categoryOrder": 3,
-      "allCategoryTitle": "Все предлоги"
-    }
-  },
-  {
-    "id": "delante",
-    "cat": "compound",
-    "word": "delante de",
-    "base": "delante de",
-    "gender": "составной предлог",
-    "tr": "перед",
-    "ru": [
-      "перед"
-    ],
-    "answers": [
-      "delante de"
-    ],
-    "art": null,
-    "examples": [
-      [
-        "El coche está delante de la casa.",
-        "Машина стоит перед домом."
-      ],
-      [
-        "Espero delante del cine.",
-        "Я жду перед кинотеатром."
-      ]
-    ],
-    "cloze": "El coche está ___ la casa.",
-    "clozeAnswers": [
-      "delante de"
-    ],
-    "meta": {
-      "categoryTitle": "Составные",
-      "categoryOrder": 3,
-      "allCategoryTitle": "Все предлоги"
-    }
-  },
-  {
-    "id": "detras",
-    "cat": "compound",
-    "word": "detrás de",
-    "base": "detrás de",
-    "gender": "составной предлог",
-    "tr": "за, позади",
-    "ru": [
-      "за",
-      "позади"
-    ],
-    "answers": [
-      "detrás de",
-      "detras de"
-    ],
-    "art": null,
-    "examples": [
-      [
-        "El jardín está detrás de la casa.",
-        "Сад находится за домом."
-      ],
-      [
-        "La mochila está detrás de la puerta.",
-        "Рюкзак находится за дверью."
-      ]
-    ],
-    "cloze": "El jardín está ___ la casa.",
-    "clozeAnswers": [
-      "detrás de",
-      "detras de"
-    ],
-    "meta": {
-      "categoryTitle": "Составные",
-      "categoryOrder": 3,
-      "allCategoryTitle": "Все предлоги"
-    }
-  },
-  {
-    "id": "cerca",
-    "cat": "compound",
-    "word": "cerca de",
-    "base": "cerca de",
-    "gender": "составной предлог",
-    "tr": "рядом с, недалеко от",
-    "ru": [
-      "рядом с",
-      "недалеко от"
-    ],
-    "answers": [
-      "cerca de"
-    ],
-    "art": null,
-    "examples": [
-      [
-        "Vivo cerca del metro.",
-        "Я живу рядом с метро."
-      ],
-      [
-        "La farmacia está cerca de casa.",
-        "Аптека находится недалеко от дома."
-      ]
-    ],
-    "cloze": "Vivo ___ metro.",
-    "clozeAnswers": [
-      "cerca del"
-    ],
-    "meta": {
-      "categoryTitle": "Составные",
-      "categoryOrder": 3,
-      "allCategoryTitle": "Все предлоги"
-    }
-  },
-  {
-    "id": "lejos",
-    "cat": "compound",
-    "word": "lejos de",
-    "base": "lejos de",
-    "gender": "составной предлог",
-    "tr": "далеко от",
-    "ru": [
-      "далеко от"
-    ],
-    "answers": [
-      "lejos de"
-    ],
-    "art": null,
-    "examples": [
-      [
-        "El aeropuerto está lejos del centro.",
-        "Аэропорт находится далеко от центра."
-      ],
-      [
-        "Vivimos lejos de la escuela.",
-        "Мы живём далеко от школы."
-      ]
-    ],
-    "cloze": "Vivimos ___ la escuela.",
-    "clozeAnswers": [
-      "lejos de"
-    ],
-    "meta": {
-      "categoryTitle": "Составные",
-      "categoryOrder": 3,
-      "allCategoryTitle": "Все предлоги"
-    }
-  },
-  {
     "id": "entre",
     "cat": "place",
     "word": "entre",
@@ -564,6 +390,388 @@ const STUDY_ITEMS = [
     "meta": {
       "categoryTitle": "Место",
       "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "bajo",
+    "cat": "place",
+    "word": "bajo",
+    "base": "bajo",
+    "gender": "простой предлог",
+    "tr": "под",
+    "ru": [
+      "под"
+    ],
+    "answers": [
+      "bajo"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "El gato duerme bajo la mesa.",
+        "Кот спит под столом."
+      ],
+      [
+        "Estamos bajo la lluvia.",
+        "Мы под дождем."
+      ]
+    ],
+    "cloze": "El gato duerme ___ la mesa.",
+    "clozeAnswers": [
+      "bajo"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "delante",
+    "cat": "place",
+    "word": "delante de",
+    "base": "delante de",
+    "gender": "составной предлог",
+    "tr": "перед, впереди",
+    "ru": [
+      "перед",
+      "впереди"
+    ],
+    "answers": [
+      "delante de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "Hay un parque delante de mi casa.",
+        "Перед моим домом есть парк."
+      ],
+      [
+        "Ponte delante de mí.",
+        "Встань передо мной."
+      ]
+    ],
+    "cloze": "Hay un parque ___ mi casa.",
+    "clozeAnswers": [
+      "delante de"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "detras",
+    "cat": "place",
+    "word": "detrás de",
+    "base": "detrás de",
+    "gender": "составной предлог",
+    "tr": "за, позади",
+    "ru": [
+      "за",
+      "позади"
+    ],
+    "answers": [
+      "detrás de",
+      "detras de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "La llave está detrás de la puerta.",
+        "Ключ за дверью."
+      ],
+      [
+        "El sol se esconde detrás de las montañas.",
+        "Солнце прячется за горами."
+      ]
+    ],
+    "cloze": "La llave está ___ la puerta.",
+    "clozeAnswers": [
+      "detrás de",
+      "detras de"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "al_lado",
+    "cat": "place",
+    "word": "al lado de",
+    "base": "al lado de",
+    "gender": "составной предлог",
+    "tr": "рядом с, около",
+    "ru": [
+      "рядом с",
+      "около"
+    ],
+    "answers": [
+      "al lado de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "La farmacia está al lado del banco.",
+        "Аптека находится рядом с банком."
+      ],
+      [
+        "Siéntate al lado de mí.",
+        "Сядь рядом со мной."
+      ]
+    ],
+    "cloze": "La farmacia está ___ banco.",
+    "clozeAnswers": [
+      "al lado del"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "dentro",
+    "cat": "place",
+    "word": "dentro de",
+    "base": "dentro de",
+    "gender": "составной предлог",
+    "tr": "внутри, в",
+    "ru": [
+      "внутри",
+      "в"
+    ],
+    "answers": [
+      "dentro de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "El libro está dentro de la mochila.",
+        "Книга внутри рюкзака."
+      ],
+      [
+        "Estamos dentro del edificio.",
+        "Мы внутри здания."
+      ]
+    ],
+    "cloze": "El libro está ___ la mochila.",
+    "clozeAnswers": [
+      "dentro de"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "fuera",
+    "cat": "place",
+    "word": "fuera de",
+    "base": "fuera de",
+    "gender": "составной предлог",
+    "tr": "снаружи, за пределами",
+    "ru": [
+      "снаружи",
+      "за пределами"
+    ],
+    "answers": [
+      "fuera de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "El perro espera fuera de la tienda.",
+        "Собака ждет снаружи магазина."
+      ],
+      [
+        "Está fuera de peligro.",
+        "Он вне опасности."
+      ]
+    ],
+    "cloze": "El perro espera ___ la tienda.",
+    "clozeAnswers": [
+      "fuera de"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "izquierda",
+    "cat": "place",
+    "word": "a la izquierda de",
+    "base": "a la izquierda de",
+    "gender": "составной предлог",
+    "tr": "слева от",
+    "ru": [
+      "слева от"
+    ],
+    "answers": [
+      "a la izquierda de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "La taza está a la izquierda del plato.",
+        "Чашка слева от тарелки."
+      ],
+      [
+        "Gira a la izquierda de la plaza.",
+        "Поверни налево от площади."
+      ]
+    ],
+    "cloze": "La taza está ___ plato.",
+    "clozeAnswers": [
+      "a la izquierda del"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "derecha",
+    "cat": "place",
+    "word": "a la derecha de",
+    "base": "a la derecha de",
+    "gender": "составной предлог",
+    "tr": "справа от",
+    "ru": [
+      "справа от"
+    ],
+    "answers": [
+      "a la derecha de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "El baño está a la derecha del pasillo.",
+        "Ванная комната справа по коридору."
+      ],
+      [
+        "Mira a la derecha de la casa.",
+        "Посмотри направо от дома."
+      ]
+    ],
+    "cloze": "El baño está ___ pasillo.",
+    "clozeAnswers": [
+      "a la derecha del"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "cerca",
+    "cat": "place",
+    "word": "cerca de",
+    "base": "cerca de",
+    "gender": "составной предлог",
+    "tr": "близко к, около",
+    "ru": [
+      "близко к",
+      "около"
+    ],
+    "answers": [
+      "cerca de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "Vivo muy cerca del metro.",
+        "Я живу очень близко к метро."
+      ],
+      [
+        "Hay una cafetería cerca de aquí.",
+        "Здесь рядом есть кофейня."
+      ]
+    ],
+    "cloze": "Vivo muy ___ metro.",
+    "clozeAnswers": [
+      "cerca del"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "lejos",
+    "cat": "place",
+    "word": "lejos de",
+    "base": "lejos de",
+    "gender": "составной предлог",
+    "tr": "далеко от",
+    "ru": [
+      "далеко от"
+    ],
+    "answers": [
+      "lejos de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "La playa está lejos del centro.",
+        "Пляж находится далеко от центра."
+      ],
+      [
+        "No vayas lejos de casa.",
+        "Не уходи далеко от дома."
+      ]
+    ],
+    "cloze": "La playa está ___ centro.",
+    "clozeAnswers": [
+      "lejos del"
+    ],
+    "meta": {
+      "categoryTitle": "Место",
+      "categoryOrder": 2,
+      "allCategoryTitle": "Все предлоги"
+    }
+  },
+  {
+    "id": "debajo",
+    "cat": "compound",
+    "word": "debajo de",
+    "base": "debajo de",
+    "gender": "составной предлог",
+    "tr": "под",
+    "ru": [
+      "под"
+    ],
+    "answers": [
+      "debajo de"
+    ],
+    "art": null,
+    "examples": [
+      [
+        "El gato está debajo de la mesa.",
+        "Кот находится под столом."
+      ],
+      [
+        "Los zapatos están debajo de la cama.",
+        "Туфли находятся под кроватью."
+      ]
+    ],
+    "cloze": "El gato está ___ la mesa.",
+    "clozeAnswers": [
+      "debajo de"
+    ],
+    "meta": {
+      "categoryTitle": "Составные",
+      "categoryOrder": 3,
       "allCategoryTitle": "Все предлоги"
     }
   },
@@ -1186,144 +1394,6 @@ const EXERCISES = [
     "e": "El gato está debajo de la mesa. — Кот находится под столом."
   },
   {
-    "id": "study_prepositions_delante_es",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Вспомни",
-    "q": "Переведи на испанский: перед.",
-    "a": [
-      "delante de"
-    ],
-    "e": "Правильный вариант: delante de."
-  },
-  {
-    "id": "study_prepositions_delante_ru",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Узнай",
-    "q": "Переведи на русский: delante de.",
-    "a": [
-      "перед"
-    ],
-    "e": "delante de — перед."
-  },
-  {
-    "id": "study_prepositions_delante_ctx",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Машина стоит перед домом.»: El coche está ___ la casa.",
-    "a": [
-      "delante de"
-    ],
-    "e": "El coche está delante de la casa. — Машина стоит перед домом."
-  },
-  {
-    "id": "study_prepositions_detras_es",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Вспомни",
-    "q": "Переведи на испанский: за, позади.",
-    "a": [
-      "detrás de",
-      "detras de"
-    ],
-    "e": "Правильный вариант: detrás de."
-  },
-  {
-    "id": "study_prepositions_detras_ru",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Узнай",
-    "q": "Переведи на русский: detrás de.",
-    "a": [
-      "за",
-      "позади",
-      "за, позади"
-    ],
-    "e": "detrás de — за, позади."
-  },
-  {
-    "id": "study_prepositions_detras_ctx",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Сад находится за домом.»: El jardín está ___ la casa.",
-    "a": [
-      "detrás de",
-      "detras de"
-    ],
-    "e": "El jardín está detrás de la casa. — Сад находится за домом."
-  },
-  {
-    "id": "study_prepositions_cerca_es",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Вспомни",
-    "q": "Переведи на испанский: рядом с, недалеко от.",
-    "a": [
-      "cerca de"
-    ],
-    "e": "Правильный вариант: cerca de."
-  },
-  {
-    "id": "study_prepositions_cerca_ru",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Узнай",
-    "q": "Переведи на русский: cerca de.",
-    "a": [
-      "рядом с",
-      "недалеко от",
-      "рядом с, недалеко от"
-    ],
-    "e": "cerca de — рядом с, недалеко от."
-  },
-  {
-    "id": "study_prepositions_cerca_ctx",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Я живу рядом с метро.»: Vivo ___ metro.",
-    "a": [
-      "cerca del"
-    ],
-    "e": "Vivo cerca del metro. — Я живу рядом с метро."
-  },
-  {
-    "id": "study_prepositions_lejos_es",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Вспомни",
-    "q": "Переведи на испанский: далеко от.",
-    "a": [
-      "lejos de"
-    ],
-    "e": "Правильный вариант: lejos de."
-  },
-  {
-    "id": "study_prepositions_lejos_ru",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "Узнай",
-    "q": "Переведи на русский: lejos de.",
-    "a": [
-      "далеко от"
-    ],
-    "e": "lejos de — далеко от."
-  },
-  {
-    "id": "study_prepositions_lejos_ctx",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "skill": "В контексте",
-    "q": "Вставь пропущенную часть по переводу «Аэропорт находится далеко от центра.»: Vivimos ___ la escuela.",
-    "a": [
-      "lejos de"
-    ],
-    "e": "El aeropuerto está lejos del centro. — Аэропорт находится далеко от центра."
-  },
-  {
     "id": "study_prepositions_entre_es",
     "topic": "prepositions",
     "foodCat": "place",
@@ -1592,78 +1662,6 @@ const EXERCISES = [
     "e": "debajo de — под."
   },
   {
-    "id": "choice_prepositions_delante",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "choice",
-    "skill": "Быстрый тест",
-    "q": "Выбери испанский вариант: перед.",
-    "a": [
-      "delante de"
-    ],
-    "options": [
-      "delante de",
-      "detrás de",
-      "cerca de",
-      "lejos de"
-    ],
-    "e": "delante de — перед."
-  },
-  {
-    "id": "choice_prepositions_detras",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "choice",
-    "skill": "Быстрый тест",
-    "q": "Выбери испанский вариант: за, позади.",
-    "a": [
-      "detrás de"
-    ],
-    "options": [
-      "detrás de",
-      "cerca de",
-      "lejos de",
-      "junto a"
-    ],
-    "e": "detrás de — за, позади."
-  },
-  {
-    "id": "choice_prepositions_cerca",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "choice",
-    "skill": "Быстрый тест",
-    "q": "Выбери испанский вариант: рядом с, недалеко от.",
-    "a": [
-      "cerca de"
-    ],
-    "options": [
-      "cerca de",
-      "lejos de",
-      "junto a",
-      "debajo de"
-    ],
-    "e": "cerca de — рядом с, недалеко от."
-  },
-  {
-    "id": "choice_prepositions_lejos",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "choice",
-    "skill": "Быстрый тест",
-    "q": "Выбери испанский вариант: далеко от.",
-    "a": [
-      "lejos de"
-    ],
-    "options": [
-      "lejos de",
-      "junto a",
-      "debajo de",
-      "delante de"
-    ],
-    "e": "lejos de — далеко от."
-  },
-  {
     "id": "choice_prepositions_entre",
     "topic": "prepositions",
     "foodCat": "place",
@@ -1843,58 +1841,6 @@ const EXERCISES = [
     "e": "Кот находится под столом."
   },
   {
-    "id": "audio_prepositions_delante",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "audio",
-    "skill": "Аудиодиктант",
-    "q": "Прослушай и запиши предложение по-испански.",
-    "audio": "El coche está delante de la casa.",
-    "a": [
-      "El coche está delante de la casa."
-    ],
-    "e": "Машина стоит перед домом."
-  },
-  {
-    "id": "audio_prepositions_detras",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "audio",
-    "skill": "Аудиодиктант",
-    "q": "Прослушай и запиши предложение по-испански.",
-    "audio": "El jardín está detrás de la casa.",
-    "a": [
-      "El jardín está detrás de la casa."
-    ],
-    "e": "Сад находится за домом."
-  },
-  {
-    "id": "audio_prepositions_cerca",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "audio",
-    "skill": "Аудиодиктант",
-    "q": "Прослушай и запиши предложение по-испански.",
-    "audio": "Vivo cerca del metro.",
-    "a": [
-      "Vivo cerca del metro."
-    ],
-    "e": "Я живу рядом с метро."
-  },
-  {
-    "id": "audio_prepositions_lejos",
-    "topic": "prepositions",
-    "foodCat": "compound",
-    "type": "audio",
-    "skill": "Аудиодиктант",
-    "q": "Прослушай и запиши предложение по-испански.",
-    "audio": "El aeropuerto está lejos del centro.",
-    "a": [
-      "El aeropuerto está lejos del centro."
-    ],
-    "e": "Аэропорт находится далеко от центра."
-  },
-  {
     "id": "audio_prepositions_entre",
     "topic": "prepositions",
     "foodCat": "place",
@@ -1919,6 +1865,902 @@ const EXERCISES = [
       "La parada está junto al banco."
     ],
     "e": "Остановка находится рядом с банком."
+  },
+  {
+    "id": "study_prepositions_bajo_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: под.",
+    "a": [
+      "bajo"
+    ],
+    "e": "Правильный вариант: bajo."
+  },
+  {
+    "id": "study_prepositions_bajo_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: bajo.",
+    "a": [
+      "под"
+    ],
+    "e": "bajo — под."
+  },
+  {
+    "id": "study_prepositions_bajo_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Кот спит под столом.»: El gato duerme ___ la mesa.",
+    "a": [
+      "bajo"
+    ],
+    "e": "El gato duerme bajo la mesa. — Кот спит под столом."
+  },
+  {
+    "id": "study_prepositions_bajo_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Мы под дождем.»: Estamos ___ la lluvia.",
+    "a": [
+      "bajo"
+    ],
+    "e": "Estamos bajo la lluvia. — Мы под дождем."
+  },
+  {
+    "id": "choice_prepositions_bajo",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: под.",
+    "a": [
+      "bajo"
+    ],
+    "options": [
+      "bajo",
+      "delante de",
+      "detrás de",
+      "al lado de"
+    ],
+    "e": "bajo — под."
+  },
+  {
+    "id": "audio_prepositions_bajo",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "El gato duerme bajo la mesa.",
+    "a": [
+      "El gato duerme bajo la mesa."
+    ],
+    "e": "Кот спит под столом."
+  },
+  {
+    "id": "audio_prepositions_bajo_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Estamos bajo la lluvia.",
+    "a": [
+      "Estamos bajo la lluvia."
+    ],
+    "e": "Мы под дождем."
+  },
+  {
+    "id": "study_prepositions_delante_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: перед, впереди.",
+    "a": [
+      "delante de"
+    ],
+    "e": "Правильный вариант: delante de."
+  },
+  {
+    "id": "study_prepositions_delante_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: delante de.",
+    "a": [
+      "перед",
+      "впереди",
+      "перед, впереди"
+    ],
+    "e": "delante de — перед, впереди."
+  },
+  {
+    "id": "study_prepositions_delante_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Перед моим домом есть парк.»: Hay un parque ___ mi casa.",
+    "a": [
+      "delante de"
+    ],
+    "e": "Hay un parque delante de mi casa. — Перед моим домом есть парк."
+  },
+  {
+    "id": "study_prepositions_delante_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Встань передо мной.»: Ponte ___ mí.",
+    "a": [
+      "delante de"
+    ],
+    "e": "Ponte delante de mí. — Встань передо мной."
+  },
+  {
+    "id": "choice_prepositions_delante",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: перед, впереди.",
+    "a": [
+      "delante de"
+    ],
+    "options": [
+      "delante de",
+      "detrás de",
+      "al lado de",
+      "dentro de"
+    ],
+    "e": "delante de — перед, впереди."
+  },
+  {
+    "id": "audio_prepositions_delante",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Hay un parque delante de mi casa.",
+    "a": [
+      "Hay un parque delante de mi casa."
+    ],
+    "e": "Перед моим домом есть парк."
+  },
+  {
+    "id": "audio_prepositions_delante_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Ponte delante de mí.",
+    "a": [
+      "Ponte delante de mí."
+    ],
+    "e": "Встань передо мной."
+  },
+  {
+    "id": "study_prepositions_detras_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: за, позади.",
+    "a": [
+      "detrás de",
+      "detras de"
+    ],
+    "e": "Правильный вариант: detrás de."
+  },
+  {
+    "id": "study_prepositions_detras_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: detrás de.",
+    "a": [
+      "за",
+      "позади",
+      "за, позади"
+    ],
+    "e": "detrás de — за, позади."
+  },
+  {
+    "id": "study_prepositions_detras_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Ключ за дверью.»: La llave está ___ la puerta.",
+    "a": [
+      "detrás de",
+      "detras de"
+    ],
+    "e": "La llave está detrás de la puerta. — Ключ за дверью."
+  },
+  {
+    "id": "study_prepositions_detras_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Солнце прячется за горами.»: El sol se esconde ___ las montañas.",
+    "a": [
+      "detrás de",
+      "detras de"
+    ],
+    "e": "El sol se esconde detrás de las montañas. — Солнце прячется за горами."
+  },
+  {
+    "id": "choice_prepositions_detras",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: за, позади.",
+    "a": [
+      "detrás de",
+      "detras de"
+    ],
+    "options": [
+      "detrás de",
+      "al lado de",
+      "dentro de",
+      "fuera de"
+    ],
+    "e": "detrás de — за, позади."
+  },
+  {
+    "id": "audio_prepositions_detras",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "La llave está detrás de la puerta.",
+    "a": [
+      "La llave está detrás de la puerta."
+    ],
+    "e": "Ключ за дверью."
+  },
+  {
+    "id": "audio_prepositions_detras_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "El sol se esconde detrás de las montañas.",
+    "a": [
+      "El sol se esconde detrás de las montañas."
+    ],
+    "e": "Солнце прячется за горами."
+  },
+  {
+    "id": "study_prepositions_al_lado_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: рядом с, около.",
+    "a": [
+      "al lado de"
+    ],
+    "e": "Правильный вариант: al lado de."
+  },
+  {
+    "id": "study_prepositions_al_lado_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: al lado de.",
+    "a": [
+      "рядом с",
+      "около",
+      "рядом с, около"
+    ],
+    "e": "al lado de — рядом с, около."
+  },
+  {
+    "id": "study_prepositions_al_lado_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Аптека находится рядом с банком.»: La farmacia está ___ banco.",
+    "a": [
+      "al lado del"
+    ],
+    "e": "La farmacia está al lado del banco. — Аптека находится рядом с банком."
+  },
+  {
+    "id": "study_prepositions_al_lado_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Сядь рядом со мной.»: Siéntate ___ mí.",
+    "a": [
+      "al lado de"
+    ],
+    "e": "Siéntate al lado de mí. — Сядь рядом со мной."
+  },
+  {
+    "id": "choice_prepositions_al_lado",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: рядом с, около.",
+    "a": [
+      "al lado de"
+    ],
+    "options": [
+      "al lado de",
+      "dentro de",
+      "fuera de",
+      "a la izquierda de"
+    ],
+    "e": "al lado de — рядом с, около."
+  },
+  {
+    "id": "audio_prepositions_al_lado",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "La farmacia está al lado del banco.",
+    "a": [
+      "La farmacia está al lado del banco."
+    ],
+    "e": "Аптека находится рядом с банком."
+  },
+  {
+    "id": "audio_prepositions_al_lado_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Siéntate al lado de mí.",
+    "a": [
+      "Siéntate al lado de mí."
+    ],
+    "e": "Сядь рядом со мной."
+  },
+  {
+    "id": "study_prepositions_dentro_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: внутри, в.",
+    "a": [
+      "dentro de"
+    ],
+    "e": "Правильный вариант: dentro de."
+  },
+  {
+    "id": "study_prepositions_dentro_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: dentro de.",
+    "a": [
+      "внутри",
+      "в",
+      "внутри, в"
+    ],
+    "e": "dentro de — внутри, в."
+  },
+  {
+    "id": "study_prepositions_dentro_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Книга внутри рюкзака.»: El libro está ___ la mochila.",
+    "a": [
+      "dentro de"
+    ],
+    "e": "El libro está dentro de la mochila. — Книга внутри рюкзака."
+  },
+  {
+    "id": "study_prepositions_dentro_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Мы внутри здания.»: Estamos ___ edificio.",
+    "a": [
+      "dentro del"
+    ],
+    "e": "Estamos dentro del edificio. — Мы внутри здания."
+  },
+  {
+    "id": "choice_prepositions_dentro",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: внутри, в.",
+    "a": [
+      "dentro de"
+    ],
+    "options": [
+      "dentro de",
+      "fuera de",
+      "a la izquierda de",
+      "a la derecha de"
+    ],
+    "e": "dentro de — внутри, в."
+  },
+  {
+    "id": "audio_prepositions_dentro",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "El libro está dentro de la mochila.",
+    "a": [
+      "El libro está dentro de la mochila."
+    ],
+    "e": "Книга внутри рюкзака."
+  },
+  {
+    "id": "audio_prepositions_dentro_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Estamos dentro del edificio.",
+    "a": [
+      "Estamos dentro del edificio."
+    ],
+    "e": "Мы внутри здания."
+  },
+  {
+    "id": "study_prepositions_fuera_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: снаружи, за пределами.",
+    "a": [
+      "fuera de"
+    ],
+    "e": "Правильный вариант: fuera de."
+  },
+  {
+    "id": "study_prepositions_fuera_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: fuera de.",
+    "a": [
+      "снаружи",
+      "за пределами",
+      "снаружи, за пределами"
+    ],
+    "e": "fuera de — снаружи, за пределами."
+  },
+  {
+    "id": "study_prepositions_fuera_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Собака ждет снаружи магазина.»: El perro espera ___ la tienda.",
+    "a": [
+      "fuera de"
+    ],
+    "e": "El perro espera fuera de la tienda. — Собака ждет снаружи магазина."
+  },
+  {
+    "id": "study_prepositions_fuera_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Он вне опасности.»: Está ___ peligro.",
+    "a": [
+      "fuera de"
+    ],
+    "e": "Está fuera de peligro. — Он вне опасности."
+  },
+  {
+    "id": "choice_prepositions_fuera",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: снаружи, за пределами.",
+    "a": [
+      "fuera de"
+    ],
+    "options": [
+      "fuera de",
+      "a la izquierda de",
+      "a la derecha de",
+      "cerca de"
+    ],
+    "e": "fuera de — снаружи, за пределами."
+  },
+  {
+    "id": "audio_prepositions_fuera",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "El perro espera fuera de la tienda.",
+    "a": [
+      "El perro espera fuera de la tienda."
+    ],
+    "e": "Собака ждет снаружи магазина."
+  },
+  {
+    "id": "audio_prepositions_fuera_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Está fuera de peligro.",
+    "a": [
+      "Está fuera de peligro."
+    ],
+    "e": "Он вне опасности."
+  },
+  {
+    "id": "study_prepositions_izquierda_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: слева от.",
+    "a": [
+      "a la izquierda de"
+    ],
+    "e": "Правильный вариант: a la izquierda de."
+  },
+  {
+    "id": "study_prepositions_izquierda_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: a la izquierda de.",
+    "a": [
+      "слева от"
+    ],
+    "e": "a la izquierda de — слева от."
+  },
+  {
+    "id": "study_prepositions_izquierda_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Чашка слева от тарелки.»: La taza está ___ plato.",
+    "a": [
+      "a la izquierda del"
+    ],
+    "e": "La taza está a la izquierda del plato. — Чашка слева от тарелки."
+  },
+  {
+    "id": "study_prepositions_izquierda_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Поверни налево от площади.»: Gira ___ plaza.",
+    "a": [
+      "a la izquierda de la"
+    ],
+    "e": "Gira a la izquierda de la plaza. — Поверни налево от площади."
+  },
+  {
+    "id": "choice_prepositions_izquierda",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: слева от.",
+    "a": [
+      "a la izquierda de"
+    ],
+    "options": [
+      "a la izquierda de",
+      "a la derecha de",
+      "cerca de",
+      "lejos de"
+    ],
+    "e": "a la izquierda de — слева от."
+  },
+  {
+    "id": "audio_prepositions_izquierda",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "La taza está a la izquierda del plato.",
+    "a": [
+      "La taza está a la izquierda del plato."
+    ],
+    "e": "Чашка слева от тарелки."
+  },
+  {
+    "id": "audio_prepositions_izquierda_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Gira a la izquierda de la plaza.",
+    "a": [
+      "Gira a la izquierda de la plaza."
+    ],
+    "e": "Поверни налево от площади."
+  },
+  {
+    "id": "study_prepositions_derecha_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: справа от.",
+    "a": [
+      "a la derecha de"
+    ],
+    "e": "Правильный вариант: a la derecha de."
+  },
+  {
+    "id": "study_prepositions_derecha_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: a la derecha de.",
+    "a": [
+      "справа от"
+    ],
+    "e": "a la derecha de — справа от."
+  },
+  {
+    "id": "study_prepositions_derecha_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Ванная комната справа по коридору.»: El baño está ___ pasillo.",
+    "a": [
+      "a la derecha del"
+    ],
+    "e": "El baño está a la derecha del pasillo. — Ванная комната справа по коридору."
+  },
+  {
+    "id": "study_prepositions_derecha_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Посмотри направо от дома.»: Mira ___ casa.",
+    "a": [
+      "a la derecha de la"
+    ],
+    "e": "Mira a la derecha de la casa. — Посмотри направо от дома."
+  },
+  {
+    "id": "choice_prepositions_derecha",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: справа от.",
+    "a": [
+      "a la derecha de"
+    ],
+    "options": [
+      "a la derecha de",
+      "cerca de",
+      "lejos de",
+      "sobre"
+    ],
+    "e": "a la derecha de — справа от."
+  },
+  {
+    "id": "audio_prepositions_derecha",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "El baño está a la derecha del pasillo.",
+    "a": [
+      "El baño está a la derecha del pasillo."
+    ],
+    "e": "Ванная комната справа по коридору."
+  },
+  {
+    "id": "audio_prepositions_derecha_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Mira a la derecha de la casa.",
+    "a": [
+      "Mira a la derecha de la casa."
+    ],
+    "e": "Посмотри направо от дома."
+  },
+  {
+    "id": "study_prepositions_cerca_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: близко к, около.",
+    "a": [
+      "cerca de"
+    ],
+    "e": "Правильный вариант: cerca de."
+  },
+  {
+    "id": "study_prepositions_cerca_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: cerca de.",
+    "a": [
+      "близко к",
+      "около",
+      "близко к, около"
+    ],
+    "e": "cerca de — близко к, около."
+  },
+  {
+    "id": "study_prepositions_cerca_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Я живу очень близко к метро.»: Vivo muy ___ metro.",
+    "a": [
+      "cerca del"
+    ],
+    "e": "Vivo muy cerca del metro. — Я живу очень близко к метро."
+  },
+  {
+    "id": "study_prepositions_cerca_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Здесь рядом есть кофейня.»: Hay una cafetería ___ aquí.",
+    "a": [
+      "cerca de"
+    ],
+    "e": "Hay una cafetería cerca de aquí. — Здесь рядом есть кофейня."
+  },
+  {
+    "id": "choice_prepositions_cerca",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: близко к, около.",
+    "a": [
+      "cerca de"
+    ],
+    "options": [
+      "cerca de",
+      "lejos de",
+      "sobre",
+      "entre"
+    ],
+    "e": "cerca de — близко к, около."
+  },
+  {
+    "id": "audio_prepositions_cerca",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Vivo muy cerca del metro.",
+    "a": [
+      "Vivo muy cerca del metro."
+    ],
+    "e": "Я живу очень близко к метро."
+  },
+  {
+    "id": "audio_prepositions_cerca_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "Hay una cafetería cerca de aquí.",
+    "a": [
+      "Hay una cafetería cerca de aquí."
+    ],
+    "e": "Здесь рядом есть кофейня."
+  },
+  {
+    "id": "study_prepositions_lejos_es",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Вспомни",
+    "q": "Переведи на испанский: далеко от.",
+    "a": [
+      "lejos de"
+    ],
+    "e": "Правильный вариант: lejos de."
+  },
+  {
+    "id": "study_prepositions_lejos_ru",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "Узнай",
+    "q": "Переведи на русский: lejos de.",
+    "a": [
+      "далеко от"
+    ],
+    "e": "lejos de — далеко от."
+  },
+  {
+    "id": "study_prepositions_lejos_ctx",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Пляж находится далеко от центра.»: La playa está ___ centro.",
+    "a": [
+      "lejos del"
+    ],
+    "e": "La playa está lejos del centro. — Пляж находится далеко от центра."
+  },
+  {
+    "id": "study_prepositions_lejos_ctx2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "skill": "В контексте",
+    "q": "Вставь пропущенную часть по переводу «Не уходи далеко от дома.»: No vayas ___ casa.",
+    "a": [
+      "lejos de"
+    ],
+    "e": "No vayas lejos de casa. — Не уходи далеко от дома."
+  },
+  {
+    "id": "choice_prepositions_lejos",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "choice",
+    "skill": "Быстрый тест",
+    "q": "Выбери испанский вариант: далеко от.",
+    "a": [
+      "lejos de"
+    ],
+    "options": [
+      "lejos de",
+      "sobre",
+      "entre",
+      "bajo"
+    ],
+    "e": "lejos de — далеко от."
+  },
+  {
+    "id": "audio_prepositions_lejos",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "La playa está lejos del centro.",
+    "a": [
+      "La playa está lejos del centro."
+    ],
+    "e": "Пляж находится далеко от центра."
+  },
+  {
+    "id": "audio_prepositions_lejos_2",
+    "topic": "prepositions",
+    "foodCat": "place",
+    "type": "audio",
+    "skill": "Аудиодиктант",
+    "q": "Прослушай и запиши предложение по-испански.",
+    "audio": "No vayas lejos de casa.",
+    "a": [
+      "No vayas lejos de casa."
+    ],
+    "e": "Не уходи далеко от дома."
   },
   {
     "id": "compare_por_para",
@@ -1985,25 +2827,35 @@ const EXERCISES = [
         "category": "place"
       },
       {
+        "id": "prepositions_0_place_bajo",
+        "text": "bajo",
+        "category": "place"
+      },
+      {
+        "id": "prepositions_0_place_delante",
+        "text": "delante de",
+        "category": "place"
+      },
+      {
+        "id": "prepositions_0_place_al_lado",
+        "text": "al lado de",
+        "category": "place"
+      },
+      {
         "id": "prepositions_0_compound_debajo",
         "text": "debajo de",
         "category": "compound"
       },
       {
-        "id": "prepositions_0_compound_delante",
-        "text": "delante de",
-        "category": "compound"
-      },
-      {
-        "id": "prepositions_0_compound_detras",
-        "text": "detrás de",
+        "id": "prepositions_0_compound_junto",
+        "text": "junto a",
         "category": "compound"
       }
     ],
     "a": [
-      "basic | basic | basic | place | place | compound | compound | compound"
+      "basic | basic | basic | place | place | place | place | place | compound | compound"
     ],
-    "displayAnswer": "Основные: a, al, de · Место: sobre, entre · Составные: debajo de, delante de, detrás de",
+    "displayAnswer": "Основные: a, al, de · Место: sobre, entre, bajo, delante de, al lado de · Составные: debajo de, junto a",
     "e": "Категории не пересекаются внутри этого задания; каждое слово используется один раз."
   }
 ];

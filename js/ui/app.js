@@ -48,7 +48,7 @@ import { load, save } from "../core/storage.js";
   import { constructionsTopic } from "../topics/constructions.js?v=20260927-topic-emoji1";
   import { gustarTopic } from "../topics/gustar.js?v=20260927-topic-emoji1";
   import { agreementTopic } from "../topics/agreement.js?v=20260927-topic-emoji1";
-  import { prepositionsTopic } from "../topics/prepositions.js?v=20260927-topic-emoji1";
+  import { prepositionsTopic } from "../topics/prepositions.js?v=20260929-prepositions-place12";
   import { connectorsTopic } from "../topics/connectors.js?v=20260927-topic-emoji1";
   import { pastTopic } from "../topics/past.js?v=20260927-topic-emoji1";
   import { routineTopic } from "../topics/routine.js?v=20260927-topic-emoji1";
