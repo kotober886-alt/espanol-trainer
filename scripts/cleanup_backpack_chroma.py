@@ -39,6 +39,19 @@ def chroma_masks(rgba: np.ndarray):
     alpha = rgba[..., 3]
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
 
+    pure = (
+        (alpha > 8)
+        & (g >= 245)
+        & (r <= 20)
+        & (b <= 20)
+    )
+    exactish = (
+        (alpha > 8)
+        & (g > 220)
+        & (r < 55)
+        & (b < 55)
+        & ((g - np.maximum(r, b)) > 165)
+    )
     strict = (
         (alpha > 8)
         & (g > STRICT_G_MIN)
@@ -52,8 +65,7 @@ def chroma_masks(rgba: np.ndarray):
         & (b < BROAD_B_MAX)
         & ((g - np.maximum(r, b)) > BROAD_DOMINANCE)
     )
-    return strict, broad
-
+    return pure, exactish, strict, broad
 
 def border_connected(strict: np.ndarray, broad: np.ndarray) -> np.ndarray:
     h, w = strict.shape
@@ -82,6 +94,78 @@ def border_connected(strict: np.ndarray, broad: np.ndarray) -> np.ndarray:
                 queue.append((ny, nx))
     return connected
 
+
+def flood_from_seeds(seeds: np.ndarray, allowed: np.ndarray) -> np.ndarray:
+    h, w = seeds.shape
+    connected = np.zeros((h, w), dtype=bool)
+    queue: deque[tuple[int, int]] = deque()
+    ys, xs = np.nonzero(seeds)
+    for y, x in zip(ys.tolist(), xs.tolist()):
+        if not connected[y, x]:
+            connected[y, x] = True
+            queue.append((y, x))
+
+    while queue:
+        y, x = queue.popleft()
+        for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+            if 0 <= ny < h and 0 <= nx < w and allowed[ny, nx] and not connected[ny, nx]:
+                connected[ny, nx] = True
+                queue.append((ny, nx))
+    return connected
+
+
+def internal_chroma_islands(exactish: np.ndarray, strict: np.ndarray, broad: np.ndarray) -> np.ndarray:
+    """Catch large enclosed chroma fields such as the hole inside the headphones trophy."""
+    h, w = exactish.shape
+    seen = np.zeros((h, w), dtype=bool)
+    selected = np.zeros((h, w), dtype=bool)
+    min_area = max(220, int(h * w * 0.03))
+
+    ys, xs = np.nonzero(exactish)
+    for sy, sx in zip(ys.tolist(), xs.tolist()):
+        if seen[sy, sx]:
+            continue
+        queue = deque([(sy, sx)])
+        seen[sy, sx] = True
+        component = []
+        while queue:
+            y, x = queue.popleft()
+            component.append((y, x))
+            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+                if 0 <= ny < h and 0 <= nx < w and exactish[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    queue.append((ny, nx))
+        if len(component) < min_area:
+            continue
+        seeds = np.zeros((h, w), dtype=bool)
+        for y, x in component:
+            seeds[y, x] = True
+        grown = flood_from_seeds(seeds, broad)
+        grown_count = int(np.count_nonzero(grown))
+        strict_fraction = float(np.count_nonzero(grown & strict) / max(1, grown_count))
+        if strict_fraction >= 0.70:
+            selected |= grown
+    return selected
+
+
+def edge_chroma_halo(rgba: np.ndarray, pure: np.ndarray, strict: np.ndarray) -> np.ndarray:
+    """Remove near-#00FF00 fringe touching transparency without erasing ordinary green object details."""
+    transparent = rgba[..., 3] < 16
+    near_transparent = dilate(transparent, 5)
+    seeds = pure & near_transparent
+    if not np.any(seeds):
+        return np.zeros_like(seeds)
+    grown = flood_from_seeds(seeds, strict)
+    return grown & dilate(transparent, 7)
+
+
+def combined_chroma_mask(rgba: np.ndarray):
+    pure, exactish, strict, broad = chroma_masks(rgba)
+    border = border_connected(strict, broad)
+    islands = internal_chroma_islands(exactish, strict, broad)
+    halo = edge_chroma_halo(rgba, pure, strict)
+    combined = border | islands | halo
+    return pure, exactish, strict, broad, combined, islands, halo
 
 def dilate(mask: np.ndarray, size: int) -> np.ndarray:
     image = Image.fromarray((mask.astype(np.uint8) * 255), mode="L")
@@ -133,15 +217,18 @@ def border_opaque_ratio(alpha: np.ndarray) -> float:
 def asset_stats(path: Path):
     with Image.open(path) as im:
         rgba = np.asarray(im.convert("RGBA"), dtype=np.uint8)
-    strict, broad = chroma_masks(rgba)
-    connected = border_connected(strict, broad)
+    pure, exactish, strict, broad, connected, islands, halo = combined_chroma_mask(rgba)
     total = rgba.shape[0] * rgba.shape[1]
     alpha = rgba[..., 3]
     return {
         "width": int(rgba.shape[1]),
         "height": int(rgba.shape[0]),
+        "pure_chroma": int(pure.sum()),
+        "exactish_chroma": int(exactish.sum()),
         "strict_chroma": int(strict.sum()),
         "connected_chroma": int(connected.sum()),
+        "internal_island_chroma": int(islands.sum()),
+        "edge_halo_chroma": int(halo.sum()),
         "connected_ratio": float(connected.sum() / max(1, total)),
         "transparent_ratio": float(np.count_nonzero(alpha < 16) / max(1, total)),
         "border_opaque_ratio": border_opaque_ratio(alpha),
@@ -149,13 +236,16 @@ def asset_stats(path: Path):
         "connected_mask": connected,
     }
 
-
 def should_clean(stats: dict) -> bool:
     pixels = stats["width"] * stats["height"]
     connected = stats["connected_chroma"]
-    strict = stats["strict_chroma"]
-    return connected >= max(24, int(pixels * 0.002)) and strict >= 12
-
+    islands = stats.get("internal_island_chroma", 0)
+    halo = stats.get("edge_halo_chroma", 0)
+    return (
+        connected >= max(24, int(pixels * 0.002))
+        or islands >= max(220, int(pixels * 0.03))
+        or halo >= 3
+    )
 
 def save_rgba(path: Path, rgba: np.ndarray):
     image = Image.fromarray(rgba, mode="RGBA")
@@ -173,21 +263,21 @@ def verify(path: Path, changed: bool) -> dict:
         im.load()
         has_alpha = "A" in im.getbands()
         rgba = np.asarray(im.convert("RGBA"), dtype=np.uint8)
-    strict, broad = chroma_masks(rgba)
-    connected = border_connected(strict, broad)
+    pure, exactish, strict, broad, connected, islands, halo = combined_chroma_mask(rgba)
     alpha = rgba[..., 3]
     remaining = int(np.count_nonzero(connected & (alpha > 16)))
     if changed and not has_alpha:
         raise RuntimeError(f"{path}: cleaned file lost alpha channel")
     if changed and remaining:
-        raise RuntimeError(f"{path}: {remaining} border-connected chroma pixels remain after cleanup")
+        raise RuntimeError(f"{path}: {remaining} detected chroma pixels remain after cleanup")
     return {
         "has_alpha": bool(has_alpha),
         "remaining_connected_chroma": remaining,
+        "remaining_internal_islands": int(np.count_nonzero(islands & (alpha > 16))),
+        "remaining_edge_halo": int(np.count_nonzero(halo & (alpha > 16))),
         "transparent_ratio": float(np.count_nonzero(alpha < 16) / max(1, alpha.size)),
         "border_opaque_ratio": border_opaque_ratio(alpha),
     }
-
 
 def load_manifest_titles(manifest: Path) -> dict[str, dict]:
     if not manifest.exists():
