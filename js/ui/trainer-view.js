@@ -256,6 +256,21 @@ export function createTrainerView(deps){
     updateAudioStorySelection(item);
   }
 
+  function isInlineFillType(type){
+    return type==="fill_in"||type==="fill_in_choice";
+  }
+
+  function isChoiceWidgetItem(item){
+    const type=item&&item.type||"text";
+    if(type==="choice"||type==="context-choice"||type==="fill-choice")return true;
+    return isInlineFillType(type)&&Array.isArray(item.options)&&item.options.length>0;
+  }
+
+  function isAutoFillChoice(item){
+    const type=item&&item.type||"text";
+    return isInlineFillType(type)&&Array.isArray(item.options)&&item.options.length>0;
+  }
+
   function setupExercise(item){
     resetCard();patchState({checkedCurrent:false});
     const type=item.type||"text";
@@ -285,15 +300,22 @@ export function createTrainerView(deps){
     }else if(type==="color-prompt"){
       els.choiceGrid.hidden=false;els.choiceGrid.className="choice-grid color-prompt-grid";els.choiceGrid.innerHTML=colorArt(item.colorHex);
       els.answerLabel.textContent="Название цвета";els.answerInput.placeholder="Напиши цвет по-испански…";els.answerInput.focus();
-    }else if(type==="choice"||type==="context-choice"||type==="fill-choice"){
+    }else if(isChoiceWidgetItem(item)){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.choiceGrid.hidden=false;
+      els.choiceGrid.className=isAutoFillChoice(item)?"choice-grid fill-in-choice-grid":"choice-grid";
       els.choiceGrid.innerHTML=shuffle(item.options||[]).map(option=>'<button class="choice-option" data-choice="'+escapeHtml(option)+
         '" type="button">'+escapeHtml(option)+'</button>').join("");
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(btn=>btn.addEventListener("click",function(){
         if(getState().checkedCurrent)return;
-        els.answerInput.value=btn.dataset.choice;
+        const selected=btn.dataset.choice;
+        els.answerInput.value=selected;
         els.choiceGrid.querySelectorAll(".choice-option").forEach(o=>o.classList.toggle("selected",o===btn));
         syncActionButtons();
+        if(isAutoFillChoice(item)){
+          const question=String(item.q||"");
+          els.questionText.textContent=question.indexOf("___")>=0?question.replace("___",selected):question;
+          checkAnswer();
+        }
       }));
     }else if(type==="match"){
       els.answerInput.hidden=true;els.answerLabel.hidden=true;els.matchWidget.hidden=false;
@@ -400,7 +422,7 @@ export function createTrainerView(deps){
 
     els.answerBox.classList.add("open");
 
-    if(item.type==="choice"||item.type==="context-choice"||item.type==="fill-choice"){
+    if(isChoiceWidgetItem(item)){
       const correct=(item.a||[]).map(normalize);
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(function(btn){
         btn.disabled=true;
@@ -511,7 +533,7 @@ export function createTrainerView(deps){
       const transcriptWrap=els.choiceGrid.querySelector("[data-story-transcript-wrap]");
       if(transcriptWrap)transcriptWrap.hidden=false;
       const checkBtn=$("checkBtn");if(checkBtn)checkBtn.disabled=true;
-    }else if(item.type==="choice"||item.type==="context-choice"||item.type==="fill-choice"){
+    }else if(isChoiceWidgetItem(item)){
       const selected=normalize(els.answerInput.value),correct=(item.a||[]).map(normalize);
       els.choiceGrid.querySelectorAll("[data-choice]").forEach(function(btn){
         btn.disabled=true;
@@ -593,7 +615,7 @@ export function createTrainerView(deps){
     let state=getState();if(!state.queue.length)return;
     const item=state.queue[state.index],value=currentAnswer(item);
     if(!value.trim()){
-      const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.","fill-choice":"Сначала выбери слово для пропуска.",match:"Сначала заполни все соответствия.",
+      const map={choice:"Сначала выбери вариант.","context-choice":"Сначала выбери вариант.","fill-choice":"Сначала выбери слово для пропуска.","fill_in":"Сначала введи слово для пропуска.","fill_in_choice":"Сначала выбери слово для пропуска.",match:"Сначала заполни все соответствия.",
         "cloze-passage":"Сначала заполни все пропуски в тексте.","category-sort":"Сначала распредели все слова по колонкам.",
         "picture-label":"Сначала подпиши все отмеченные предметы.",
         "spot_the_imposter":"Найди слово, в котором кот ошибся.",

@@ -216,6 +216,11 @@
     }
     .choice-option:hover { border-color:#c9c2ff; background:#faf9ff; }
     .choice-option.selected { border-color:var(--violet); background:#f0edff; color:#433a86; box-shadow:0 0 0 3px rgba(98,83,217,.08); }
+    .choice-grid.fill-in-choice-grid { display:flex; flex-wrap:wrap; align-items:center; gap:9px; }
+    .choice-grid.fill-in-choice-grid .choice-option {
+      width:auto; min-width:76px; min-height:42px; padding:9px 14px; border-width:1.5px; border-radius:999px;
+      text-align:center; font-size:15px; box-shadow:0 4px 12px rgba(40,31,86,.05);
+    }
     .order-widget { margin:0 0 22px; }
     .order-built {
       min-height:72px; display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:13px;

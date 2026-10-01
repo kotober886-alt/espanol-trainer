@@ -15,6 +15,8 @@ const TEST_TYPES = new Set([
   "choice",
   "context-choice",
   "fill-choice",
+  "fill_in",
+  "fill_in_choice",
   "match",
   "cloze",
   "cloze-passage",
@@ -62,6 +64,8 @@ function exerciseMatchesFormat(item, format) {
   if (format === "fill") {
     return (
       type === "fill-choice" ||
+      type === "fill_in" ||
+      type === "fill_in_choice" ||
       type === "cloze" ||
       type === "cloze-passage" ||
       type === "ser-estar-hay"

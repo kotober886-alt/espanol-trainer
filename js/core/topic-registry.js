@@ -1,3 +1,5 @@
+import { CONTEXT_FILL_EXERCISES } from "../../data/exercises.js";
+
 /**
  * Unified topic registry for Español Trainer.
  *
@@ -94,6 +96,41 @@ function validateTopic(topic) {
   validateUniqueIds(topic.exercises, topic.id + ".exercises");
 }
 
+function normalizeSupplementalExercise(exercise) {
+  const source = exercise || {};
+  const answerSource = source.a != null
+    ? source.a
+    : source.answers != null
+      ? source.answers
+      : source.answer;
+  const answers = Array.isArray(answerSource)
+    ? answerSource.slice()
+    : answerSource == null || String(answerSource).trim() === ""
+      ? []
+      : [String(answerSource)];
+  const sentence = String(source.sentence || "").trim();
+  const translation = String(source.translation || "").trim();
+  const question = source.q || (sentence
+    ? (translation
+      ? "Вставь пропущенную часть по переводу «" + translation + "»: " + sentence
+      : sentence)
+    : "");
+
+  return {
+    ...source,
+    q: question,
+    a: answers,
+    e: source.e || source.hint || "",
+    skill: source.skill || "В контексте"
+  };
+}
+
+function supplementalExercisesFor(topicId) {
+  return CONTEXT_FILL_EXERCISES
+    .filter(function (exercise) { return exercise && exercise.topic === topicId; })
+    .map(normalizeSupplementalExercise);
+}
+
 export function registerTopic(topic) {
   validateTopic(topic);
 
@@ -105,13 +142,16 @@ export function registerTopic(topic) {
     );
   }
 
+  const exercises = topic.exercises.concat(supplementalExercisesFor(id));
+  validateUniqueIds(exercises, id + ".exercises");
+
   const normalizedTopic = {
     ...topic,
     id: id,
     title: topic.title.trim(),
     icon: topic.icon.trim(),
     studyItems: topic.studyItems.slice(),
-    exercises: topic.exercises.slice()
+    exercises: exercises
   };
 
   topics.set(id, normalizedTopic);

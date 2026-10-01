@@ -661,7 +661,7 @@ window.LegacyProgressAdapter = {
       if(format==="audio") return type==="audio"||type==="audio_story_quiz"||Boolean(item&&item.audio)||Boolean(item&&item.audioText);
       if(format==="pictures") return type==="picture-label"||type==="color-prompt"||Boolean(item&&item.pictureScene)||Boolean(item&&Array.isArray(item.pictureLabels)&&item.pictureLabels.length);
       if(format==="phrase") return type==="order";
-      if(format==="fill") return type==="fill-choice"||type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
+      if(format==="fill") return type==="fill-choice"||type==="fill_in"||type==="fill_in_choice"||type==="cloze"||type==="cloze-passage"||type==="ser-estar-hay";
       if(format==="choice") return type==="choice"||type==="context-choice"||type==="spot_the_imposter";
       return false;
     }
