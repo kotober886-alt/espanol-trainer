@@ -197,7 +197,19 @@
     select.value=topics.some(topic=>topic.id===current)?current:"all";
   }
   function pickWords(pool,count){const src=normalizePool(pool);return shuffle(src).slice(0,Math.min(count,src.length));}
-  function pickOrderedWords(pool,count){const src=normalizePool(pool);return src.slice(0,Math.min(count,src.length));}
+  function pickOrderedWords(pool,count,topicId,roundMode){
+    const src=normalizePool(pool);
+    const api=core();
+    if(api&&typeof api.selectRoundWords==="function"){
+      return api.selectRoundWords(src,count,{topicId,roundMode});
+    }
+    const limit=Math.min(Math.max(1,Number(count)||src.length),src.length);
+    if(!src.length||limit>=src.length)return src.slice();
+    const start=Math.floor(Math.random()*src.length);
+    const selected=[];
+    for(let offset=0;offset<limit;offset++)selected.push(src[(start+offset)%src.length]);
+    return selected;
+  }
   function splitArticle(word){const m=String(word).match(ARTICLE);return m?{p:m[0],c:String(word).slice(m[0].length)}:{p:"",c:String(word)};}
   function replaceAt(s,i,n,r){return s.slice(0,i)+r+s.slice(i+n);}
   function mutations(word){
@@ -486,7 +498,7 @@
       ?window.CatFlashRewards.finishRound(session.errors)
       :null;
     const rewardVisual=reward
-      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20261002-photoflash-exam-no-preview1" alt="'+esc(reward.title)+'"></div>'
+      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20261002-photoflash-pool-rotation1" alt="'+esc(reward.title)+'"></div>'
       :'<div class="pf-result-camera">📸</div>';
     const rewardCopy=reward
       ?'<div class="pf-reward-copy '+(reward.isNewReward?'is-new':'is-owned')+'">'+
@@ -551,7 +563,7 @@
       source=fallbackPool();
       topicId="all";
     }
-    const orderedCards=pickOrderedWords(source,count);
+    const orderedCards=pickOrderedWords(source,count,topicId,selected.roundMode);
     const api=core();
     const planned=api&&typeof api.buildRoundQueue==="function"
       ?api.buildRoundQueue(orderedCards,selected.roundMode,shuffle)
@@ -736,6 +748,6 @@
   function syncBanner(){if(banner)banner.hidden=!wordsActive()||!!(game&&!game.hidden);}
   function observe(){const nodes=[document.getElementById("headerNavWords"),document.getElementById("navWords"),document.getElementById("trainerLayout")].filter(Boolean),o=new MutationObserver(syncBanner);nodes.forEach(n=>o.observe(n,{attributes:true,attributeFilter:["class","hidden"]}));["headerNavWords","headerNavHome","headerNavPractice","headerNavMistakes","navWords","navHome","navPractice","navMistakes","learnWordsBtn","chooseTopicBtn","mistakesWordsBtn"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("click",()=>setTimeout(syncBanner,0));});}
   function init(){styles();ui();bind();observe();syncBanner();}
-  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20261002-photoflash-exam-no-preview1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords,pickOrderedWords,core:()=>core()});
+  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20261002-photoflash-pool-rotation1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords,pickOrderedWords,core:()=>core()});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
