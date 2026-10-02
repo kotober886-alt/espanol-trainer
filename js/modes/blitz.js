@@ -370,15 +370,36 @@
     const shown=Math.min(total,done+(current?1:0));
     let phaseLabel="По порядку";
     if(session&&session.roundMode==="order_then_shuffle"){
-      phaseLabel=current&&current.roundPhase==="shuffle"?"Круг 2/2 · вразброс":"Круг 1/2 · по порядку";
+      phaseLabel=current&&current.phase===2?"Круг 2/2 · без подсказок":"Круг 1/2 · обучение";
     }
     if(m)m.textContent="Шаг "+shown+" из "+total+" · "+phaseLabel+" · "+label;
-    if(o)o.style.width=(total?done/total*100:0)+"%";
+    if(o)o.style.width=(total?shown/total*100:0)+"%";
   }
   function frame(inner,phase,label){game.innerHTML='<div class="pf-card" data-phase="'+phase+'"><header class="pf-head"><div><b>⚡ Фотовспышка</b><span data-pf-meta></span></div><button data-pf-close aria-label="Закрыть">×</button></header><div class="pf-overall"><i data-pf-overall></i></div><div class="pf-timer"><i data-pf-timer></i></div><main class="pf-stage">'+inner+'</main></div>';meta(label);}
+  function currentQuestionMode(){
+    if(!current)return normalizeQuestionMode(session&&session.questionMode);
+    if(current.questionMode)return current.questionMode;
+    current.questionMode=current.randomDirection
+      ?(Math.random()<0.5?"word_to_translation":"translation_to_word")
+      :normalizeQuestionMode(session&&session.questionMode);
+    return current.questionMode;
+  }
+  function showQuestion(){
+    return currentQuestionMode()==="translation_to_word"?spelling():meaning();
+  }
   function questionAfterFlash(){
-    if(session&&session.questionMode==="translation_to_word")return spelling();
-    return meaning();
+    return showQuestion();
+  }
+  function showPhaseToast(message){
+    const toast=document.createElement("div");
+    toast.className="pf-phase-toast";
+    toast.textContent=message;
+    game.appendChild(toast);
+    requestAnimationFrame(()=>toast.classList.add("is-visible"));
+    setTimeout(()=>{
+      toast.classList.remove("is-visible");
+      setTimeout(()=>toast.remove(),220);
+    },1200);
   }
   function flash(){
     const duration=phaseDuration("flash");
@@ -448,7 +469,13 @@
     current.failed=false;
     current.spellingResolved=false;
     current.meaningResolved=false;
-    flash();
+    current.questionMode=null;
+    if(current.phase===2&&!session.phase2Started){
+      session.phase2Started=true;
+      showPhaseToast("Круг 2: проверка без подсказок!");
+    }
+    if(current.showPreview)flash();
+    else showQuestion();
   }
   function results(){
     clearTimers();
@@ -459,7 +486,7 @@
       ?window.CatFlashRewards.finishRound(session.errors)
       :null;
     const rewardVisual=reward
-      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20260930-photoflash-two-phase1" alt="'+esc(reward.title)+'"></div>'
+      ?'<div class="pf-reward-card"><img src="'+esc(reward.file)+'?v=20261002-photoflash-exam-no-preview1" alt="'+esc(reward.title)+'"></div>'
       :'<div class="pf-result-camera">📸</div>';
     const rewardCopy=reward
       ?'<div class="pf-reward-copy '+(reward.isNewReward?'is-new':'is-owned')+'">'+
@@ -473,7 +500,7 @@
       :'';
     const speedBadge=sprint?'<div class="pf-speed-badge">⚡️ Темп: Спринт</div>':'';
     const roundCopy=session.roundMode==="order_then_shuffle"
-      ?"Пройдены оба этапа: сначала по порядку, затем те же слова вразброс."
+      ?"Пройдены оба этапа: обучение по порядку и проверка вразброс без подсказок."
       :"Пройден один круг строго по порядку.";
     frame('<div class="pf-results">'+rewardVisual+'<em>Фотовспышка завершена</em><h2>'+title+'</h2><p>'+roundCopy+'</p>'+speedBadge+rewardCopy+'<section><span><b>'+session.wordCount+'</b>слов</span><span><b>'+session.totalSteps+'</b>шагов</span><span><b>'+session.errors+'</b>ошибок / таймаутов</span><span><b>'+secs+'с</b>время</span></section><footer><button class="pf-secondary" data-pf-exit>К словам</button>'+albumAction+'<button class="pf-primary" data-pf-restart>Ещё раз</button></footer></div>',"results","Готово");
     const t=game.querySelector("[data-pf-timer]"),o=game.querySelector("[data-pf-overall]");
@@ -529,16 +556,29 @@
     const planned=api&&typeof api.buildRoundQueue==="function"
       ?api.buildRoundQueue(orderedCards,selected.roundMode,shuffle)
       :(selected.roundMode==="order_then_shuffle"
-        ?[...orderedCards,...shuffle([...orderedCards])]
-        :[...orderedCards]);
-    const firstPassLength=orderedCards.length;
-    const queue=planned.map((item,index)=>({
-      item,
-      roundPhase:index<firstPassLength?"order":"shuffle",
-      failed:false,
-      spellingResolved:false,
-      meaningResolved:false
-    }));
+        ?[
+          ...orderedCards.map(item=>({...item,phase:1,showPreview:true,randomDirection:false})),
+          ...shuffle([...orderedCards]).map(item=>({...item,phase:2,showPreview:false,randomDirection:true}))
+        ]
+        :orderedCards.map(item=>({...item,phase:1,showPreview:true,randomDirection:false})));
+    const queue=planned.map(step=>{
+      const marked=step&&typeof step==="object";
+      const phase=marked&&Number(step.phase)===2?2:1;
+      const showPreview=marked&&typeof step.showPreview==="boolean"?step.showPreview:phase===1;
+      const randomDirection=marked&&typeof step.randomDirection==="boolean"?step.randomDirection:phase===2;
+      const item=marked?Object.fromEntries(Object.entries(step).filter(([key])=>!["phase","showPreview","randomDirection"].includes(key))):step;
+      return {
+        item,
+        phase,
+        roundPhase:phase===2?"shuffle":"order",
+        showPreview,
+        randomDirection,
+        failed:false,
+        spellingResolved:false,
+        meaningResolved:false,
+        questionMode:null
+      };
+    });
     if(!queue.length){
       console.error("[Photoflash] Words pool is empty!");
       alert("Не удалось загрузить слова для спринта. Проверьте выбор темы.");
@@ -563,6 +603,7 @@
       totalSteps:queue.length,
       completedSteps:0,
       queue,
+      phase2Started:false,
       attempts:0,
       errors:0,
       startedAt:Date.now()
@@ -602,14 +643,14 @@
     '.photoflash-open{overflow:hidden!important}.photoflash-banner{grid-column:1/-1;position:relative;overflow:visible;display:block;min-height:156px;padding:22px 210px 22px 26px;border:1px solid rgba(255,255,255,.95);border-radius:26px;background:linear-gradient(135deg,#3d348b 0%,#6c5ce7 55%,#ff7675 85%,#f0932b 100%);color:#fff;box-shadow:0 18px 45px rgba(35,28,89,.18);cursor:pointer}.photoflash-banner[hidden]{display:none!important}.photoflash-banner-copy{position:relative;min-width:0;z-index:2}.photoflash-badge,.pf-card em{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:850;font-style:normal}.photoflash-banner h2{margin:0;font-size:clamp(25px,3.3vw,38px);letter-spacing:-.04em}.photoflash-banner p{max-width:690px;margin:8px 0 16px;color:rgba(255,255,255,.88);font-size:14px}.photoflash-banner-cta{min-height:43px;padding:10px 15px;border:0;border-radius:13px;background:#ffd447;color:#292044;font-weight:900}.photoflash-banner-art{position:absolute;right:20px;bottom:-10px;width:180px;height:180px;display:flex;align-items:flex-end;justify-content:center;z-index:1;pointer-events:none}.photoflash-banner-art img{display:block;height:180px;max-height:180px;width:auto;object-fit:contain;filter:drop-shadow(0 10px 20px rgba(0,0,0,.25))}',
     '.pf-dialog{width:min(620px,calc(100vw - 28px));max-height:calc(100vh - 24px);overflow:auto;border:0;border-radius:24px;padding:0;color:#17153b;box-shadow:0 28px 80px rgba(23,21,59,.28)}.pf-dialog::backdrop{background:rgba(20,17,46,.54);backdrop-filter:blur(5px)}.pf-dialog>div{padding:24px}.pf-dialog header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0}.pf-dialog h2{margin:3px 0 4px;font-size:27px}.pf-dialog p{margin:0;color:#6d6a86}.pf-close,.pf-head>button{width:42px;height:42px;border:0;border-radius:12px;background:#f2f0f8;color:#514b68;font-size:27px}.pf-topic-field{display:grid;gap:7px;margin:20px 0 4px;text-align:left}.pf-topic-field span{color:#514b68;font-size:12px;font-weight:850}.pf-topic-field select{width:100%;min-height:48px;padding:10px 12px;border:2px solid #e5e1ef;border-radius:14px;background:#fff;color:#17153b;font:inherit;font-weight:750}.pf-topic-field select:focus{outline:none;border-color:#6253d9}.pf-difficulty{display:grid;gap:8px;margin:16px 0 4px;text-align:left}.pf-difficulty>span{color:#514b68;font-size:12px;font-weight:850}.pf-levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-level{padding:12px;border:2px solid #e5e1ef;border-radius:16px;background:#fff;color:#17153b;text-align:left;cursor:pointer}.pf-level strong{display:block;margin-bottom:4px;font-size:14px}.pf-level small{display:block;color:#77718d;font-size:11px;line-height:1.35}.pf-level.active{border-color:#6253d9;background:#f1efff}.pf-level.active small{color:#5a4cc8}.pf-counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 18px}.pf-counts button{min-height:74px;border:2px solid #e5e1ef;border-radius:16px;background:#fff;font-weight:850}.pf-counts button b{display:block;font-size:25px}.pf-counts button span{display:block;color:#7a748f;font-size:11px}.pf-counts button.active{border-color:#6253d9;background:#f1efff;color:#4b3dbe}.pf-actions{display:flex;justify-content:flex-end}',
     '.pf-game{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 20% 10%,rgba(255,212,71,.23),transparent 25rem),linear-gradient(145deg,#f7f5fc,#efebff)}.pf-game[hidden]{display:none!important}.pf-card{width:min(760px,100%);min-height:min(650px,calc(100vh - 36px));display:flex;flex-direction:column;overflow:hidden;border-radius:30px;background:#fff;box-shadow:0 24px 75px rgba(35,28,89,.17)}.pf-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px 14px;margin:0}.pf-head b{display:block;color:#6253d9;font-size:12px;text-transform:uppercase;letter-spacing:.09em}.pf-head span{display:block;color:#77718d;font-size:12px;font-weight:750}.pf-overall{height:6px;margin:0 20px 10px;overflow:hidden;border-radius:999px;background:#eeeaf7}.pf-overall i{display:block;width:0;height:100%;background:linear-gradient(90deg,#6253d9,#ff786c);transition:width .3s}.pf-timer{height:8px;overflow:hidden;background:#f0edf7}.pf-timer i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#ffd447,#ff786c)}.pf-stage{flex:1;display:grid;place-items:center;padding:clamp(28px,6vw,60px);text-align:center}.pf-stage em{background:#f1efff;color:#5a4cc8}.pf-primary,.pf-secondary{min-height:48px;padding:12px 18px;border-radius:14px;font-weight:900}.pf-primary{border:0;background:#6253d9;color:#fff}.pf-secondary{border:1px solid #e2deec;background:#fff;color:#514b68}',
-    '.pf-card[data-phase="results"]{min-height:0}.pf-card[data-phase="results"] .pf-stage{place-items:start center;padding:26px 30px 32px}.pf-results{width:min(620px,100%)}.pf-flash h2{margin:20px 0 8px;font-size:clamp(46px,8vw,82px);line-height:1;letter-spacing:-.055em}.pf-flash p{margin:0 0 26px;color:#6d6a86;font-size:clamp(21px,3vw,30px);font-weight:750}.pf-question{width:min(620px,100%)}.pf-question h2{margin:16px 0 7px;font-size:clamp(30px,5vw,46px);letter-spacing:-.04em}.pf-question>p{margin:0 0 22px;color:#77718d;font-size:17px;font-weight:700}.pf-question>strong{display:block;margin:8px 0 24px;color:#4a4088;font-size:clamp(28px,4.5vw,42px)}.pf-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-options button{min-height:64px;padding:13px 15px;border:2px solid #e6e2ef;border-radius:16px;background:#fff;color:#17153b;font-weight:850;overflow-wrap:anywhere}.pf-options button.good{border-color:#62bd92;background:#eaf8f1;color:#176d4e}.pf-options button.bad{border-color:#e88f9b;background:#fff0f2;color:#a53643}.pf-options button:disabled{opacity:1}.pf-feedback{min-height:28px;margin-top:16px;font-weight:850}.pf-feedback.ok{color:#187052}.pf-feedback.no{color:#a53643}.pf-results>div:first-child{font-size:58px}.pf-results h2{margin:14px 0 6px;font-size:clamp(30px,5vw,46px)}.pf-results>p{color:#6d6a86}.pf-speed-badge{display:inline-flex;margin:8px 0 2px;padding:7px 11px;border-radius:999px;background:#fff4cf;color:#755300;font-size:12px;font-weight:900}.pf-results section{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:20px 0}.pf-results section span{padding:13px 8px;border-radius:14px;background:#f7f5fc;color:#77718d;font-size:11px;font-weight:750}.pf-results section b{display:block;color:#17153b;font-size:22px}.pf-results footer{display:flex;justify-content:center;gap:10px;margin-top:24px}',
+    '.pf-phase-toast{position:absolute;top:22px;left:50%;z-index:4;max-width:calc(100% - 36px);padding:11px 16px;border-radius:999px;background:#17153b;color:#fff;font-size:13px;font-weight:900;box-shadow:0 12px 30px rgba(23,21,59,.24);opacity:0;transform:translate(-50%,-10px);transition:opacity .2s,transform .2s;pointer-events:none}.pf-phase-toast.is-visible{opacity:1;transform:translate(-50%,0)}.pf-card[data-phase="results"]{min-height:0}.pf-card[data-phase="results"] .pf-stage{place-items:start center;padding:26px 30px 32px}.pf-results{width:min(620px,100%)}.pf-flash h2{margin:20px 0 8px;font-size:clamp(46px,8vw,82px);line-height:1;letter-spacing:-.055em}.pf-flash p{margin:0 0 26px;color:#6d6a86;font-size:clamp(21px,3vw,30px);font-weight:750}.pf-question{width:min(620px,100%)}.pf-question h2{margin:16px 0 7px;font-size:clamp(30px,5vw,46px);letter-spacing:-.04em}.pf-question>p{margin:0 0 22px;color:#77718d;font-size:17px;font-weight:700}.pf-question>strong{display:block;margin:8px 0 24px;color:#4a4088;font-size:clamp(28px,4.5vw,42px)}.pf-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-options button{min-height:64px;padding:13px 15px;border:2px solid #e6e2ef;border-radius:16px;background:#fff;color:#17153b;font-weight:850;overflow-wrap:anywhere}.pf-options button.good{border-color:#62bd92;background:#eaf8f1;color:#176d4e}.pf-options button.bad{border-color:#e88f9b;background:#fff0f2;color:#a53643}.pf-options button:disabled{opacity:1}.pf-feedback{min-height:28px;margin-top:16px;font-weight:850}.pf-feedback.ok{color:#187052}.pf-feedback.no{color:#a53643}.pf-results>div:first-child{font-size:58px}.pf-results h2{margin:14px 0 6px;font-size:clamp(30px,5vw,46px)}.pf-results>p{color:#6d6a86}.pf-speed-badge{display:inline-flex;margin:8px 0 2px;padding:7px 11px;border-radius:999px;background:#fff4cf;color:#755300;font-size:12px;font-weight:900}.pf-results section{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:20px 0}.pf-results section span{padding:13px 8px;border-radius:14px;background:#f7f5fc;color:#77718d;font-size:11px;font-weight:750}.pf-results section b{display:block;color:#17153b;font-size:22px}.pf-results footer{display:flex;justify-content:center;gap:10px;margin-top:24px}',
     '@media(max-width:720px){.photoflash-banner{min-height:154px;padding:18px 170px 18px 18px}.photoflash-banner-art{right:12px;bottom:-8px;width:160px;height:160px}.photoflash-banner-art img{height:160px;max-height:160px}.pf-game{padding:0}.pf-card{min-height:100vh;border-radius:0}.pf-stage{padding:28px 18px 34px}.pf-results section{grid-template-columns:repeat(2,1fr)}}@media(max-width:460px){.photoflash-banner{min-height:176px;padding:18px 118px 18px 18px}.photoflash-banner-art{right:4px;bottom:-8px;width:132px;height:150px}.photoflash-banner-art img{height:150px;max-height:150px}.photoflash-banner p{font-size:13px}.pf-dialog>div{padding:20px}}'
   ].join("");document.head.appendChild(s);}
   function ui(){
     banner=document.getElementById("photoflashBanner");
     chooser=document.createElement("dialog");
     chooser.className="pf-dialog";
-    chooser.innerHTML='<div><header><div><b>⚡ Новый режим</b><h2>Фотовспышка</h2><p>Выбери тему, количество слов, направление вопросов, порядок и темп.</p></div><button class="pf-close" data-pf-dialog-close aria-label="Закрыть">×</button></header><label class="pf-topic-field"><span>Тема</span><select data-pf-topic><option value="all">Все темы (микс)</option></select></label><div class="pf-counts">'+COUNTS.map(n=>'<button type="button" data-pf-count="'+n+'"><b>'+n+'</b><span>слов</span></button>').join("")+'</div><input type="hidden" data-pf-selected value="10"><div class="pf-difficulty"><span>Тип вопросов</span><div class="pf-levels"><button type="button" class="pf-level active" data-pf-question-choice="word_to_translation"><strong>Слово → Перевод</strong><small>Показываем испанское слово, выбираешь перевод.</small></button><button type="button" class="pf-level" data-pf-question-choice="translation_to_word"><strong>Перевод → Слово</strong><small>Показываем перевод, выбираешь написание слова.</small></button></div></div><input type="hidden" data-pf-question value="word_to_translation"><div class="pf-difficulty"><span>Порядок / режим прохождения</span><div class="pf-levels"><button type="button" class="pf-level" data-pf-round-choice="order"><strong>По порядку</strong><small>Один круг строго в порядке темы.</small></button><button type="button" class="pf-level active" data-pf-round-choice="order_then_shuffle"><strong>С усложнением</strong><small>Круг 1 по порядку + круг 2 с теми же словами вразброс.</small></button></div></div><input type="hidden" data-pf-round value="order_then_shuffle"><div class="pf-difficulty"><span>Скорость / темп</span><div class="pf-levels"><button type="button" class="pf-level active" data-pf-speed-choice="normal"><strong>🟢 Обычный</strong><small>+5 сек на ответ, показ карточки на 2,5 сек дольше.</small></button><button type="button" class="pf-level" data-pf-speed-choice="sprint"><strong>⚡️ Спринт</strong><small>Исходный быстрый таймер Фотовспышки.</small></button></div></div><input type="hidden" data-pf-speed value="normal"><div class="pf-actions"><button class="pf-primary" data-pf-go>Поехали!</button></div></div>';
+    chooser.innerHTML='<div><header><div><b>⚡ Новый режим</b><h2>Фотовспышка</h2><p>Выбери тему, количество слов, направление вопросов, порядок и темп.</p></div><button class="pf-close" data-pf-dialog-close aria-label="Закрыть">×</button></header><label class="pf-topic-field"><span>Тема</span><select data-pf-topic><option value="all">Все темы (микс)</option></select></label><div class="pf-counts">'+COUNTS.map(n=>'<button type="button" data-pf-count="'+n+'"><b>'+n+'</b><span>слов</span></button>').join("")+'</div><input type="hidden" data-pf-selected value="10"><div class="pf-difficulty"><span>Тип вопросов</span><div class="pf-levels"><button type="button" class="pf-level active" data-pf-question-choice="word_to_translation"><strong>Слово → Перевод</strong><small>Показываем испанское слово, выбираешь перевод.</small></button><button type="button" class="pf-level" data-pf-question-choice="translation_to_word"><strong>Перевод → Слово</strong><small>Показываем перевод, выбираешь написание слова.</small></button></div></div><input type="hidden" data-pf-question value="word_to_translation"><div class="pf-difficulty"><span>Порядок / режим прохождения</span><div class="pf-levels"><button type="button" class="pf-level" data-pf-round-choice="order"><strong>По порядку</strong><small>Один круг строго в порядке темы.</small></button><button type="button" class="pf-level active" data-pf-round-choice="order_then_shuffle"><strong>С усложнением</strong><small>Круг 1 с подсказками по порядку + круг 2 вразброс без превью.</small></button></div></div><input type="hidden" data-pf-round value="order_then_shuffle"><div class="pf-difficulty"><span>Скорость / темп</span><div class="pf-levels"><button type="button" class="pf-level active" data-pf-speed-choice="normal"><strong>🟢 Обычный</strong><small>+5 сек на ответ, показ карточки на 2,5 сек дольше.</small></button><button type="button" class="pf-level" data-pf-speed-choice="sprint"><strong>⚡️ Спринт</strong><small>Исходный быстрый таймер Фотовспышки.</small></button></div></div><input type="hidden" data-pf-speed value="normal"><div class="pf-actions"><button class="pf-primary" data-pf-go>Поехали!</button></div></div>';
     document.body.appendChild(chooser);
     game=document.createElement("section");
     game.className="pf-game";
@@ -695,6 +736,6 @@
   function syncBanner(){if(banner)banner.hidden=!wordsActive()||!!(game&&!game.hidden);}
   function observe(){const nodes=[document.getElementById("headerNavWords"),document.getElementById("navWords"),document.getElementById("trainerLayout")].filter(Boolean),o=new MutationObserver(syncBanner);nodes.forEach(n=>o.observe(n,{attributes:true,attributeFilter:["class","hidden"]}));["headerNavWords","headerNavHome","headerNavPractice","headerNavMistakes","navWords","navHome","navPractice","navMistakes","learnWordsBtn","chooseTopicBtn","mistakesWordsBtn"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("click",()=>setTimeout(syncBanner,0));});}
   function init(){styles();ui();bind();observe();syncBanner();}
-  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20260930-photoflash-two-phase1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords,pickOrderedWords,core:()=>core()});
+  window.startPhotoflash=start;window.PhotoflashBlitz=Object.freeze({version:"20261002-photoflash-exam-no-preview1",start,close,collectPool:()=>normalizePool(),normalizePool,pickWords,pickOrderedWords,core:()=>core()});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();

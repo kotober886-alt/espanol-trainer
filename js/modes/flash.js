@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "20260930-photoflash-two-phase1";
+  const BUILD = "20261002-photoflash-exam-no-preview1";
   const MAX_ERRORS_FOR_REWARD = 2;
   const SPEED_PRESETS = Object.freeze({
     normal: Object.freeze({ previewBonusMs: 2500, answerTimeBonusSec: 5 }),
@@ -32,15 +32,15 @@
   function buildRoundQueue(orderedCards, roundMode, shuffleFn) {
     const cards = Array.isArray(orderedCards) ? orderedCards.slice() : [];
     const shuffle = typeof shuffleFn === "function" ? shuffleFn : shuffleArray;
-    let queue;
 
     if (normalizeRoundMode(roundMode) === "order_then_shuffle") {
-      queue = [...cards, ...shuffle([...cards])];
-    } else {
-      queue = [...cards];
+      return [
+        ...cards.map(card => ({ ...card, phase: 1, showPreview: true, randomDirection: false })),
+        ...shuffle([...cards]).map(card => ({ ...card, phase: 2, showPreview: false, randomDirection: true }))
+      ];
     }
 
-    return queue;
+    return cards.map(card => ({ ...card, phase: 1, showPreview: true, randomDirection: false }));
   }
 
   function answerTimerLimit(baseLimit, speedMode) {
