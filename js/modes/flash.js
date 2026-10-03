@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "20261002-photoflash-pool-rotation1";
+  const BUILD = "20261003-photoflash-pool-rotation2";
   const MAX_ERRORS_FOR_REWARD = 2;
   const ROTATION_STORAGE_PREFIX = "flash_seen_words_";
   const SPEED_PRESETS = Object.freeze({
@@ -81,27 +81,45 @@
     return null;
   }
 
-  function readRotationState(storage, storageKey, signature) {
-    if (!storage) return { signature, seen: [] };
+  function legacyCursorFromSeen(seen, keys) {
+    if (!Array.isArray(seen) || !seen.length) return 0;
+    const seenSet = new Set(seen.map(String));
+    let cursor = 0;
+    while (cursor < keys.length && seenSet.has(keys[cursor])) cursor += 1;
+    return cursor >= keys.length ? 0 : cursor;
+  }
+
+  function readRotationState(storage, storageKey, signature, keys) {
+    if (!storage) return { signature, cursor: 0, cycle: 0 };
     try {
       const raw = storage.getItem(storageKey);
-      if (!raw) return { signature, seen: [] };
+      if (!raw) return { signature, cursor: 0, cycle: 0 };
       const parsed = JSON.parse(raw);
-      if (!parsed || parsed.signature !== signature || !Array.isArray(parsed.seen)) {
-        return { signature, seen: [] };
+      if (!parsed || parsed.signature !== signature) {
+        return { signature, cursor: 0, cycle: 0 };
       }
-      return { signature, seen: parsed.seen.map(String) };
+
+      const savedCursor = Number(parsed.cursor);
+      const cursor = Number.isInteger(savedCursor) && savedCursor >= 0 && savedCursor < keys.length
+        ? savedCursor
+        : legacyCursorFromSeen(parsed.seen, keys);
+      const savedCycle = Number(parsed.cycle);
+      const cycle = Number.isInteger(savedCycle) && savedCycle >= 0 ? savedCycle : 0;
+      return { signature, cursor, cycle };
     } catch (error) {
-      return { signature, seen: [] };
+      return { signature, cursor: 0, cycle: 0 };
     }
   }
 
-  function writeRotationState(storage, storageKey, signature, seen) {
+  function writeRotationState(storage, storageKey, signature, cursor, keys, cycle) {
     if (!storage) return;
     try {
+      const safeCursor = Math.max(0, Math.min(Number(cursor) || 0, keys.length));
       storage.setItem(storageKey, JSON.stringify({
         signature,
-        seen: Array.from(new Set(seen.map(String))),
+        cursor: safeCursor >= keys.length ? 0 : safeCursor,
+        cycle: Math.max(0, Number(cycle) || 0),
+        seen: keys.slice(0, safeCursor >= keys.length ? 0 : safeCursor),
         updatedAt: Date.now()
       }));
     } catch (error) {}
@@ -109,12 +127,10 @@
 
   function fallbackOrderedSelection(cards, limit) {
     if (limit >= cards.length) return cards.slice();
-    const start = Math.floor(Math.random() * cards.length);
-    const selected = [];
-    for (let offset = 0; offset < limit; offset++) {
-      selected.push(cards[(start + offset) % cards.length]);
-    }
-    return selected;
+    return shuffleArray(cards.map((card, index) => ({ card, index })))
+      .slice(0, limit)
+      .sort((a, b) => a.index - b.index)
+      .map(entry => entry.card);
   }
 
   function selectRoundWords(orderedCards, count, options) {
@@ -132,38 +148,19 @@
     const topicId = safeTopicId(config.topicId);
     const storageKey = ROTATION_STORAGE_PREFIX + topicId;
     const keys = cards.map(rotationCardKey);
-    const keySet = new Set(keys);
     const signature = poolSignature(keys);
-    const state = readRotationState(storage, storageKey, signature);
-    let seen = new Set(state.seen.filter(key => keySet.has(key)));
+    const state = readRotationState(storage, storageKey, signature, keys);
+    const start = Math.min(state.cursor, cards.length - 1);
+    const end = Math.min(start + limit, cards.length);
+    const selected = cards.slice(start, end);
 
-    if (seen.size >= cards.length) seen = new Set();
+    // Do not mix two cycles in one round. If only the tail of a topic remains,
+    // return that tail; the next launch starts a fresh cycle from card #1.
+    const exhausted = end >= cards.length;
+    const nextCursor = exhausted ? 0 : end;
+    const nextCycle = exhausted ? state.cycle + 1 : state.cycle;
+    writeRotationState(storage, storageKey, signature, nextCursor, keys, nextCycle);
 
-    const selected = [];
-    const selectedKeys = new Set();
-    for (let i = 0; i < cards.length && selected.length < limit; i++) {
-      const cardKey = keys[i];
-      if (seen.has(cardKey)) continue;
-      selected.push(cards[i]);
-      selectedKeys.add(cardKey);
-    }
-
-    let nextSeen;
-    if (selected.length < limit) {
-      nextSeen = new Set();
-      for (let i = 0; i < cards.length && selected.length < limit; i++) {
-        const cardKey = keys[i];
-        if (selectedKeys.has(cardKey)) continue;
-        selected.push(cards[i]);
-        selectedKeys.add(cardKey);
-        nextSeen.add(cardKey);
-      }
-    } else {
-      nextSeen = new Set(seen);
-      selectedKeys.forEach(cardKey => nextSeen.add(cardKey));
-    }
-
-    writeRotationState(storage, storageKey, signature, Array.from(nextSeen));
     return selected;
   }
 
